@@ -1,0 +1,57 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render correctly with content 1`] = `
+<div
+  className="view-details bp3-light view-details--visible"
+>
+  <div
+    className="view-details__close"
+  >
+    <p>
+      Button
+    </p>
+  </div>
+  <div
+    className="view-details__wrapper"
+  >
+    <div
+      className="view-details__button view-details__button--prev"
+    >
+      <p>
+        Button
+      </p>
+    </div>
+    <div
+      className="view-details__content"
+    >
+      <h1>
+        Hello world
+      </h1>
+      <p>
+         This is 
+      </p>
+    </div>
+    <div
+      className="view-details__button view-details__button--next"
+    >
+      <p>
+        Button
+      </p>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`should render correctly without content 1`] = `
+<div
+  className="view-details bp3-light"
+>
+  <div
+    className="view-details__close"
+  >
+    <p>
+      Button
+    </p>
+  </div>
+</div>
+`;

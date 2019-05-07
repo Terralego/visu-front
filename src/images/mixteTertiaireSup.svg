@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="67" height="67" viewBox="0 0 67 67">
+  <g fill="none" fill-rule="evenodd">
+    <rect width="67" height="67" fill="#FFF"/>
+    <g stroke="#1F4B99" transform="translate(1.866 1.866)">
+      <circle cx="44.255" cy="12.011" r="5.7" stroke-width="2.5" transform="rotate(45 44.255 12.011)"/>
+      <path stroke-linecap="square" stroke-width="2.5" d="M38.2094719,20.9071052 L38.2094719,15.2071633" transform="rotate(45 38.21 18.057)"/>
+      <circle cx="44.255" cy="44.255" r="5.7" stroke-width="2.5" transform="rotate(135 44.255 44.255)"/>
+      <path stroke-linecap="square" stroke-width="2.5" d="M38.2094719,41.0594429 L38.2094719,35.359501" transform="rotate(135 38.21 38.21)"/>
+      <circle cx="12.378" cy="12.378" r="5.7" stroke-width="2.5" transform="scale(-1 1) rotate(45 0 -17.505)"/>
+      <path stroke-linecap="square" stroke-width="2.5" d="M18.6221223,21.191256 L18.6221223,16.0529885" transform="scale(-1 1) rotate(45 0 -26.336)"/>
+      <circle cx="12.378" cy="43.889" r="5.7" stroke-width="2.5" transform="scale(1 -1) rotate(-45 -93.579 0)"/>
+      <path stroke-linecap="square" stroke-width="2.5" d="M18.6221223,40.2136177 L18.6221223,35.0753502" transform="scale(1 -1) rotate(-45 -72.26 0)"/>
+      <circle cx="27.769" cy="5.846" r="5.846" stroke-width="2.5"/>
+      <path stroke-linecap="square" stroke-width="2.5" d="M28.1343284,17.5382826 L28.1343284,12.0575693"/>
+      <circle cx="50.423" cy="28.5" r="5.846" stroke-width="2.5" transform="rotate(90 50.423 28.5)"/>
+      <path stroke-linecap="square" stroke-width="2.5" d="M42.0188021,31.4227563 L42.0188021,26.3074239" transform="rotate(90 42.019 28.865)"/>
+      <circle cx="5.846" cy="28.5" r="5.846" stroke-width="2.5" transform="matrix(0 1 1 0 -22.654 22.654)"/>
+      <path stroke-linecap="square" stroke-width="2.5" d="M14.6152355,31.7881372 L14.6152355,25.942043" transform="matrix(0 1 1 0 -14.25 14.25)"/>
+      <circle cx="27.769" cy="50.423" r="5.846" stroke-width="2.5" transform="matrix(1 0 0 -1 0 100.845)"/>
+      <path stroke-linecap="square" stroke-width="2.5" d="M28.1343284,44.5764683 L28.1343284,40.1488371" transform="matrix(1 0 0 -1 0 84.038)"/>
+      <circle cx="28.5" cy="28.5" r="10.961" stroke-width="2.5"/>
+    </g>
+    <polygon fill="#FFF" points="29 29 67 12.985 67 67 12.894 67"/>
+    <g stroke="#1F4B99" stroke-width="1.25" transform="translate(26 26)">
+      <rect width="10.75" height="24.75" x=".625" y="11.625" rx="1"/>
+      <rect width="10.75" height="25.75" x="29.625" y="11.625" rx="1"/>
+      <rect width="17.75" height="35.75" x="11.625" y="4.625" rx="1"/>
+      <rect width="12.75" height="3.75" x="14.625" y=".625" rx="1"/>
+      <path stroke-linecap="round" stroke-linejoin="round" d="M14 8.5L27 8.5M14.5143891 12.5666667L27.366793 12.5666667M3.31556595 16.5666667L8.07183028 16.5666667M32.6178915 16.5666667L37.3741559 16.5666667M14.3953488 16.5666667L27.0983061 16.5666667M3.31556595 20.5666667L8.07183028 20.5666667M32.6178915 20.5666667L37.3741559 20.5666667M14.0898032 20.5666667L26.7927605 20.5666667M3.31556595 24.5666667L8.07183028 24.5666667M32.6178915 24.5666667L37.3741559 24.5666667M14.0898032 24.5666667L26.7927605 24.5666667M3.31556595 28.5666667L8.07183028 28.5666667M32.6178915 28.5666667L37.3741559 28.5666667M14.0898032 28.5666667L26.7927605 28.5666667"/>
+      <g stroke-linecap="round" stroke-linejoin="round" transform="translate(3 32)">
+        <path d="M.315565952.8L5.07183028.8M29.6178915.8L34.3741559.8"/>
+        <polygon points="11.477 .8 23.605 .8 23.605 8 11.395 8"/>
+        <path d="M17.4278606,1 L17.5,8"/>
+      </g>
+    </g>
+  </g>
+</svg>

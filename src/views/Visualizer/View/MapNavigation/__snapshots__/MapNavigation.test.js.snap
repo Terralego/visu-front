@@ -1,0 +1,24 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render correctly 1`] = `
+Array [
+  <div
+    className="map-navigation__header"
+  >
+    LayerTree Button
+  </div>,
+  <div
+    className="map-navigation__content"
+    id="map-navigation__content-42"
+  />,
+  <div
+    className="map-navigation__header"
+  >
+    LayerTree Button
+  </div>,
+  <div
+    className="map-navigation__content"
+    id="map-navigation__content-42"
+  />,
+]
+`;

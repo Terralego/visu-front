@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render correctly 1`] = `
+<div
+  className="filters-panel bp3-dark"
+  style={
+    Object {
+      "left": undefined,
+    }
+  }
+>
+  <div
+    className="filters-panel__arrow"
+    style={
+      Object {
+        "top": undefined,
+      }
+    }
+  />
+  <div
+    className="filters-panel__content"
+  >
+    <div
+      className="filters-panel__header"
+    >
+      <h2
+        className="filters-panel__title"
+      >
+        Filtrer
+      </h2>
+    </div>
+    <div
+      className="filters-panel__form"
+    >
+      <div />
+    </div>
+  </div>
+</div>
+`;

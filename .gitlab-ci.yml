@@ -1,0 +1,106 @@
+image: node:10.9.0 # Should match .nvmrc content
+
+stages:
+  - tests
+  - deploy
+
+before_script:
+  - node --version
+  - npm --version
+  - ls -alh
+
+# Tests stage
+
+npm_test:
+  before_script:
+    - npm ci
+  tags: [shared-ci-docker]
+  stage: tests
+  script:
+    - npm run coverage
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+
+npm_run_lint:
+  before_script:
+    - npm ci
+  tags: [shared-ci-docker]
+  stage: tests
+  script:
+    - npm run lint
+
+# Deploy story book
+
+build:
+  before_script:
+    - npm ci
+  tags: [shared-ci-docker]
+  stage: tests
+  script:
+    - npm run build
+  artifacts:
+    expire_in: 3 days
+    paths:
+      - build/
+
+.deploy: &deploy # Deploy template
+  tags: [shared-ci-docker]
+  stage: deploy
+  when: manual
+  variables:
+    SITE_ID: "yournamehere.netlify.com"
+    BACKEND_URL: "yourbackend.makina.com"
+  dependencies:
+    - build
+  script:
+    - cat ./build/env.dist.json | sed
+      -e "s/<BACKEND_URL>/${BACKEND_URL}/g" > ./build/env.json
+    - cat ./build/env.json
+    - npx netlify-cli deploy --site=$SITE_ID --auth=$NETLIFY_ACCESS_TOKEN  --dir=./build --prod
+
+deploy_predev: &deploy_predev
+  <<: *deploy
+  environment:
+    name: dev
+    url: https://auran-dev.netlify.com
+  variables:
+    SITE_ID: "auran-dev.netlify.com"
+    BACKEND_URL: "https:\\/\\/dev-terralego-auran.makina-corpus.net\\/api"
+
+deploy_dev:
+  <<: *deploy_predev
+  only:
+    - master
+  when: always
+
+deploy_qa:
+  <<: *deploy
+  only:
+    - master
+  environment:
+    name: qa
+    url: https://auran-qa.netlify.com
+  variables:
+    SITE_ID: "auran-qa.netlify.com"
+    BACKEND_URL: "https:\\/\\/qa-terralego-auran.makina-corpus.net\\/api"
+
+deploy_staging:
+  <<: *deploy
+  only:
+    - master
+  environment:
+    name: staging
+    url: https://auran-staging.netlify.com
+  variables:
+    SITE_ID: "auran-staging.netlify.com"
+    BACKEND_URL: "https:\\/\\/staging-terralego-auran.makina-corpus.net\\/api"
+
+deploy_prod:
+  <<: *deploy
+  only:
+    - master
+  environment:
+    name: prod
+    url: https://auran.netlify.com
+  variables:
+    SITE_ID: "auran.netlify.com"
+    BACKEND_URL: "https:\\/\\/prod-terralego-auran.makina-corpus.net\\/api"

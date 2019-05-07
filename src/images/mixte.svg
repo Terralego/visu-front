@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="69" height="69" viewBox="0 0 69 69">
+  <g fill="none" fill-rule="evenodd" stroke="#1F4B99" stroke-width="2.5" transform="translate(2 2)">
+    <circle cx="51.122" cy="13.875" r="6.584" transform="rotate(45 51.122 13.875)"/>
+    <path stroke-linecap="square" d="M44.1385279,24.1513112 L44.1385279,17.5668956" transform="rotate(45 44.139 20.86)"/>
+    <circle cx="51.122" cy="51.122" r="6.584" transform="rotate(135 51.122 51.122)"/>
+    <path stroke-linecap="square" d="M44.1385279,47.4307357 L44.1385279,40.8463201" transform="rotate(135 44.139 44.139)"/>
+    <circle cx="14.299" cy="14.299" r="6.584" transform="scale(-1 1) rotate(45 0 -20.221)"/>
+    <path stroke-linecap="square" d="M21.5117619,24.4795544 L21.5117619,18.5439694" transform="scale(-1 1) rotate(45 0 -30.422)"/>
+    <circle cx="14.299" cy="50.699" r="6.584" transform="scale(1 -1) rotate(-45 -108.1 0)"/>
+    <path stroke-linecap="square" d="M21.5117619,46.4536619 L21.5117619,40.5180769" transform="scale(1 -1) rotate(-45 -83.472 0)"/>
+    <circle cx="32.078" cy="6.753" r="6.753"/>
+    <path stroke-linecap="square" d="M32.5,20.2597403 L32.5,13.9285714"/>
+    <circle cx="58.247" cy="32.922" r="6.753" transform="rotate(90 58.247 32.922)"/>
+    <path stroke-linecap="square" d="M48.538961,36.2987013 L48.538961,30.3896104" transform="rotate(90 48.539 33.344)"/>
+    <circle cx="6.753" cy="32.922" r="6.753" transform="matrix(0 1 1 0 -26.169 26.169)"/>
+    <path stroke-linecap="square" d="M16.8831169,36.7207792 L16.8831169,29.9675325" transform="matrix(0 1 1 0 -16.461 16.461)"/>
+    <circle cx="32.078" cy="58.247" r="6.753" transform="matrix(1 0 0 -1 0 116.494)"/>
+    <path stroke-linecap="square" d="M32.5,51.4935065 L32.5,46.378829" transform="matrix(1 0 0 -1 0 97.078)"/>
+    <circle cx="32.922" cy="32.922" r="12.662"/>
+  </g>
+</svg>

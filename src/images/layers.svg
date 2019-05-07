@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.6 (67491) - http://www.bohemiancoding.com/sketch -->
+    <title>icon_layers</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="icon_layers/light" fill="#F5F8FA" fill-rule="nonzero">
+            <g id="icon_layers">
+                <path d="M0.4,5.52 L7.6,9.52 C7.76,9.6 7.84,9.6 8,9.6 C8.16,9.6 8.24,9.6 8.4,9.52 L15.6,5.52 C15.84,5.36 16,5.12 16,4.8 C16,4.48 15.84,4.24 15.6,4.08 L8.4,0.08 C8.24,0 8.16,0 8,0 C7.84,0 7.76,0 7.6,0.08 L0.4,4.08 C0.16,4.24 0,4.48 0,4.8 C0,5.12 0.16,5.36 0.4,5.52 Z" id="Shape"></path>
+                <path d="M15.2,7.2 C15.04,7.2 14.96,7.2 14.8,7.28 L8,11.12 L1.2,7.28 C1.04,7.2 0.96,7.2 0.8,7.2 C0.32,7.2 0,7.52 0,8 C0,8.32 0.16,8.56 0.4,8.72 L7.6,12.72 C7.76,12.8 7.84,12.8 8,12.8 C8.16,12.8 8.24,12.8 8.4,12.72 L15.6,8.72 C15.84,8.56 16,8.32 16,8 C16,7.52 15.68,7.2 15.2,7.2 Z" id="Shape"></path>
+                <path d="M15.2,10.4 C15.04,10.4 14.96,10.4 14.8,10.48 L8,14.32 L1.2,10.56 C1.04,10.4 0.96,10.4 0.8,10.4 C0.32,10.4 0,10.72 0,11.2 C0,11.52 0.16,11.76 0.4,11.92 L7.6,15.92 C7.76,16 7.84,16 8,16 C8.16,16 8.24,16 8.4,15.92 L15.6,11.92 C15.84,11.76 16,11.52 16,11.2 C16,10.72 15.68,10.4 15.2,10.4 Z" id="Shape"></path>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,18 @@
+.storytelling {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 140px);
+
+  &__content {
+    flex: 1;
+  }
+  &__buttons {
+    display: flex;
+    font-size: 2rem;
+    height: 1.3em;
+    justify-content: center;
+    &--justified {
+      justify-content: space-between;
+    }
+  }
+}

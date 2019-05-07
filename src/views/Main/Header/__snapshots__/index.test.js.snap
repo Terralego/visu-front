@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render correctly 1`] = `
+<div
+  className="main__header"
+>
+  <div
+    className="bp3-navbar navBar bp3-dark"
+  >
+    <div
+      className="bp3-navbar-group bp3-align-left navBar__group"
+    />
+    <div
+      className="bp3-navbar-group bp3-align-left navBar__group"
+    />
+    <div
+      className="bp3-navbar-group bp3-align-left navBar__group"
+    />
+  </div>
+</div>
+`;

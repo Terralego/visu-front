@@ -1,0 +1,43 @@
+
+.main {
+  display: flex;
+  &__header {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    flex: 0 0 50px;
+  }
+  &__content {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    min-width: 0;
+  }
+  @media print {
+    display: block;
+    &__header {
+      display: none;
+    }
+    &__content {
+      display: block;
+    }
+  }
+}
+
+.navBar {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: auto;
+  flex: 1;
+  padding: 0.4rem 0;
+  &__group {
+    flex-direction: column;
+    height: auto;
+  }
+  // Below override blueprint
+  .bp3-overlay {
+    white-space: nowrap;
+  }
+}
