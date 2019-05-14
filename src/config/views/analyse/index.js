@@ -1,5 +1,5 @@
 import layersTree from './layersTree';
-import interactions from '../common/interactions';
+import interactions from './interactions';
 import customStyle from './customStyle';
 
 export default {
@@ -13,11 +13,11 @@ export default {
       { label: 'Photographies aériennes IGN', url: '/background-ign-satellite.json' },
       { label: 'Plan IGN', url: '/background-ign-plan.json' },
     ],
-    center: [5.386195159396806, 43.30072210972415],
-    zoom: 9,
+    center: [-1.686401, 48.106514],
+    zoom: 7,
     maxZoom: 19.9,
     minZoom: 7,
     customStyle,
-    fitBounds: [[4.2301364, 42.9822468], [7.7184776, 45.1266002]],
+    fitBounds: [[-6.0002640, 46.8491442], [1.9477370, 49.5994025]],
   },
 };
