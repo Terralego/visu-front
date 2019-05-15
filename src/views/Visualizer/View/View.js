@@ -6,7 +6,6 @@ import InteractiveMap, { INTERACTION_DISPLAY_TOOLTIP, INTERACTION_ZOOM, INTERACT
 import { DEFAULT_CONTROLS, CONTROL_SEARCH, CONTROL_BACKGROUND_STYLES, CONTROLS_TOP_RIGHT } from '@terralego/core/modules/Map';
 import { toggleLayerVisibility, setLayerOpacity } from '@terralego/core/modules/Map/services/mapUtils';
 import classnames from 'classnames';
-import qs from 'qs';
 import debounce from 'debounce';
 import turfCenter from '@turf/center';
 import turfBbox from '@turf/bbox';
@@ -16,13 +15,11 @@ import {
   filterFeatures,
   resetFilters,
   filterLayersStatesFromLayersState,
-  filterLayersFromLayersState,
   hasTable,
   setLayerStateAction,
   layersTreeStatesHaveChanged,
 } from './layersTreeUtils';
 import searchService, { getExtent } from '../../../services/search';
-import Search from './Search';
 import Details from './Details';
 import MapNavigation from './MapNavigation';
 import LayersTree from './LayersTree';
@@ -32,7 +29,6 @@ import PrintControl from './PrintControl';
 import DataTable from './DataTable';
 import Widgets from './Widgets';
 import { generateClusterList } from './interactions';
-import AppName from './AppName/AppName';
 
 import translate from './translate';
 
@@ -123,8 +119,6 @@ export class Visualizer extends React.Component {
     interactions: [],
   };
 
-  debouncedUpdateMapState = debounce(e => this.updateMapState(e), 200);
-
   debouncedSearchQuery = debounce(query => this.search(query), 500);
 
   storyRef = React.createRef();
@@ -169,23 +163,6 @@ export class Visualizer extends React.Component {
 
     if (interactions !== prevInteractions) {
       this.setInteractions();
-    }
-  }
-
-  get mapState () {
-    const { history: { location: { hash } } } = this.props;
-    const mapState = qs.parse(hash.replace(/^#/, ''));
-    try {
-      const zoom = +mapState.zoom;
-      const center = JSON.parse(mapState.center).map(v => +v);
-
-      return {
-        zoom,
-        center,
-        fitBounds: null,
-      };
-    } catch (e) {
-      return {};
     }
   }
 
@@ -279,53 +256,18 @@ export class Visualizer extends React.Component {
 
   resetMap = map => {
     const { initLayersState, setMap } = this.props;
-    const { mapState: { zoom, center } } = this;
     setMap(map);
-    const onFirstResize = () => {
-      const { view: { map: { fitBounds } } } = this.props;
-      if (!fitBounds) return;
-
-      map.fitBounds(fitBounds, { animate: false });
-      this.updateMapState({ target: map });
-    };
     const onMapUpdate = e => {
       // e.originalEvent means it's a user's event
       if (!e.originalEvent && e.type !== 'updateMap') return;
-      map.off('resize', onFirstResize);
-      this.debouncedUpdateMapState(e);
       this.debouncedSearchQuery();
     };
-    if (zoom || center) {
-      this.updateMapState({ target: map });
-    } else {
-      map.once('resize', onFirstResize);
-    }
     map.on('move', onMapUpdate);
     map.on('zoom', onMapUpdate);
     map.on('updateMap', onMapUpdate);
     map.on('load', () => this.updateLayersTree());
     initLayersState();
     map.resize();
-  }
-
-  updateMapState = ({ target: map }) => {
-    const {
-      history: { location: { pathname }, replace },
-      setMapState,
-    } = this.props;
-    const zoom = map.getZoom();
-    const { lng, lat } = map.getCenter();
-    const center = [lng, lat];
-
-    replace(`${pathname}#zoom=${zoom}&center=${JSON.stringify(center)}`);
-
-    const mapState = {
-      zoom,
-      center,
-      fitBounds: null,
-    };
-
-    setMapState(mapState);
   }
 
   hideDetails = () => {
@@ -661,15 +603,11 @@ export class Visualizer extends React.Component {
   render () {
     const {
       layersTreeState,
-      query,
       view: {
         title,
         map: mapProps,
         layersTree,
         story,
-        state: {
-          map: mapStateFromView,
-        } = {},
       },
       mapIsResizing,
     } = this.props;
@@ -683,14 +621,12 @@ export class Visualizer extends React.Component {
     } = this.state;
     const {
       refreshLayers,
-      mapState, resetMap, hideDetails, toggleLayersTree,
+      resetMap, hideDetails, toggleLayersTree,
       legends,
-      searchQuery,
       setLegends,
       storyRef,
       onClusterUpdate,
     } = this;
-    const displaySearch = filterLayersFromLayersState(layersTreeState, () => true).length > 0;
     const isDetailsVisible = !!details && !hasTable(layersTreeState);
     const [{ features: featuresForDetail = [] } = {}] = isDetailsVisible
       ? features.filter(({ layer }) => layer === sourceLayer)
@@ -709,17 +645,6 @@ export class Visualizer extends React.Component {
 
     return (
       <div className="visualizer">
-        <div className="visualizer-view__top">
-          <AppName />
-          {displaySearch
-          && (
-          <Search
-            value={query}
-            onChange={searchQuery}
-          />
-          )
-        }
-        </div>
         <div className={`
           visualizer-view
           ${isLayersTreeVisible ? 'is-layers-tree-visible' : ''}
@@ -760,8 +685,6 @@ export class Visualizer extends React.Component {
                   <TooManyResults count={totalFeatures} />
                   <InteractiveMap
                     {...mapProps}
-                    {...mapStateFromView}
-                    {...mapState}
                     className={Classes.DARK}
                     interactions={interactions}
                     legends={legends}
@@ -771,6 +694,7 @@ export class Visualizer extends React.Component {
                     onClusterUpdate={onClusterUpdate}
                     translate={translate}
                     controls={getControls(displaySearchInMap)}
+                    hash
                   />
                   <Details
                     visible={isDetailsVisible}

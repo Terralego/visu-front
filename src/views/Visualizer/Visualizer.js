@@ -65,7 +65,6 @@ export class Visualizer extends React.Component {
       [viewName]: {
         ...viewConfig,
         state: {
-          map: {},
           layersTreeState: new Map(),
           query: '',
           table: [],
