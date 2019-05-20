@@ -13,9 +13,6 @@ exports[`should render correctly 1`] = `
     <div
       className="bp3-navbar-group bp3-align-left navBar__group"
     />
-    <div
-      className="bp3-navbar-group bp3-align-left navBar__group"
-    />
   </div>
 </div>
 `;

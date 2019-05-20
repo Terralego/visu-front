@@ -5,10 +5,8 @@ import {
 } from '@blueprintjs/core';
 
 import NavBarItem from './NavBarItem';
-import PartnerButton from './PartnerButton';
 import logo from '../../../images/blason.svg';
 import heatmap from '../../../images/heatmap.svg';
-import infoSign from '../../../images/info-sign.svg';
 
 import './styles.scss';
 
@@ -28,12 +26,6 @@ const navHeader = [
       iconPath: heatmap,
     },
   ], [],
-  [{
-    id: 'nav-partenaires',
-    label: 'Partenaires',
-    iconPath: infoSign,
-    component: PartnerButton,
-  }],
 ];
 
 /* eslint-disable react/no-array-index-key */
