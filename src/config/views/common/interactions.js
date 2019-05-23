@@ -3,25 +3,6 @@ import ReactDOM from 'react-dom';
 
 import Loading from '../../../components/Loading';
 
-import fiber1 from '../../../images/fiber1.svg';
-import fiber0 from '../../../images/fiber0.svg';
-import parkingPL1 from '../../../images/parkingPL1.svg';
-import parkingPL0 from '../../../images/parkingPL0.svg';
-import doctor1 from '../../../images/doctor1.svg';
-import doctor0 from '../../../images/doctor0.svg';
-import hotel1 from '../../../images/hotel1.svg';
-import hotel0 from '../../../images/hotel0.svg';
-import restaurant1 from '../../../images/restaurant1.svg';
-import restaurant0 from '../../../images/restaurant0.svg';
-import post1 from '../../../images/post1.svg';
-import post0 from '../../../images/post0.svg';
-import bank1 from '../../../images/bank1.svg';
-import bank0 from '../../../images/bank0.svg';
-import airport from '../../../images/airport.svg';
-import rail from '../../../images/rail.svg';
-import motorways from '../../../images/motorways.svg';
-
-
 const el = document.createElement('div');
 ReactDOM.render(<Loading className="details__loading" />, el);
 const loading = el.innerHTML;
@@ -138,7 +119,6 @@ const TEMPLATE_DETAILS_EAE = `
       <li class="details__column details__column--fibre">
         <img
           class="details__list__amenity__img"
-          src="{% if fibre %}${fiber1}{% else %}${fiber0}{% endif %}"
           alt="Fibre"
           title="Fibre"
         />
@@ -146,7 +126,6 @@ const TEMPLATE_DETAILS_EAE = `
       <li class="details__column details__column--parking">
         <img
           class="details__list__amenity__img"
-          src="{% if parking_hgv %}${parkingPL1}{% else %}${parkingPL0}{% endif %}"
           alt="Parking Poids lourds"
           title="Parking Poids lourds"
         />
@@ -154,7 +133,6 @@ const TEMPLATE_DETAILS_EAE = `
       <li class="details__column details__doctor">
         <img
           class="details__list__amenity__img"
-          src="{% if doctors %}${doctor1}{% else %}${doctor0}{% endif %}"
           alt="Cabinets médicaux"
           title="Cabinets médicaux"
         />
@@ -162,7 +140,6 @@ const TEMPLATE_DETAILS_EAE = `
       <li class="details__column details__hotel">
         <img
           class="details__list__amenity__img"
-          src="{% if hotel %}${hotel1}{% else %}${hotel0}{% endif %}"
           alt="Hôtels"
           title="Hôtels"
         />
@@ -170,7 +147,6 @@ const TEMPLATE_DETAILS_EAE = `
       <li class="details__column details__restaurant">
         <img
           class="details__list__amenity__img"
-          src="{% if restaurant %}${restaurant1}{% else %}${restaurant0}{% endif %}"
           alt="Restaurants"
           title="Restaurants"
         />
@@ -178,7 +154,6 @@ const TEMPLATE_DETAILS_EAE = `
       <li class="details__column details__post">
         <img
           class="details__list__amenity__img"
-          src="{% if post_office %}${post1}{% else %}${post0}{% endif %}"
           alt="Agences de poste"
           title="Agences de poste"
         />
@@ -186,7 +161,6 @@ const TEMPLATE_DETAILS_EAE = `
       <li class="details__column details__bank">
         <img
           class="details__list__amenity__img"
-          src="{% if bank %}${bank1}{% else %}${bank0}{% endif %}"
           alt="Banques"
           title="Banques"
         />
@@ -211,7 +185,6 @@ const TEMPLATE_DETAILS_EAE = `
         <li class="details__column-value-time">
           <img 
             class="details__airport"
-            src="${airport}"
             alt="Aéroport le plus proche"
             title="Aéroport le plus proche"
           >
@@ -222,7 +195,6 @@ const TEMPLATE_DETAILS_EAE = `
         <li class="details__column-value-time">
           <img
           class="details__rail"
-            src="${rail}"
             alt="Gare la plus proche"
             title="Gare la plus proche"
           >
@@ -233,7 +205,6 @@ const TEMPLATE_DETAILS_EAE = `
         <li class="details__column-value-time">
           <img 
             class="details__motorways"
-            src="${motorways}"
             alt="Sortie d'autoroute la plus proche"
             title="Sortie d'autoroute la plus proche"
           >
