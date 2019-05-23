@@ -1,6 +1,10 @@
 import React from 'react';
-import { Button, Classes } from '@blueprintjs/core';
+import {
+  Button,
+  Classes,
+} from '@blueprintjs/core';
 import './styles.scss';
+import classnames from 'classnames';
 
 export const HeaderButton = ({ id, iconPath, alt }) => (
   <Button
@@ -8,7 +12,7 @@ export const HeaderButton = ({ id, iconPath, alt }) => (
     minimal
     id={id}
   >
-    <img src={iconPath} alt={alt} className="icon" />
+    <img src={iconPath} alt={alt} className={classnames({ icon: id !== 'welcome' })} />
   </Button>
 );
 export default HeaderButton;

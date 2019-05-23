@@ -1,10 +1,13 @@
 import Api from '@terralego/core/modules/Api';
 
-import analyse from '../config/views/analyse';
+import population from '../config/views/population';
+import habitat from '../config/views/habitat';
+import mobilite from '../config/views/mobilite';
+import economie from '../config/views/economie';
 
 import { getEnv } from './env';
 
-const viewsMocks = { analyse };
+const viewsMocks = { population, habitat, mobilite, economie };
 
 export const fetchViewConfig = async viewName => {
   const viewMock = viewsMocks[viewName];
