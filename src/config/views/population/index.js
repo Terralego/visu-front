@@ -3,7 +3,7 @@ import interactions from './interactions';
 import customStyle from './customStyle';
 
 export default {
-  title: 'Analyser',
+  title: 'Population',
   layersTree,
   interactions,
   map: {
