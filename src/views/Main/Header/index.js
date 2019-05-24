@@ -20,6 +20,7 @@ const navHeader = [
       label: 'Accueil',
       href: '/',
       iconPath: logo,
+      icon: null,
     },
     {
       id: 'nav-population',

@@ -23,6 +23,7 @@ export const NavBarItem = ({ id, content, iconPath, env: { VIEW_ROOT_PATH }, ...
         id={id}
         iconPath={iconPath}
         alt={item.label}
+        icon={item.icon}
       >
         {item.content}
       </HeaderButton>

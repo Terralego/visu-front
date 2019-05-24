@@ -1,27 +1,7 @@
 import React from 'react';
 import { Card } from '@blueprintjs/core';
 
-const logosPath = [{
-  name: 'ccir',
-  path: 'http://www.paca.cci.fr/',
-  logo: 'logoCCIR',
-}, {
-  name: 'crige',
-  path: 'http://www.crige-paca.org/',
-  logo: 'logoCrige',
-}, {
-  name: 'dreal',
-  path: 'http://www.paca.developpement-durable.gouv.fr/',
-  logo: 'logoDreal',
-}, {
-  name: 'epf',
-  path: 'http://www.epfpaca.com/',
-  logo: 'logoEpf',
-}, {
-  name: 'RegionSud',
-  path: 'https://www.maregionsud.fr/',
-  logo: 'logoRegionSud',
-}];
+const logosPath = [];
 
 const PartnerPage = () => (
   <Card>
