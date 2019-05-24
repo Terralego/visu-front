@@ -7,7 +7,7 @@ export default {
   layersTree,
   interactions,
   map: {
-    accessToken: 'pk.eyJ1IjoibWFraW5hY29ycHVzIiwiYSI6ImNqY3E4ZTNwcTFta3ozMm80d2xzY29wM2MifQ.Nwl_FHrWAIQ46s_lY0KNiQ',
+    accessToken: 'pk.eyJ1IjoibWFraW5hY29ycHVzIiwiYSI6ImNqdzF6eWhhbDBwYnc0N3BscHNoM3Y2NWQifQ.miNBzyxOCefDL8t-CodGhA',
     backgroundStyle: 'mapbox://styles/makinacorpus/cjpdvdqdj0b7a2slajmjqy3py',
     center: [-1.686401, 48.106514],
     zoom: 7,
