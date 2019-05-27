@@ -4,6 +4,7 @@
     height: auto;
   }
 }
+
 .logo {
   max-width: 100%;
 }
@@ -16,16 +17,18 @@
   justify-content: center;
   height: 36px;
   width: 36px;
+
   .icon {
     opacity: 1;
-    width: 16px;
-    height: 16px;
+    width: 30px;
+    height: 25px;
     transition: .2s ease-in filter;
   }
 }
 
 .active .header-button {
   background: radial-gradient(#5a91b3 0, transparent 55%) !important;
+
   .icon {
     filter: invert(.5) sepia(1) saturate(5) hue-rotate(175deg);
   }
@@ -40,6 +43,7 @@
     max-width: 30rem;
   }
 }
+
 .modal-partner {
   display: flex;
   justify-content: center;
@@ -47,23 +51,13 @@
   border: none;
 }
 
-.partner-logo-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.partner-logo{
-  max-width: 160px;
-  margin: 16px;
-  max-height: 100px;
-}
-
 .navBar__group {
   padding-top: 12px;
+
   button {
     outline: none;
   }
+
   .bp3-popover-wrapper {
     margin: 0px 0px 16px 0px;
     background-color: transparent;

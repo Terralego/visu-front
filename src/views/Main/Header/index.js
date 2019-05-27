@@ -5,11 +5,13 @@ import {
 } from '@blueprintjs/core';
 
 import NavBarItem from './NavBarItem';
-import logo from '../../../images/blason.svg';
-import heatmap from '../../../images/heatmap.svg';
+import logo from '../../../images/AURAN-logo-blanc.svg';
+import population from '../../../images/population.png';
+import habitat from '../../../images/habitat.png';
+import mobilite from '../../../images/mobilite.png';
+import economie from '../../../images/economie.png';
 
 import './styles.scss';
-
 
 const navHeader = [
   [
@@ -18,12 +20,31 @@ const navHeader = [
       label: 'Accueil',
       href: '/',
       iconPath: logo,
+      icon: null,
     },
     {
-      id: 'nav-analyser',
-      label: 'Analyser',
-      href: '/{{VIEW_ROOT_PATH}}/analyse',
-      iconPath: heatmap,
+      id: 'nav-population',
+      label: 'Population',
+      href: '/{{VIEW_ROOT_PATH}}/population',
+      iconPath: population,
+    },
+    {
+      id: 'nav-habitat',
+      label: 'Habitat',
+      href: '/{{VIEW_ROOT_PATH}}/habitat',
+      iconPath: habitat,
+    },
+    {
+      id: 'nav-mobilite',
+      label: 'Mobilité',
+      href: '/{{VIEW_ROOT_PATH}}/mobilite',
+      iconPath: mobilite,
+    },
+    {
+      id: 'nav-economie',
+      label: 'Économie',
+      href: '/{{VIEW_ROOT_PATH}}/economie',
+      iconPath: economie,
     },
   ], [],
 ];
