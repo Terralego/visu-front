@@ -27,24 +27,28 @@ const navHeader = [
       label: 'Population',
       href: '/{{VIEW_ROOT_PATH}}/population',
       iconPath: population,
+      icon: 'icon',
     },
     {
       id: 'nav-habitat',
       label: 'Habitat',
       href: '/{{VIEW_ROOT_PATH}}/habitat',
       iconPath: habitat,
+      icon: 'icon',
     },
     {
       id: 'nav-mobilite',
       label: 'Mobilité',
       href: '/{{VIEW_ROOT_PATH}}/mobilite',
       iconPath: mobilite,
+      icon: 'icon',
     },
     {
       id: 'nav-economie',
       label: 'Économie',
       href: '/{{VIEW_ROOT_PATH}}/economie',
       iconPath: economie,
+      icon: 'icon',
     },
   ], [],
 ];
