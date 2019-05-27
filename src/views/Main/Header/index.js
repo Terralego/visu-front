@@ -5,7 +5,7 @@ import {
 } from '@blueprintjs/core';
 
 import NavBarItem from './NavBarItem';
-import logo from '../../../images/logo-auran.svg';
+import logo from '../../../images/AURAN-logo-blanc.svg';
 import population from '../../../images/population.png';
 import habitat from '../../../images/habitat.png';
 import mobilite from '../../../images/mobilite.png';
