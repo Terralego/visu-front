@@ -65,7 +65,7 @@
     width: calc(100% - .5rem);
     flex: auto;
     height: calc(100% - 1rem);
-    margin: .5rem .5rem .5rem 0;
+    margin: 0;
 
     .mapboxgl-ctrl-attrib {
       p {
@@ -156,10 +156,11 @@
   &-title {
     font-size: 1.4rem;
     font-family: "SFProText-Regular", Arial, Helvetica, sans-serif;
-    margin-right: 8px;
-  }
-  &-version {
-    font-size: 0.8rem;
-    font-family: "SFProText-light", Arial, Helvetica, sans-serif;
+    margin-right: .5rem;
+
+    &-logo {
+      height: 2rem;
+      margin-top: .5rem;
+    }
   }
 }

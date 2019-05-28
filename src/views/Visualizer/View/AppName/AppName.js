@@ -1,9 +1,15 @@
 import React from 'react';
+import logo from '../../../../images/Cart_en_main.png';
 
 export const AppName = () => (
   <div className="bp3-dark appName">
-    <span className="appName-title">Cartenmain</span>
-    <span className="appName-version">Version Bêta</span>
+    <span className="appName-title">
+      <img
+        className="appName-title-logo"
+        src={logo}
+        alt="Cartenmain"
+      />
+    </span>
   </div>
 );
 

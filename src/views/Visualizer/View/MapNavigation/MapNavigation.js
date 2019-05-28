@@ -1,7 +1,10 @@
 import React from 'react';
-import { Button, Card, Classes, Tooltip } from '@blueprintjs/core';
+import { Card, Classes } from '@blueprintjs/core';
 
+import MapNavigationButton from './MapNavigationButton';
 import LayersTree from '../LayersTree';
+import AppName from '../AppName/AppName';
+
 import './styles.scss';
 
 function getUid () {
@@ -10,9 +13,9 @@ function getUid () {
 
 export const MapNavigation = ({
   title,
-  onToggle,
-  isVisible,
   children,
+  visible,
+  toggleLayersTree,
 }) => {
   const uid = getUid();
   return (
@@ -20,24 +23,16 @@ export const MapNavigation = ({
       className={`map-navigation ${Classes.DARK}`}
     >
       <div className="map-navigation__header">
-        {title && <h2 className="map-navigation__title">{title}</h2>}
-        <Tooltip
-          className="map-navigation__button-container"
-          content={isVisible ? 'replier ' : 'déplier'}
-        >
-          <Button
-            className="map-navigation__button"
-            onClick={onToggle}
-            aria-controls={`map-navigation__content-${uid}`}
-            aria-expanded={isVisible}
-            icon="arrow-right"
-            minimal
-          />
-        </Tooltip>
+        <AppName />
       </div>
+      {title && <h2 className="map-navigation__title">{title}</h2>}
       <div id={`map-navigation__content-${uid}`} className="map-navigation__content">
         {children}
       </div>
+      <MapNavigationButton
+        onToggle={toggleLayersTree}
+        isVisible={visible}
+      />
     </Card>
   );
 };

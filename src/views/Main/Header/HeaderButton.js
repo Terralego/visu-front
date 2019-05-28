@@ -12,7 +12,7 @@ export const HeaderButton = ({ id, icon = 'icon', iconPath, alt }) => (
     minimal
     id={id}
   >
-    <img src={iconPath} alt={alt} className={classnames({ icon })} />
+    <img src={iconPath} alt={alt} className={classnames({ icon })} id={id} />
   </Button>
 );
 export default HeaderButton;

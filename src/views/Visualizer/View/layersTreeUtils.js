@@ -144,6 +144,9 @@ export const filterLayersFromLayersState = (layersTreeState, check) =>
 export const hasTable = layersTreeState =>
   filterLayersFromLayersState(layersTreeState, ({ table }) => table).length > 0;
 
+export const hasWidget = layersTreeState =>
+  filterLayersFromLayersState(layersTreeState, ({ widgets = [] }) => widgets.length > 0).length > 0;
+
 export const fetchPropertyValues = async (layer, { property }) => {
   const results = await searchService.search({
     properties: {
@@ -190,4 +193,5 @@ export default {
   setLayerStateAction,
   filterLayersFromLayersState,
   hasTable,
+  hasWidget,
 };

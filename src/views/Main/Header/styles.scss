@@ -1,6 +1,6 @@
 #welcome {
   img {
-    width: 36px;
+    width: 2.4rem;
     height: auto;
   }
 }
@@ -15,23 +15,21 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  height: 36px;
-  width: 36px;
 
   .icon {
     opacity: 1;
-    width: 30px;
-    height: 25px;
+    width: 1.5rem;
     transition: .2s ease-in filter;
   }
 }
 
 .active .header-button {
-  background: radial-gradient(#5a91b3 0, transparent 55%) !important;
+  background-color: rgba(46, 230, 214, .3) !important;
+}
 
-  .icon {
-    filter: invert(.5) sepia(1) saturate(5) hue-rotate(175deg);
-  }
+#welcome {
+  background-color: #156571 !important;
+  margin-bottom: .3rem;
 }
 
 .modal-signin {
@@ -52,14 +50,14 @@
 }
 
 .navBar__group {
-  padding-top: 12px;
+  padding-top: .2rem;
 
   button {
     outline: none;
   }
 
   .bp3-popover-wrapper {
-    margin: 0px 0px 16px 0px;
+    margin: 0 0 1rem 0;
     background-color: transparent;
   }
 }
