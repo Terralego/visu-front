@@ -42,6 +42,25 @@ function getLegendNMig (period) {
   }
 }
 
+const getFromTo = period => {
+  const [from, to] = period.split(/-/);
+  return { from, to };
+};
+
+const getProperty = (period, prefix) => {
+  const { from, to } = getFromTo(period);
+
+  return `${prefix}_${from.substr(2, 2)}${to.substr(2, 2)}`;
+};
+
+const getLabel = (period, prefix) => {
+  const { from, to } = getFromTo(period);
+
+  if (prefix === 'snat') {
+    return `Communes solde naturel en ${period}`;
+  }
+  return `Communes solde migratoire en ${period}`;
+};
 
 export const customStyleSoldesNaturel = periods.map(period => {
   const legend = getLegendNat(period);
@@ -52,17 +71,17 @@ export const customStyleSoldesNaturel = periods.map(period => {
     paint: {
       'fill-color': [
         'case',
-        ['<', ['get', `snat_${period.substring(2, 4)}${period.substring(7)}`], legend[0]],
+        ['<', ['get', getProperty(period, 'snat')], legend[0]],
         '#156571',
-        ['<', ['get', `snat_${period.substring(2, 4)}${period.substring(7)}`], legend[1]],
+        ['<', ['get', getProperty(period, 'snat')], legend[1]],
         '#2FB0C5',
-        ['<', ['get', `snat_${period.substring(2, 4)}${period.substring(7)}`], legend[2]],
+        ['<', ['get', getProperty(period, 'snat')], legend[2]],
         '#8CCBDA',
-        ['<', ['get', `snat_${period.substring(2, 4)}${period.substring(7)}`], legend[3]],
+        ['<', ['get', getProperty(period, 'snat')], legend[3]],
         '#F7F1E8',
-        ['<', ['get', `snat_${period.substring(2, 4)}${period.substring(7)}`], legend[4]],
+        ['<', ['get', getProperty(period, 'snat')], legend[4]],
         '#F7C99D',
-        ['<', ['get', `snat_${period.substring(2, 4)}${period.substring(7)}`], legend[5]],
+        ['<', ['get', getProperty(period, 'snat')], legend[5]],
         '#F48161',
         '#BC205D',
       ],
@@ -74,16 +93,27 @@ export const customStyleSoldesNaturel = periods.map(period => {
 export const layerTreeSoldesNaturel = periods.map(period => {
   const legend = getLegendNat(period);
   return {
-    label: `Communes solde naturel en ${period}`,
+    label: getLabel(period, 'snat'),
     layers: [`terralego-soldes_naturels-communes_snat_${period}`],
     filters: {
       layer: 'soldes_communal',
       form: [{
-        property: `snat_${period.substring(2, 4)}${period.substring(7)}`,
+        property: getProperty(period, 'snat'),
         label: 'Solde naturel (en unité)',
         type: TYPE_RANGE,
         fetchValues: true,
       }],
+      fields: [{
+        value: 'nom',
+        label: 'Nom',
+      }, ...periods.map(fieldsPeriod => ({
+        value: getProperty(fieldsPeriod, 'snat'),
+        label: getLabel(fieldsPeriod, 'snat'),
+        format: {
+          type: 'number',
+        },
+        display: period === fieldsPeriod,
+      }))],
       export: true,
     },
     legends: [
@@ -127,17 +157,17 @@ export const customStyleSoldesMigratoire = periods.map(period => {
     paint: {
       'fill-color': [
         'case',
-        ['<', ['get', `smig_${period.substring(2, 4)}${period.substring(7)}`], legend[0]],
+        ['<', ['get', getProperty(period, 'smig')], legend[0]],
         '#156571',
-        ['<', ['get', `smig_${period.substring(2, 4)}${period.substring(7)}`], legend[1]],
+        ['<', ['get', getProperty(period, 'smig')], legend[1]],
         '#2FB0C5',
-        ['<', ['get', `smig_${period.substring(2, 4)}${period.substring(7)}`], legend[2]],
+        ['<', ['get', getProperty(period, 'smig')], legend[2]],
         '#8CCBDA',
-        ['<', ['get', `smig_${period.substring(2, 4)}${period.substring(7)}`], legend[3]],
+        ['<', ['get', getProperty(period, 'smig')], legend[3]],
         '#F7F1E8',
-        ['<', ['get', `smig_${period.substring(2, 4)}${period.substring(7)}`], legend[4]],
+        ['<', ['get', getProperty(period, 'smig')], legend[4]],
         '#F7C99D',
-        ['<', ['get', `smig_${period.substring(2, 4)}${period.substring(7)}`], legend[5]],
+        ['<', ['get', getProperty(period, 'smig')], legend[5]],
         '#F48161',
         '#BC205D',
       ],
@@ -149,16 +179,27 @@ export const customStyleSoldesMigratoire = periods.map(period => {
 export const layerTreeSoldesMigratoire = periods.map(period => {
   const legend = getLegendNMig(period);
   return {
-    label: `Communes solde migratoire en ${period}`,
+    label: getLabel(period, 'smig'),
     layers: [`terralego-soldes_naturels-communes_smig_${period}`],
     filters: {
       layer: 'soldes_communal',
       form: [{
-        property: `smig_${period.substring(2, 4)}${period.substring(7)}`,
+        property: getProperty(period, 'smig'),
         label: 'Solde migratoire (en unité)',
         type: TYPE_RANGE,
         fetchValues: true,
       }],
+      fields: [{
+        value: 'nom',
+        label: 'Nom',
+      }, ...periods.map(fieldsPeriod => ({
+        value: getProperty(fieldsPeriod, 'smig'),
+        label: getLabel(fieldsPeriod, 'smig'),
+        format: {
+          type: 'number',
+        },
+        display: period === fieldsPeriod,
+      }))],
     },
     legends: [
       {

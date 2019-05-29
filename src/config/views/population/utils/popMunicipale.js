@@ -28,6 +28,66 @@ export const layerTreePopulationMunicipale = years.map(year => ({
       type: TYPE_RANGE,
       fetchValues: true,
     }],
+    fields: [{
+      value: 'nom',
+      label: 'Nom',
+    }, {
+      value: 'pop_1968',
+      label: 'Population en 1968',
+      format: {
+        type: 'number',
+      },
+      display: year === '1968',
+    }, {
+      value: 'pop_1975',
+      label: 'Population en 1975',
+      format: {
+        type: 'number',
+      },
+      display: year === '1975',
+    }, {
+      value: 'pop_1982',
+      label: 'Population en 1982',
+      format: {
+        type: 'number',
+      },
+      display: year === '1982',
+    }, {
+      value: 'pop_1990',
+      label: 'Population en 1990',
+      format: {
+        type: 'number',
+      },
+      display: year === '1990',
+    }, {
+      value: 'pop_1999',
+      label: 'Population en 1999',
+      format: {
+        type: 'number',
+      },
+      display: year === '1999',
+    }, {
+      value: 'pop_2006',
+      label: 'Population en 2006',
+      format: {
+        type: 'number',
+      },
+      display: year === '2006',
+    }, {
+      value: 'pop_2011',
+      label: 'Population en 2011',
+      format: {
+        type: 'number',
+      },
+      display: year === '2011',
+    }, {
+      value: 'pop_2016',
+      label: 'Population en 2016',
+      format: {
+        type: 'number',
+      },
+      display: year === '2016',
+    }],
     export: true,
   },
   legends: [

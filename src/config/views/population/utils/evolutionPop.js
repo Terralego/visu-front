@@ -3,6 +3,27 @@ import { INTERACTION_DISPLAY_TOOLTIP } from '@terralego/core/modules/Map/Interac
 
 const periodsEvolution = ['2011-2016', '2006-2011', '1999-2006', '1990-1999', '1982-1990', '1975-1982', '1968-1975'];
 
+const getFromTo = period => {
+  const [from, to] = period.split(/-/);
+  return { from, to };
+};
+
+const getProperty = (period, prefix) => {
+  const { from, to } = getFromTo(period);
+
+  return `${prefix}_${from.substr(2, 2)}${to.substr(2, 2)}`;
+};
+
+const getLabel = (period, prefix) => {
+  const { from, to } = getFromTo(period);
+
+  if (prefix === 'snat') {
+    return `Communes solde naturel en ${period}`;
+  }
+  return `Communes solde migratoire en ${period}`;
+};
+
+
 export const customStyleEvolution = periodsEvolution.map(period => ({
   type: 'fill',
   source: 'terralego',
@@ -10,15 +31,15 @@ export const customStyleEvolution = periodsEvolution.map(period => ({
   paint: {
     'fill-color': [
       'case',
-      ['<', ['get', `evpop_${period.substring(2, 4)}${period.substring(7)}`], -2.0],
+      ['<', ['get', getProperty(period, 'evpop')], -2.0],
       '#156571',
-      ['<', ['get', `evpop_${period.substring(2, 4)}${period.substring(7)}`], -1.0],
+      ['<', ['get', getProperty(period, 'evpop')], -1.0],
       '#2FB0C5',
-      ['<', ['get', `evpop_${period.substring(2, 4)}${period.substring(7)}`], 0.0],
+      ['<', ['get', getProperty(period, 'evpop')], 0.0],
       '#8CCBDA',
-      ['<', ['get', `evpop_${period.substring(2, 4)}${period.substring(7)}`], 1.0],
+      ['<', ['get', getProperty(period, 'evpop')], 1.0],
       '#EFE3CF',
-      ['<', ['get', `evpop_${period.substring(2, 4)}${period.substring(7)}`], 2.0],
+      ['<', ['get', getProperty(period, 'evpop')], 2.0],
       '#F48161',
       '#BC205D',
     ],

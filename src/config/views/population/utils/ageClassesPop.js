@@ -96,20 +96,51 @@ export const customStyleAgeClasses = ageClasses.reduce((prevAges, ageClass) => [
   }),
 ], []);
 
+const getFromTo = ageClass => {
+  const [, from, to] = ageClass.split(/c([0-9]{2})(.*)$/);
+  return { from, to };
+};
+const getLabel = (ageClass, year) => {
+  const { from, to } = getFromTo(ageClass);
+  if (Number.isNaN(+to)) {
+    return `Part de la population à partir de ${+from} ans en ${year}`;
+  }
+  return `Part de la population de ${+from} à ${+to} ans en ${year}`;
+};
+const getProperty = (ageClass, year) => {
+  const { from, to } = getFromTo(ageClass);
+
+  return `c${from}${to}_${year}`;
+};
+
 export const layerTreeAgeClasses = ageClasses.reduce((prevAges, ageClass) => [
   ...prevAges, ...yearsAgeClasses.map(year => {
     const legend = getLegend(ageClass, year);
     return {
-      label: `De ${ageClass.substring(1, 3)} à ${ageClass.substring(3)} pour ${year}`,
+      label: getLabel(ageClass, year),
       layers: [`terralego-classe_age-communes_${ageClass}_${year}`],
       filters: {
         layer: 'classe_age_communal',
         form: [{
-          property: `c${ageClass.substring(1, 3)}${ageClass.substring(3)}_${year}`,
+          property: getProperty(ageClass, year),
           label: 'Âge',
           type: TYPE_RANGE,
           fetchValues: true,
         }],
+        fields: [{
+          value: 'nom',
+          label: 'Nom',
+        }, ...yearsAgeClasses.reduce((prev, fieldsYear) => [
+          ...prev,
+          ...ageClasses.map(fieldsAgeClass => ({
+            value: getProperty(fieldsAgeClass, fieldsYear),
+            label: getLabel(fieldsAgeClass, fieldsYear),
+            format: {
+              type: 'number',
+            },
+            display: year === fieldsYear && ageClass === fieldsAgeClass,
+          })),
+        ], [])],
         export: true,
       },
       legends: [
