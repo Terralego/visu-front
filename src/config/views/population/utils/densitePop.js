@@ -1,4 +1,5 @@
 import { TYPE_RANGE } from '@terralego/core/modules/Forms/Filters';
+import { INTERACTION_DISPLAY_TOOLTIP } from '@terralego/core/modules/Map/InteractiveMap/InteractiveMap';
 
 import { years } from './variables';
 
@@ -69,7 +70,7 @@ export const layerTreeDensity = years.map(year => {
     },
     legends: [
       {
-        title: 'Densité de la population (hab/km²)',
+        title: `Densité de la population en ${year} (hab/km²)`,
         items: [
           {
             label: `Supérieur ou égal à ${legend[5]}`,
@@ -99,7 +100,18 @@ export const layerTreeDensity = years.map(year => {
   };
 });
 
+export const interactionDensite = years.map(year => ({
+  id: `terralego-densite_population-communes_${year}`,
+  interaction: INTERACTION_DISPLAY_TOOLTIP,
+  trigger: 'mouseover',
+  template: `
+Commune : {{nom}}  
+{{d_${year} | round(1)}} hab/km²
+`,
+}));
+
 export default {
   customStyleDensity,
   layerTreeDensity,
+  interactionDensite,
 };

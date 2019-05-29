@@ -1,4 +1,5 @@
 import { TYPE_RANGE } from '@terralego/core/modules/Forms/Filters';
+import { INTERACTION_DISPLAY_TOOLTIP } from '@terralego/core/modules/Map/InteractiveMap/InteractiveMap';
 
 import { periodsEvolution } from './variables';
 
@@ -39,7 +40,7 @@ export const layerTreeEvolution = periodsEvolution.map(period => ({
   },
   legends: [
     {
-      title: 'Évolution de la population (en %)',
+      title: `Évolution de la population entre en ${period} (en %)`,
       items: [
         {
           label: 'Supérieur ou égal à 2.0',
@@ -65,7 +66,18 @@ export const layerTreeEvolution = periodsEvolution.map(period => ({
   ],
 }));
 
+export const interactionEvolution = periodsEvolution.map(period => ({
+  id: `terralego-evolution_population-communes_${period}`,
+  interaction: INTERACTION_DISPLAY_TOOLTIP,
+  trigger: 'mouseover',
+  template: `
+Commune : {{nom}}  
+{{evpop_${period.substring(2, 4)}${period.substring(7)} | round(1)}}%
+`,
+}));
+
 export default {
   customStyleEvolution,
   layerTreeEvolution,
+  interactionEvolution,
 };
