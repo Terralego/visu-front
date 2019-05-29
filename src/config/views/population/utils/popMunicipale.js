@@ -8,7 +8,7 @@ export const customStylePopulationMunicipale = years.map(year => ({
     'circle-color': '#769198',
     'circle-radius': ['*', ['get', `pop_${year}`], 0.000010, 10],
   },
-  'source-layer': 'population_municipale',
+  'source-layer': 'population_communal',
 }));
 
 export const layerTreePopulationMunicipale = years.map(year => ({

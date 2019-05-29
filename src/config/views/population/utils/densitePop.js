@@ -47,7 +47,7 @@ export const customStyleDensity = years.map(year => {
         '#BC205D',
       ],
     },
-    'source-layer': 'densite_population',
+    'source-layer': 'denspop_communal',
   };
 });
 

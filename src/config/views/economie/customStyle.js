@@ -11,9 +11,9 @@ export default {
       id: 'terralego-emplois',
       paint: {
         'circle-color': '#769198',
-        'circle-radius': ['*', ['get', 'data'], 0.000010, 30],
+        'circle-radius': ['*', ['get', 'emplt_2015'], 0.000010, 30],
       },
-      'source-layer': 'emplois',
+      'source-layer': 'emplois_communal',
     },
   ],
 };

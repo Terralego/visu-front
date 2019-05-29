@@ -1,6 +1,6 @@
 const TEMPLATE_TOOLTIP_TRANSPORTS = `
-Commune : {{lib_geo}}  
-Part des actifs se déplaçant en transport en commun : {{data}}%
+Commune : {{nom}}  
+Part des actifs se déplaçant en transport en commun : {{cdr_2015}}%
 `;
 
 export default [

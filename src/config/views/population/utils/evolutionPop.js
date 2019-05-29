@@ -20,7 +20,7 @@ export const customStyleEvolution = periodsEvolution.map(period => ({
       '#BC205D',
     ],
   },
-  'source-layer': 'evolution_population',
+  'source-layer': 'evpop_communal',
 }));
 
 export const layerTreeEvolution = periodsEvolution.map(period => ({

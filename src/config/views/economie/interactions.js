@@ -1,6 +1,6 @@
 const TEMPLATE_TOOLTIP_EMPLOIS = `
-Commune : {{lib_geo}}  
-Nombre d'emplois : {{data}}
+Commune : {{nom}}  
+Nombre d'emplois : {{emplt_2015}}
 `;
 
 export default [
