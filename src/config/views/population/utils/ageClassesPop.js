@@ -1,4 +1,5 @@
 import { TYPE_RANGE } from '@terralego/core/modules/Forms/Filters';
+import { INTERACTION_DISPLAY_TOOLTIP } from '@terralego/core/modules/Map/InteractiveMap/InteractiveMap';
 
 import {
   ageClasses,
@@ -147,7 +148,7 @@ export const layerTreeAgeClasses = ageClasses.reduce((prevAges, ageClass) => [
 export const interactionAgeClasses = ageClasses.reduce((prevAges, ageClass) => [
   ...prevAges, ...yearsAgeClasses.map(year => ({
     id: `terralego-classe_age-communes_${ageClass}_${year}`,
-    interaction: 'displayTooltip',
+    interaction: INTERACTION_DISPLAY_TOOLTIP,
     trigger: 'mouseover',
     template: `
 Commune : {{nom}}  

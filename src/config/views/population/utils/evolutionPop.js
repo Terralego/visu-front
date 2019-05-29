@@ -1,4 +1,5 @@
 import { TYPE_RANGE } from '@terralego/core/modules/Forms/Filters';
+import { INTERACTION_DISPLAY_TOOLTIP } from '@terralego/core/modules/Map/InteractiveMap/InteractiveMap';
 
 import { periodsEvolution } from './variables';
 
@@ -67,11 +68,11 @@ export const layerTreeEvolution = periodsEvolution.map(period => ({
 
 export const interactionEvolution = periodsEvolution.map(period => ({
   id: `terralego-evolution_population-communes_${period}`,
-  interaction: 'displayTooltip',
+  interaction: INTERACTION_DISPLAY_TOOLTIP,
   trigger: 'mouseover',
   template: `
-Commune : {{lib_geo | round(1)}}  
-{{evpop_${period.substring(2, 4)}${period.substring(7)}}}%
+Commune : {{nom}}  
+{{evpop_${period.substring(2, 4)}${period.substring(7)} | round(1)}}%
 `,
 }));
 

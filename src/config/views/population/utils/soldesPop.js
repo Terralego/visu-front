@@ -1,4 +1,5 @@
 import { TYPE_RANGE } from '@terralego/core/modules/Forms/Filters';
+import { INTERACTION_DISPLAY_TOOLTIP } from '@terralego/core/modules/Map/InteractiveMap/InteractiveMap';
 
 import { periods } from './variables';
 
@@ -191,7 +192,7 @@ export const layerTreeSoldesMigratoire = periods.map(period => {
 
 export const interactionSoldesNaturel = periods.map(period => ({
   id: `terralego-soldes_naturels-communes_snat_${period}`,
-  interaction: 'displayTooltip',
+  interaction: INTERACTION_DISPLAY_TOOLTIP,
   trigger: 'mouseover',
   template: `
 Commune : {{nom}}  
@@ -201,7 +202,7 @@ Commune : {{nom}}
 
 export const interactionSoldesMigratoire = periods.map(period => ({
   id: `terralego-soldes_naturels-communes_smig_${period}`,
-  interaction: 'displayTooltip',
+  interaction: INTERACTION_DISPLAY_TOOLTIP,
   trigger: 'mouseover',
   template: `
 Commune : {{nom}}  

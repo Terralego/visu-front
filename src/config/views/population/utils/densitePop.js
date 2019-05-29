@@ -1,4 +1,5 @@
 import { TYPE_RANGE } from '@terralego/core/modules/Forms/Filters';
+import { INTERACTION_DISPLAY_TOOLTIP } from '@terralego/core/modules/Map/InteractiveMap/InteractiveMap';
 
 import { years } from './variables';
 
@@ -101,7 +102,7 @@ export const layerTreeDensity = years.map(year => {
 
 export const interactionDensite = years.map(year => ({
   id: `terralego-densite_population-communes_${year}`,
-  interaction: 'displayTooltip',
+  interaction: INTERACTION_DISPLAY_TOOLTIP,
   trigger: 'mouseover',
   template: `
 Commune : {{nom}}  
