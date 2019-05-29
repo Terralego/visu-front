@@ -30,7 +30,7 @@ export const layerTreePopulationMunicipale = years.map(year => ({
   },
   legends: [
     {
-      title: 'Répartition de la population',
+      title: `Répartition de la population en ${year}`,
       items: [
         {
           label: 'Plus de 300 000',

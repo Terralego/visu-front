@@ -69,7 +69,7 @@ export const layerTreeDensity = years.map(year => {
     },
     legends: [
       {
-        title: 'Densité de la population (hab/km²)',
+        title: `Densité de la population en ${year} (hab/km²)`,
         items: [
           {
             label: `Supérieur ou égal à ${legend[5]}`,

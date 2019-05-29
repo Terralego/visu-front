@@ -39,7 +39,7 @@ export const layerTreeEvolution = periodsEvolution.map(period => ({
   },
   legends: [
     {
-      title: 'Évolution de la population (en %)',
+      title: `Évolution de la population entre en ${period} (en %)`,
       items: [
         {
           label: 'Supérieur ou égal à 2.0',

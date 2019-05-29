@@ -113,7 +113,7 @@ export const layerTreeAgeClasses = ageClasses.reduce((prevAges, ageClass) => [
       },
       legends: [
         {
-          title: 'Part de la population par classes d’âge (en %)',
+          title: `Part de la population par classes d’âge en ${year} (en %)`,
           items: [
             {
               label: `Supérieur ou égal à ${legend[5]}%`,

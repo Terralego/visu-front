@@ -85,7 +85,7 @@ export const layerTreeSoldesNaturel = periods.map(period => {
     },
     legends: [
       {
-        title: 'Solde naturel (en unité)',
+        title: `Solde naturel entre ${period} (en unité)`,
         items: [
           {
             label: `Supérieur ou égal à ${legend[5].toLocaleString()}`,
@@ -159,7 +159,7 @@ export const layerTreeSoldesMigratoire = periods.map(period => {
     },
     legends: [
       {
-        title: 'Solde migratoire (en unité)',
+        title: `Solde migratoire entre ${period} (en unité)`,
         items: [
           {
             label: `Supérieur ou égal à ${legend[5].toLocaleString()}`,
