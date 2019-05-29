@@ -37,6 +37,7 @@ export const layerTreeEvolution = periodsEvolution.map(period => ({
       type: TYPE_RANGE,
       fetchValues: true,
     }],
+    export: true,
   },
   legends: [
     {

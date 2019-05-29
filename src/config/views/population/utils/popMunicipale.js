@@ -28,6 +28,7 @@ export const layerTreePopulationMunicipale = years.map(year => ({
       type: TYPE_RANGE,
       fetchValues: true,
     }],
+    export: true,
   },
   legends: [
     {

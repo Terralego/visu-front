@@ -67,6 +67,7 @@ export const layerTreeDensity = years.map(year => {
         type: TYPE_RANGE,
         fetchValues: true,
       }],
+      export: true,
     },
     legends: [
       {

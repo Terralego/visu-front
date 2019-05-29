@@ -110,6 +110,7 @@ export const layerTreeAgeClasses = ageClasses.reduce((prevAges, ageClass) => [
           type: TYPE_RANGE,
           fetchValues: true,
         }],
+        export: true,
       },
       legends: [
         {

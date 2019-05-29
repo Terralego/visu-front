@@ -84,6 +84,7 @@ export const layerTreeSoldesNaturel = periods.map(period => {
         type: TYPE_RANGE,
         fetchValues: true,
       }],
+      export: true,
     },
     legends: [
       {
