@@ -1,11 +1,11 @@
 import layersTree from './layersTree';
-import interactions from './interactions';
+// import interactions from './interactions';
 import customStyle from './customStyle';
 
 export default {
   title: 'Population',
   layersTree,
-  interactions,
+  // interactions,
   map: {
     accessToken: 'pk.eyJ1IjoibWFraW5hY29ycHVzIiwiYSI6ImNqdzF6eWhhbDBwYnc0N3BscHNoM3Y2NWQifQ.miNBzyxOCefDL8t-CodGhA',
     backgroundStyle: 'mapbox://styles/makinacorpus/cjpdvdqdj0b7a2slajmjqy3py',
