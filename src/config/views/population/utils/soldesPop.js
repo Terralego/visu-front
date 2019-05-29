@@ -1,3 +1,5 @@
+import { TYPE_RANGE } from '@terralego/core/modules/Forms/Filters';
+
 import { periods } from './variables';
 
 function getLegendNat (period) {
@@ -72,6 +74,15 @@ export const layerTreeSoldesNaturel = periods.map(period => {
   return {
     label: `Communes solde naturel en ${period}`,
     layers: [`terralego-soldes_naturels-communes_snat_${period}`],
+    filters: {
+      layer: 'soldes_communal',
+      form: [{
+        property: `snat_${period.substring(2, 4)}${period.substring(7)}`,
+        label: 'Solde naturel (en unité)',
+        type: TYPE_RANGE,
+        fetchValues: true,
+      }],
+    },
     legends: [
       {
         title: 'Solde naturel (en unité)',
@@ -137,6 +148,15 @@ export const layerTreeSoldesMigratoire = periods.map(period => {
   return {
     label: `Communes solde migratoire en ${period}`,
     layers: [`terralego-soldes_naturels-communes_smig_${period}`],
+    filters: {
+      layer: 'soldes_communal',
+      form: [{
+        property: `smig_${period.substring(2, 4)}${period.substring(7)}`,
+        label: 'Solde migratoire (en unité)',
+        type: TYPE_RANGE,
+        fetchValues: true,
+      }],
+    },
     legends: [
       {
         title: 'Solde migratoire (en unité)',

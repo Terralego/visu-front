@@ -1,3 +1,5 @@
+import { TYPE_RANGE } from '@terralego/core/modules/Forms/Filters';
+
 import { years } from './variables';
 
 export const customStylePopulationMunicipale = years.map(year => ({
@@ -16,6 +18,15 @@ export const layerTreePopulationMunicipale = years.map(year => ({
   layers: [`terralego-population_municipale-communes_${year}`],
   initialState: {
     opacity: 0.8,
+  },
+  filters: {
+    layer: 'population_communal',
+    form: [{
+      property: `pop_${year}`,
+      label: 'Population',
+      type: TYPE_RANGE,
+      fetchValues: true,
+    }],
   },
   legends: [
     {
