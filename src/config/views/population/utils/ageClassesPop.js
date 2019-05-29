@@ -89,7 +89,7 @@ export const customStyleAgeClasses = ageClasses.reduce((prevAges, ageClass) => [
           '#BC205D',
         ],
       },
-      'source-layer': 'classe_age',
+      'source-layer': 'classe_age_communal',
     };
   }),
 ], []);

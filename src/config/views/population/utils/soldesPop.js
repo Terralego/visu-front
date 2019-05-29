@@ -63,7 +63,7 @@ export const customStyleSoldesNaturel = periods.map(period => {
         '#BC205D',
       ],
     },
-    'source-layer': 'soldes_naturels',
+    'source-layer': 'soldes_communal',
   };
 });
 
@@ -128,7 +128,7 @@ export const customStyleSoldesMigratoire = periods.map(period => {
         '#BC205D',
       ],
     },
-    'source-layer': 'soldes_naturels',
+    'source-layer': 'soldes_communal',
   };
 });
 
