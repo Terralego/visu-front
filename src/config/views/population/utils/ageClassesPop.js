@@ -1,3 +1,5 @@
+import { TYPE_RANGE } from '@terralego/core/modules/Forms/Filters';
+
 import {
   ageClasses,
   yearsAgeClasses,
@@ -100,6 +102,15 @@ export const layerTreeAgeClasses = ageClasses.reduce((prevAges, ageClass) => [
     return {
       label: `De ${ageClass.substring(1, 3)} à ${ageClass.substring(3)} pour ${year}`,
       layers: [`terralego-classe_age-communes_${ageClass}_${year}`],
+      filters: {
+        layer: 'classe_age_communal',
+        form: [{
+          property: `c${ageClass.substring(1, 3)}${ageClass.substring(3)}_${year}`,
+          label: 'Âge',
+          type: TYPE_RANGE,
+          fetchValues: true,
+        }],
+      },
       legends: [
         {
           title: 'Part de la population par classes d’âge (en %)',

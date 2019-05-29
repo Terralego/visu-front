@@ -1,3 +1,5 @@
+import { TYPE_RANGE } from '@terralego/core/modules/Forms/Filters';
+
 import { years } from './variables';
 
 function getLegend (year) {
@@ -56,6 +58,15 @@ export const layerTreeDensity = years.map(year => {
   return {
     label: `Communes en ${year}`,
     layers: [`terralego-densite_population-communes_${year}`],
+    filters: {
+      layer: 'denspop_communal',
+      form: [{
+        property: `d_${year}`,
+        label: 'Densité de la population (hab/km²)',
+        type: TYPE_RANGE,
+        fetchValues: true,
+      }],
+    },
     legends: [
       {
         title: 'Densité de la population (hab/km²)',

@@ -1,3 +1,5 @@
+import { TYPE_RANGE } from '@terralego/core/modules/Forms/Filters';
+
 import { periodsEvolution } from './variables';
 
 export const customStyleEvolution = periodsEvolution.map(period => ({
@@ -26,6 +28,15 @@ export const customStyleEvolution = periodsEvolution.map(period => ({
 export const layerTreeEvolution = periodsEvolution.map(period => ({
   label: `Communes en ${period}`,
   layers: [`terralego-evolution_population-communes_${period}`],
+  filters: {
+    layer: 'evpop_communal',
+    form: [{
+      property: `evpop_${period.substring(2, 4)}${period.substring(7)}`,
+      label: 'Évolution de la population (en %)',
+      type: TYPE_RANGE,
+      fetchValues: true,
+    }],
+  },
   legends: [
     {
       title: 'Évolution de la population (en %)',
