@@ -150,8 +150,8 @@ export const interactionAgeClasses = ageClasses.reduce((prevAges, ageClass) => [
     interaction: 'displayTooltip',
     trigger: 'mouseover',
     template: `
-Commune : {{lib_geo}}  
-{{${ageClass}_${year}}}%
+Commune : {{nom}}  
+{{${ageClass}_${year} | round(1)}}%
 `,
   })),
 ], []);

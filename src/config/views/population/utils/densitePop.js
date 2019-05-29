@@ -104,8 +104,8 @@ export const interactionDensite = years.map(year => ({
   interaction: 'displayTooltip',
   trigger: 'mouseover',
   template: `
-Commune : {{lib_geo}}  
-{{d_${year}}} hab/km²
+Commune : {{nom}}  
+{{d_${year} | round(1)}} hab/km²
 `,
 }));
 

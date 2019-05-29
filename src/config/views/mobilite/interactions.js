@@ -1,6 +1,6 @@
 const TEMPLATE_TOOLTIP_TRANSPORTS = `
 Commune : {{nom}}  
-Part des actifs se déplaçant en transport en commun : {{cdr_2015}}%
+Part des actifs se déplaçant en transport en commun : {{cdr_2015 | round(1)}}%
 `;
 
 export default [

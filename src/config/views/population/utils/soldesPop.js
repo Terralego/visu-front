@@ -88,25 +88,25 @@ export const layerTreeSoldesNaturel = periods.map(period => {
         title: 'Solde naturel (en unité)',
         items: [
           {
-            label: `Supérieur ou égal à ${legend[5]}`,
+            label: `Supérieur ou égal à ${legend[5].toLocaleString()}`,
             color: '#BC205D',
           }, {
-            label: `De ${legend[4]} à ${legend[5]}`,
+            label: `De ${legend[4].toLocaleString()} à ${legend[5].toLocaleString()}`,
             color: '#F48161',
           }, {
-            label: `De ${legend[3]} à ${legend[4]}`,
+            label: `De ${legend[3].toLocaleString()} à ${legend[4].toLocaleString()}`,
             color: '#F7C99D',
           }, {
-            label: `De ${legend[2]} à ${legend[3]}`,
+            label: `De ${legend[2].toLocaleString()} à ${legend[3].toLocaleString()}`,
             color: '#F7F1E8',
           }, {
-            label: `De ${legend[1]} à ${legend[2]}`,
+            label: `De ${legend[1].toLocaleString()} à ${legend[2].toLocaleString()}`,
             color: '#8CCBDA',
           }, {
-            label: `De ${legend[0]} à ${legend[1]}`,
+            label: `De ${legend[0].toLocaleString()} à ${legend[1].toLocaleString()}`,
             color: '#2FB0C5',
           }, {
-            label: `Inférieur à ${legend[0]}`,
+            label: `Inférieur à ${legend[0].toLocaleString()}`,
             color: '#156571',
           },
         ],
@@ -162,25 +162,25 @@ export const layerTreeSoldesMigratoire = periods.map(period => {
         title: 'Solde migratoire (en unité)',
         items: [
           {
-            label: `Supérieur ou égal à ${legend[5]}`,
+            label: `Supérieur ou égal à ${legend[5].toLocaleString()}`,
             color: '#BC205D',
           }, {
-            label: `De ${legend[4]} à ${legend[5]}`,
+            label: `De ${legend[4].toLocaleString()} à ${legend[5].toLocaleString()}`,
             color: '#F48161',
           }, {
-            label: `De ${legend[3]} à ${legend[4]}`,
+            label: `De ${legend[3].toLocaleString()} à ${legend[4].toLocaleString()}`,
             color: '#F7C99D',
           }, {
-            label: `De ${legend[2]} à ${legend[3]}`,
+            label: `De ${legend[2].toLocaleString()} à ${legend[3].toLocaleString()}`,
             color: '#F7F1E8',
           }, {
-            label: `De ${legend[1]} à ${legend[2]}`,
+            label: `De ${legend[1].toLocaleString()} à ${legend[2].toLocaleString()}`,
             color: '#8CCBDA',
           }, {
-            label: `De ${legend[0]} à ${legend[1]}`,
+            label: `De ${legend[0].toLocaleString()} à ${legend[1].toLocaleString()}`,
             color: '#2FB0C5',
           }, {
-            label: `Inférieur à ${legend[0]}`,
+            label: `Inférieur à ${legend[0].toLocaleString()}`,
             color: '#156571',
           },
         ],
@@ -194,8 +194,8 @@ export const interactionSoldesNaturel = periods.map(period => ({
   interaction: 'displayTooltip',
   trigger: 'mouseover',
   template: `
-Commune : {{lib_geo}}  
-{{snat_${period.substring(2, 4)}${period.substring(7)}}}
+Commune : {{nom}}  
+{{(snat_${period.substring(2, 4)}${period.substring(7)} | round(1)).toLocaleString()}}
 `,
 }));
 
@@ -204,8 +204,8 @@ export const interactionSoldesMigratoire = periods.map(period => ({
   interaction: 'displayTooltip',
   trigger: 'mouseover',
   template: `
-Commune : {{lib_geo}}  
-{{smig_${period.substring(2, 4)}${period.substring(7)}}}
+Commune : {{nom}}  
+{{(smig_${period.substring(2, 4)}${period.substring(7)} | round(1)).toLocaleString()}}
 `,
 }));
 

@@ -1,6 +1,6 @@
 const TEMPLATE_TOOLTIP_EMPLOIS = `
 Commune : {{nom}}  
-Nombre d'emplois : {{emplt_2015}}
+Nombre d'emplois : {{(emplt_2015 | round(1)).toLocaleString() }}
 `;
 
 export default [

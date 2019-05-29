@@ -70,7 +70,7 @@ export const interactionEvolution = periodsEvolution.map(period => ({
   interaction: 'displayTooltip',
   trigger: 'mouseover',
   template: `
-Commune : {{lib_geo}}  
+Commune : {{lib_geo | round(1)}}  
 {{evpop_${period.substring(2, 4)}${period.substring(7)}}}%
 `,
 }));
