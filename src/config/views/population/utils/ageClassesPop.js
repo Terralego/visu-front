@@ -144,7 +144,20 @@ export const layerTreeAgeClasses = ageClasses.reduce((prevAges, ageClass) => [
   }),
 ], []);
 
+export const interactionAgeClasses = ageClasses.reduce((prevAges, ageClass) => [
+  ...prevAges, ...yearsAgeClasses.map(year => ({
+    id: `terralego-classe_age-communes_${ageClass}_${year}`,
+    interaction: 'displayTooltip',
+    trigger: 'mouseover',
+    template: `
+Commune : {{lib_geo}}  
+{{${ageClass}_${year}}}%
+`,
+  })),
+], []);
+
 export default {
   customStyleAgeClasses,
   layerTreeAgeClasses,
+  interactionAgeClasses,
 };

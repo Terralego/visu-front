@@ -65,7 +65,18 @@ export const layerTreeEvolution = periodsEvolution.map(period => ({
   ],
 }));
 
+export const interactionEvolution = periodsEvolution.map(period => ({
+  id: `terralego-evolution_population-communes_${period}`,
+  interaction: 'displayTooltip',
+  trigger: 'mouseover',
+  template: `
+Commune : {{lib_geo}}  
+{{evpop_${period.substring(2, 4)}${period.substring(7)}}}%
+`,
+}));
+
 export default {
   customStyleEvolution,
   layerTreeEvolution,
+  interactionEvolution,
 };

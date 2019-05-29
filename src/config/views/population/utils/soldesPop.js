@@ -189,9 +189,31 @@ export const layerTreeSoldesMigratoire = periods.map(period => {
   };
 });
 
+export const interactionSoldesNaturel = periods.map(period => ({
+  id: `terralego-soldes_naturels-communes_snat_${period}`,
+  interaction: 'displayTooltip',
+  trigger: 'mouseover',
+  template: `
+Commune : {{lib_geo}}  
+{{snat_${period.substring(2, 4)}${period.substring(7)}}}
+`,
+}));
+
+export const interactionSoldesMigratoire = periods.map(period => ({
+  id: `terralego-soldes_naturels-communes_smig_${period}`,
+  interaction: 'displayTooltip',
+  trigger: 'mouseover',
+  template: `
+Commune : {{lib_geo}}  
+{{smig_${period.substring(2, 4)}${period.substring(7)}}}
+`,
+}));
+
 export default {
   customStyleSoldesNaturel,
   layerTreeSoldesNaturel,
+  interactionSoldesNaturel,
   customStyleSoldesMigratoire,
   layerTreeSoldesMigratoire,
+  interactionSoldesMigratoire,
 };

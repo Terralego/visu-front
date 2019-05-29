@@ -67,7 +67,18 @@ export const layerTreePopulationMunicipale = years.map(year => ({
   ],
 }));
 
+export const interactionPopulationMunicipale = years.map(year => ({
+  id: `terralego-population_municipale-communes_${year}`,
+  interaction: 'displayTooltip',
+  trigger: 'mouseover',
+  template: `
+Commune : {{lib_geo}}  
+{{pop_${year}}}
+`,
+}));
+
 export default {
   customStylePopulationMunicipale,
   layerTreePopulationMunicipale,
+  interactionPopulationMunicipale,
 };

@@ -99,7 +99,18 @@ export const layerTreeDensity = years.map(year => {
   };
 });
 
+export const interactionDensite = years.map(year => ({
+  id: `terralego-densite_population-communes_${year}`,
+  interaction: 'displayTooltip',
+  trigger: 'mouseover',
+  template: `
+Commune : {{lib_geo}}  
+{{d_${year}}} hab/km²
+`,
+}));
+
 export default {
   customStyleDensity,
   layerTreeDensity,
+  interactionDensite,
 };
