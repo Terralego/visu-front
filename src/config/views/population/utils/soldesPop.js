@@ -49,13 +49,10 @@ const getFromTo = period => {
 
 const getProperty = (period, prefix) => {
   const { from, to } = getFromTo(period);
-
   return `${prefix}_${from.substr(2, 2)}${to.substr(2, 2)}`;
 };
 
 const getLabel = (period, prefix) => {
-  const { from, to } = getFromTo(period);
-
   if (prefix === 'snat') {
     return `Communes solde naturel en ${period}`;
   }

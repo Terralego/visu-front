@@ -3,13 +3,15 @@ import { INTERACTION_DISPLAY_TOOLTIP } from '@terralego/core/modules/Map/Interac
 
 const years = ['1968', '1975', '1982', '1990', '1999', '2006', '2011', '2016'];
 
+const getProperty = year => `pop_${year}`;
+
 export const customStylePopulationMunicipale = years.map(year => ({
   type: 'circle',
   source: 'terralego',
   id: `terralego-population_municipale-communes_${year}`,
   paint: {
     'circle-color': '#769198',
-    'circle-radius': ['*', ['get', `pop_${year}`], 0.000010, 20],
+    'circle-radius': ['*', ['get', getProperty(year)], 0.000010, 20],
   },
   'source-layer': 'population_communal',
 }));
@@ -23,7 +25,7 @@ export const layerTreePopulationMunicipale = years.map(year => ({
   filters: {
     layer: 'population_communal',
     form: [{
-      property: `pop_${year}`,
+      property: getProperty(year),
       label: 'Population',
       type: TYPE_RANGE,
       fetchValues: true,

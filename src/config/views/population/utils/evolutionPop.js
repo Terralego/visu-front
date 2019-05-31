@@ -8,21 +8,10 @@ const getFromTo = period => {
   return { from, to };
 };
 
-const getProperty = (period, prefix) => {
+const getProperty = period => {
   const { from, to } = getFromTo(period);
-
-  return `${prefix}_${from.substr(2, 2)}${to.substr(2, 2)}`;
+  return `evpop_${from.substr(2, 2)}${to.substr(2, 2)}`;
 };
-
-const getLabel = (period, prefix) => {
-  const { from, to } = getFromTo(period);
-
-  if (prefix === 'snat') {
-    return `Communes solde naturel en ${period}`;
-  }
-  return `Communes solde migratoire en ${period}`;
-};
-
 
 export const customStyleEvolution = periodsEvolution.map(period => ({
   type: 'fill',
@@ -31,15 +20,15 @@ export const customStyleEvolution = periodsEvolution.map(period => ({
   paint: {
     'fill-color': [
       'case',
-      ['<', ['get', getProperty(period, 'evpop')], -2.0],
+      ['<', ['get', getProperty(period)], -2.0],
       '#156571',
-      ['<', ['get', getProperty(period, 'evpop')], -1.0],
+      ['<', ['get', getProperty(period)], -1.0],
       '#2FB0C5',
-      ['<', ['get', getProperty(period, 'evpop')], 0.0],
+      ['<', ['get', getProperty(period)], 0.0],
       '#8CCBDA',
-      ['<', ['get', getProperty(period, 'evpop')], 1.0],
+      ['<', ['get', getProperty(period)], 1.0],
       '#EFE3CF',
-      ['<', ['get', getProperty(period, 'evpop')], 2.0],
+      ['<', ['get', getProperty(period)], 2.0],
       '#F48161',
       '#BC205D',
     ],
@@ -53,7 +42,7 @@ export const layerTreeEvolution = periodsEvolution.map(period => ({
   filters: {
     layer: 'evpop_communal',
     form: [{
-      property: `evpop_${period.substring(2, 4)}${period.substring(7)}`,
+      property: getProperty(period),
       label: 'Évolution de la population (en %)',
       type: TYPE_RANGE,
       fetchValues: true,
