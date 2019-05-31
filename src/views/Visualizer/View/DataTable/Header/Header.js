@@ -9,6 +9,8 @@ function getIds (features) {
   return features.map(({ _id }) => _id).join(',');
 }
 
+const close = (setLayerState, layer) => () => setLayerState({ layer, state: { table: false } });
+
 export const Header = ({
   loading,
   title,
@@ -22,6 +24,8 @@ export const Header = ({
   exportData,
   selectedFeatures = [],
   compare = '',
+  setLayerState,
+  displayedLayer: [layer] = [],
 }) => (
   <div
     className={classnames({
@@ -116,6 +120,18 @@ export const Header = ({
           icon={full ? 'minimize' : 'maximize'}
           minimal
           active={full}
+          intent={Intent.PRIMARY}
+        />
+      </Popover>
+
+      <Popover
+        content="Fermer"
+        interactionKind={PopoverInteractionKind.HOVER}
+      >
+        <Button
+          onClick={close(setLayerState, layer)}
+          icon="cross"
+          minimal
           intent={Intent.PRIMARY}
         />
       </Popover>
