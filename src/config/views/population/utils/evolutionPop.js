@@ -40,6 +40,7 @@ export const layerTreeEvolution = periodsEvolution.map(period => ({
   label: `Communes en ${period}`,
   layers: [`terralego-evolution_population-communes_${period}`],
   filters: {
+    title: `Évolution de la population de ${period} selon la commune`,
     layer: 'evpop_communal',
     form: [{
       property: getProperty(period),
@@ -47,7 +48,19 @@ export const layerTreeEvolution = periodsEvolution.map(period => ({
       type: TYPE_RANGE,
       fetchValues: true,
     }],
-    export: true,
+    fields: [{
+      value: 'nom',
+      label: 'Nom',
+      exportable: true,
+    }, ...periodsEvolution.map(fieldsPeriod => ({
+      value: getProperty(fieldsPeriod),
+      label: `Évolution en ${fieldsPeriod}`,
+      exportable: true,
+      format: {
+        type: 'number',
+      },
+    }))],
+    exportable: true,
   },
   legends: [
     {

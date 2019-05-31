@@ -129,6 +129,7 @@ export const layerTreeAgeClasses = ageClasses.reduce((prevAges, ageClass) => [
       label: getLabel(ageClass, year),
       layers: [`terralego-classe_age-communes_${ageClass}_${year}`],
       filters: {
+        title: `Classe d'âge en ${year} selon la commune`,
         layer: 'classe_age_communal',
         form: [{
           property: getProperty(ageClass, year),
@@ -139,18 +140,20 @@ export const layerTreeAgeClasses = ageClasses.reduce((prevAges, ageClass) => [
         fields: [{
           value: 'nom',
           label: 'Nom',
+          exportable: true,
         }, ...yearsAgeClasses.reduce((prev, fieldsYear) => [
           ...prev,
           ...ageClasses.map(fieldsAgeClass => ({
             value: getProperty(fieldsAgeClass, fieldsYear),
             label: getLabel(fieldsAgeClass, fieldsYear),
+            exportable: true,
             format: {
               type: 'number',
             },
-            display: year === fieldsYear && ageClass === fieldsAgeClass,
+            display: ageClass === fieldsAgeClass,
           })),
         ], [])],
-        export: true,
+        exportable: true,
       },
       legends: [
         {

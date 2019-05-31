@@ -3,7 +3,6 @@ import { INTERACTION_DISPLAY_TOOLTIP } from '@terralego/core/modules/Map/Interac
 
 const periods = ['2010-2015', '1999-2010', '1990-1999', '1982-1990', '1975-1982', '1968-1975'];
 
-
 function getLegendNat (period) {
   switch (period) {
     case '2010-2015':
@@ -59,6 +58,20 @@ const getLabel = (period, prefix) => {
   return `Communes solde migratoire en ${period}`;
 };
 
+const getTitleTable = (period, prefix) => {
+  if (prefix === 'snat') {
+    return `Solde naturel en ${period} pour la commune`;
+  }
+  return `Solde migratoire en ${period} pour la commune`;
+};
+
+const getField = (period, prefix) => {
+  if (prefix === 'snat') {
+    return `S.naturel ${period}`;
+  }
+  return `S.migratoire ${period}`;
+};
+
 export const customStyleSoldesNaturel = periods.map(period => {
   const legend = getLegendNat(period);
   return {
@@ -93,6 +106,7 @@ export const layerTreeSoldesNaturel = periods.map(period => {
     label: getLabel(period, 'snat'),
     layers: [`terralego-soldes_naturels-communes_snat_${period}`],
     filters: {
+      title: `${getTitleTable(period)}`,
       layer: 'soldes_communal',
       form: [{
         property: getProperty(period, 'snat'),
@@ -103,15 +117,16 @@ export const layerTreeSoldesNaturel = periods.map(period => {
       fields: [{
         value: 'nom',
         label: 'Nom',
+        exportable: true,
       }, ...periods.map(fieldsPeriod => ({
         value: getProperty(fieldsPeriod, 'snat'),
-        label: getLabel(fieldsPeriod, 'snat'),
+        label: getField(fieldsPeriod, 'snat'),
+        exportable: true,
         format: {
           type: 'number',
         },
-        display: period === fieldsPeriod,
       }))],
-      export: true,
+      exportable: true,
     },
     legends: [
       {
@@ -179,6 +194,7 @@ export const layerTreeSoldesMigratoire = periods.map(period => {
     label: getLabel(period, 'smig'),
     layers: [`terralego-soldes_naturels-communes_smig_${period}`],
     filters: {
+      title: `${getTitleTable(period)}`,
       layer: 'soldes_communal',
       form: [{
         property: getProperty(period, 'smig'),
@@ -189,14 +205,16 @@ export const layerTreeSoldesMigratoire = periods.map(period => {
       fields: [{
         value: 'nom',
         label: 'Nom',
+        exportable: true,
       }, ...periods.map(fieldsPeriod => ({
         value: getProperty(fieldsPeriod, 'smig'),
-        label: getLabel(fieldsPeriod, 'smig'),
+        label: getField(fieldsPeriod, 'smig'),
+        exportable: true,
         format: {
           type: 'number',
         },
-        display: period === fieldsPeriod,
       }))],
+      exportable: true,
     },
     legends: [
       {
