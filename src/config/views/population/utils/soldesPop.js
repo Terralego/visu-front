@@ -1,7 +1,8 @@
 import { TYPE_RANGE } from '@terralego/core/modules/Forms/Filters';
 import { INTERACTION_DISPLAY_TOOLTIP } from '@terralego/core/modules/Map/InteractiveMap/InteractiveMap';
 
-import { periods } from './variables';
+const periods = ['2010-2015', '1999-2010', '1990-1999', '1982-1990', '1975-1982', '1968-1975'];
+
 
 function getLegendNat (period) {
   switch (period) {
