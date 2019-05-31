@@ -203,8 +203,9 @@ export class DataTable extends React.Component {
     const { displayedLayer } = this.props;
 
     const {
-      label: title,
+      label,
       filters: {
+        title,
         layer,
         compare,
         exportable,
@@ -251,7 +252,7 @@ export class DataTable extends React.Component {
                 compare={compare}
                 selectedFeatures={selectedFeatures || []}
                 loading={loading}
-                title={title}
+                title={title || label}
                 full={full}
                 resize={resize}
                 exportData={showExportButton && exportDataAction}
