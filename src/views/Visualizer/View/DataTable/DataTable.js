@@ -31,7 +31,7 @@ export class DataTable extends React.Component {
   };
 
   static defaultProps = {
-    displayedLayer: null,
+    displayedLayer: undefined,
     query: '',
     filters: {},
   }
@@ -57,7 +57,7 @@ export class DataTable extends React.Component {
     displayedLayer: {
       filters: { layer: prevLayer } = {},
       state: { filters: prevFilters } = {},
-    },
+    } = {},
     query: prevQuery,
   }, {
     extent: prevExtent,
@@ -90,10 +90,13 @@ export class DataTable extends React.Component {
 
   resize = () => this.setState(({ full: prevFull }) => {
     const full = !prevFull;
-    const delay = full ? 0 : 1000;
-    setTimeout(() => this.setState({ full, isResizing: false }), delay);
 
-    return { isResizing: true };
+    if (full) {
+      setTimeout(() => this.setState({ full, isResizing: false }), 300);
+      return { isResizing: true };
+    }
+    setTimeout(() => this.setState({ isResizing: false }), 300);
+    return { full, isResizing: true };
   })
 
   toggleExtent = () => this.setState(({ extent }) => ({ extent: !extent }));
@@ -127,8 +130,8 @@ export class DataTable extends React.Component {
     const columnLabels = columns.map(({ value, label = value }) => label);
 
     // Go through each line and keep only exportable columns
-    const data = [columnLabels, ...results]
-      .map(dataLine => exportableColumnIndexes.map(index => dataLine[index]));
+    const data = [columnLabels, ...results].map(dataLine =>
+      exportableColumnIndexes.map(index => dataLine[index]));
 
     exportData({ data, name });
   }
@@ -138,9 +141,9 @@ export class DataTable extends React.Component {
   }
 
   extentChanged () {
-    const { map } = this.props;
+    const { map, visibleBoundingBox } = this.props;
     const prevExtent = this.prevExtent || [[], []];
-    this.prevExtent = getExtent(map);
+    this.prevExtent = getExtent(map, visibleBoundingBox);
     const [[a, b], [c, d]] = prevExtent;
     const [[aa, bb], [cc, dd]] = this.prevExtent;
     return !(a === aa && b === bb && c === cc && d === dd);
@@ -151,11 +154,13 @@ export class DataTable extends React.Component {
       displayedLayer: { filters: { layer, fields, form }, state: { filters = {} } = {} },
       query,
       map,
+      visibleBoundingBox,
     } = this.props;
     const { columns, extent } = this.state;
 
     this.setState({ loading: true });
-    this.prevExtent = extent && getExtent(map);
+
+    this.prevExtent = extent && getExtent(map, visibleBoundingBox);
     const boundingBox = this.prevExtent;
     const resp = await searchService.search({
       query,
@@ -197,8 +202,6 @@ export class DataTable extends React.Component {
   render () {
     const { displayedLayer } = this.props;
 
-    if (!displayedLayer) return null;
-
     const {
       label: title,
       filters: {
@@ -207,7 +210,7 @@ export class DataTable extends React.Component {
         exportable,
         fields = [],
       } = {},
-    } = displayedLayer;
+    } = displayedLayer || {};
 
     const haveExportableField = fields.some(({ exportable: exportableField }) => exportableField);
     const showExportButton = exportable && haveExportableField;
@@ -221,39 +224,46 @@ export class DataTable extends React.Component {
 
     const { resize, toggleExtent, onSelection, exportDataAction } = this;
     return (
-      <div
-        className={classnames({
-          'table-container': true,
-          'table-container--is-resizing': isResizing,
-          'table-container--full': full,
-        })}
+      <div className={classnames({
+        'data-table': true,
+        'data-table--visible': !!displayedLayer,
+      })}
       >
-        <Table
-          columns={columns || []}
-          data={results || []}
-          onSelection={onSelection}
-          Header={props => (
-            <Header
-              {...props}
-              resultsTotal={resultsTotal}
-              toggleExtent={toggleExtent}
-              extent={extent}
-              layer={layer}
-              compare={compare}
-              selectedFeatures={selectedFeatures || []}
-              loading={loading}
-              title={title}
-              full={full}
-              resize={resize}
-              exportData={showExportButton && exportDataAction}
-            />
-          )}
-          locales={{
-            sortAsc: 'Trier dans l\'ordre croissant',
-            sortDesc: 'Trier dans l\'ordre décroissant',
-          }}
-          loading={firstLoading}
-        />
+        <div
+          className={classnames({
+            'table-container': true,
+            'table-container--visible': !!displayedLayer,
+            'table-container--is-resizing': isResizing,
+            'table-container--full': full,
+          })}
+        >
+          <Table
+            columns={columns || []}
+            data={results || []}
+            onSelection={onSelection}
+            Header={props => (
+              <Header
+                {...props}
+                resultsTotal={resultsTotal}
+                toggleExtent={toggleExtent}
+                extent={extent}
+                layer={layer}
+                compare={compare}
+                selectedFeatures={selectedFeatures || []}
+                loading={loading}
+                title={title}
+                full={full}
+                resize={resize}
+                exportData={showExportButton && exportDataAction}
+              />
+            )}
+            locales={{
+              sortAsc: 'Trier dans l\'ordre croissant',
+              sortDesc: 'Trier dans l\'ordre décroissant',
+            }}
+            loading={firstLoading}
+          />
+        </div>
       </div>
     );
   }

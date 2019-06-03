@@ -4,9 +4,10 @@
   height: 0;
   transition: height .2s ease-in;
   display: flex;
+  position: relative;
+  will-change: height;
 
   &--visible {
-    position: relative;
     height: 33vh;
   }
 
@@ -21,17 +22,20 @@
     right: 0;
     bottom: 0;
     left: 0;
-    z-index: 11;
-    margin: 0 .5rem .5rem 0;
+    margin: 0;
+    transform: translate3d(0, 100%, 0);
 
-    &--full {
-      transform: translateY(-62.75vh);
-      height: calc(100vh - 4rem);
+    &--visible {
+      transform: translate3d(0, 0, 0);
+    }
+
+    &--full.table-container--visible {
+      height: calc(100vh);
+      transform: translate3d(0, -67.25vh, 0);
     }
 
     &--is-resizing {
-      height: calc(100vh - 4rem);
-      transform: translateY(0);
+      height: calc(100vh);
     }
   }
 
@@ -41,8 +45,8 @@
   }
 
   .table-header {
-    background: white;
-    padding: .5rem;
+    background: #F5F8FA;
+    padding: .8rem;
     position: relative;
     display: flex;
     align-items: center;
@@ -65,7 +69,7 @@
 
     &__actions {
       position: absolute;
-      right: 0;
+      right: .6rem;
     }
 
     &__loading {
