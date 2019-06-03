@@ -24,7 +24,7 @@ export const layerTreePopulationMunicipale = years.map(year => ({
   },
   filters: {
     table: {
-      title: `Population municipal en ${year} selon la commune`,
+      title: `Population municipale en ${year} par commune`,
     },
     layer: 'population_communal',
     form: [{
