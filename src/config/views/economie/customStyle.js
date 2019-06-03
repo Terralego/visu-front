@@ -1,3 +1,9 @@
+import {
+  customStyleCommunal,
+  customStyleDepartemental,
+  customStyleInterCommunal,
+} from '../../utils/administrativeBorders';
+
 export default {
   sources: [{
     id: 'terralego',
@@ -15,5 +21,8 @@ export default {
       },
       'source-layer': 'emplois_communal',
     },
+    customStyleDepartemental,
+    customStyleInterCommunal,
+    customStyleCommunal,
   ],
 };

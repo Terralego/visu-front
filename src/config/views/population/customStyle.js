@@ -6,6 +6,11 @@ import {
   customStyleSoldesNaturel,
 } from './utils/soldesPop';
 import { customStyleAgeClasses } from './utils/ageClassesPop';
+import {
+  customStyleCommunal,
+  customStyleDepartemental,
+  customStyleInterCommunal,
+} from '../../utils/administrativeBorders';
 
 export default {
   sources: [
@@ -22,5 +27,8 @@ export default {
     ...customStyleSoldesNaturel,
     ...customStyleSoldesMigratoire,
     ...customStyleAgeClasses,
+    customStyleDepartemental,
+    customStyleInterCommunal,
+    customStyleCommunal,
   ],
 };
