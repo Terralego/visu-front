@@ -1,7 +1,7 @@
 .view-details {
   position: absolute;
-  top: 1rem;
-  bottom: 2.2rem;
+  top: 0.5rem;
+  bottom: .5rem;
   right: 0;
   width: 30rem;
   display: flex;
@@ -10,12 +10,17 @@
   transition: transform .2s ease-in, opacity .2s ease-in;
   z-index: 99;
   background: #fff;
+  margin: 0;
   opacity: 0;
-  margin: 2.5rem 0;
+
+  &--hidden {
+    display: none;
+  }
 
   &--visible {
-    transform: translate3d(-3.8rem, 0, 0);
-    opacity: 1;
+    transform: translate3d(-.5rem, 0, 0);
+    opacity: .9;
+    box-shadow: 0 0 10px rgba(0,0,0,.2);
   }
 
   &__close-button {
@@ -63,7 +68,7 @@
   }
 
   .details {
-    padding: 1rem 1.5rem;
+    padding: 0.5rem;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -88,11 +93,12 @@
     }
 
     &__group {
-      margin-top: 1.5rem;
+      margin-top: .5rem;
     }
 
     &__list {
       padding: 0;
+      margin: 0;
       display: table;
       
       &__amenity {

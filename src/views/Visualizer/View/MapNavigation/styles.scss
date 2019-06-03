@@ -1,4 +1,8 @@
 $transitionSpeed: .2s;
+$font-medium: "SFProText-Medium", Arial, Helvetica, sans-serif;
+$font-default: "SFProText-Light", Arial, Helvetica, sans-serif;
+$font-color: #F5F8FA;
+$active-button-color: rgba(46, 230, 214, .3);
 
 .map-navigation {
   position: relative;
@@ -50,7 +54,7 @@ $transitionSpeed: .2s;
     margin: .5rem 0;
     outline: none;
     transition: transform $transitionSpeed ease-in;
-    transform: translate3d(8px, 0, 0);
+    transform: translate3d(.5rem, 0, 0);
   }
 
   &__button-tooltip {
@@ -68,7 +72,7 @@ $transitionSpeed: .2s;
     flex-direction: row;
   }
   &__content::-webkit-scrollbar {
-    width: 8px;
+    width: .5rem;
   }
 
   @media print {
@@ -84,11 +88,27 @@ $transitionSpeed: .2s;
       padding: 0;
   
       &__button {
-        transform: scaleX(-1) translate3d(-8px, 0, 0);
+        transform: scaleX(-1) translate3d(-0.5rem, 0, 0);
       }
   
       &__content {
         opacity: 1;
+      }
+
+      .layerNode-options__buttons--active {
+        background: radial-gradient($active-button-color 0, transparent 55%) !important;
+      
+        .icon {
+          filter: invert(0.5) sepia(1) saturate(2) hue-rotate(144deg);
+        }
+      }
+      
+      .layerNode-widgets__buttons--active {
+        background: radial-gradient($active-button-color 0, transparent 55%) !important;
+      
+        svg {
+          filter: invert(0.5) sepia(1) saturate(2) hue-rotate(144deg);
+        }
       }
     }
   }

@@ -45,20 +45,30 @@ export class WidgetSynthesis extends React.Component {
   debouncedLoad = debounce(() => this.load(), 1000);
 
   componentDidMount () {
+    const { map } = this.props;
     this.debouncedLoad();
+    map.on('moveend', this.debouncedLoad);
+    map.on('zoomend', this.debouncedLoad);
   }
 
-  componentDidUpdate ({ filters: prevFilters, query: prevQuery, mapState: prevMapState }) {
-    const { filters, query, mapState } = this.props;
+  componentDidUpdate ({
+    filters: prevFilters,
+    query: prevQuery,
+    visibleBoundingBox: prevVisibleBoundingBox,
+  }) {
+    const { filters, query, visibleBoundingBox } = this.props;
     if (!isEqual(filters, prevFilters)
       || query !== prevQuery
-      || mapState !== prevMapState) {
+      || visibleBoundingBox !== prevVisibleBoundingBox) {
       this.resetValues();
       this.debouncedLoad();
     }
   }
 
   componentWillUnmount () {
+    const { map } = this.props;
+    map.off('moveend', this.debouncedLoad);
+    map.off('zoomend', this.debouncedLoad);
     this.isUnmount = true;
   }
 
@@ -67,7 +77,7 @@ export class WidgetSynthesis extends React.Component {
   }
 
   async load () {
-    const { items, filters, query, map } = this.props;
+    const { items, filters, query, map, visibleBoundingBox } = this.props;
 
     if (!map) return;
 
@@ -75,7 +85,7 @@ export class WidgetSynthesis extends React.Component {
       name, type, field,
     }));
 
-    const boundingBox = getExtent(map);
+    const boundingBox = getExtent(map, visibleBoundingBox);
 
     const data = await searchService.search({
       aggregations,

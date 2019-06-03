@@ -5,6 +5,7 @@ import { Classes } from '@blueprintjs/core';
 import InteractiveMap, { INTERACTION_DISPLAY_TOOLTIP, INTERACTION_ZOOM, INTERACTION_HIGHLIGHT, INTERACTION_FN } from '@terralego/core/modules/Map/InteractiveMap';
 import { DEFAULT_CONTROLS, CONTROL_SEARCH, CONTROL_BACKGROUND_STYLES, CONTROLS_TOP_RIGHT } from '@terralego/core/modules/Map';
 import { toggleLayerVisibility, setLayerOpacity } from '@terralego/core/modules/Map/services/mapUtils';
+import { LayersTree } from '@terralego/core/modules/Visualizer';
 import classnames from 'classnames';
 import debounce from 'debounce';
 import turfCenter from '@turf/center';
@@ -23,7 +24,6 @@ import {
 import searchService, { getExtent } from '../../../services/search';
 import Details from './Details';
 import MapNavigation from './MapNavigation';
-import LayersTree from './LayersTree';
 import Story from './Story';
 import TooManyResults from './TooManyResults';
 import PrintControl from './PrintControl';
@@ -131,12 +131,20 @@ export class Visualizer extends React.Component {
   componentDidUpdate ({
     view: {
       interactions: prevInteractions,
+      layersTree: prevLayersTree,
     },
     layersTreeState: prevLayersTreeState,
     query: prevQuery,
     map: prevMap,
+    authenticated: prevAuthenticated,
   }, { features: prevFeatures }) {
-    const { view: { interactions }, map, layersTreeState, query } = this.props;
+    const {
+      view: { interactions, layersTree },
+      map,
+      layersTreeState,
+      query,
+      authenticated,
+    } = this.props;
     const { features } = this.state;
     if (prevLayersTreeState !== layersTreeState
         || map !== prevMap) {
@@ -160,6 +168,11 @@ export class Visualizer extends React.Component {
 
     if (interactions !== prevInteractions) {
       this.setInteractions();
+    }
+
+    if (authenticated !== prevAuthenticated
+      || layersTree !== prevLayersTree) {
+      this.updatePrivateLayers();
     }
   }
 
@@ -261,6 +274,7 @@ export class Visualizer extends React.Component {
     map.on('updateMap', onMapUpdate);
     map.on('load', () => this.updateLayersTree());
     initLayersState();
+    this.updatePrivateLayers();
     map.resize();
   }
 
@@ -506,6 +520,11 @@ export class Visualizer extends React.Component {
     });
   }
 
+  updateLayersTreeState = layersTreeState => {
+    const { setLayersTreeState } = this.props;
+    setLayersTreeState(layersTreeState);
+  }
+
   displayDetails (feature, interaction, { addHighlight, removeHighlight }) {
     const { details: { hide = () => {} } = {} } = this.state;
     const { highlight } = interaction;
@@ -537,6 +556,7 @@ export class Visualizer extends React.Component {
     });
   }
 
+
   updateLayersTree () {
     const { map } = this.props;
     const { features } = this.state;
@@ -544,24 +564,40 @@ export class Visualizer extends React.Component {
     if (!map) return;
 
     const { layersTreeState, query } = this.props;
+    const { prevLayersTreeState = new Map() } = this;
+    this.prevLayersTreeState = layersTreeState;
+
     layersTreeState.forEach(({
       active,
       opacity,
       sublayers: sublayersState,
-    }, {
-      sublayers = [],
-      layers = [],
-      ignore = {},
-    }) => {
+    }, layer) => {
+      const {
+        sublayers = [],
+        layers = [],
+        ignore = {},
+      } = layer;
+
+      const {
+        active: prevActive,
+        opacity: prevOpacity,
+        sublayers: prevSublayersState,
+      } = prevLayersTreeState.get(layer) || {};
+
       if (sublayersState) {
         sublayers.forEach((sublayer, index) => {
           const isActive = active && sublayersState[index];
+          const prevIsActive = prevActive && prevSublayersState[index];
           sublayer.layers.forEach(layerId => {
             if (!map.getLayer(layerId)) {
               return;
             }
-            toggleLayerVisibility(map, layerId, isActive ? 'visible' : 'none');
-            setLayerOpacity(map, layerId, opacity);
+            if (isActive !== prevIsActive) {
+              toggleLayerVisibility(map, layerId, isActive ? 'visible' : 'none');
+            }
+            if (opacity !== prevOpacity) {
+              setLayerOpacity(map, layerId, opacity);
+            }
           });
         });
       }
@@ -573,10 +609,11 @@ export class Visualizer extends React.Component {
           `${layerId}-border`,
         ];
 
-        if (active !== undefined) {
+        if (active !== undefined && active !== prevActive) {
           toggleLayerVisibility(map, layerId, active ? 'visible' : 'none');
         }
         if (opacity !== undefined
+          && opacity !== prevOpacity
           // Don't change cluster border
           && !ignoreOpacity.includes(layerId)) {
           setLayerOpacity(map, layerId, opacity);
@@ -592,6 +629,18 @@ export class Visualizer extends React.Component {
     if (current) current.displayStep();
   }
 
+  updatePrivateLayers () {
+    const { layersTreeState: prevLayersTreeState, setLayersTreeState, authenticated } = this.props;
+    const layersTreeState = new Map(Array.from(prevLayersTreeState).map(([layer, state]) => [
+      layer,
+      {
+        ...state,
+        hidden: !authenticated && layer.private,
+      },
+    ]));
+    setLayersTreeState(layersTreeState);
+  }
+
   render () {
     const {
       layersTreeState,
@@ -603,6 +652,7 @@ export class Visualizer extends React.Component {
       },
       mapIsResizing,
       setVisibleBoundingBox,
+      renderHeader,
     } = this.props;
     const {
       details,
@@ -670,13 +720,15 @@ export class Visualizer extends React.Component {
             title={title}
             toggleLayersTree={toggleLayersTree}
             visible={isLayersTreeVisible}
+            renderHeader={renderHeader}
           >
             {layersTree && (
               <LayersTree
                 layersTree={layersTree}
+                // onChange={this.updateLayersTreeState}
+                // initialState={layersTreeState}
               />
-            )
-            }
+            )}
             {story && (
               <Story
                 ref={storyRef}

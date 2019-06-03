@@ -75,7 +75,7 @@ export class Visualizer extends React.Component {
   }
 
   render () {
-    const { match: { params: { viewName } } } = this.props;
+    const { match: { params: { viewName } }, ...props } = this.props;
     const { loading } = this.state;
     const { onViewStateUpdate } = this;
     const viewSettings = this.getCurrentViewSetting();
@@ -89,6 +89,7 @@ export class Visualizer extends React.Component {
               key={viewName}
               view={viewSettings}
               onViewStateUpdate={onViewStateUpdate}
+              {...props}
             />
           )
         }

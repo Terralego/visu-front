@@ -1,27 +1,18 @@
+$transitionSpeed: .2s;
+
 .visualizer {
   width: 100%;
   background: rgb(49, 64, 77);
 
-    &-view {
+  &-view {
     position: relative;
     display: flex;
+    flex-direction: row;
     min-height: 100%;
     flex: auto;
     overflow: hidden;
     width: 100%;
-
-    &__top {
-      position: relative;
-      height: 50px;
-      display: flex;
-      flex: row;
-      justify-content: space-between;
-      align-items: center;
-      z-index: 4;
-      background-color: #394b59;
-      box-shadow: 0 2px 4px 0 rgba(16,22,26,0.40);
-    }
-
+    
     &__center,
     .col-data,
     .col-widgets {
@@ -29,6 +20,9 @@
       flex: auto;
       flex-direction: column;
       min-width: 0;
+    }
+    .col-data {
+      position: relative;
     }
     .col-widgets {
       flex: none;
@@ -57,26 +51,6 @@
           opacity: 0;
           filter: blur(1rem);
         }
-      }
-    }
-  }
-
-  .interactive-map {
-    width: calc(100% - .5rem);
-    flex: auto;
-    height: calc(100% - 1rem);
-    margin: 0;
-
-    .mapboxgl-ctrl-attrib {
-      p {
-        display: inline;
-      }
-    }
-    .tf-legend{
-      max-width: 280px;
-
-      &__title {
-        max-width: 248px;
       }
     }
   }
@@ -116,10 +90,80 @@
     }
   }
 
-  .mapboxgl-ctrl-top-right {
-    // To be over the details panels
+  .mapboxgl-ctrl-top-left,
+  .mapboxgl-ctrl-bottom-left,
+  .mapboxgl-ctrl-top-right,
+  .mapboxgl-ctrl-bottom-right,
+  .interactive-map__legends {
+    transition: transform .2s ease-in;
     z-index: 999;
   }
+  .mapboxgl-ctrl-top-left,
+  .mapboxgl-ctrl-bottom-left {
+    transform: translate3d(3rem, 0, 0);
+  }
+  &--with {
+    $layersTreeWidth: 22.5rem;
+    $tableHeight: 33vh;
+    $widgetsWidth: 20rem;
+    $detailsWidth: 30.5rem;
+    &-layers-tree {
+      .mapboxgl-ctrl-top-left,
+      .mapboxgl-ctrl-bottom-left {
+        transform: translate3d($layersTreeWidth, 0, 0);
+      }
+    }
+    &-table {
+      .mapboxgl-ctrl-bottom-left {
+        transform: translate3d(3rem, -$tableHeight, 0);
+      }
+      .mapboxgl-ctrl-bottom-right,
+      .interactive-map__legends {
+        transform: translate3d(0, -$tableHeight, 0);
+      }
+      &.visualizer--with-layers-tree .mapboxgl-ctrl-bottom-left {
+        transform: translate3d($layersTreeWidth, -$tableHeight, 0);
+      }
+    }
+    &-widgets {
+      .mapboxgl-ctrl-top-right,
+      .mapboxgl-ctrl-bottom-right,
+      .interactive-map__legends {
+        transform: translate3d(-$widgetsWidth, 0, 0);
+      }
+      &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
+      &.visualizer--with-table .interactive-map__legends {
+        transform: translate3d(-$widgetsWidth, -$tableHeight, 0);
+      }
+    }
+    &-details {
+      .mapboxgl-ctrl-top-right,
+      .mapboxgl-ctrl-bottom-right,
+      .interactive-map__legends {
+        transform: translate3d(-$detailsWidth, 0, 0);
+      }
+      &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
+      &.visualizer--with-table .interactive-map__legends {
+        transform: translate3d(-$detailsWidth, -$tableHeight, 0);
+      }
+
+      &.visualizer--with-widgets {
+        .mapboxgl-ctrl-top-right,
+        .mapboxgl-ctrl-bottom-right,
+        .interactive-map__legends {
+          transform: translate3d(-#{$widgetsWidth + $detailsWidth}, 0, 0);
+        }
+        &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
+        &.visualizer--with-table .interactive-map__legends {
+          transform: translate3d(-#{$widgetsWidth + $detailsWidth}, -$tableHeight, 0);
+        }
+      }
+    }
+  }
+}
+
+.bp3-transition-container {
+  z-index: 99;
 }
 
 @media print {
@@ -151,7 +195,7 @@
 }
 
 .appName {
-  padding-left: 0.8rem;
+  padding-left: 0.7rem;
 
   &-title {
     font-size: 1.4rem;
@@ -163,4 +207,32 @@
       margin-top: .5rem;
     }
   }
+}
+
+.interactive-map {
+  position: absolute;
+  height: auto;
+  width: auto;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+
+  .mapboxgl-ctrl-attrib {
+    p {
+      display: inline;
+    }
+  }
+  .tf-legend{
+    max-width: 280px;
+
+    &__title {
+      max-width: 248px;
+    }
+  }
+}
+
+.filters-panel {
+  z-index: 999;
 }

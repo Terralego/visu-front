@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from '../../../../images/Cart_en_main.png';
+import logo from '../../images/cart_en_main.png';
 
 export const AppName = () => (
   <div className="bp3-dark appName">

@@ -1,9 +1,8 @@
 import React from 'react';
 import { Card, Classes } from '@blueprintjs/core';
+import { LayersTree } from '@terralego/core/modules/Visualizer';
 
 import MapNavigationButton from './MapNavigationButton';
-import LayersTree from '../LayersTree';
-import AppName from '../AppName/AppName';
 
 import './styles.scss';
 
@@ -16,15 +15,18 @@ export const MapNavigation = ({
   children,
   visible,
   toggleLayersTree,
+  renderHeader,
 }) => {
   const uid = getUid();
   return (
     <Card
       className={`map-navigation ${Classes.DARK}`}
     >
-      <div className="map-navigation__header">
-        <AppName />
-      </div>
+      {renderHeader && (
+        <div className="map-navigation__header">
+          {renderHeader}
+        </div>
+      )}
       {title && <h2 className="map-navigation__title">{title}</h2>}
       <div id={`map-navigation__content-${uid}`} className="map-navigation__content">
         {children}
