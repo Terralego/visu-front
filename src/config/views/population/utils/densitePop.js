@@ -62,7 +62,9 @@ export const layerTreeDensity = years.map(year => {
     label: `Communes en ${year}`,
     layers: [`terralego-densite_population-communes_${year}`],
     filters: {
-      title: `Dénsité de population en ${year} selon la commune`,
+      table: {
+        title: `Dénsité de population en ${year} selon la commune`,
+      },
       layer: 'denspop_communal',
       form: [{
         property: getProperty(year),
@@ -81,6 +83,7 @@ export const layerTreeDensity = years.map(year => {
         format: {
           type: 'number',
         },
+        display: year === fieldsYear,
       }))],
       exportable: true,
     },

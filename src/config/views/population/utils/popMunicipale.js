@@ -23,7 +23,9 @@ export const layerTreePopulationMunicipale = years.map(year => ({
     opacity: 0.8,
   },
   filters: {
-    title: `Population municipal en ${year} selon la commune`,
+    table: {
+      title: `Population municipal en ${year} selon la commune`,
+    },
     layer: 'population_communal',
     form: [{
       property: getProperty(year),
@@ -42,6 +44,7 @@ export const layerTreePopulationMunicipale = years.map(year => ({
       format: {
         type: 'number',
       },
+      display: year === fieldsYear,
     }))],
     exportable: true,
   },

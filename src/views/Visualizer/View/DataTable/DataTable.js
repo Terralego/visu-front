@@ -211,7 +211,7 @@ export class DataTable extends React.Component {
     const {
       label,
       filters: {
-        title,
+        table: { title } = {},
         layer,
         compare,
         exportable,
