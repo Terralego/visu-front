@@ -66,6 +66,32 @@ function getLegend (ageClass, year) {
   }
 }
 
+const getFromTo = ageClass => {
+  const [, from, to] = ageClass.split(/c([0-9]{2})(.*)$/);
+  return { from, to };
+};
+
+const getLabel = (ageClass, year) => {
+  const { from, to } = getFromTo(ageClass);
+  if (Number.isNaN(+to)) {
+    return `À partir de ${+from} ans en ${year}`;
+  }
+  return `De ${+from} à ${+to} ans en ${year}`;
+};
+
+const getTitleLegend = (ageClass, year) => {
+  const { from, to } = getFromTo(ageClass);
+  if (Number.isNaN(+to)) {
+    return `Part de la population à partir de ${+from} ans en ${year} (en %)`;
+  }
+  return `Part de la population de ${+from} à ${+to} ans en ${year} (en %)`;
+};
+
+const getProperty = (ageClass, year) => {
+  const { from, to } = getFromTo(ageClass);
+  return `c${from}${to}_${year}`;
+};
+
 export const customStyleAgeClasses = ageClasses.reduce((prevAges, ageClass) => [
   ...prevAges, ...yearsAgeClasses.map(year => {
     const legend = getLegend(ageClass, year);
@@ -76,17 +102,17 @@ export const customStyleAgeClasses = ageClasses.reduce((prevAges, ageClass) => [
       paint: {
         'fill-color': [
           'case',
-          ['<', ['get', `${ageClass}_${year}`], legend[0]],
+          ['<', ['get', getProperty(ageClass, year)], legend[0]],
           '#EFE3CF',
-          ['<', ['get', `${ageClass}_${year}`], legend[1]],
+          ['<', ['get', getProperty(ageClass, year)], legend[1]],
           '#F7C99E',
-          ['<', ['get', `${ageClass}_${year}`], legend[2]],
+          ['<', ['get', getProperty(ageClass, year)], legend[2]],
           '#F9AF79',
-          ['<', ['get', `${ageClass}_${year}`], legend[3]],
+          ['<', ['get', getProperty(ageClass, year)], legend[3]],
           '#F79465',
-          ['<', ['get', `${ageClass}_${year}`], legend[4]],
+          ['<', ['get', getProperty(ageClass, year)], legend[4]],
           '#E8705D',
-          ['<', ['get', `${ageClass}_${year}`], legend[5]],
+          ['<', ['get', getProperty(ageClass, year)], legend[5]],
           '#D4495A',
           '#BC205D',
         ],
@@ -100,20 +126,40 @@ export const layerTreeAgeClasses = ageClasses.reduce((prevAges, ageClass) => [
   ...prevAges, ...yearsAgeClasses.map(year => {
     const legend = getLegend(ageClass, year);
     return {
-      label: `De ${ageClass.substring(1, 3)} à ${ageClass.substring(3)} pour ${year}`,
+      label: getLabel(ageClass, year),
       layers: [`terralego-classe_age-communes_${ageClass}_${year}`],
       filters: {
+        table: {
+          title: `Classe d'âge en ${year} selon la commune`,
+        },
         layer: 'classe_age_communal',
         form: [{
-          property: `c${ageClass.substring(1, 3)}${ageClass.substring(3)}_${year}`,
+          property: getProperty(ageClass, year),
           label: 'Âge',
           type: TYPE_RANGE,
           fetchValues: true,
         }],
+        fields: [{
+          value: 'nom',
+          label: 'Nom',
+          exportable: true,
+        }, ...yearsAgeClasses.reduce((prev, fieldsYear) => [
+          ...prev,
+          ...ageClasses.map(fieldsAgeClass => ({
+            value: getProperty(fieldsAgeClass, fieldsYear),
+            label: getLabel(fieldsAgeClass, fieldsYear),
+            exportable: true,
+            format: {
+              type: 'number',
+            },
+            display: year === fieldsYear && ageClass === fieldsAgeClass,
+          })),
+        ], [])],
+        exportable: true,
       },
       legends: [
         {
-          title: `Part de la population par classes d’âge en ${year} (en %)`,
+          title: getTitleLegend(ageClass, year),
           items: [
             {
               label: `Supérieur ou égal à ${legend[5]}%`,

@@ -3,13 +3,15 @@ import { INTERACTION_DISPLAY_TOOLTIP } from '@terralego/core/modules/Map/Interac
 
 const years = ['1968', '1975', '1982', '1990', '1999', '2006', '2011', '2016'];
 
+const getProperty = year => `pop_${year}`;
+
 export const customStylePopulationMunicipale = years.map(year => ({
   type: 'circle',
   source: 'terralego',
   id: `terralego-population_municipale-communes_${year}`,
   paint: {
     'circle-color': '#769198',
-    'circle-radius': ['*', ['get', `pop_${year}`], 0.000010, 20],
+    'circle-radius': ['*', ['get', getProperty(year)], 0.000010, 20],
   },
   'source-layer': 'population_communal',
 }));
@@ -21,47 +23,60 @@ export const layerTreePopulationMunicipale = years.map(year => ({
     opacity: 0.8,
   },
   filters: {
+    table: {
+      title: `Population municipal en ${year} selon la commune`,
+    },
     layer: 'population_communal',
     form: [{
-      property: `pop_${year}`,
+      property: getProperty(year),
       label: 'Population',
       type: TYPE_RANGE,
       fetchValues: true,
     }],
+    fields: [{
+      value: 'nom',
+      label: 'Nom',
+      exportable: true,
+    }, ...years.map(fieldsYear => ({
+      value: getProperty(fieldsYear),
+      label: `Population en ${fieldsYear}`,
+      exportable: true,
+      format: {
+        type: 'number',
+      },
+      display: year === fieldsYear,
+    }))],
+    exportable: true,
   },
-  legends: [
-    {
-      title: `Répartition de la population en ${year}`,
-      items: [
-        {
-          label: 'Plus de 300 000',
-          color: '#769198',
-          shape: 'circle',
-          radius: 25,
-        }, {
-          label: 'De 240 000 à 300 000',
-          color: '#769198',
-          shape: 'circle',
-          radius: 22,
-        }, {
-          label: 'De 180 000 à 240 000',
-          color: '#769198',
-          shape: 'circle',
-          radius: 20,
-        }, {
-          label: 'De 120 000 à 180 000 ',
-          color: '#769198',
-          shape: 'circle',
-          radius: 15,
-        }, {
-          label: 'Moins de 120 000',
-          color: '#769198',
-          shape: 'circle',
-          radius: 10,
-        },
-      ],
-    },
-  ],
+  legends: [{
+    title: `Répartition de la population en ${year}`,
+    items: [{
+      label: 'Plus de 300 000',
+      color: '#769198',
+      shape: 'circle',
+      radius: 25,
+    }, {
+      label: 'De 240 000 à 300 000',
+      color: '#769198',
+      shape: 'circle',
+      radius: 22,
+    }, {
+      label: 'De 180 000 à 240 000',
+      color: '#769198',
+      shape: 'circle',
+      radius: 20,
+    }, {
+      label: 'De 120 000 à 180 000 ',
+      color: '#769198',
+      shape: 'circle',
+      radius: 15,
+    }, {
+      label: 'Moins de 120 000',
+      color: '#769198',
+      shape: 'circle',
+      radius: 10,
+    }],
+  }],
 }));
 
 export const interactionPopulationMunicipale = years.map(year => ({

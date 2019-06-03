@@ -113,11 +113,17 @@ export class DataTable extends React.Component {
   exportDataAction = () => {
     const {
       displayedLayer: {
-        label: name,
+        label: labelLayer,
         filters: { fields = [] } = {},
       },
     } = this.props;
     const { columns, results } = this.state;
+
+    /** Allow to cut the length of label
+     * to prevent error : Sheet names cannot exceed 31 chars
+     * https://github.com/SheetJS/js-xlsx/issues/870
+     */
+    const name = labelLayer.substring(0, 31);
 
     // Find out which column (indexes) are exportable
     const exportableColumnIndexes = columns.reduce((store, { value }, index) => {
@@ -203,8 +209,9 @@ export class DataTable extends React.Component {
     const { displayedLayer } = this.props;
 
     const {
-      label: title,
+      label,
       filters: {
+        table: { title } = {},
         layer,
         compare,
         exportable,
@@ -251,7 +258,7 @@ export class DataTable extends React.Component {
                 compare={compare}
                 selectedFeatures={selectedFeatures || []}
                 loading={loading}
-                title={title}
+                title={title || label}
                 full={full}
                 resize={resize}
                 exportData={showExportButton && exportDataAction}

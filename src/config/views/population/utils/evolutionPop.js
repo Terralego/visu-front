@@ -3,6 +3,16 @@ import { INTERACTION_DISPLAY_TOOLTIP } from '@terralego/core/modules/Map/Interac
 
 const periodsEvolution = ['2011-2016', '2006-2011', '1999-2006', '1990-1999', '1982-1990', '1975-1982', '1968-1975'];
 
+const getFromTo = period => {
+  const [from, to] = period.split(/-/);
+  return { from, to };
+};
+
+const getProperty = period => {
+  const { from, to } = getFromTo(period);
+  return `evpop_${from.substr(2, 2)}${to.substr(2, 2)}`;
+};
+
 export const customStyleEvolution = periodsEvolution.map(period => ({
   type: 'fill',
   source: 'terralego',
@@ -10,15 +20,15 @@ export const customStyleEvolution = periodsEvolution.map(period => ({
   paint: {
     'fill-color': [
       'case',
-      ['<', ['get', `evpop_${period.substring(2, 4)}${period.substring(7)}`], -2.0],
+      ['<', ['get', getProperty(period)], -2.0],
       '#156571',
-      ['<', ['get', `evpop_${period.substring(2, 4)}${period.substring(7)}`], -1.0],
+      ['<', ['get', getProperty(period)], -1.0],
       '#2FB0C5',
-      ['<', ['get', `evpop_${period.substring(2, 4)}${period.substring(7)}`], 0.0],
+      ['<', ['get', getProperty(period)], 0.0],
       '#8CCBDA',
-      ['<', ['get', `evpop_${period.substring(2, 4)}${period.substring(7)}`], 1.0],
+      ['<', ['get', getProperty(period)], 1.0],
       '#EFE3CF',
-      ['<', ['get', `evpop_${period.substring(2, 4)}${period.substring(7)}`], 2.0],
+      ['<', ['get', getProperty(period)], 2.0],
       '#F48161',
       '#BC205D',
     ],
@@ -30,13 +40,30 @@ export const layerTreeEvolution = periodsEvolution.map(period => ({
   label: `Communes en ${period}`,
   layers: [`terralego-evolution_population-communes_${period}`],
   filters: {
+    table: {
+      title: `Évolution de la population de ${period} selon la commune`,
+    },
     layer: 'evpop_communal',
     form: [{
-      property: `evpop_${period.substring(2, 4)}${period.substring(7)}`,
+      property: getProperty(period),
       label: 'Évolution de la population (en %)',
       type: TYPE_RANGE,
       fetchValues: true,
     }],
+    fields: [{
+      value: 'nom',
+      label: 'Nom',
+      exportable: true,
+    }, ...periodsEvolution.map(fieldsPeriod => ({
+      value: getProperty(fieldsPeriod),
+      label: `Évolution en ${fieldsPeriod}`,
+      exportable: true,
+      format: {
+        type: 'number',
+      },
+      display: period === fieldsPeriod,
+    }))],
+    exportable: true,
   },
   legends: [
     {

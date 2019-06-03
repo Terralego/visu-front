@@ -26,6 +26,8 @@ function getLegend (year) {
   }
 }
 
+const getProperty = year => `d_${year}`;
+
 export const customStyleDensity = years.map(year => {
   const legend = getLegend(year);
   return {
@@ -35,17 +37,17 @@ export const customStyleDensity = years.map(year => {
     paint: {
       'fill-color': [
         'case',
-        ['<', ['get', `d_${year}`], legend[0]],
+        ['<', ['get', getProperty(year)], legend[0]],
         '#EFE3CF',
-        ['<', ['get', `d_${year}`], legend[1]],
+        ['<', ['get', getProperty(year)], legend[1]],
         '#F7C99E',
-        ['<', ['get', `d_${year}`], legend[2]],
+        ['<', ['get', getProperty(year)], legend[2]],
         '#F9AF79',
-        ['<', ['get', `d_${year}`], legend[3]],
+        ['<', ['get', getProperty(year)], legend[3]],
         '#F79465',
-        ['<', ['get', `d_${year}`], legend[4]],
+        ['<', ['get', getProperty(year)], legend[4]],
         '#E8705D',
-        ['<', ['get', `d_${year}`], legend[5]],
+        ['<', ['get', getProperty(year)], legend[5]],
         '#D4495A',
         '#BC205D',
       ],
@@ -60,13 +62,30 @@ export const layerTreeDensity = years.map(year => {
     label: `Communes en ${year}`,
     layers: [`terralego-densite_population-communes_${year}`],
     filters: {
+      table: {
+        title: `Dénsité de population en ${year} selon la commune`,
+      },
       layer: 'denspop_communal',
       form: [{
-        property: `d_${year}`,
+        property: getProperty(year),
         label: 'Densité de la population (hab/km²)',
         type: TYPE_RANGE,
         fetchValues: true,
       }],
+      fields: [{
+        value: 'nom',
+        label: 'Nom',
+        exportable: true,
+      }, ...years.map(fieldsYear => ({
+        value: getProperty(fieldsYear),
+        label: `Population en ${fieldsYear}`,
+        exportable: true,
+        format: {
+          type: 'number',
+        },
+        display: year === fieldsYear,
+      }))],
+      exportable: true,
     },
     legends: [
       {

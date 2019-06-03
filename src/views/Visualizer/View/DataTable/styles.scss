@@ -60,6 +60,7 @@
       width: 100%;
       display: flex;
       justify-content: center;
+      flex: 1;
     }
 
     &__counter {
@@ -68,8 +69,7 @@
     }
 
     &__actions {
-      position: absolute;
-      right: .6rem;
+      text-align: end;
     }
 
     &__loading {

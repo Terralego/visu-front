@@ -3,7 +3,6 @@ import { INTERACTION_DISPLAY_TOOLTIP } from '@terralego/core/modules/Map/Interac
 
 const periods = ['2010-2015', '1999-2010', '1990-1999', '1982-1990', '1975-1982', '1968-1975'];
 
-
 function getLegendNat (period) {
   switch (period) {
     case '2010-2015':
@@ -42,6 +41,36 @@ function getLegendNMig (period) {
   }
 }
 
+const getFromTo = period => {
+  const [from, to] = period.split(/-/);
+  return { from, to };
+};
+
+const getProperty = (period, prefix) => {
+  const { from, to } = getFromTo(period);
+  return `${prefix}_${from.substr(2, 2)}${to.substr(2, 2)}`;
+};
+
+const getLabel = (period, prefix) => {
+  if (prefix === 'snat') {
+    return `Communes solde naturel en ${period}`;
+  }
+  return `Communes solde migratoire en ${period}`;
+};
+
+const getTitleTable = (period, prefix) => {
+  if (prefix === 'snat') {
+    return `Solde naturel en ${period} pour la commune`;
+  }
+  return `Solde migratoire en ${period} pour la commune`;
+};
+
+const getField = (period, prefix) => {
+  if (prefix === 'snat') {
+    return `S.naturel ${period}`;
+  }
+  return `S.migratoire ${period}`;
+};
 
 export const customStyleSoldesNaturel = periods.map(period => {
   const legend = getLegendNat(period);
@@ -52,20 +81,19 @@ export const customStyleSoldesNaturel = periods.map(period => {
     paint: {
       'fill-color': [
         'case',
-        ['<', ['get', `snat_${period.substring(2, 4)}${period.substring(7)}`], legend[0]],
+        ['<', ['get', getProperty(period, 'snat')], legend[0]],
         '#156571',
-        ['<', ['get', `snat_${period.substring(2, 4)}${period.substring(7)}`], legend[1]],
+        ['<', ['get', getProperty(period, 'snat')], legend[1]],
         '#2FB0C5',
-        ['<', ['get', `snat_${period.substring(2, 4)}${period.substring(7)}`], legend[2]],
+        ['<', ['get', getProperty(period, 'snat')], legend[2]],
         '#8CCBDA',
-        ['<', ['get', `snat_${period.substring(2, 4)}${period.substring(7)}`], legend[3]],
+        ['<', ['get', getProperty(period, 'snat')], legend[3]],
         '#F7F1E8',
-        ['<', ['get', `snat_${period.substring(2, 4)}${period.substring(7)}`], legend[4]],
+        ['<', ['get', getProperty(period, 'snat')], legend[4]],
         '#F7C99D',
-        ['<', ['get', `snat_${period.substring(2, 4)}${period.substring(7)}`], legend[5]],
+        ['<', ['get', getProperty(period, 'snat')], legend[5]],
         '#F48161',
-        '#BC205D',
-      ],
+        '#BC205D'],
     },
     'source-layer': 'soldes_communal',
   };
@@ -74,46 +102,59 @@ export const customStyleSoldesNaturel = periods.map(period => {
 export const layerTreeSoldesNaturel = periods.map(period => {
   const legend = getLegendNat(period);
   return {
-    label: `Communes solde naturel en ${period}`,
+    label: getLabel(period, 'snat'),
     layers: [`terralego-soldes_naturels-communes_snat_${period}`],
     filters: {
+      table: {
+        title: `${getTitleTable(period)}`,
+      },
       layer: 'soldes_communal',
       form: [{
-        property: `snat_${period.substring(2, 4)}${period.substring(7)}`,
+        property: getProperty(period, 'snat'),
         label: 'Solde naturel (en unité)',
         type: TYPE_RANGE,
         fetchValues: true,
       }],
+      fields: [{
+        value: 'nom',
+        label: 'Nom',
+        exportable: true,
+      }, ...periods.map(fieldsPeriod => ({
+        value: getProperty(fieldsPeriod, 'snat'),
+        label: getField(fieldsPeriod, 'snat'),
+        exportable: true,
+        format: {
+          type: 'number',
+        },
+        display: period === fieldsPeriod,
+      }))],
+      exportable: true,
     },
-    legends: [
-      {
-        title: `Solde naturel entre ${period} (en unité)`,
-        items: [
-          {
-            label: `Supérieur ou égal à ${legend[5].toLocaleString()}`,
-            color: '#BC205D',
-          }, {
-            label: `De ${legend[4].toLocaleString()} à ${legend[5].toLocaleString()}`,
-            color: '#F48161',
-          }, {
-            label: `De ${legend[3].toLocaleString()} à ${legend[4].toLocaleString()}`,
-            color: '#F7C99D',
-          }, {
-            label: `De ${legend[2].toLocaleString()} à ${legend[3].toLocaleString()}`,
-            color: '#F7F1E8',
-          }, {
-            label: `De ${legend[1].toLocaleString()} à ${legend[2].toLocaleString()}`,
-            color: '#8CCBDA',
-          }, {
-            label: `De ${legend[0].toLocaleString()} à ${legend[1].toLocaleString()}`,
-            color: '#2FB0C5',
-          }, {
-            label: `Inférieur à ${legend[0].toLocaleString()}`,
-            color: '#156571',
-          },
-        ],
-      },
-    ],
+    legends: [{
+      title: `Solde naturel entre ${period} (en unité)`,
+      items: [{
+        label: `Supérieur ou égal à ${legend[5].toLocaleString()}`,
+        color: '#BC205D',
+      }, {
+        label: `De ${legend[4].toLocaleString()} à ${legend[5].toLocaleString()}`,
+        color: '#F48161',
+      }, {
+        label: `De ${legend[3].toLocaleString()} à ${legend[4].toLocaleString()}`,
+        color: '#F7C99D',
+      }, {
+        label: `De ${legend[2].toLocaleString()} à ${legend[3].toLocaleString()}`,
+        color: '#F7F1E8',
+      }, {
+        label: `De ${legend[1].toLocaleString()} à ${legend[2].toLocaleString()}`,
+        color: '#8CCBDA',
+      }, {
+        label: `De ${legend[0].toLocaleString()} à ${legend[1].toLocaleString()}`,
+        color: '#2FB0C5',
+      }, {
+        label: `Inférieur à ${legend[0].toLocaleString()}`,
+        color: '#156571',
+      }],
+    }],
   };
 });
 
@@ -126,17 +167,17 @@ export const customStyleSoldesMigratoire = periods.map(period => {
     paint: {
       'fill-color': [
         'case',
-        ['<', ['get', `smig_${period.substring(2, 4)}${period.substring(7)}`], legend[0]],
+        ['<', ['get', getProperty(period, 'smig')], legend[0]],
         '#156571',
-        ['<', ['get', `smig_${period.substring(2, 4)}${period.substring(7)}`], legend[1]],
+        ['<', ['get', getProperty(period, 'smig')], legend[1]],
         '#2FB0C5',
-        ['<', ['get', `smig_${period.substring(2, 4)}${period.substring(7)}`], legend[2]],
+        ['<', ['get', getProperty(period, 'smig')], legend[2]],
         '#8CCBDA',
-        ['<', ['get', `smig_${period.substring(2, 4)}${period.substring(7)}`], legend[3]],
+        ['<', ['get', getProperty(period, 'smig')], legend[3]],
         '#F7F1E8',
-        ['<', ['get', `smig_${period.substring(2, 4)}${period.substring(7)}`], legend[4]],
+        ['<', ['get', getProperty(period, 'smig')], legend[4]],
         '#F7C99D',
-        ['<', ['get', `smig_${period.substring(2, 4)}${period.substring(7)}`], legend[5]],
+        ['<', ['get', getProperty(period, 'smig')], legend[5]],
         '#F48161',
         '#BC205D',
       ],
@@ -148,46 +189,59 @@ export const customStyleSoldesMigratoire = periods.map(period => {
 export const layerTreeSoldesMigratoire = periods.map(period => {
   const legend = getLegendNMig(period);
   return {
-    label: `Communes solde migratoire en ${period}`,
+    label: getLabel(period, 'smig'),
     layers: [`terralego-soldes_naturels-communes_smig_${period}`],
     filters: {
+      table: {
+        title: `${getTitleTable(period)}`,
+      },
       layer: 'soldes_communal',
       form: [{
-        property: `smig_${period.substring(2, 4)}${period.substring(7)}`,
+        property: getProperty(period, 'smig'),
         label: 'Solde migratoire (en unité)',
         type: TYPE_RANGE,
         fetchValues: true,
       }],
+      fields: [{
+        value: 'nom',
+        label: 'Nom',
+        exportable: true,
+      }, ...periods.map(fieldsPeriod => ({
+        value: getProperty(fieldsPeriod, 'smig'),
+        label: getField(fieldsPeriod, 'smig'),
+        exportable: true,
+        format: {
+          type: 'number',
+        },
+        display: period === fieldsPeriod,
+      }))],
+      exportable: true,
     },
-    legends: [
-      {
-        title: `Solde migratoire entre ${period} (en unité)`,
-        items: [
-          {
-            label: `Supérieur ou égal à ${legend[5].toLocaleString()}`,
-            color: '#BC205D',
-          }, {
-            label: `De ${legend[4].toLocaleString()} à ${legend[5].toLocaleString()}`,
-            color: '#F48161',
-          }, {
-            label: `De ${legend[3].toLocaleString()} à ${legend[4].toLocaleString()}`,
-            color: '#F7C99D',
-          }, {
-            label: `De ${legend[2].toLocaleString()} à ${legend[3].toLocaleString()}`,
-            color: '#F7F1E8',
-          }, {
-            label: `De ${legend[1].toLocaleString()} à ${legend[2].toLocaleString()}`,
-            color: '#8CCBDA',
-          }, {
-            label: `De ${legend[0].toLocaleString()} à ${legend[1].toLocaleString()}`,
-            color: '#2FB0C5',
-          }, {
-            label: `Inférieur à ${legend[0].toLocaleString()}`,
-            color: '#156571',
-          },
-        ],
-      },
-    ],
+    legends: [{
+      title: `Solde migratoire entre ${period} (en unité)`,
+      items: [{
+        label: `Supérieur ou égal à ${legend[5].toLocaleString()}`,
+        color: '#BC205D',
+      }, {
+        label: `De ${legend[4].toLocaleString()} à ${legend[5].toLocaleString()}`,
+        color: '#F48161',
+      }, {
+        label: `De ${legend[3].toLocaleString()} à ${legend[4].toLocaleString()}`,
+        color: '#F7C99D',
+      }, {
+        label: `De ${legend[2].toLocaleString()} à ${legend[3].toLocaleString()}`,
+        color: '#F7F1E8',
+      }, {
+        label: `De ${legend[1].toLocaleString()} à ${legend[2].toLocaleString()}`,
+        color: '#8CCBDA',
+      }, {
+        label: `De ${legend[0].toLocaleString()} à ${legend[1].toLocaleString()}`,
+        color: '#2FB0C5',
+      }, {
+        label: `Inférieur à ${legend[0].toLocaleString()}`,
+        color: '#156571',
+      }],
+    }],
   };
 });
 
