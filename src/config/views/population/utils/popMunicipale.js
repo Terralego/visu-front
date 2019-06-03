@@ -1,7 +1,7 @@
 import { TYPE_RANGE } from '@terralego/core/modules/Forms/Filters';
 import { INTERACTION_DISPLAY_TOOLTIP } from '@terralego/core/modules/Map/InteractiveMap/InteractiveMap';
 
-import { years } from './variables';
+const years = ['1968', '1975', '1982', '1990', '1999', '2006', '2011', '2016'];
 
 export const customStylePopulationMunicipale = years.map(year => ({
   type: 'circle',
