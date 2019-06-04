@@ -130,7 +130,7 @@ export const layerTreeAgeClasses = ageClasses.reduce((prevAges, ageClass) => [
       layers: [`terralego-classe_age-communes_${ageClass}_${year}`],
       filters: {
         table: {
-          title: `Classe d'âge en ${year} selon la commune`,
+          title: `Classe d'âge en ${year} par commune`,
         },
         layer: 'classe_age_communal',
         form: [{

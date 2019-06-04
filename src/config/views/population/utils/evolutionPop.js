@@ -41,7 +41,7 @@ export const layerTreeEvolution = periodsEvolution.map(period => ({
   layers: [`terralego-evolution_population-communes_${period}`],
   filters: {
     table: {
-      title: `Évolution de la population de ${period} selon la commune`,
+      title: `Évolution de la population de ${period} par commune`,
     },
     layer: 'evpop_communal',
     form: [{
