@@ -24,7 +24,7 @@
   }
 }
 
-.navBar {
+.main .navBar {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -32,7 +32,7 @@
   flex: 1;
   padding: 0;
   z-index: 1000;
-  background-color: #156571 !important;
+  background-color: #156571;
   
   &__group {
     flex-direction: column;

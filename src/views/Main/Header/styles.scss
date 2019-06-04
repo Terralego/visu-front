@@ -1,4 +1,6 @@
-#welcome {
+.navBar .navBar__group .active .welcome {
+  background-color: #156571;
+  margin-bottom: .3rem;
   img {
     width: 2.4rem;
     height: auto;
@@ -23,13 +25,8 @@
   }
 }
 
-.active .header-button {
-  background-color: #2FB0C5 !important;
-}
-
-#welcome {
-  background-color: #156571 !important;
-  margin-bottom: .3rem;
+.bp3-navbar-group .active .header-button {
+  background-color: #2FB0C5;
 }
 
 .modal-signin {
