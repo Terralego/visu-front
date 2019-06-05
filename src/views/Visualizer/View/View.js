@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { Classes } from '@blueprintjs/core';
-import InteractiveMap, { INTERACTION_DISPLAY_TOOLTIP, INTERACTION_ZOOM, INTERACTION_HIGHLIGHT, INTERACTION_FN /* , CONTROL_BACKGROUND_STYLES */ } from '@terralego/core/modules/Map/InteractiveMap';
-import { DEFAULT_CONTROLS, CONTROL_SEARCH, CONTROLS_TOP_RIGHT } from '@terralego/core/modules/Map';
+import InteractiveMap, { INTERACTION_DISPLAY_TOOLTIP, INTERACTION_ZOOM, INTERACTION_HIGHLIGHT, INTERACTION_FN } from '@terralego/core/modules/Map/InteractiveMap';
+import { DEFAULT_CONTROLS, CONTROL_SEARCH, CONTROL_BACKGROUND_STYLES, CONTROLS_TOP_RIGHT } from '@terralego/core/modules/Map';
 import { toggleLayerVisibility, setLayerOpacity } from '@terralego/core/modules/Map/services/mapUtils';
 import { LayersTree } from '@terralego/core/modules/Visualizer';
 import classnames from 'classnames';
@@ -20,6 +20,8 @@ import {
   hasWidget,
   setLayerStateAction,
   layersTreeStatesHaveChanged,
+  fetchPropertyValues,
+  fetchPropertyRange,
 } from './layersTreeUtils';
 import searchService, { getExtent } from '../../../services/search';
 import Details from './Details';
@@ -58,20 +60,20 @@ const LayersTreeGroupProps = PropTypes.shape({
 
 const LAYER_PROPERTY = 'layer.keyword';
 
-const CONTROLS = [
+const getControls = memoize(({ displaySearch, displayBackgroundStyles }) => [
+  displaySearch && {
+    control: CONTROL_SEARCH,
+    position: CONTROLS_TOP_RIGHT,
+  },
   ...DEFAULT_CONTROLS,
-  /* {
+  displayBackgroundStyles && {
     control: CONTROL_BACKGROUND_STYLES,
     position: CONTROLS_TOP_RIGHT,
-  }, */{
+  }, {
     control: new PrintControl(),
     position: CONTROLS_TOP_RIGHT,
   },
-];
-
-const getControls = memoize(state => (state
-  ? [{ control: CONTROL_SEARCH, position: CONTROLS_TOP_RIGHT }, ...CONTROLS]
-  : CONTROLS));
+].filter(defined => defined));
 
 export class Visualizer extends React.Component {
   static propTypes = {
@@ -258,6 +260,7 @@ export class Visualizer extends React.Component {
   setLegends = legends => this.setState({ legends });
 
   refreshLayers = () => {
+    delete this.prevLayersTreeState;
     this.updateLayersTree();
   }
 
@@ -679,7 +682,10 @@ export class Visualizer extends React.Component {
       .from(layersTreeState.keys())
       .some(({ filters: { mainField } = {} }) => mainField);
 
-    const controls = getControls(displaySearchInMap);
+    const controls = getControls({
+      displaySearch: displaySearchInMap,
+      displayBackgroundStyles: Array.isArray(mapProps.backgroundStyle),
+    });
     if (displaySearchInMap) {
       const search = controls.find(({ control }) => control === CONTROL_SEARCH);
       search.onSearch = this.searchInMap;
@@ -708,7 +714,7 @@ export class Visualizer extends React.Component {
           onStyleChange={refreshLayers}
           onClusterUpdate={onClusterUpdate}
           translate={translate}
-          controls={getControls(displaySearchInMap)}
+          controls={controls}
           hash
         />
         <div className={`
@@ -726,6 +732,9 @@ export class Visualizer extends React.Component {
               <LayersTree
                 layersTree={layersTree}
                 onChange={this.updateLayersTreeState}
+                initialState={layersTreeState}
+                fetchPropertyValues={fetchPropertyValues}
+                fetchPropertyRange={fetchPropertyRange}
               />
             )}
             {story && (
