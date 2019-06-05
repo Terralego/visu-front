@@ -6,7 +6,7 @@ export const customStyleDepartemental = {
     'line-color': '#007798',
     'line-width': 3,
   },
-  'source-layer': 'evpop_departemental',
+  'source-layer': 'departements',
 };
 
 export const customStyleInterCommunal = {
@@ -17,7 +17,7 @@ export const customStyleInterCommunal = {
     'line-color': '#007798',
     'line-width': 1,
   },
-  'source-layer': 'evpop_intercommunal',
+  'source-layer': 'intercommunalites',
 };
 
 export const customStyleCommunal = {
@@ -29,7 +29,7 @@ export const customStyleCommunal = {
     'line-width': 1,
     'line-dasharray': [2, 5],
   },
-  'source-layer': 'evpop_communal',
+  'source-layer': 'communes',
 };
 
 export default {
