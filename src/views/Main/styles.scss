@@ -43,3 +43,32 @@
     white-space: nowrap;
   }
 }
+
+.appName {
+  padding-left: 0.7rem;
+
+  &-title {
+    font-size: 1.4rem;
+    font-family: "SFProText-Regular", Arial, Helvetica, sans-serif;
+    margin-right: .5rem;
+
+    &-logo {
+      height: 2rem;
+      margin-top: .5rem;
+    }
+    margin-right: 8px;
+  }
+  &-version {
+    font-size: 0.8rem;
+    font-family: "SFProText-light", Arial, Helvetica, sans-serif;
+  }
+}
+
+.main .map-navigation {
+  padding: 0 ! important;
+
+  &__header {
+    background-image: url('../../images/AURAN-fond.png');
+    height: 3rem;
+  }
+}

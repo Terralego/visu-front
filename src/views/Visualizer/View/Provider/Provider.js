@@ -22,6 +22,14 @@ export class ViewProvider extends React.Component {
 
   setLayersTreeState = layersTreeState => this.setState({ layersTreeState });
 
+  setLayerState = ({ layer, state }) => {
+    const { layersTreeState: prevLayersTreeState } = this.state;
+    const layersTreeState = new Map(prevLayersTreeState);
+    const newState = { ...layersTreeState.get(layer), ...state };
+    layersTreeState.set(layer, newState);
+    this.setLayersTreeState(layersTreeState);
+  }
+
   searchQuery = query => {
     const { onViewStateUpdate } = this.props;
     onViewStateUpdate({ query });
@@ -42,6 +50,7 @@ export class ViewProvider extends React.Component {
     const { map, mapIsResizing, bbox, layersTreeState } = this.state;
     const {
       setLayersTreeState,
+      setLayerState,
       setMap, setMapState,
       setVisibleBoundingBox,
       searchQuery,
@@ -49,6 +58,7 @@ export class ViewProvider extends React.Component {
     const value = {
       layersTreeState,
       setLayersTreeState,
+      setLayerState,
       query,
       map,
       mapState,
