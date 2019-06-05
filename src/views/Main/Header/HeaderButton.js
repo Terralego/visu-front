@@ -8,7 +8,7 @@ import './styles.scss';
 
 export const HeaderButton = ({ id, icon = 'icon', iconPath, alt }) => (
   <Button
-    className={`${Classes.MINIMAL} header-button`}
+    className={`${Classes.MINIMAL} header-button ${id}`}
     minimal
     id={id}
   >

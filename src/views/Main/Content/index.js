@@ -3,6 +3,7 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 
 import withEnv from '../../../config/withEnv';
 import Loading from '../../../components/Loading';
+import AppName from '../AppName';
 
 const Error404 = lazy(() => import('../../Error404'));
 const Visualizer = lazy(() => import('../../Visualizer'));
@@ -12,7 +13,9 @@ const Content = ({ env: { VIEW_ROOT_PATH = 'view', DEFAULT_VIEWNAME = 'recherche
     <Switch>
       <Route path={`/${VIEW_ROOT_PATH}/:viewName`}>
         <Suspense fallback={<Loading />}>
-          <Visualizer />
+          <Visualizer
+            renderHeader={<AppName />}
+          />
         </Suspense>
       </Route>
       <Route path="/">

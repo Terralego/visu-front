@@ -1,14 +1,27 @@
-.widgets-panel {
-  width: 0;
-  transition: width .2s ease-in;
+$containerWidth: 20rem;
 
+.widgets-panel {
+  position: relative;
+  width: 0;
+  height: 100%;
+  transition: width .2s ease-in;
+  z-index: 1;
+  background: rgb(48,64,77);
+  will-change: width;
+  overflow: hidden;
+  
   &--visible {
-    width: 20rem;
+    width: $containerWidth;
+  }
+
+  &__container {
+    width: $containerWidth;
   }
 
   .widget {
-    margin: .5rem .5rem .5rem 0;
-    background: white;
+    position: relative;
+    margin: .5rem;
+    background: #F5F8FA;
 
     &__header {
       display: flex;

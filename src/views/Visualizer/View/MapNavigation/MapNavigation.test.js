@@ -14,7 +14,7 @@ jest.mock('@blueprintjs/core', () => ({
   },
   Classes: { DARK: 'dark' },
 }));
-jest.mock('../LayersTree', () => function LayersTree () {
+jest.mock('@terralego/core/modules/Visualizer', () => function LayersTree () {
   return <p>LayersTree</p>;
 });
 
