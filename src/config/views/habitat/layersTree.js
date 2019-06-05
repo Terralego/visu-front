@@ -9,16 +9,24 @@ export default [{
     },
     layers: ['terralego-departemental'],
     filters: {
-      layer: 'evpop_departemental',
+      layer: 'departements',
       form: [{
         property: 'nom',
         label: 'Nom',
+        type: TYPE_SINGLE,
+        fetchValues: true,
+      }, {
+        property: 'codegeo',
+        label: 'Code postal',
         type: TYPE_SINGLE,
         fetchValues: true,
       }],
       fields: [{
         value: 'nom',
         label: 'Nom',
+      }, {
+        value: 'codegeo',
+        label: 'Code postal',
       }],
     },
   }, {
@@ -28,16 +36,24 @@ export default [{
     },
     layers: ['terralego-intercommunal'],
     filters: {
-      layer: 'evpop_intercommunal',
+      layer: 'intercommunalites',
       form: [{
         property: 'nom',
         label: 'Nom',
+        type: TYPE_SINGLE,
+        fetchValues: true,
+      }, {
+        property: 'codegeo',
+        label: 'Code postal',
         type: TYPE_SINGLE,
         fetchValues: true,
       }],
       fields: [{
         value: 'nom',
         label: 'Nom',
+      }, {
+        value: 'codegeo',
+        label: 'Code postal',
       }],
     },
   }, {
@@ -47,16 +63,72 @@ export default [{
     },
     layers: ['terralego-communal'],
     filters: {
-      layer: 'evpop_communal',
+      layer: 'communes',
       form: [{
         property: 'nom',
         label: 'Nom',
+        type: TYPE_SINGLE,
+        fetchValues: true,
+      }, {
+        property: 'codegeo',
+        label: 'Code postal',
+        type: TYPE_SINGLE,
+        fetchValues: true,
+      }, {
+        property: 'libepci',
+        label: 'Intercommune',
+        type: TYPE_SINGLE,
+        fetchValues: true,
+      }, {
+        property: 'codepci',
+        label: 'Code Intercommune',
+        type: TYPE_SINGLE,
+        fetchValues: true,
+      }, {
+        property: 'libdep',
+        label: 'Département',
+        type: TYPE_SINGLE,
+        fetchValues: true,
+      }, {
+        property: 'codep',
+        label: 'Code Département',
+        type: TYPE_SINGLE,
+        fetchValues: true,
+      }, {
+        property: 'libreg',
+        label: 'Région',
+        type: TYPE_SINGLE,
+        fetchValues: true,
+      }, {
+        property: 'codreg',
+        label: 'Code Région',
         type: TYPE_SINGLE,
         fetchValues: true,
       }],
       fields: [{
         value: 'nom',
         label: 'Nom',
+      }, {
+        value: 'codegeo',
+        label: 'Code postal',
+      }, {
+        value: 'libepci',
+        label: 'Intercommune',
+      }, {
+        value: 'codepci',
+        label: 'Code Intercommune',
+      }, {
+        value: 'libdep',
+        label: 'Département',
+      }, {
+        value: 'codep',
+        label: 'Code Département',
+      }, {
+        value: 'libreg',
+        label: 'Région',
+      }, {
+        value: 'codreg',
+        label: 'Code Région',
       }],
     },
   }],
