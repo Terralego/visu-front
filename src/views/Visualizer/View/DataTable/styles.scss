@@ -5,6 +5,8 @@
   transition: height .2s ease-in;
   display: flex;
   position: relative;
+  height: 0;
+  z-index: 99;
   will-change: height;
 
   &--visible {
@@ -60,7 +62,6 @@
       width: 100%;
       display: flex;
       justify-content: center;
-      flex: 1;
     }
 
     &__counter {
@@ -69,7 +70,8 @@
     }
 
     &__actions {
-      text-align: end;
+      position: absolute;
+      right: .6rem;
     }
 
     &__loading {

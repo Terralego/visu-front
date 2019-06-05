@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { Classes } from '@blueprintjs/core';
-import InteractiveMap, { INTERACTION_DISPLAY_TOOLTIP, INTERACTION_ZOOM, INTERACTION_HIGHLIGHT, INTERACTION_FN } from '@terralego/core/modules/Map/InteractiveMap';
-import { DEFAULT_CONTROLS, CONTROL_SEARCH, CONTROL_BACKGROUND_STYLES, CONTROLS_TOP_RIGHT } from '@terralego/core/modules/Map';
+import InteractiveMap, { INTERACTION_DISPLAY_TOOLTIP, INTERACTION_ZOOM, INTERACTION_HIGHLIGHT, INTERACTION_FN/*, CONTROL_BACKGROUND_STYLES*/ } from '@terralego/core/modules/Map/InteractiveMap';
+import { DEFAULT_CONTROLS, CONTROL_SEARCH, CONTROLS_TOP_RIGHT } from '@terralego/core/modules/Map';
 import { toggleLayerVisibility, setLayerOpacity } from '@terralego/core/modules/Map/services/mapUtils';
 import { LayersTree } from '@terralego/core/modules/Visualizer';
 import classnames from 'classnames';
@@ -60,10 +60,10 @@ const LAYER_PROPERTY = 'layer.keyword';
 
 const CONTROLS = [
   ...DEFAULT_CONTROLS,
-  {
+  /*{
     control: CONTROL_BACKGROUND_STYLES,
     position: CONTROLS_TOP_RIGHT,
-  }, {
+  }, */{
     control: new PrintControl(),
     position: CONTROLS_TOP_RIGHT,
   },
@@ -725,8 +725,7 @@ export class Visualizer extends React.Component {
             {layersTree && (
               <LayersTree
                 layersTree={layersTree}
-                // onChange={this.updateLayersTreeState}
-                // initialState={layersTreeState}
+                onChange={this.updateLayersTreeState}
               />
             )}
             {story && (

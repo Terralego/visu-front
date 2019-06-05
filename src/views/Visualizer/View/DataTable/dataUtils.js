@@ -30,13 +30,14 @@ export const getData = (dataSource, key) => {
 export const prepareData = (fields = [], results) => {
   const properties = fields.map(({ value }) => value);
 
-  return results.map(({ _id, _source: dataSource }) => properties.map(key => {
-    const interpolation = key.match(/\{([^}]+)\}/g);
-    if (interpolation) {
-      return key.replace(/\{([^}]+)\}/g, (match, p1) => getData(dataSource, p1));
-    }
-    return getData({ _id, ...dataSource }, key);
-  }));
+  return results
+    .map(({ _id, _source: dataSource }) => properties.map(key => {
+      const interpolation = key.match(/\{([^}]+)\}/g);
+      if (interpolation) {
+        return key.replace(/\{([^}]+)\}/g, (match, p1) => getData(dataSource, p1));
+      }
+      return getData({ _id, ...dataSource }, key);
+    }));
 };
 
 export const exportData = async ({ name, data }) => {
