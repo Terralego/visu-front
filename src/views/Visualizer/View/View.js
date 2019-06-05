@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { Classes } from '@blueprintjs/core';
-import InteractiveMap, { INTERACTION_DISPLAY_TOOLTIP, INTERACTION_ZOOM, INTERACTION_HIGHLIGHT, INTERACTION_FN/*, CONTROL_BACKGROUND_STYLES*/ } from '@terralego/core/modules/Map/InteractiveMap';
+import InteractiveMap, { INTERACTION_DISPLAY_TOOLTIP, INTERACTION_ZOOM, INTERACTION_HIGHLIGHT, INTERACTION_FN /* , CONTROL_BACKGROUND_STYLES */ } from '@terralego/core/modules/Map/InteractiveMap';
 import { DEFAULT_CONTROLS, CONTROL_SEARCH, CONTROLS_TOP_RIGHT } from '@terralego/core/modules/Map';
 import { toggleLayerVisibility, setLayerOpacity } from '@terralego/core/modules/Map/services/mapUtils';
 import { LayersTree } from '@terralego/core/modules/Visualizer';
@@ -60,7 +60,7 @@ const LAYER_PROPERTY = 'layer.keyword';
 
 const CONTROLS = [
   ...DEFAULT_CONTROLS,
-  /*{
+  /* {
     control: CONTROL_BACKGROUND_STYLES,
     position: CONTROLS_TOP_RIGHT,
   }, */{
