@@ -35,7 +35,7 @@ export default [{
         label: 'Nom',
       }, {
         value: 'codegeo',
-        label: 'Code postal',
+        label: 'Code',
       }],
     },
   }, {
@@ -62,7 +62,7 @@ export default [{
         label: 'Nom',
       }, {
         value: 'codegeo',
-        label: 'Code postal',
+        label: 'Code',
       }],
     },
   }, {
