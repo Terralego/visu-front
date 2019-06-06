@@ -1,3 +1,5 @@
+@import '../../theme.scss';
+
 .main {
   display: flex;
   &__header {
@@ -84,4 +86,16 @@
 
 .layerstree-panel-list {
   width: 100%;
+}
+
+.main .layerNode-options__buttons--active, .layerNode-widgets__buttons--active {
+  .icon, svg {
+    filter: invert(0.5) sepia(1) saturate(5) hue-rotate(140deg);
+  }
+}
+
+.bp3-dark .bp3-control.bp3-switch:hover input:checked ~ .bp3-control-indicator,
+.bp3-control input:focus ~ .bp3-control-indicator {
+  background: $pt-dark-icon-color-selected;
+  outline: none;
 }

@@ -1,8 +1,3 @@
-$pt-intent-primary: #2FB0C5;
-$pt-link-color: #2FB0C5;
-$pt-dark-link-color: #2FB0C5;
-$pt-text-selection-color: #2FB0C5;
-$pt-icon-color-selected: #2FB0C5;
-$pt-dark-icon-color-selected: #2FB0C5;	
-$pt-text-selection-color: #32A2B4;	
+@import './theme.scss';
+
 @import '../node_modules/@blueprintjs/core/src/blueprint.scss';
