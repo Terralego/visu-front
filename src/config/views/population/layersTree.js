@@ -26,7 +26,7 @@ export default [{
         fetchValues: true,
       }, {
         property: 'codegeo',
-        label: 'Code postal',
+        label: 'Code',
         type: TYPE_SINGLE,
         fetchValues: true,
       }],
@@ -53,7 +53,7 @@ export default [{
         fetchValues: true,
       }, {
         property: 'codegeo',
-        label: 'Code postal',
+        label: 'Code',
         type: TYPE_SINGLE,
         fetchValues: true,
       }],
@@ -142,18 +142,13 @@ export default [{
     },
   }],
 }, {
-  group: 'Population municipale',
-  layers: [...layerTreePopulationMunicipale],
-}, {
-  group: 'Évolution de la population',
-  layers: [...layerTreeEvolution],
-}, {
-  group: 'Densité de la population',
-  layers: [...layerTreeDensity],
-}, {
-  group: 'Soldes naturel et migratoire',
-  layers: [...layerTreeSoldesNaturel, ...layerTreeSoldesMigratoire],
-}, {
-  group: 'Classe d\'âge',
-  layers: [...layerTreeAgeClasses],
+  group: 'Structure de la population',
+  layers: [
+    layerTreePopulationMunicipale,
+    layerTreeSoldesNaturel,
+    layerTreeSoldesMigratoire,
+    layerTreeEvolution,
+    layerTreeDensity,
+    layerTreeAgeClasses,
+  ],
 }];

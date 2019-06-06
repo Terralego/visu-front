@@ -56,67 +56,67 @@ export const customStyleDensity = years.map(year => {
   };
 });
 
-export const layerTreeDensity = years.map(year => {
-  const legend = getLegend(year);
-  return {
-    label: `Communes en ${year}`,
-    layers: [`terralego-densite_population-communes_${year}`],
-    filters: {
-      table: {
-        title: `Dénsité de population en ${year} par commune`,
-      },
-      layer: 'denspop_communal',
-      form: [{
-        property: getProperty(year),
-        label: 'Densité de la population (hab/km²)',
-        type: TYPE_RANGE,
-        fetchValues: true,
-      }],
-      fields: [{
-        value: 'nom',
-        label: 'Nom',
-        exportable: true,
-      }, ...years.map(fieldsYear => ({
-        value: getProperty(fieldsYear),
-        label: `Population en ${fieldsYear}`,
-        exportable: true,
-        format: {
-          type: 'number',
-        },
-        display: year === fieldsYear,
-      }))],
-      exportable: true,
+export const layerTreeDensity = ({
+  label: 'Densité de la population',
+  filters: {
+    table: {
+      title: 'Dénsité de population par commune',
     },
-    legends: [
-      {
-        title: `Densité de la population en ${year} (hab/km²)`,
-        items: [
-          {
-            label: `Supérieur ou égal à ${legend[5]}`,
-            color: '#BC205D',
-          }, {
-            label: `De ${legend[4]} à ${legend[5]}`,
-            color: '#D4495A',
-          }, {
-            label: `De ${legend[3]} à ${legend[4]}`,
-            color: '#E8705D',
-          }, {
-            label: `De ${legend[2]} à ${legend[3]}`,
-            color: '#F79465',
-          }, {
-            label: `De ${legend[1]} à ${legend[2]}`,
-            color: '#F9AF79',
-          }, {
-            label: `De ${legend[0]} à ${legend[1]}`,
-            color: '#F7C99E',
-          }, {
-            label: `Inférieur à ${legend[0]}`,
-            color: '#EFE3CF',
-          },
-        ],
+    layer: 'denspop_communal',
+    form: [...years.map(year => ({
+      property: getProperty(year),
+      label: `Densité de la population par ${year} (hab/km²)`,
+      type: TYPE_RANGE,
+      fetchValues: true,
+    }))],
+    fields: [{
+      value: 'nom',
+      label: 'Nom',
+      exportable: true,
+    }, ...years.map(fieldsYear => ({
+      value: getProperty(fieldsYear),
+      label: `Densité en ${fieldsYear}`,
+      exportable: true,
+      format: {
+        type: 'number',
       },
-    ],
-  };
+    }))],
+    exportable: true,
+  },
+  sublayers: years.map(year => {
+    const legend = getLegend(year);
+    return ({
+      label: `Année ${year}`,
+      layers: [`terralego-densite_population-communes_${year}`],
+      legends: [
+        {
+          title: `Densité de la population en ${year} (hab/km²)`,
+          items: [
+            {
+              label: `Supérieur ou égal à ${legend[5]}`,
+              color: '#BC205D',
+            }, {
+              label: `De ${legend[4]} à ${legend[5]}`,
+              color: '#D4495A',
+            }, {
+              label: `De ${legend[3]} à ${legend[4]}`,
+              color: '#E8705D',
+            }, {
+              label: `De ${legend[2]} à ${legend[3]}`,
+              color: '#F79465',
+            }, {
+              label: `De ${legend[1]} à ${legend[2]}`,
+              color: '#F9AF79',
+            }, {
+              label: `De ${legend[0]} à ${legend[1]}`,
+              color: '#F7C99E',
+            }, {
+              label: `Inférieur à ${legend[0]}`,
+              color: '#EFE3CF',
+            }],
+        }],
+    });
+  }),
 });
 
 export const interactionDensite = years.map(year => ({

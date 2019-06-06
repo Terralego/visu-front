@@ -51,20 +51,6 @@ const getProperty = (period, prefix) => {
   return `${prefix}_${from.substr(2, 2)}${to.substr(2, 2)}`;
 };
 
-const getLabel = (period, prefix) => {
-  if (prefix === 'snat') {
-    return `Communes solde naturel en ${period}`;
-  }
-  return `Communes solde migratoire en ${period}`;
-};
-
-const getTitleTable = (period, prefix) => {
-  if (prefix === 'snat') {
-    return `Solde naturel en ${period} pour la commune`;
-  }
-  return `Solde migratoire en ${period} pour la commune`;
-};
-
 const getField = (period, prefix) => {
   if (prefix === 'snat') {
     return `S.naturel ${period}`;
@@ -99,63 +85,65 @@ export const customStyleSoldesNaturel = periods.map(period => {
   };
 });
 
-export const layerTreeSoldesNaturel = periods.map(period => {
-  const legend = getLegendNat(period);
-  return {
-    label: getLabel(period, 'snat'),
-    layers: [`terralego-soldes_naturels-communes_snat_${period}`],
-    filters: {
-      table: {
-        title: `${getTitleTable(period)}`,
-      },
-      layer: 'soldes_communal',
-      form: [{
-        property: getProperty(period, 'snat'),
-        label: 'Solde naturel (en unité)',
-        type: TYPE_RANGE,
-        fetchValues: true,
-      }],
-      fields: [{
-        value: 'nom',
-        label: 'Nom',
-        exportable: true,
-      }, ...periods.map(fieldsPeriod => ({
-        value: getProperty(fieldsPeriod, 'snat'),
-        label: getField(fieldsPeriod, 'snat'),
-        exportable: true,
-        format: {
-          type: 'number',
-        },
-        display: period === fieldsPeriod,
-      }))],
-      exportable: true,
+export const layerTreeSoldesNaturel = ({
+  label: 'Solde naturel',
+  filters: {
+    table: {
+      title: 'Solde naturel pour la commune',
     },
-    legends: [{
-      title: `Solde naturel entre ${period} (en unité)`,
-      items: [{
-        label: `Supérieur ou égal à ${legend[5].toLocaleString()}`,
-        color: '#BC205D',
-      }, {
-        label: `De ${legend[4].toLocaleString()} à ${legend[5].toLocaleString()}`,
-        color: '#F48161',
-      }, {
-        label: `De ${legend[3].toLocaleString()} à ${legend[4].toLocaleString()}`,
-        color: '#F7C99D',
-      }, {
-        label: `De ${legend[2].toLocaleString()} à ${legend[3].toLocaleString()}`,
-        color: '#F7F1E8',
-      }, {
-        label: `De ${legend[1].toLocaleString()} à ${legend[2].toLocaleString()}`,
-        color: '#8CCBDA',
-      }, {
-        label: `De ${legend[0].toLocaleString()} à ${legend[1].toLocaleString()}`,
-        color: '#2FB0C5',
-      }, {
-        label: `Inférieur à ${legend[0].toLocaleString()}`,
-        color: '#156571',
+    layer: 'soldes_communal',
+    form: [...periods.map(period => ({
+      property: getProperty(period, 'snat'),
+      label: `Solde naturel de ${period} (en unité)`,
+      type: TYPE_RANGE,
+      fetchValues: true,
+    }))],
+    fields: [{
+      value: 'nom',
+      label: 'Nom',
+      exportable: true,
+    }, ...periods.map(fieldsPeriod => ({
+      value: getProperty(fieldsPeriod, 'snat'),
+      label: getField(fieldsPeriod, 'snat'),
+      exportable: true,
+      format: {
+        type: 'number',
+      },
+    }))],
+    exportable: true,
+  },
+  sublayers: periods.map(period => {
+    const legend = getLegendNat(period);
+    return ({
+      label: `De ${period}`,
+      layers: [`terralego-soldes_naturels-communes_snat_${period}`],
+      legends: [{
+        title: `Solde naturel entre ${period} (en unité)`,
+        items: [{
+          label: `Supérieur ou égal à ${legend[5].toLocaleString()}`,
+          color: '#BC205D',
+        }, {
+          label: `De ${legend[4].toLocaleString()} à ${legend[5].toLocaleString()}`,
+          color: '#F48161',
+        }, {
+          label: `De ${legend[3].toLocaleString()} à ${legend[4].toLocaleString()}`,
+          color: '#F7C99D',
+        }, {
+          label: `De ${legend[2].toLocaleString()} à ${legend[3].toLocaleString()}`,
+          color: '#F7F1E8',
+        }, {
+          label: `De ${legend[1].toLocaleString()} à ${legend[2].toLocaleString()}`,
+          color: '#8CCBDA',
+        }, {
+          label: `De ${legend[0].toLocaleString()} à ${legend[1].toLocaleString()}`,
+          color: '#2FB0C5',
+        }, {
+          label: `Inférieur à ${legend[0].toLocaleString()}`,
+          color: '#156571',
+        }],
       }],
-    }],
-  };
+    });
+  }),
 });
 
 export const customStyleSoldesMigratoire = periods.map(period => {
@@ -186,63 +174,65 @@ export const customStyleSoldesMigratoire = periods.map(period => {
   };
 });
 
-export const layerTreeSoldesMigratoire = periods.map(period => {
-  const legend = getLegendNMig(period);
-  return {
-    label: getLabel(period, 'smig'),
-    layers: [`terralego-soldes_naturels-communes_smig_${period}`],
-    filters: {
-      table: {
-        title: `${getTitleTable(period)}`,
-      },
-      layer: 'soldes_communal',
-      form: [{
-        property: getProperty(period, 'smig'),
-        label: 'Solde migratoire (en unité)',
-        type: TYPE_RANGE,
-        fetchValues: true,
-      }],
-      fields: [{
-        value: 'nom',
-        label: 'Nom',
-        exportable: true,
-      }, ...periods.map(fieldsPeriod => ({
-        value: getProperty(fieldsPeriod, 'smig'),
-        label: getField(fieldsPeriod, 'smig'),
-        exportable: true,
-        format: {
-          type: 'number',
-        },
-        display: period === fieldsPeriod,
-      }))],
-      exportable: true,
+export const layerTreeSoldesMigratoire = ({
+  label: 'Solde migratoire',
+  filters: {
+    table: {
+      title: 'Solde migratoire pour la commune',
     },
-    legends: [{
-      title: `Solde migratoire entre ${period} (en unité)`,
-      items: [{
-        label: `Supérieur ou égal à ${legend[5].toLocaleString()}`,
-        color: '#BC205D',
-      }, {
-        label: `De ${legend[4].toLocaleString()} à ${legend[5].toLocaleString()}`,
-        color: '#F48161',
-      }, {
-        label: `De ${legend[3].toLocaleString()} à ${legend[4].toLocaleString()}`,
-        color: '#F7C99D',
-      }, {
-        label: `De ${legend[2].toLocaleString()} à ${legend[3].toLocaleString()}`,
-        color: '#F7F1E8',
-      }, {
-        label: `De ${legend[1].toLocaleString()} à ${legend[2].toLocaleString()}`,
-        color: '#8CCBDA',
-      }, {
-        label: `De ${legend[0].toLocaleString()} à ${legend[1].toLocaleString()}`,
-        color: '#2FB0C5',
-      }, {
-        label: `Inférieur à ${legend[0].toLocaleString()}`,
-        color: '#156571',
+    layer: 'soldes_communal',
+    form: [...periods.map(period => ({
+      property: getProperty(period, 'smig'),
+      label: `Solde migratoire de ${period} (en unité)`,
+      type: TYPE_RANGE,
+      fetchValues: true,
+    }))],
+    fields: [{
+      value: 'nom',
+      label: 'Nom',
+      exportable: true,
+    }, ...periods.map(fieldsPeriod => ({
+      value: getProperty(fieldsPeriod, 'smig'),
+      label: getField(fieldsPeriod, 'smig'),
+      exportable: true,
+      format: {
+        type: 'number',
+      },
+    }))],
+    exportable: true,
+  },
+  sublayers: periods.map(period => {
+    const legend = getLegendNMig(period);
+    return ({
+      label: `De ${period}`,
+      layers: [`terralego-soldes_naturels-communes_smig_${period}`],
+      legends: [{
+        title: `Solde migratoire entre ${period} (en unité)`,
+        items: [{
+          label: `Supérieur ou égal à ${legend[5].toLocaleString()}`,
+          color: '#BC205D',
+        }, {
+          label: `De ${legend[4].toLocaleString()} à ${legend[5].toLocaleString()}`,
+          color: '#F48161',
+        }, {
+          label: `De ${legend[3].toLocaleString()} à ${legend[4].toLocaleString()}`,
+          color: '#F7C99D',
+        }, {
+          label: `De ${legend[2].toLocaleString()} à ${legend[3].toLocaleString()}`,
+          color: '#F7F1E8',
+        }, {
+          label: `De ${legend[1].toLocaleString()} à ${legend[2].toLocaleString()}`,
+          color: '#8CCBDA',
+        }, {
+          label: `De ${legend[0].toLocaleString()} à ${legend[1].toLocaleString()}`,
+          color: '#2FB0C5',
+        }, {
+          label: `Inférieur à ${legend[0].toLocaleString()}`,
+          color: '#156571',
+        }],
       }],
-    }],
-  };
+    });
+  }),
 });
 
 export const interactionSoldesNaturel = periods.map(period => ({

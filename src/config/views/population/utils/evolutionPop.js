@@ -36,20 +36,19 @@ export const customStyleEvolution = periodsEvolution.map(period => ({
   'source-layer': 'evpop_communal',
 }));
 
-export const layerTreeEvolution = periodsEvolution.map(period => ({
-  label: `Communes en ${period}`,
-  layers: [`terralego-evolution_population-communes_${period}`],
+export const layerTreeEvolution = ({
+  label: 'Évolution de la population',
   filters: {
     table: {
-      title: `Évolution de la population de ${period} par commune`,
+      title: 'Évolution de la population par commune',
     },
     layer: 'evpop_communal',
-    form: [{
+    form: [...periodsEvolution.map(period => ({
       property: getProperty(period),
       label: 'Évolution de la population (en %)',
       type: TYPE_RANGE,
       fetchValues: true,
-    }],
+    }))],
     fields: [{
       value: 'nom',
       label: 'Nom',
@@ -61,37 +60,40 @@ export const layerTreeEvolution = periodsEvolution.map(period => ({
       format: {
         type: 'number',
       },
-      display: period === fieldsPeriod,
     }))],
     exportable: true,
   },
-  legends: [
-    {
-      title: `Évolution de la population entre en ${period} (en %)`,
-      items: [
-        {
-          label: 'Supérieur ou égal à 2.0',
-          color: '#BC205D',
-        }, {
-          label: 'De 1.0 à 2.0',
-          color: '#F48161',
-        }, {
-          label: 'De 0.0 à 1.0',
-          color: '#EFE3CF',
-        }, {
-          label: 'De -1.0 à 0.0',
-          color: '#8CCBDA',
-        }, {
-          label: 'De -2.0 à -1.0',
-          color: '#2FB0C5',
-        }, {
-          label: 'Inférieur à -2.0',
-          color: '#156571',
-        },
-      ],
-    },
-  ],
-}));
+  sublayers: periodsEvolution.map(period => ({
+    label: `De ${period}`,
+    layers: [`terralego-evolution_population-communes_${period}`],
+    legends: [
+      {
+        title: `Évolution de la population entre en ${period} (en %)`,
+        items: [
+          {
+            label: 'Supérieur ou égal à 2.0',
+            color: '#BC205D',
+          }, {
+            label: 'De 1.0 à 2.0',
+            color: '#F48161',
+          }, {
+            label: 'De 0.0 à 1.0',
+            color: '#EFE3CF',
+          }, {
+            label: 'De -1.0 à 0.0',
+            color: '#8CCBDA',
+          }, {
+            label: 'De -2.0 à -1.0',
+            color: '#2FB0C5',
+          }, {
+            label: 'Inférieur à -2.0',
+            color: '#156571',
+          },
+        ],
+      },
+    ],
+  })),
+});
 
 export const interactionEvolution = periodsEvolution.map(period => ({
   id: `terralego-evolution_population-communes_${period}`,

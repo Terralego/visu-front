@@ -122,73 +122,78 @@ export const customStyleAgeClasses = ageClasses.reduce((prevAges, ageClass) => [
   }),
 ], []);
 
-export const layerTreeAgeClasses = ageClasses.reduce((prevAges, ageClass) => [
-  ...prevAges, ...yearsAgeClasses.map(year => {
-    const legend = getLegend(ageClass, year);
-    return {
-      label: getLabel(ageClass, year),
-      layers: [`terralego-classe_age-communes_${ageClass}_${year}`],
-      filters: {
-        table: {
-          title: `Classe d'âge en ${year} par commune`,
-        },
-        layer: 'classe_age_communal',
-        form: [{
-          property: getProperty(ageClass, year),
-          label: 'Âge',
-          type: TYPE_RANGE,
-          fetchValues: true,
-        }],
-        fields: [{
-          value: 'nom',
-          label: 'Nom',
-          exportable: true,
-        }, ...yearsAgeClasses.reduce((prev, fieldsYear) => [
-          ...prev,
-          ...ageClasses.map(fieldsAgeClass => ({
-            value: getProperty(fieldsAgeClass, fieldsYear),
-            label: getLabel(fieldsAgeClass, fieldsYear),
-            exportable: true,
-            format: {
-              type: 'number',
-            },
-            display: year === fieldsYear && ageClass === fieldsAgeClass,
-          })),
-        ], [])],
+export const layerTreeAgeClasses = ({
+  label: 'Classe d\'âge',
+  filters: {
+    table: {
+      title: 'Classe d\'âge par commune',
+    },
+    layer: 'classe_age_communal',
+    form: [...yearsAgeClasses.reduce((prev, fieldsYear) => [
+      ...prev,
+      ...ageClasses.map(fieldsAgeClass => ({
+        property: getProperty(fieldsAgeClass, fieldsYear),
+        label: `Part de la population ${getLabel(fieldsAgeClass, fieldsYear)} (en %)`,
+        type: TYPE_RANGE,
+        fetchValues: true,
+      })),
+    ], [])],
+    fields: [{
+      value: 'nom',
+      label: 'Nom',
+      exportable: true,
+    }, ...yearsAgeClasses.reduce((prev, fieldsYear) => [
+      ...prev,
+      ...ageClasses.map(fieldsAgeClass => ({
+        value: getProperty(fieldsAgeClass, fieldsYear),
+        label: getLabel(fieldsAgeClass, fieldsYear),
         exportable: true,
-      },
-      legends: [
-        {
-          title: getTitleLegend(ageClass, year),
-          items: [
-            {
-              label: `Supérieur ou égal à ${legend[5]}%`,
-              color: '#BC205D',
-            }, {
-              label: `De ${legend[4]} à ${legend[5]}%`,
-              color: '#D4495A',
-            }, {
-              label: `De ${legend[3]} à ${legend[4]}%`,
-              color: '#E8705D',
-            }, {
-              label: `De ${legend[2]} à ${legend[3]}%`,
-              color: '#F79465',
-            }, {
-              label: `De ${legend[1]} à ${legend[2]}%`,
-              color: '#F9AF79',
-            }, {
-              label: `De ${legend[0]} à ${legend[1]}%`,
-              color: '#F7C99E',
-            }, {
-              label: `Inférieur à ${legend[0]}%`,
-              color: '#EFE3CF',
-            },
-          ],
+        format: {
+          type: 'number',
         },
-      ],
-    };
-  }),
-], []);
+      })),
+    ], [])],
+    exportable: true,
+  },
+  sublayers: yearsAgeClasses.reduce((prev, fieldsYear) => [
+    ...prev,
+    ...ageClasses.map(fieldsAgeClass => {
+      const legend = getLegend(fieldsAgeClass, fieldsYear);
+      return ({
+        label: getLabel(fieldsAgeClass, fieldsYear),
+        layers: [`terralego-classe_age-communes_${fieldsAgeClass}_${fieldsYear}`],
+        legends: [
+          {
+            title: getTitleLegend(fieldsAgeClass, fieldsYear),
+            items: [
+              {
+                label: `Supérieur ou égal à ${legend[5]}%`,
+                color: '#BC205D',
+              }, {
+                label: `De ${legend[4]} à ${legend[5]}%`,
+                color: '#D4495A',
+              }, {
+                label: `De ${legend[3]} à ${legend[4]}%`,
+                color: '#E8705D',
+              }, {
+                label: `De ${legend[2]} à ${legend[3]}%`,
+                color: '#F79465',
+              }, {
+                label: `De ${legend[1]} à ${legend[2]}%`,
+                color: '#F9AF79',
+              }, {
+                label: `De ${legend[0]} à ${legend[1]}%`,
+                color: '#F7C99E',
+              }, {
+                label: `Inférieur à ${legend[0]}%`,
+                color: '#EFE3CF',
+              },
+            ],
+          }],
+      });
+    }),
+  ], []),
+});
 
 export const interactionAgeClasses = ageClasses.reduce((prevAges, ageClass) => [
   ...prevAges, ...yearsAgeClasses.map(year => ({
