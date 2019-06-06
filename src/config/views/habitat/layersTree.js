@@ -17,7 +17,7 @@ export default [{
         fetchValues: true,
       }, {
         property: 'codegeo',
-        label: 'Code postal',
+        label: 'Code',
         type: TYPE_SINGLE,
         fetchValues: true,
       }],
@@ -26,7 +26,7 @@ export default [{
         label: 'Nom',
       }, {
         value: 'codegeo',
-        label: 'Code postal',
+        label: 'Code',
       }],
     },
   }, {
@@ -44,7 +44,7 @@ export default [{
         fetchValues: true,
       }, {
         property: 'codegeo',
-        label: 'Code postal',
+        label: 'Code',
         type: TYPE_SINGLE,
         fetchValues: true,
       }],
@@ -53,7 +53,7 @@ export default [{
         label: 'Nom',
       }, {
         value: 'codegeo',
-        label: 'Code postal',
+        label: 'Code',
       }],
     },
   }, {
