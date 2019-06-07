@@ -569,7 +569,6 @@ export class Visualizer extends React.Component {
     const { layersTreeState, query } = this.props;
     const { prevLayersTreeState = new Map() } = this;
     this.prevLayersTreeState = layersTreeState;
-
     layersTreeState.forEach(({
       active,
       opacity,
@@ -584,20 +583,16 @@ export class Visualizer extends React.Component {
       const {
         active: prevActive,
         opacity: prevOpacity,
-        sublayers: prevSublayersState,
       } = prevLayersTreeState.get(layer) || {};
 
       if (sublayersState) {
         sublayers.forEach((sublayer, index) => {
           const isActive = active && sublayersState[index];
-          const prevIsActive = prevActive && prevSublayersState[index];
           sublayer.layers.forEach(layerId => {
             if (!map.getLayer(layerId)) {
               return;
             }
-            if (isActive !== prevIsActive) {
-              toggleLayerVisibility(map, layerId, isActive ? 'visible' : 'none');
-            }
+            toggleLayerVisibility(map, layerId, isActive ? 'visible' : 'none');
             if (opacity !== prevOpacity) {
               setLayerOpacity(map, layerId, opacity);
             }
