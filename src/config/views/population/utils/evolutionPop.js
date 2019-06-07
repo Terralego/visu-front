@@ -40,7 +40,7 @@ export const layerTreeEvolution = ({
   label: 'Évolution de la population',
   filters: {
     table: {
-      title: 'Évolution de la population par commune',
+      title: 'Évolution annuelle de la population par commune',
     },
     layer: 'evpop_communal',
     form: [...periodsEvolution.map(period => ({
@@ -68,7 +68,7 @@ export const layerTreeEvolution = ({
     layers: [`terralego-evolution_population-communes_${period}`],
     legends: [
       {
-        title: `Évolution de la population entre en ${period} (en %)`,
+        title: `Évolution de la population entre ${period} (en %)`,
         items: [
           {
             label: 'Supérieur ou égal à 2.0',

@@ -51,7 +51,7 @@ export const layerTreePopulationMunicipale = ({
     layers: [`terralego-population_municipale-communes_${year}`],
     legends: [
       {
-        title: `Répartition de la population en ${year}`,
+        title: `Population en ${year}`,
         items: [
           {
             label: 'Plus de 300 000',
