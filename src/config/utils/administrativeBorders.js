@@ -35,7 +35,9 @@ export const customStyleCommunal = {
 
 export const layerTreeAdministrativeBorders = [{
   group: 'Limites administratives',
-  hidden: true,
+  initialState: {
+    open: false,
+  },
   layers: [
     {
       label: 'Départements',
