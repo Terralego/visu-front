@@ -78,7 +78,9 @@ export const filterFeatures = (
   layersTreeState,
 ) => {
   Array.from(layersTreeState).forEach(([{
-    layers, filters: { layer } = {},
+    sublayers = [],
+    layers = sublayers.reduce((all, { layers: layersIds }) => [...all, ...layersIds], []),
+    filters: { layer } = {},
   }, {
     active,
   }]) => {
