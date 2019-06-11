@@ -1,9 +1,11 @@
+import { TYPE_SINGLE } from '@terralego/core/modules/Forms/Filters/Filters';
+
 export const customStyleDepartemental = {
   type: 'line',
   source: 'terralego',
   id: 'terralego-departemental',
   paint: {
-    'line-color': '#007798',
+    'line-color': '#30404d',
     'line-width': 3,
   },
   'source-layer': 'departements',
@@ -14,8 +16,8 @@ export const customStyleInterCommunal = {
   source: 'terralego',
   id: 'terralego-intercommunal',
   paint: {
-    'line-color': '#007798',
-    'line-width': 1,
+    'line-color': '#30404d',
+    'line-width': 2,
   },
   'source-layer': 'intercommunalites',
 };
@@ -25,14 +27,132 @@ export const customStyleCommunal = {
   source: 'terralego',
   id: 'terralego-communal',
   paint: {
-    'line-color': '#007798',
+    'line-color': '#30404d',
     'line-width': 1,
-    'line-dasharray': [2, 5],
   },
   'source-layer': 'communes',
 };
 
+export const layerTreeAdministrativeBorders = [{
+  group: 'Limites administratives',
+  hidden: true,
+  layers: [
+    {
+      label: 'Départements',
+      initialState: {
+        active: false,
+      },
+      layers: ['terralego-departemental'],
+      filters: {
+        layer: 'departements',
+        form: [
+          {
+            property: 'nom',
+            label: 'Nom',
+            type: TYPE_SINGLE,
+            fetchValues: true,
+          }, {
+            property: 'codegeo',
+            label: 'Code',
+            type: TYPE_SINGLE,
+            fetchValues: true,
+          }],
+        fields: [
+          {
+            value: 'nom',
+            label: 'Nom',
+          }, {
+            value: 'codegeo',
+            label: 'Code',
+          }],
+      },
+    }, {
+      label: 'Intercommunalités',
+      initialState: {
+        active: false,
+      },
+      layers: ['terralego-intercommunal'],
+      filters: {
+        layer: 'intercommunalites',
+        form: [
+          {
+            property: 'nom',
+            label: 'Nom',
+            type: TYPE_SINGLE,
+            fetchValues: true,
+          }, {
+            property: 'codegeo',
+            label: 'Code',
+            type: TYPE_SINGLE,
+            fetchValues: true,
+          }],
+        fields: [
+          {
+            value: 'nom',
+            label: 'Nom',
+          }, {
+            value: 'codegeo',
+            label: 'Code',
+          }],
+      },
+    }, {
+      label: 'Communes',
+      initialState: {
+        active: false,
+      },
+      layers: ['terralego-communal'],
+      filters: {
+        layer: 'communes',
+        form: [
+          {
+            property: 'nom',
+            label: 'Nom',
+            type: TYPE_SINGLE,
+            fetchValues: true,
+          }, {
+            property: 'codegeo',
+            label: 'Code postal',
+            type: TYPE_SINGLE,
+            fetchValues: true,
+          }, {
+            property: 'libepci',
+            label: 'Intercommune',
+            type: TYPE_SINGLE,
+            fetchValues: true,
+          }, {
+            property: 'libdep',
+            label: 'Département',
+            type: TYPE_SINGLE,
+            fetchValues: true,
+          }, {
+            property: 'libreg',
+            label: 'Région',
+            type: TYPE_SINGLE,
+            fetchValues: true,
+          }],
+        fields: [
+          {
+            value: 'nom',
+            label: 'Nom',
+          }, {
+            value: 'codegeo',
+            label: 'Code postal',
+          }, {
+            value: 'libepci',
+            label: 'Intercommune',
+          }, {
+            value: 'libdep',
+            label: 'Département',
+          }, {
+            value: 'libreg',
+            label: 'Région',
+          }],
+      },
+    }],
+}];
+
 export default {
+  layerTreeAdministrativeBorders,
   customStyleDepartemental,
   customStyleInterCommunal,
   customStyleCommunal,
