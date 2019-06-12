@@ -1,7 +1,7 @@
 import { TYPE_RANGE } from '@terralego/core/modules/Forms/Filters';
 import { INTERACTION_DISPLAY_TOOLTIP } from '@terralego/core/modules/Map/InteractiveMap/InteractiveMap';
 
-const yearsAgeClasses = ['2010', '2015'];
+const yearsAgeClasses = ['2015', '2010'];
 
 const ageClasses = ['c0014', 'c1529', 'c3044', 'c4559', 'c6074', 'c75p'];
 

@@ -1,7 +1,7 @@
 import { TYPE_RANGE } from '@terralego/core/modules/Forms/Filters';
 import { INTERACTION_DISPLAY_TOOLTIP } from '@terralego/core/modules/Map/InteractiveMap/InteractiveMap';
 
-const years = ['1968', '1975', '1982', '1990', '1999', '2006', '2011', '2016'];
+const years = ['2016', '2011', '2006', '1999', '1990', '1982', '1975', '1968'];
 
 const getProperty = year => `pop_${year}`;
 
