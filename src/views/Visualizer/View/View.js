@@ -54,6 +54,9 @@ const LayersTreeProps = PropTypes.shape({
 
 const LayersTreeGroupProps = PropTypes.shape({
   group: PropTypes.string.isRequired,
+  initialState: PropTypes.shape({
+    open: PropTypes.bool,
+  }),
   layers: PropTypes.arrayOf(LayersTreeProps.isRequired),
   private: PropTypes.bool,
 });
