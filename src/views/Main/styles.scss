@@ -2,12 +2,14 @@
 
 .main {
   display: flex;
+
   &__header {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     flex: 0 0 50px;
   }
+
   &__content {
     display: flex;
     flex: 1;
@@ -15,6 +17,7 @@
     align-items: center;
     min-width: 0;
   }
+
   @media print {
     display: block;
     &__header {
@@ -35,11 +38,12 @@
   padding: 0;
   z-index: 1000;
   background-color: #156571;
-  
+
   &__group {
     flex-direction: column;
     height: auto;
   }
+
   // Below override blueprint
   .bp3-overlay {
     white-space: nowrap;
@@ -58,8 +62,8 @@
       height: 2rem;
       margin-top: .5rem;
     }
-    margin-right: 8px;
   }
+
   &-version {
     font-size: 0.8rem;
     font-family: "SFProText-light", Arial, Helvetica, sans-serif;
@@ -92,10 +96,4 @@
   .icon, svg {
     filter: invert(0.5) sepia(1) saturate(5) hue-rotate(140deg);
   }
-}
-
-.bp3-dark .bp3-control.bp3-switch:hover input:checked ~ .bp3-control-indicator,
-.bp3-control input:focus ~ .bp3-control-indicator {
-  background: $pt-dark-icon-color-selected;
-  outline: none;
 }
