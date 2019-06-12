@@ -24,12 +24,11 @@ export const getData = (dataSource, key) => {
   const value = dataSource[key];
   if (Array.isArray(value)) return value.join(',');
   if (value && typeof value === 'object') return JSON.stringify(value, '  ');
-  return `${[null, undefined].includes(value) ? '' : value}`;
+  return [null, undefined].includes(value) ? '' : value;
 };
 
 export const prepareData = (fields = [], results) => {
   const properties = fields.map(({ value }) => value);
-
   return results
     .map(({ _id, _source: dataSource }) => properties.map(key => {
       const interpolation = key.match(/\{([^}]+)\}/g);
