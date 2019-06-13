@@ -110,7 +110,9 @@ export const filterFeatures = (
 
 export const resetFilters = (map, layersTreeState) => {
   Array.from(layersTreeState).forEach(([{
-    layers = [], filters,
+    sublayers = [],
+    layers = sublayers.reduce((all, { layers: layersIds }) => [...all, ...layersIds], []),
+    filters,
   }]) => {
     if (!filters) return;
 
