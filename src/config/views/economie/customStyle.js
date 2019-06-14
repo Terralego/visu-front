@@ -1,5 +1,6 @@
 import {
   customStyleCommunal,
+  customStyleCommunalTransparent,
   customStyleCommuneLabels,
   customStyleDepartemental,
   customStyleInterCommunal,
@@ -25,6 +26,7 @@ export default {
     customStyleDepartemental,
     customStyleInterCommunal,
     customStyleCommunal,
+    customStyleCommunalTransparent,
     ...customStyleCommuneLabels,
   ],
 };
