@@ -45,7 +45,7 @@ export const layerTreeEvolution = ({
     layer: 'evpop_communal',
     form: [...periodsEvolution.map(period => ({
       property: getProperty(period),
-      label: 'Évolution de la population (en %)',
+      label: `Évolution de la population entre ${period} (en %)`,
       type: TYPE_RANGE,
       fetchValues: true,
     }))],
