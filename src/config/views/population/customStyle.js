@@ -8,6 +8,7 @@ import {
 import { customStyleAgeClasses } from './utils/ageClassesPop';
 import {
   customStyleCommunal,
+  customStyleCommunalTransparent,
   customStyleCommuneLabels,
   customStyleDepartemental,
   customStyleInterCommunal,
@@ -31,6 +32,7 @@ export default {
     customStyleDepartemental,
     customStyleInterCommunal,
     customStyleCommunal,
+    customStyleCommunalTransparent,
     ...customStyleCommuneLabels,
   ],
 };

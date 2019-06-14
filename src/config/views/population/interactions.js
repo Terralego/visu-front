@@ -6,6 +6,7 @@ import {
   interactionSoldesMigratoire,
   interactionSoldesNaturel,
 } from './utils/soldesPop';
+import { interactionCommunalTransparent } from '../../utils/administrativeBorders';
 
 export default [
   ...interactionPopulationMunicipale,
@@ -14,4 +15,5 @@ export default [
   ...interactionAgeClasses,
   ...interactionSoldesNaturel,
   ...interactionSoldesMigratoire,
+  interactionCommunalTransparent,
 ];
