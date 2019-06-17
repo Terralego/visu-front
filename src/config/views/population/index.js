@@ -8,7 +8,7 @@ export default {
   interactions,
   map: {
     accessToken: 'pk.eyJ1IjoibWFraW5hY29ycHVzIiwiYSI6ImNqdzF6eWhhbDBwYnc0N3BscHNoM3Y2NWQifQ.miNBzyxOCefDL8t-CodGhA',
-    backgroundStyle: 'mapbox://styles/makinacorpus/cjpdvdqdj0b7a2slajmjqy3py',
+    backgroundStyle: 'mapbox://styles/makinacorpus/cjx0630i50y1d1cpk006a92k9',
     center: [-2.028, 47.852],
     zoom: 7.7,
     maxZoom: 19.9,
