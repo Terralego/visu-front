@@ -329,7 +329,7 @@ export const layerTreeAdministrativeBorders = [{
     }],
 }];
 
-const TEMPLATE_DETAILS_EVOLUTION = `
+const TEMPLATE_DETAILS_COMMUNE = `
 <div class="details">
   <h2 class="details__title">{{nom}}</h2>
   <span class="details__info-administrative">{{libepci}}</span>
@@ -412,7 +412,7 @@ const TEMPLATE_DETAILS_EVOLUTION = `
     </ul>
   </section>
   <section class="details__group">
-    <h3 class="details__subtitle">Éconmie</h3>
+    <h3 class="details__subtitle">Économie</h3>
     <ul class="details__list">
       <li class="details__column details__column--date_crea">
         <span class="details__column-label">
@@ -455,7 +455,7 @@ const TEMPLATE_DETAILS_EVOLUTION = `
 export const interactionCommunalTransparent = {
   id: 'terralego-communal-interaction',
   interaction: 'displayDetails',
-  template: TEMPLATE_DETAILS_EVOLUTION,
+  template: TEMPLATE_DETAILS_COMMUNE,
   fetchProperties: {
     url: '{{HOST}}/layer/communes/feature/{{id}}/',
     id: '_id',
