@@ -1,5 +1,7 @@
 import { TYPE_RANGE } from '@terralego/core/modules/Forms/Filters';
 import { INTERACTION_DISPLAY_TOOLTIP } from '@terralego/core/modules/Map/InteractiveMap/InteractiveMap';
+import defaultFields from './defaultFields';
+import defaultForm from './defaultForm';
 
 const periodsEvolution = ['2011-2016', '2006-2011', '1999-2006', '1990-1999', '1982-1990', '1975-1982', '1968-1975'];
 
@@ -43,17 +45,13 @@ export const layerTreeEvolution = ({
       title: 'Évolution annuelle de la population par commune',
     },
     layer: 'evpop_communal',
-    form: [...periodsEvolution.map(period => ({
+    form: [...defaultForm, ...periodsEvolution.map(period => ({
       property: getProperty(period),
       label: `Évolution de la population entre ${period} (en %)`,
       type: TYPE_RANGE,
       fetchValues: true,
     }))],
-    fields: [{
-      value: 'nom',
-      label: 'Nom',
-      exportable: true,
-    }, ...periodsEvolution.map(fieldsPeriod => ({
+    fields: [...defaultFields, ...periodsEvolution.map(fieldsPeriod => ({
       value: getProperty(fieldsPeriod),
       label: `Évolution en ${fieldsPeriod}`,
       exportable: true,

@@ -113,7 +113,7 @@ export const layerTreeAdministrativeBorders = [{
             fetchValues: true,
           }, {
             property: 'codegeo',
-            label: 'Code postal',
+            label: 'Code INSEE',
             type: TYPE_SINGLE,
             fetchValues: true,
           }, {
@@ -138,7 +138,7 @@ export const layerTreeAdministrativeBorders = [{
             label: 'Nom',
           }, {
             value: 'codegeo',
-            label: 'Code postal',
+            label: 'Code INSEE',
           }, {
             value: 'libepci',
             label: 'Intercommune',
@@ -146,9 +146,13 @@ export const layerTreeAdministrativeBorders = [{
             value: 'libdep',
             label: 'Département',
           }, {
+            value: 'codep',
+            label: 'Code dpt.',
+          }, {
             value: 'libreg',
             label: 'Région',
-          }],
+          },
+        ],
       },
     }],
 }];

@@ -1,5 +1,7 @@
 import { TYPE_RANGE } from '@terralego/core/modules/Forms/Filters';
 import { INTERACTION_DISPLAY_TOOLTIP } from '@terralego/core/modules/Map/InteractiveMap/InteractiveMap';
+import defaultFields from './defaultFields';
+import defaultForm from './defaultForm';
 
 const yearsAgeClasses = ['2015', '2010'];
 
@@ -129,7 +131,7 @@ export const layerTreeAgeClasses = ({
       title: 'Classe d\'âge par commune',
     },
     layer: 'classe_age_communal',
-    form: [...yearsAgeClasses.reduce((prev, fieldsYear) => [
+    form: [...defaultForm, ...yearsAgeClasses.reduce((prev, fieldsYear) => [
       ...prev,
       ...ageClasses.map(fieldsAgeClass => ({
         property: getProperty(fieldsAgeClass, fieldsYear),
@@ -138,11 +140,7 @@ export const layerTreeAgeClasses = ({
         fetchValues: true,
       })),
     ], [])],
-    fields: [{
-      value: 'nom',
-      label: 'Nom',
-      exportable: true,
-    }, ...yearsAgeClasses.reduce((prev, fieldsYear) => [
+    fields: [...defaultFields, ...yearsAgeClasses.reduce((prev, fieldsYear) => [
       ...prev,
       ...ageClasses.map(fieldsAgeClass => ({
         value: getProperty(fieldsAgeClass, fieldsYear),
