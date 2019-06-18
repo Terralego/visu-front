@@ -31,6 +31,17 @@ export const customStyleInterCommunal = {
   'source-layer': 'intercommunalites',
 };
 
+export const customStyleInterCommunalTransparent = {
+  type: 'fill',
+  source: 'terralego',
+  id: 'terralego-intercommunal-interaction',
+  paint: {
+    'fill-color': 'transparent',
+  },
+  'source-layer': 'intercommunalites',
+};
+
+
 export const customStyleCommunal = {
   type: 'line',
   source: 'terralego',
@@ -238,7 +249,7 @@ export const layerTreeAdministrativeBorders = [{
       initialState: {
         active: false,
       },
-      layers: ['terralego-intercommunal'],
+      layers: ['terralego-intercommunal', 'terralego-intercommunal-interaction'],
       filters: {
         layer: 'intercommunalites',
         form: [
@@ -465,11 +476,148 @@ export const interactionCommunalTransparent = {
   },
 };
 
+const TEMPLATE_DETAILS_INTERCOMMUNAL = `
+<div class="details">
+  <h2 class="details__title">{{nom}}</h2>
+  <span class="details__info-administrative">{{libreg}}</span>
+  {% if loading %}
+    ${loading}
+  {% else %}
+  <section class="details__group">
+    <h3 class="details__subtitle">Population</h3>
+    <ul class="details__list">
+      <li class="details__column details__column--date_crea">
+        <span class="details__column-label">
+          Nombre d’habitants en x
+        </span>
+        <span class="details__column-value">
+          x
+        </span>
+      </li>
+      <li class="details__column details__column--date_crea">
+        <span class="details__column-label">
+          Évolution annuelle de la population entre x
+        </span>
+        <span class="details__column-value">
+          x
+        </span>
+      </li>
+      <li class="details__column details__column--date_crea">
+        <span class="details__column-label">
+          Taille moyenne des ménages en x
+        </span>
+        <span class="details__column-value">
+        x personnes
+        </span>
+      </li>
+      <li class="details__column details__column--date_crea">
+        <span class="details__column-label">
+          Part des moins de 20 ans en x
+        </span>
+        <span class="details__column-value">
+        x%
+        </span>
+      </li>
+      <li class="details__column details__column--date_crea">
+        <span class="details__column-label">
+          Part des plus de 60 ans en x
+        </span>
+        <span class="details__column-value">
+        x%
+        </span>
+      </li>
+    </ul>
+  </section>
+  <section class="details__group">
+    <h3 class="details__subtitle">Habitat</h3>
+    <ul class="details__list">
+      <li class="details__column details__column--date_crea">
+        <span class="details__column-label">
+          Nombre de logements en x
+        </span>
+        <span class="details__column-value">
+          x
+        </span>
+      </li>
+      <li class="details__column details__column--date_crea">
+        <span class="details__column-label">
+          Part des propriétaires occupants en x
+        </span>
+        <span class="details__column-value">
+          x%
+        </span>
+      </li>
+      <li class="details__column details__column--date_crea">
+        <span class="details__column-label">
+          Part les locataires (privés et sociaux) en x
+        </span>
+        <span class="details__column-value">
+          x%
+        </span>
+      </li>
+    </ul>
+  </section>
+  <section class="details__group">
+    <h3 class="details__subtitle">Économie</h3>
+    <ul class="details__list">
+      <li class="details__column details__column--date_crea">
+        <span class="details__column-label">
+          Nombre d’emplois en x
+        </span>
+        <span class="details__column-value">
+          x
+        </span>
+      </li>
+      <li class="details__column details__column--date_crea">
+        <span class="details__column-label">
+          Évolution annuelle du nombre d’emplois entre x
+        </span>
+        <span class="details__column-value">
+          x%
+        </span>
+      </li>
+      <li class="details__column details__column--date_crea">
+        <span class="details__column-label">
+          Nombre d’actifs en x
+        </span>
+        <span class="details__column-value">
+          x
+        </span>
+      </li>
+      <li class="details__column details__column--date_crea">
+        <span class="details__column-label">
+          Nombre d’établissements économiques en x
+        </span>
+        <span class="details__column-value">
+          x
+        </span>
+      </li>
+    </ul>
+  </section>
+  {% endif %}
+</div>
+`;
+
+export const interactionInterCommunalTransparent = {
+  id: 'terralego-intercommunal-interaction',
+  interaction: 'displayDetails',
+  template: TEMPLATE_DETAILS_INTERCOMMUNAL,
+  fetchProperties: {
+    url: '{{HOST}}/layer/intercommunalites/feature/{{id}}/',
+    id: '_id',
+  },
+  highlight: {
+    color: '#0B2B2F',
+  },
+};
+
 export default {
   layerTreeAdministrativeBorders,
   customStyleDepartemental,
   customStyleInterCommunal,
   customStyleCommunal,
   customStyleCommunalTransparent,
+  customStyleInterCommunalTransparent,
   interactionCommunalTransparent,
+  interactionInterCommunalTransparent,
 };

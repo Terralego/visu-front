@@ -1,4 +1,7 @@
-import { interactionCommunalTransparent } from '../../utils/administrativeBorders';
+import {
+  interactionCommunalTransparent,
+  interactionInterCommunalTransparent
+} from '../../utils/administrativeBorders';
 
 const TEMPLATE_TOOLTIP_HABITATIONS_PRINCIPALES = `
 Commune : {{lib_geo}}  
@@ -15,4 +18,5 @@ export const interactionHabitat = {
 export default [
   interactionHabitat,
   interactionCommunalTransparent,
+  interactionInterCommunalTransparent,
 ];
