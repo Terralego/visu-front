@@ -66,7 +66,11 @@ export const layerTreeAdministrativeBorders = [{
           }, {
             value: 'codegeo',
             label: 'Code',
-          }],
+          }, {
+            value: 'libreg',
+            label: 'Région',
+          },
+        ],
       },
     }, {
       label: 'Intercommunalités',
@@ -93,9 +97,16 @@ export const layerTreeAdministrativeBorders = [{
             value: 'nom',
             label: 'Nom',
           }, {
-            value: 'codegeo',
-            label: 'Code',
-          }],
+            value: 'libdept',
+            label: 'Département',
+          }, {
+            value: 'codept',
+            label: 'Code dpt.',
+          }, {
+            value: 'libreg',
+            label: 'Région',
+          },
+        ],
       },
     }, {
       label: 'Communes',
