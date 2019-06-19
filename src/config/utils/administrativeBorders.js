@@ -1,4 +1,13 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
+
 import { TYPE_SINGLE } from '@terralego/core/modules/Forms/Filters/Filters';
+
+import Loading from '../../components/Loading';
+
+const el = document.createElement('div');
+ReactDOM.render(<Loading className="details__loading" />, el);
+const loading = el.innerHTML;
 
 export const customStyleDepartemental = {
   type: 'line',
@@ -21,6 +30,17 @@ export const customStyleInterCommunal = {
   },
   'source-layer': 'intercommunalites',
 };
+
+export const customStyleInterCommunalTransparent = {
+  type: 'fill',
+  source: 'terralego',
+  id: 'terralego-intercommunal-interaction',
+  paint: {
+    'fill-color': 'transparent',
+  },
+  'source-layer': 'intercommunalites',
+};
+
 
 export const customStyleCommunal = {
   type: 'line',
@@ -175,6 +195,16 @@ export const customStyleCommuneLabels = [
   },
 ];
 
+export const customStyleCommunalTransparent = {
+  type: 'fill',
+  source: 'terralego',
+  id: 'terralego-communal-interaction',
+  paint: {
+    'fill-color': 'transparent',
+  },
+  'source-layer': 'communes',
+};
+
 export const layerTreeAdministrativeBorders = [{
   group: 'Limites administratives',
   initialState: {
@@ -219,7 +249,7 @@ export const layerTreeAdministrativeBorders = [{
       initialState: {
         active: false,
       },
-      layers: ['terralego-intercommunal'],
+      layers: ['terralego-intercommunal', 'terralego-intercommunal-interaction'],
       filters: {
         layer: 'intercommunalites',
         form: [
@@ -255,7 +285,7 @@ export const layerTreeAdministrativeBorders = [{
       initialState: {
         active: false,
       },
-      layers: ['terralego-communal'],
+      layers: ['terralego-communal', 'terralego-communal-interaction'],
       filters: {
         layer: 'communes',
         form: [
@@ -310,9 +340,284 @@ export const layerTreeAdministrativeBorders = [{
     }],
 }];
 
+const TEMPLATE_DETAILS_COMMUNE = `
+<div class="details">
+  <h2 class="details__title">{{nom}}</h2>
+  <span class="details__info-administrative">{{libepci}}</span>
+  <span class="details__info-administrative">{{libreg}}</span>
+  {% if loading %}
+    ${loading}
+  {% else %}
+  <section class="details__group">
+    <h3 class="details__subtitle">Population</h3>
+    <ul class="details__list">
+      <li class="details__column">
+        <span class="details__column-label">
+          Nombre d’habitants en 2016
+        </span>
+        <span class="details__column-value">
+          {{pop_2016}}
+        </span>
+      </li>
+      <li class="details__column">
+        <span class="details__column-label">
+          Évolution annuelle de la population entre 2011 et 2016
+        </span>
+        <span class="details__column-value">
+          {{evpop_2011_2016|round(1)}}%
+        </span>
+      </li>
+      <li class="details__column">
+        <span class="details__column-label">
+          Taille moyenne des ménages en 2015
+        </span>
+        <span class="details__column-value">
+        {{menages_2015|round(1)}} personnes
+        </span>
+      </li>
+      <li class="details__column">
+        <span class="details__column-label">
+          Part des moins de 30 ans en 2015
+        </span>
+        <span class="details__column-value">
+        {{c30m_2015|round(1)}}%
+        </span>
+      </li>
+      <li class="details__column">
+        <span class="details__column-label">
+          Part des plus de 60 ans en 2015
+        </span>
+        <span class="details__column-value">
+        {{c60p_2015|round(1)}}%
+        </span>
+      </li>
+    </ul>
+  </section>
+  <section class="details__group">
+    <h3 class="details__subtitle">Habitat</h3>
+    <ul class="details__list">
+      <li class="details__column">
+        <span class="details__column-label">
+          Nombre de logements en 2015
+        </span>
+        <span class="details__column-value">
+          {{log_2015|round}}
+        </span>
+      </li>
+      <li class="details__column">
+        <span class="details__column-label">
+          Part des propriétaires occupants en 2015
+        </span>
+        <span class="details__column-value">
+          {{prop_2015|round(1)}}%
+        </span>
+      </li>
+      <li class="details__column">
+        <span class="details__column-label">
+          Part les locataires (privés et sociaux) en 2015
+        </span>
+        <span class="details__column-value">
+          {{loc_2015|round(1)}}%
+        </span>
+      </li>
+    </ul>
+  </section>
+  <section class="details__group">
+    <h3 class="details__subtitle">Économie</h3>
+    <ul class="details__list">
+      <li class="details__column">
+        <span class="details__column-label">
+          Nombre d’emplois en 2015
+        </span>
+        <span class="details__column-value">
+          {{emplt_2015|round}}
+        </span>
+      </li>
+      <li class="details__column">
+        <span class="details__column-label">
+          Évolution annuelle du nombre d’emplois entre 2010 et 2015
+        </span>
+        <span class="details__column-value">
+          {{evemplt_2010_2015|round(1)}}%
+        </span>
+      </li>
+      <li class="details__column">
+        <span class="details__column-label">
+          Nombre d’actifs en 2015
+        </span>
+        <span class="details__column-value">
+          {{actifs_2015|round(1)}}
+        </span>
+      </li>
+      <li class="details__column">
+        <span class="details__column-label">
+          Nombre d’établissements économiques en 2015
+        </span>
+        <span class="details__column-value">
+          {{eteco_2015}}
+        </span>
+      </li>
+    </ul>
+  </section>
+  {% endif %}
+</div>
+`;
+
+export const interactionCommunalTransparent = {
+  id: 'terralego-communal-interaction',
+  interaction: 'displayDetails',
+  template: TEMPLATE_DETAILS_COMMUNE,
+  fetchProperties: {
+    url: '{{HOST}}/layer/communes/feature/{{id}}/',
+    id: '_id',
+  },
+  highlight: {
+    color: '#0B2B2F',
+  },
+};
+
+const TEMPLATE_DETAILS_INTERCOMMUNAL = `
+<div class="details">
+  <h2 class="details__title">{{nom}}</h2>
+  <span class="details__info-administrative">{{libreg}}</span>
+  {% if loading %}
+    ${loading}
+  {% else %}
+  <section class="details__group">
+    <h3 class="details__subtitle">Population</h3>
+    <ul class="details__list">
+      <li class="details__column">
+        <span class="details__column-label">
+          Nombre d’habitants en 2016
+        </span>
+        <span class="details__column-value">
+          {{pop_2016}}
+        </span>
+      </li>
+      <li class="details__column">
+        <span class="details__column-label">
+          Évolution annuelle de la population entre 2011 et 2016
+        </span>
+        <span class="details__column-value">
+          {{evpop_2011_2016|round(1)}}%
+        </span>
+      </li>
+      <li class="details__column">
+        <span class="details__column-label">
+          Taille moyenne des ménages en 2015
+        </span>
+        <span class="details__column-value">
+        {{menages_2015|round(1)}} personnes
+        </span>
+      </li>
+      <li class="details__column">
+        <span class="details__column-label">
+          Part des moins de 30 ans en 2015
+        </span>
+        <span class="details__column-value">
+        {{c30m_2015|round(1)}}%
+        </span>
+      </li>
+      <li class="details__column">
+        <span class="details__column-label">
+          Part des plus de 60 ans en 2015
+        </span>
+        <span class="details__column-value">
+        {{c60p_2015|round(1)}}%
+        </span>
+      </li>
+    </ul>
+  </section>
+  <section class="details__group">
+    <h3 class="details__subtitle">Habitat</h3>
+    <ul class="details__list">
+      <li class="details__column">
+        <span class="details__column-label">
+          Nombre de logements en 2015
+        </span>
+        <span class="details__column-value">
+          {{log_2015|round}}
+        </span>
+      </li>
+      <li class="details__column">
+        <span class="details__column-label">
+          Part des propriétaires occupants en 2015
+        </span>
+        <span class="details__column-value">
+          {{prop_2015|round(1)}}%
+        </span>
+      </li>
+      <li class="details__column">
+        <span class="details__column-label">
+          Part les locataires (privés et sociaux) en 2015
+        </span>
+        <span class="details__column-value">
+          {{loc_2015|round(1)}}%
+        </span>
+      </li>
+    </ul>
+  </section>
+  <section class="details__group">
+    <h3 class="details__subtitle">Économie</h3>
+    <ul class="details__list">
+      <li class="details__column">
+        <span class="details__column-label">
+          Nombre d’emplois en 2015
+        </span>
+        <span class="details__column-value">
+          {{emplt_2015|round}}
+        </span>
+      </li>
+      <li class="details__column">
+        <span class="details__column-label">
+          Évolution annuelle du nombre d’emplois entre 2010 et 2015
+        </span>
+        <span class="details__column-value">
+          {{evemplt_2010_2015|round(1)}}%
+        </span>
+      </li>
+      <li class="details__column">
+        <span class="details__column-label">
+          Nombre d’actifs en 2015
+        </span>
+        <span class="details__column-value">
+          {{actifs_2015|round}}
+        </span>
+      </li>
+      <li class="details__column">
+        <span class="details__column-label">
+          Nombre d’établissements économiques en 2015
+        </span>
+        <span class="details__column-value">
+          {{eteco_2015|round}}
+        </span>
+      </li>
+    </ul>
+  </section>
+  {% endif %}
+</div>
+`;
+
+export const interactionInterCommunalTransparent = {
+  id: 'terralego-intercommunal-interaction',
+  interaction: 'displayDetails',
+  template: TEMPLATE_DETAILS_INTERCOMMUNAL,
+  fetchProperties: {
+    url: '{{HOST}}/layer/intercommunalites/feature/{{id}}/',
+    id: '_id',
+  },
+  highlight: {
+    color: '#0B2B2F',
+  },
+};
+
 export default {
   layerTreeAdministrativeBorders,
   customStyleDepartemental,
   customStyleInterCommunal,
   customStyleCommunal,
+  customStyleCommunalTransparent,
+  customStyleInterCommunalTransparent,
+  interactionCommunalTransparent,
+  interactionInterCommunalTransparent,
 };
