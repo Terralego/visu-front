@@ -69,7 +69,6 @@
 
   .details {
     padding: 0.5rem;
-    overflow-y: auto;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -99,8 +98,8 @@
     &__list {
       padding: 0;
       margin: 0;
-      display: table;
-      
+      list-style: none;
+
       &__amenity {
         display: flex;
         flex-direction: row;
@@ -128,22 +127,19 @@
     }
 
     &__column {
-      display: table-row;
-
       &-label {
-        display: table-cell;
         padding-bottom: 8px;
-        white-space: nowrap;
         opacity: .65;
+        width: 72%;
+        display: inline-block;
 
         &:after {
-          content: ' : ';
+          content: ' :';
           padding-right: 1rem;
         }
       }
 
       &-value {
-        display: table-cell;
         padding-bottom: 10px;
         overflow-wrap: anywhere; // Firefox
         word-break: break-word; // Chrome

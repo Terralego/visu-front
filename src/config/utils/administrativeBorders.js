@@ -351,44 +351,44 @@ const TEMPLATE_DETAILS_COMMUNE = `
   <section class="details__group">
     <h3 class="details__subtitle">Population</h3>
     <ul class="details__list">
-      <li class="details__column details__column--date_crea">
+      <li class="details__column">
         <span class="details__column-label">
-          Nombre d’habitants en x
+          Nombre d’habitants en 2016
         </span>
         <span class="details__column-value">
-          x
+          {{pop_2016}}
         </span>
       </li>
-      <li class="details__column details__column--date_crea">
+      <li class="details__column">
         <span class="details__column-label">
-          Évolution annuelle de la population entre x
+          Évolution annuelle de la population entre 2011 et 2016
         </span>
         <span class="details__column-value">
-          x
+          {{evpop_2011_2016|round(1)}}%
         </span>
       </li>
-      <li class="details__column details__column--date_crea">
+      <li class="details__column">
         <span class="details__column-label">
-          Taille moyenne des ménages en x
+          Taille moyenne des ménages en 2015
         </span>
         <span class="details__column-value">
-        x personnes
+        {{menages_2015|round(1)}} personnes
         </span>
       </li>
-      <li class="details__column details__column--date_crea">
+      <li class="details__column">
         <span class="details__column-label">
-          Part des moins de 20 ans en x
+          Part des moins de 30 ans en 2015
         </span>
         <span class="details__column-value">
-        x%
+        {{c30m_2015|round(1)}}%
         </span>
       </li>
-      <li class="details__column details__column--date_crea">
+      <li class="details__column">
         <span class="details__column-label">
-          Part des plus de 60 ans en x
+          Part des plus de 60 ans en 2015
         </span>
         <span class="details__column-value">
-        x%
+        {{c60p_2015|round(1)}}%
         </span>
       </li>
     </ul>
@@ -396,28 +396,28 @@ const TEMPLATE_DETAILS_COMMUNE = `
   <section class="details__group">
     <h3 class="details__subtitle">Habitat</h3>
     <ul class="details__list">
-      <li class="details__column details__column--date_crea">
+      <li class="details__column">
         <span class="details__column-label">
-          Nombre de logements en x
+          Nombre de logements en 2015
         </span>
         <span class="details__column-value">
-          x
+          {{log_2015|round}}
         </span>
       </li>
-      <li class="details__column details__column--date_crea">
+      <li class="details__column">
         <span class="details__column-label">
-          Part des propriétaires occupants en x
+          Part des propriétaires occupants en 2015
         </span>
         <span class="details__column-value">
-          x%
+          {{prop_2015|round(1)}}%
         </span>
       </li>
-      <li class="details__column details__column--date_crea">
+      <li class="details__column">
         <span class="details__column-label">
-          Part les locataires (privés et sociaux) en x
+          Part les locataires (privés et sociaux) en 2015
         </span>
         <span class="details__column-value">
-          x%
+          {{loc_2015|round(1)}}%
         </span>
       </li>
     </ul>
@@ -425,36 +425,36 @@ const TEMPLATE_DETAILS_COMMUNE = `
   <section class="details__group">
     <h3 class="details__subtitle">Économie</h3>
     <ul class="details__list">
-      <li class="details__column details__column--date_crea">
+      <li class="details__column">
         <span class="details__column-label">
-          Nombre d’emplois en x
+          Nombre d’emplois en 2015
         </span>
         <span class="details__column-value">
-          x
+          {{emplt_2015|round}}
         </span>
       </li>
-      <li class="details__column details__column--date_crea">
+      <li class="details__column">
         <span class="details__column-label">
-          Évolution annuelle du nombre d’emplois entre x
+          Évolution annuelle du nombre d’emplois entre 2010 et 2015
         </span>
         <span class="details__column-value">
-          x%
+          {{evemplt_2010_2015|round(1)}}%
         </span>
       </li>
-      <li class="details__column details__column--date_crea">
+      <li class="details__column">
         <span class="details__column-label">
-          Nombre d’actifs en x
+          Nombre d’actifs en 2015
         </span>
         <span class="details__column-value">
-          x
+          {{actifs_2015|round(1)}}
         </span>
       </li>
-      <li class="details__column details__column--date_crea">
+      <li class="details__column">
         <span class="details__column-label">
-          Nombre d’établissements économiques en x
+          Nombre d’établissements économiques en 2015
         </span>
         <span class="details__column-value">
-          x
+          {{eteco_2015}}
         </span>
       </li>
     </ul>
@@ -486,44 +486,44 @@ const TEMPLATE_DETAILS_INTERCOMMUNAL = `
   <section class="details__group">
     <h3 class="details__subtitle">Population</h3>
     <ul class="details__list">
-      <li class="details__column details__column--date_crea">
+      <li class="details__column">
         <span class="details__column-label">
-          Nombre d’habitants en x
+          Nombre d’habitants en 2016
         </span>
         <span class="details__column-value">
-          x
+          {{pop_2016}}
         </span>
       </li>
-      <li class="details__column details__column--date_crea">
+      <li class="details__column">
         <span class="details__column-label">
-          Évolution annuelle de la population entre x
+          Évolution annuelle de la population entre 2011 et 2016
         </span>
         <span class="details__column-value">
-          x
+          {{evpop_2011_2016|round(1)}}%
         </span>
       </li>
-      <li class="details__column details__column--date_crea">
+      <li class="details__column">
         <span class="details__column-label">
-          Taille moyenne des ménages en x
+          Taille moyenne des ménages en 2015
         </span>
         <span class="details__column-value">
-        x personnes
+        {{menages_2015|round(1)}} personnes
         </span>
       </li>
-      <li class="details__column details__column--date_crea">
+      <li class="details__column">
         <span class="details__column-label">
-          Part des moins de 20 ans en x
+          Part des moins de 30 ans en 2015
         </span>
         <span class="details__column-value">
-        x%
+        {{c30m_2015|round(1)}}%
         </span>
       </li>
-      <li class="details__column details__column--date_crea">
+      <li class="details__column">
         <span class="details__column-label">
-          Part des plus de 60 ans en x
+          Part des plus de 60 ans en 2015
         </span>
         <span class="details__column-value">
-        x%
+        {{c60p_2015|round(1)}}%
         </span>
       </li>
     </ul>
@@ -531,28 +531,28 @@ const TEMPLATE_DETAILS_INTERCOMMUNAL = `
   <section class="details__group">
     <h3 class="details__subtitle">Habitat</h3>
     <ul class="details__list">
-      <li class="details__column details__column--date_crea">
+      <li class="details__column">
         <span class="details__column-label">
-          Nombre de logements en x
+          Nombre de logements en 2015
         </span>
         <span class="details__column-value">
-          x
+          {{log_2015|round}}
         </span>
       </li>
-      <li class="details__column details__column--date_crea">
+      <li class="details__column">
         <span class="details__column-label">
-          Part des propriétaires occupants en x
+          Part des propriétaires occupants en 2015
         </span>
         <span class="details__column-value">
-          x%
+          {{prop_2015|round(1)}}%
         </span>
       </li>
-      <li class="details__column details__column--date_crea">
+      <li class="details__column">
         <span class="details__column-label">
-          Part les locataires (privés et sociaux) en x
+          Part les locataires (privés et sociaux) en 2015
         </span>
         <span class="details__column-value">
-          x%
+          {{loc_2015|round(1)}}%
         </span>
       </li>
     </ul>
@@ -560,36 +560,36 @@ const TEMPLATE_DETAILS_INTERCOMMUNAL = `
   <section class="details__group">
     <h3 class="details__subtitle">Économie</h3>
     <ul class="details__list">
-      <li class="details__column details__column--date_crea">
+      <li class="details__column">
         <span class="details__column-label">
-          Nombre d’emplois en x
+          Nombre d’emplois en 2015
         </span>
         <span class="details__column-value">
-          x
+          {{emplt_2015|round}}
         </span>
       </li>
-      <li class="details__column details__column--date_crea">
+      <li class="details__column">
         <span class="details__column-label">
-          Évolution annuelle du nombre d’emplois entre x
+          Évolution annuelle du nombre d’emplois entre 2010 et 2015
         </span>
         <span class="details__column-value">
-          x%
+          {{evemplt_2010_2015|round(1)}}%
         </span>
       </li>
-      <li class="details__column details__column--date_crea">
+      <li class="details__column">
         <span class="details__column-label">
-          Nombre d’actifs en x
+          Nombre d’actifs en 2015
         </span>
         <span class="details__column-value">
-          x
+          {{actifs_2015|round}}
         </span>
       </li>
-      <li class="details__column details__column--date_crea">
+      <li class="details__column">
         <span class="details__column-label">
-          Nombre d’établissements économiques en x
+          Nombre d’établissements économiques en 2015
         </span>
         <span class="details__column-value">
-          x
+          {{eteco_2015|round}}
         </span>
       </li>
     </ul>
