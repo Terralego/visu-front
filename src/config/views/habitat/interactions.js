@@ -1,6 +1,6 @@
 import {
   interactionCommunalTransparent,
-  interactionInterCommunalTransparent
+  interactionInterCommunalTransparent,
 } from '../../utils/administrativeBorders';
 
 const TEMPLATE_TOOLTIP_HABITATIONS_PRINCIPALES = `
