@@ -37,6 +37,7 @@ export const customStyleDensity = years.map(year => {
     source: 'terralego',
     id: `terralego-densite_population-communes_${year}`,
     paint: {
+      'fill-outline-color': '#ffffff',
       'fill-color': [
         'case',
         ['<', ['get', getProperty(year)], legend[0]],

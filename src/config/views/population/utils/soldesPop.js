@@ -67,6 +67,7 @@ export const customStyleSoldesNaturel = periods.map(period => {
     source: 'terralego',
     id: `terralego-soldes_naturels-communes_snat_${period}`,
     paint: {
+      'fill-outline-color': '#ffffff',
       'fill-color': [
         'case',
         ['<', ['get', getProperty(period, 'snat')], legend[0]],
@@ -155,6 +156,7 @@ export const customStyleSoldesMigratoire = periods.map(period => {
     source: 'terralego',
     id: `terralego-soldes_naturels-communes_smig_${period}`,
     paint: {
+      'fill-outline-color': '#ffffff',
       'fill-color': [
         'case',
         ['<', ['get', getProperty(period, 'smig')], legend[0]],
