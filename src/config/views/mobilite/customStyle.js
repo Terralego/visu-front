@@ -1,5 +1,6 @@
 import {
   customStyleCommunal,
+  customStyleCommuneLabels,
   customStyleDepartemental,
   customStyleInterCommunal,
 } from '../../utils/administrativeBorders';
@@ -39,5 +40,6 @@ export default {
     customStyleDepartemental,
     customStyleInterCommunal,
     customStyleCommunal,
+    ...customStyleCommuneLabels,
   ],
 };
