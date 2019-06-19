@@ -33,6 +33,148 @@ export const customStyleCommunal = {
   'source-layer': 'communes',
 };
 
+
+const communeLabelPaint = {
+  'text-color': '#000000',
+  'text-halo-color': '#fcfcfc',
+  'text-halo-width': 1,
+};
+
+export const customStyleCommuneLabels = [
+  {
+    id: 'communal-label-all',
+    type: 'symbol',
+    source: 'terralego',
+    'source-layer': 'population_communal',
+    minzoom: 10,
+    maxzoom: 24,
+    layout: {
+      visibility: 'visible',
+      'text-field': '{nom}',
+      'text-font': [
+        'DIN Offc Pro Regular',
+        'Arial Unicode MS Regular',
+      ],
+      'text-size': {
+        stops: [
+          [
+            10,
+            6,
+          ],
+          [
+            11,
+            16,
+          ],
+        ],
+      },
+      'text-max-width': 6,
+    },
+    paint: communeLabelPaint,
+  },
+  {
+    id: 'communal-label-1k',
+    type: 'symbol',
+    source: 'terralego',
+    'source-layer': 'population_communal',
+    minzoom: 9,
+    maxzoom: 24,
+    filter: [
+      'all',
+      [
+        '>',
+        'pop_2016',
+        1000,
+      ],
+    ],
+    layout: {
+      visibility: 'visible',
+      'text-field': '{nom}',
+      'text-font': [
+        'DIN Offc Pro Regular',
+        'Arial Unicode MS Regular',
+      ],
+      'text-size': {
+        stops: [
+          [
+            9,
+            6,
+          ],
+          [
+            10,
+            16,
+          ],
+        ],
+      },
+      'text-max-width': 6,
+    },
+    paint: communeLabelPaint,
+  },
+  {
+    id: 'communal-label-10k',
+    type: 'symbol',
+    source: 'terralego',
+    'source-layer': 'population_communal',
+    minzoom: 8,
+    maxzoom: 24,
+    filter: [
+      'all',
+      [
+        '>',
+        'pop_2016',
+        10000,
+      ],
+    ],
+    layout: {
+      visibility: 'visible',
+      'text-field': '{nom}',
+      'text-font': [
+        'DIN Offc Pro Regular',
+        'Arial Unicode MS Regular',
+      ],
+      'text-size': {
+        stops: [
+          [
+            8,
+            6,
+          ],
+          [
+            9,
+            18,
+          ],
+        ],
+      },
+      'text-max-width': 6,
+    },
+    paint: communeLabelPaint,
+  },
+  {
+    id: 'communal-label-50k',
+    type: 'symbol',
+    source: 'terralego',
+    'source-layer': 'population_communal',
+    filter: [
+      'all',
+      [
+        '>',
+        'pop_2016',
+        50000,
+      ],
+    ],
+    layout: {
+      visibility: 'visible',
+      'text-field': '{nom}',
+      'text-transform': 'uppercase',
+      'text-font': [
+        'DIN Offc Pro Regular',
+        'Arial Unicode MS Regular',
+      ],
+      'text-size': 20,
+      'text-max-width': 6,
+    },
+    paint: communeLabelPaint,
+  },
+];
+
 export const layerTreeAdministrativeBorders = [{
   group: 'Limites administratives',
   initialState: {
