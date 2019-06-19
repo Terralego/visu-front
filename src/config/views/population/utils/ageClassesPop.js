@@ -100,6 +100,7 @@ export const customStyleAgeClasses = ageClasses.reduce((prevAges, ageClass) => [
       source: 'terralego',
       id: `terralego-classe_age-communes_${ageClass}_${year}`,
       paint: {
+        'fill-outline-color': '#ffffff',
         'fill-color': [
           'case',
           ['<', ['get', getProperty(ageClass, year)], legend[0]],

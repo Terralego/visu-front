@@ -16,6 +16,7 @@ export default {
       source: 'terralego',
       id: 'terralego-transports',
       paint: {
+        'fill-outline-color': '#ffffff',
         'fill-color': [
           'case',
           ['<', ['get', 'cdr_2015'], 1.2],

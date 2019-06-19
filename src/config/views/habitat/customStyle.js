@@ -16,6 +16,7 @@ export default {
       source: 'terralego',
       id: 'terralego-residences_principales',
       paint: {
+        'fill-outline-color': '#ffffff',
         'fill-color': [
           'case',
           ['<', ['get', 'data'], 44.8],

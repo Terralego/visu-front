@@ -18,6 +18,7 @@ export const customStyleEvolution = periodsEvolution.map(period => ({
   source: 'terralego',
   id: `terralego-evolution_population-communes_${period}`,
   paint: {
+    'fill-outline-color': '#ffffff',
     'fill-color': [
       'case',
       ['<', ['get', getProperty(period)], -2.0],
