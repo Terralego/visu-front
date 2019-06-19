@@ -1,5 +1,7 @@
 import { TYPE_RANGE } from '@terralego/core/modules/Forms/Filters';
 import { INTERACTION_DISPLAY_TOOLTIP } from '@terralego/core/modules/Map/InteractiveMap/InteractiveMap';
+import defaultFields from './defaultFields';
+import defaultForm from './defaultForm';
 
 const years = ['2016', '2011', '2006', '1999', '1990', '1982', '1975', '1968'];
 
@@ -26,17 +28,13 @@ export const layerTreePopulationMunicipale = ({
       title: 'Population municipale par commune',
     },
     layer: 'population_communal',
-    form: [...years.map(year => ({
+    form: [...defaultForm, ...years.map(year => ({
       property: getProperty(year),
       label: `Population en ${year}`,
       type: TYPE_RANGE,
       fetchValues: true,
     }))],
-    fields: [{
-      value: 'nom',
-      label: 'Nom',
-      exportable: true,
-    }, ...years.map(fieldsYear => ({
+    fields: [...defaultFields, ...years.map(fieldsYear => ({
       value: getProperty(fieldsYear),
       label: `Population en ${fieldsYear}`,
       exportable: true,

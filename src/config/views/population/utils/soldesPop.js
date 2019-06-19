@@ -1,5 +1,7 @@
 import { TYPE_RANGE } from '@terralego/core/modules/Forms/Filters';
 import { INTERACTION_DISPLAY_TOOLTIP } from '@terralego/core/modules/Map/InteractiveMap/InteractiveMap';
+import defaultFields from './defaultFields';
+import defaultForm from './defaultForm';
 
 const periods = ['2010-2015', '1999-2010', '1990-1999', '1982-1990', '1975-1982', '1968-1975'];
 
@@ -181,17 +183,13 @@ export const layerTreeSoldesMigratoire = ({
       title: 'Solde migratoire pour la commune',
     },
     layer: 'soldes_communal',
-    form: [...periods.map(period => ({
+    form: [...defaultForm, ...periods.map(period => ({
       property: getProperty(period, 'smig'),
       label: `Solde migratoire de ${period} (en unité)`,
       type: TYPE_RANGE,
       fetchValues: true,
     }))],
-    fields: [{
-      value: 'nom',
-      label: 'Nom',
-      exportable: true,
-    }, ...periods.map(fieldsPeriod => ({
+    fields: [...defaultFields, ...periods.map(fieldsPeriod => ({
       value: getProperty(fieldsPeriod, 'smig'),
       label: getField(fieldsPeriod, 'smig'),
       exportable: true,

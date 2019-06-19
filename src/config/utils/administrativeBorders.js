@@ -66,7 +66,11 @@ export const layerTreeAdministrativeBorders = [{
           }, {
             value: 'codegeo',
             label: 'Code',
-          }],
+          }, {
+            value: 'libreg',
+            label: 'Région',
+          },
+        ],
       },
     }, {
       label: 'Intercommunalités',
@@ -93,9 +97,16 @@ export const layerTreeAdministrativeBorders = [{
             value: 'nom',
             label: 'Nom',
           }, {
-            value: 'codegeo',
-            label: 'Code',
-          }],
+            value: 'libdept',
+            label: 'Département',
+          }, {
+            value: 'codept',
+            label: 'Code dpt.',
+          }, {
+            value: 'libreg',
+            label: 'Région',
+          },
+        ],
       },
     }, {
       label: 'Communes',
@@ -113,7 +124,7 @@ export const layerTreeAdministrativeBorders = [{
             fetchValues: true,
           }, {
             property: 'codegeo',
-            label: 'Code postal',
+            label: 'Code INSEE',
             type: TYPE_SINGLE,
             fetchValues: true,
           }, {
@@ -138,7 +149,7 @@ export const layerTreeAdministrativeBorders = [{
             label: 'Nom',
           }, {
             value: 'codegeo',
-            label: 'Code postal',
+            label: 'Code INSEE',
           }, {
             value: 'libepci',
             label: 'Intercommune',
@@ -146,9 +157,13 @@ export const layerTreeAdministrativeBorders = [{
             value: 'libdep',
             label: 'Département',
           }, {
+            value: 'codep',
+            label: 'Code dpt.',
+          }, {
             value: 'libreg',
             label: 'Région',
-          }],
+          },
+        ],
       },
     }],
 }];

@@ -1,5 +1,7 @@
 import { TYPE_RANGE } from '@terralego/core/modules/Forms/Filters';
 import { INTERACTION_DISPLAY_TOOLTIP } from '@terralego/core/modules/Map/InteractiveMap/InteractiveMap';
+import defaultFields from './defaultFields';
+import defaultForm from './defaultForm';
 
 const years = ['2016', '2011', '2006', '1999', '1990', '1982', '1975', '1968'];
 
@@ -63,17 +65,13 @@ export const layerTreeDensity = ({
       title: 'Dénsité de population par commune',
     },
     layer: 'denspop_communal',
-    form: [...years.map(year => ({
+    form: [...defaultForm, ...years.map(year => ({
       property: getProperty(year),
       label: `Densité de la population par ${year} (hab/km²)`,
       type: TYPE_RANGE,
       fetchValues: true,
     }))],
-    fields: [{
-      value: 'nom',
-      label: 'Nom',
-      exportable: true,
-    }, ...years.map(fieldsYear => ({
+    fields: [...defaultFields, ...years.map(fieldsYear => ({
       value: getProperty(fieldsYear),
       label: `Densité en ${fieldsYear}`,
       exportable: true,
