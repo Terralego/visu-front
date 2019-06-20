@@ -95,17 +95,13 @@ export const layerTreeSoldesNaturel = ({
       title: 'Solde naturel pour la commune',
     },
     layer: 'soldes_communal',
-    form: [...periods.map(period => ({
+    form: [...defaultForm, ...periods.map(period => ({
       property: getProperty(period, 'snat'),
       label: `Solde naturel de ${period} (en unité)`,
       type: TYPE_RANGE,
       fetchValues: true,
     }))],
-    fields: [{
-      value: 'nom',
-      label: 'Nom',
-      exportable: true,
-    }, ...periods.map(fieldsPeriod => ({
+    fields: [...defaultFields, ...periods.map(fieldsPeriod => ({
       value: getProperty(fieldsPeriod, 'snat'),
       label: getField(fieldsPeriod, 'snat'),
       exportable: true,
