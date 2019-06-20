@@ -2,7 +2,7 @@ import React from 'react';
 import classnames from 'classnames';
 import { Button } from '@blueprintjs/core';
 import FeatureProperties from '@terralego/core/modules/Map/FeatureProperties';
-import MarkdownRenderer from '@terralego/core/modules/Template/MarkdownRenderer';
+import Template from '@terralego/core/modules/Template';
 import './styles.scss';
 
 class Details extends React.Component {
@@ -146,7 +146,7 @@ class Details extends React.Component {
                 properties={featureToDisplay}
               >
                 {({ properties: newProperties, ...staticProperties }) => (
-                  <MarkdownRenderer
+                  <Template
                     template={template}
                     {...staticProperties}
                     {...newProperties}
