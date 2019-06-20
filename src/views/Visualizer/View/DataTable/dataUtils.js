@@ -29,6 +29,7 @@ export const getData = (dataSource, key) => {
 
 export const prepareData = (fields = [], results) => {
   const properties = fields.map(({ value }) => value);
+
   return results
     .map(({ _id, _source: dataSource }) => properties.map(key => {
       const interpolation = key.match(/\{([^}]+)\}/g);

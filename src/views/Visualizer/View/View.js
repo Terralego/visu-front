@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { Classes } from '@blueprintjs/core';
 import InteractiveMap, { INTERACTION_DISPLAY_TOOLTIP, INTERACTION_ZOOM, INTERACTION_HIGHLIGHT, INTERACTION_FN } from '@terralego/core/modules/Map/InteractiveMap';
-import { DEFAULT_CONTROLS, CONTROL_SEARCH, CONTROL_BACKGROUND_STYLES, CONTROLS_TOP_RIGHT } from '@terralego/core/modules/Map';
+import { DEFAULT_CONTROLS, CONTROL_SEARCH, CONTROL_BACKGROUND_STYLES, CONTROL_PRINT, CONTROLS_TOP_RIGHT } from '@terralego/core/modules/Map';
 import { toggleLayerVisibility, setLayerOpacity } from '@terralego/core/modules/Map/services/mapUtils';
 import { LayersTree } from '@terralego/core/modules/Visualizer';
 import classnames from 'classnames';
@@ -28,7 +28,6 @@ import Details from './Details';
 import MapNavigation from './MapNavigation';
 import Story from './Story';
 import TooManyResults from './TooManyResults';
-import PrintControl from './PrintControl';
 import DataTable from './DataTable';
 import Widgets from './Widgets';
 import { generateClusterList } from './interactions';
@@ -54,16 +53,13 @@ const LayersTreeProps = PropTypes.shape({
 
 const LayersTreeGroupProps = PropTypes.shape({
   group: PropTypes.string.isRequired,
-  initialState: PropTypes.shape({
-    open: PropTypes.bool,
-  }),
   layers: PropTypes.arrayOf(LayersTreeProps.isRequired),
   private: PropTypes.bool,
 });
 
 const LAYER_PROPERTY = 'layer.keyword';
 
-const getControls = memoize(({ displaySearch, displayBackgroundStyles }) => [
+const getControls = memoize((displaySearch, displayBackgroundStyles) => [
   displaySearch && {
     control: CONTROL_SEARCH,
     position: CONTROLS_TOP_RIGHT,
@@ -73,7 +69,7 @@ const getControls = memoize(({ displaySearch, displayBackgroundStyles }) => [
     control: CONTROL_BACKGROUND_STYLES,
     position: CONTROLS_TOP_RIGHT,
   }, {
-    control: new PrintControl(),
+    control: CONTROL_PRINT,
     position: CONTROLS_TOP_RIGHT,
   },
 ].filter(defined => defined));
@@ -572,6 +568,7 @@ export class Visualizer extends React.Component {
     const { layersTreeState, query } = this.props;
     const { prevLayersTreeState = new Map() } = this;
     this.prevLayersTreeState = layersTreeState;
+
     layersTreeState.forEach(({
       active,
       opacity,
@@ -680,10 +677,11 @@ export class Visualizer extends React.Component {
       .from(layersTreeState.keys())
       .some(({ filters: { mainField } = {} }) => mainField);
 
-    const controls = getControls({
-      displaySearch: displaySearchInMap,
-      displayBackgroundStyles: Array.isArray(mapProps.backgroundStyle),
-    });
+    const controls = getControls(
+      displaySearchInMap,
+      Array.isArray(mapProps.backgroundStyle),
+    );
+
     if (displaySearchInMap) {
       const search = controls.find(({ control }) => control === CONTROL_SEARCH);
       search.onSearch = this.searchInMap;

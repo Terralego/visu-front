@@ -5,6 +5,7 @@
   transition: height .2s ease-in;
   display: flex;
   position: relative;
+  height: 0;
   z-index: 99;
   will-change: height;
 

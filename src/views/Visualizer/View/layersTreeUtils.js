@@ -1,6 +1,6 @@
 import { PREFIX_SOURCE } from '@terralego/core/modules/Map/services/cluster';
 
-import searchService from '../../../services/search';
+import searchService, { MAX_SIZE } from '../../../services/search';
 
 const INITIAL_FILTERS = new Map();
 
@@ -161,7 +161,7 @@ export const fetchPropertyValues = async (layer, { property }) => {
       field: `${property}.keyword`,
       name: 'values',
       options: {
-        size: 100,
+        size: MAX_SIZE,
       },
     }],
     size: 0,
