@@ -71,7 +71,7 @@ export const customStyleSoldesNaturel = periods.map(period => {
       'fill-color': [
         'case',
         ['<', ['get', getProperty(period, 'snat')], legend[0]],
-        '#156571',
+        '#217b8b',
         ['<', ['get', getProperty(period, 'snat')], legend[1]],
         '#2FB0C5',
         ['<', ['get', getProperty(period, 'snat')], legend[2]],
@@ -82,7 +82,7 @@ export const customStyleSoldesNaturel = periods.map(period => {
         '#F7C99D',
         ['<', ['get', getProperty(period, 'snat')], legend[5]],
         '#F48161',
-        '#BC205D'],
+        '#d03568'],
     },
     'source-layer': 'soldes_communal',
   };
@@ -120,7 +120,7 @@ export const layerTreeSoldesNaturel = ({
         title: `Solde naturel entre ${period} (en unité)`,
         items: [{
           label: `Supérieur ou égal à ${legend[5].toLocaleString()}`,
-          color: '#BC205D',
+          color: '#d03568',
         }, {
           label: `De ${legend[4].toLocaleString()} à ${legend[5].toLocaleString()}`,
           color: '#F48161',
@@ -138,7 +138,7 @@ export const layerTreeSoldesNaturel = ({
           color: '#2FB0C5',
         }, {
           label: `Inférieur à ${legend[0].toLocaleString()}`,
-          color: '#156571',
+          color: '#217b8b',
         }],
       }],
     });
@@ -156,7 +156,7 @@ export const customStyleSoldesMigratoire = periods.map(period => {
       'fill-color': [
         'case',
         ['<', ['get', getProperty(period, 'smig')], legend[0]],
-        '#156571',
+        '#217b8b',
         ['<', ['get', getProperty(period, 'smig')], legend[1]],
         '#2FB0C5',
         ['<', ['get', getProperty(period, 'smig')], legend[2]],
@@ -167,7 +167,7 @@ export const customStyleSoldesMigratoire = periods.map(period => {
         '#F7C99D',
         ['<', ['get', getProperty(period, 'smig')], legend[5]],
         '#F48161',
-        '#BC205D',
+        '#d03568',
       ],
     },
     'source-layer': 'soldes_communal',
@@ -206,7 +206,7 @@ export const layerTreeSoldesMigratoire = ({
         title: `Solde migratoire entre ${period} (en unité)`,
         items: [{
           label: `Supérieur ou égal à ${legend[5].toLocaleString()}`,
-          color: '#BC205D',
+          color: '#d03568',
         }, {
           label: `De ${legend[4].toLocaleString()} à ${legend[5].toLocaleString()}`,
           color: '#F48161',
@@ -224,7 +224,7 @@ export const layerTreeSoldesMigratoire = ({
           color: '#2FB0C5',
         }, {
           label: `Inférieur à ${legend[0].toLocaleString()}`,
-          color: '#156571',
+          color: '#217b8b',
         }],
       }],
     });
