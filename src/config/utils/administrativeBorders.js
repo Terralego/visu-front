@@ -356,7 +356,7 @@ const TEMPLATE_DETAILS_COMMUNE = `
           Nombre d’habitants en 2016
         </span>
         <span class="details__column-value">
-          {{pop_2016}}
+          {{pop_2016|formatNumber('fr-FR')}}
         </span>
       </li>
       <li class="details__column">
@@ -401,7 +401,7 @@ const TEMPLATE_DETAILS_COMMUNE = `
           Nombre de logements en 2015
         </span>
         <span class="details__column-value">
-          {{log_2015|round}}
+          {{log_2015|round|formatNumber('fr-FR')}}
         </span>
       </li>
       <li class="details__column">
@@ -430,7 +430,7 @@ const TEMPLATE_DETAILS_COMMUNE = `
           Nombre d’emplois en 2015
         </span>
         <span class="details__column-value">
-          {{emplt_2015|round}}
+          {{emplt_2015|round|formatNumber('fr-FR')}}
         </span>
       </li>
       <li class="details__column">
@@ -446,7 +446,7 @@ const TEMPLATE_DETAILS_COMMUNE = `
           Nombre d’actifs en 2015
         </span>
         <span class="details__column-value">
-          {{actifs_2015|round(1)}}
+          {{actifs_2015|round|formatNumber('fr-FR')}}
         </span>
       </li>
       <li class="details__column">
@@ -454,7 +454,7 @@ const TEMPLATE_DETAILS_COMMUNE = `
           Nombre d’établissements économiques en 2015
         </span>
         <span class="details__column-value">
-          {{eteco_2015}}
+          {{eteco_2015|formatNumber('fr-FR')}}
         </span>
       </li>
     </ul>
@@ -491,7 +491,7 @@ const TEMPLATE_DETAILS_INTERCOMMUNAL = `
           Nombre d’habitants en 2016
         </span>
         <span class="details__column-value">
-          {{pop_2016}}
+          {{pop_2016|formatNumber('fr-FR')}}
         </span>
       </li>
       <li class="details__column">
@@ -536,7 +536,7 @@ const TEMPLATE_DETAILS_INTERCOMMUNAL = `
           Nombre de logements en 2015
         </span>
         <span class="details__column-value">
-          {{log_2015|round}}
+          {{log_2015|round|formatNumber('fr-FR')}}
         </span>
       </li>
       <li class="details__column">
@@ -565,7 +565,7 @@ const TEMPLATE_DETAILS_INTERCOMMUNAL = `
           Nombre d’emplois en 2015
         </span>
         <span class="details__column-value">
-          {{emplt_2015|round}}
+          {{emplt_2015|round|formatNumber('fr-FR')}}
         </span>
       </li>
       <li class="details__column">
@@ -581,7 +581,7 @@ const TEMPLATE_DETAILS_INTERCOMMUNAL = `
           Nombre d’actifs en 2015
         </span>
         <span class="details__column-value">
-          {{actifs_2015|round}}
+          {{actifs_2015|round|formatNumber('fr-FR')}}
         </span>
       </li>
       <li class="details__column">
@@ -589,7 +589,7 @@ const TEMPLATE_DETAILS_INTERCOMMUNAL = `
           Nombre d’établissements économiques en 2015
         </span>
         <span class="details__column-value">
-          {{eteco_2015|round}}
+          {{eteco_2015|round|formatNumber('fr-FR')}}
         </span>
       </li>
     </ul>
