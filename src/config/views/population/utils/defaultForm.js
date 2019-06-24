@@ -13,7 +13,7 @@ export default [
     fetchValues: true,
   }, {
     property: 'libepci',
-    label: 'Intercommune',
+    label: 'Intercommunalité',
     type: TYPE_SINGLE,
     fetchValues: true,
   }, {
