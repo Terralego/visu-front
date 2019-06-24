@@ -301,7 +301,7 @@ export const layerTreeAdministrativeBorders = [{
             fetchValues: true,
           }, {
             property: 'libepci',
-            label: 'Intercommune',
+            label: 'Intercommunalité',
             type: TYPE_SINGLE,
             fetchValues: true,
           }, {
@@ -324,7 +324,7 @@ export const layerTreeAdministrativeBorders = [{
             label: 'Code INSEE',
           }, {
             value: 'libepci',
-            label: 'Intercommune',
+            label: 'Intercommunalité',
           }, {
             value: 'libdep',
             label: 'Département',
