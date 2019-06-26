@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="66" height="67" viewBox="0 0 66 67">
+  <g fill="none" fill-rule="evenodd">
+    <rect width="66" height="67" fill="#FFF"/>
+    <g stroke="#1F4B99" stroke-width="2" transform="translate(0 1)">
+      <path fill="#FFF" d="M16.84,13.5122566 L16.84,65 L49.1419834,65 L48.5108798,29.6581953 L16.84,13.5122566 Z"/>
+      <rect width="16.48" height="57.4" x="1" y="7.6" fill="#FFF" rx="1"/>
+      <path fill="#FFF" d="M44.3525161,7.6 L39.2502938,65 L60.8246304,65 L55.7224082,7.6 L44.3525161,7.6 Z"/>
+      <path fill="#FFF" stroke-linecap="round" stroke-linejoin="round" d="M40.92 7.66L59 7.66M40.92 50.82L59 50.82"/>
+      <rect width="5.92" height="15.16" x="6.28" y="12.88" fill="#FFF" rx="1"/>
+      <rect width="12.52" height="21.76" x="22.12" y="43.24" fill="#FFF" rx="1"/>
+      <rect width="5.92" height="15.16" x="6.28" y="32.68" fill="#FFF" rx="1"/>
+      <path fill="#FFF" stroke-linecap="round" stroke-linejoin="round" d="M22.44 33L34.32 33M22.44 38.28L34.32 38.28M22.44 27.72L34.32 27.72"/>
+      <path stroke-linecap="round" stroke-linejoin="round" d="M65.34,3.96 C63.3700529,1.32 61.1700529,1.37667655e-14 58.74,1.37667655e-14 C55.0949207,1.37667655e-14 52.14,3.96 47.52,1.37667655e-14" transform="matrix(1 0 0 -1 0 3.96)"/>
+    </g>
+  </g>
+</svg>
