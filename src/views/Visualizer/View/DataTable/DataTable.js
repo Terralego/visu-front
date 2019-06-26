@@ -121,6 +121,9 @@ export class DataTable extends React.Component {
         filters: { fields = [] } = {},
       },
     } = this.props;
+
+    if (!fields) return;
+
     const { columns, results } = this.state;
 
     // Find out which column (indexes) are exportable

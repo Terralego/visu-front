@@ -22,6 +22,7 @@ import {
   layersTreeStatesHaveChanged,
   fetchPropertyValues,
   fetchPropertyRange,
+  layersTreeToStory,
 } from './layersTreeUtils';
 import searchService, { getExtent } from '../../../services/search';
 import Details from './Details';
@@ -646,7 +647,6 @@ export class Visualizer extends React.Component {
         title,
         map: mapProps,
         layersTree,
-        story,
       },
       mapIsResizing,
       setVisibleBoundingBox,
@@ -691,6 +691,8 @@ export class Visualizer extends React.Component {
     const isTableVisible = hasTable(layersTreeState);
     const isWidgetsVisible = hasWidget(layersTreeState);
 
+    const isStory = layersTree.type === 'story';
+
     return (
       <div className={classnames({
         visualizer: true,
@@ -718,30 +720,32 @@ export class Visualizer extends React.Component {
           ${isLayersTreeVisible ? 'is-layers-tree-visible' : ''}
         `}
         >
-          <MapNavigation
-            title={title}
-            toggleLayersTree={toggleLayersTree}
-            visible={isLayersTreeVisible}
-            renderHeader={renderHeader}
-          >
-            {layersTree && (
-              <LayersTree
-                layersTree={layersTree}
-                onChange={this.updateLayersTreeState}
-                initialState={layersTreeState}
-                fetchPropertyValues={fetchPropertyValues}
-                fetchPropertyRange={fetchPropertyRange}
-              />
-            )}
-            {story && (
-              <Story
-                ref={storyRef}
-                story={story}
-                setLegends={setLegends}
-              />
-            )
-          }
-          </MapNavigation>
+          {layersTree && (
+            <MapNavigation
+              title={title}
+              toggleLayersTree={toggleLayersTree}
+              visible={isLayersTreeVisible}
+              renderHeader={renderHeader}
+            >
+              {isStory
+                ? (
+                  <Story
+                    ref={storyRef}
+                    story={layersTreeToStory(layersTree)}
+                    setLegends={setLegends}
+                  />
+                )
+                : (
+                  <LayersTree
+                    layersTree={layersTree}
+                    onChange={this.updateLayersTreeState}
+                    initialState={layersTreeState}
+                    fetchPropertyValues={fetchPropertyValues}
+                    fetchPropertyRange={fetchPropertyRange}
+                  />
+                )}
+            </MapNavigation>
+          )}
 
           <div className="visualizer-view__center col">
             <div className="row">

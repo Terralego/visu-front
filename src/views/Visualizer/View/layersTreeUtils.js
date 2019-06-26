@@ -191,6 +191,41 @@ export const fetchPropertyRange = async (layer, { property }) => {
   return { min: Math.round(min), max: Math.round(max) };
 };
 
+export const layersTreeToStory = layersTree => {
+  const story = layersTree.reduce(({
+    beforeEach: [beforeEachConfig],
+    slides,
+  }, {
+    label: title, content, layers, ...layerAttrs
+  }) => ({
+    beforeEach: [{
+      ...beforeEachConfig,
+      layers: [
+        ...beforeEachConfig.layers,
+        ...layers.filter(layer => typeof layer === 'string'),
+      ],
+    }],
+    slides: [
+      ...slides, {
+        title,
+        content,
+        layouts: [{
+          layers: layers.filter(layer => typeof layer === 'string'),
+          active: true,
+        }],
+        ...layerAttrs,
+      }],
+  }), {
+    beforeEach: [{
+      layers: [],
+      active: false,
+    }],
+    slides: [],
+  });
+
+  return story;
+};
+
 export default {
   initLayersStateAction,
   selectSublayerAction,
@@ -198,4 +233,5 @@ export default {
   filterLayersFromLayersState,
   hasTable,
   hasWidget,
+  layersTreeToStory,
 };

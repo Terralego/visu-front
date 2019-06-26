@@ -4,6 +4,7 @@ import { fetchViewConfig } from '../../services/visualizer';
 import SearchProvider from '../../components/SearchProvider';
 import Loading from '../../components/Loading';
 import View from './View';
+import NotFound from './NotFound';
 
 import './styles.scss';
 
@@ -61,6 +62,11 @@ export class Visualizer extends React.Component {
 
     if (this.isUnmount) return;
 
+    if (!viewConfig) {
+      this.setState({ notfound: true });
+      return;
+    }
+
     this.setState({
       [viewName]: {
         ...viewConfig,
@@ -76,9 +82,11 @@ export class Visualizer extends React.Component {
 
   render () {
     const { match: { params: { viewName } }, ...props } = this.props;
-    const { loading } = this.state;
+    const { loading, notfound } = this.state;
     const { onViewStateUpdate } = this;
     const viewSettings = this.getCurrentViewSetting();
+
+    if (notfound) return <NotFound />;
 
     return (
       <SearchProvider>

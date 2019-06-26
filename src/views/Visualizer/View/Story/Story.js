@@ -10,18 +10,12 @@ const toggleLayers = map => ({ layers, active }) =>
     toggleLayerVisibility(map, layerId, active ? 'visible' : 'none'));
 
 const resetLayers = map => ({ layers = [] }) => {
-  layers.forEach(layer => {
-    if (layer.match(/\*/)) {
-      const regexp = new RegExp(layer.replace('*', '.*'));
-      const { layers: allLayers } = map.getStyle();
-      toggleLayers(map)({
-        layers: allLayers
-          .filter(({ id }) => id.match(regexp))
-          .filter(({ id }) => !id.match('-cluster-data'))
-          .map(({ id }) => id),
-        active: false,
-      });
-    }
+  const { layers: allLayers } = map.getStyle();
+  toggleLayers(map)({
+    layers: allLayers
+      .filter(({ id }) => layers.includes(id))
+      .map(({ id }) => id),
+    active: false,
   });
 };
 
