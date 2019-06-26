@@ -49,12 +49,16 @@ build:
   variables:
     SITE_ID: "yournamehere.netlify.com"
     BACKEND_URL: "yourbackend.makina.com"
+    ADMIN_HOST: "https:\\/\\/auran-dev.netlify.com\\/"
   dependencies:
     - build
   script:
     - cat ./build/env.dist.json | sed
       -e "s/<BACKEND_URL>/${BACKEND_URL}/g" > ./build/env.json
     - cat ./build/env.json
+    - cat ./build/_redirects.dist | sed
+      -e "s/<ADMIN_HOST>/${ADMIN_HOST}/g" | sed
+      -e "s/<BACKEND_URL>/${BACKEND_URL}/g" > ./build/_redirects
     - npx netlify-cli deploy --site=$SITE_ID --auth=$NETLIFY_ACCESS_TOKEN  --dir=./build --prod
 
 deploy_predev: &deploy_predev
@@ -65,6 +69,7 @@ deploy_predev: &deploy_predev
   variables:
     SITE_ID: "auran-dev.netlify.com"
     BACKEND_URL: "https:\\/\\/dev-terralego-auran.makina-corpus.net\\/api"
+    ADMIN_HOST: "https:\\/\\/auran-dev.netlify.com\\/"
 
 deploy_dev:
   <<: *deploy_predev
@@ -82,6 +87,7 @@ deploy_qa:
   variables:
     SITE_ID: "auran-qa.netlify.com"
     BACKEND_URL: "https:\\/\\/qa-terralego-auran.makina-corpus.net\\/api"
+    ADMIN_HOST: "https:\\/\\/auran-qa.netlify.com\\/"
 
 deploy_staging:
   <<: *deploy
@@ -93,6 +99,7 @@ deploy_staging:
   variables:
     SITE_ID: "auran-staging.netlify.com"
     BACKEND_URL: "https:\\/\\/staging-terralego-auran.makina-corpus.net\\/api"
+    ADMIN_HOST: "https:\\/\\/auran-staging.netlify.com\\/"
 
 deploy_prod:
   <<: *deploy
@@ -104,3 +111,4 @@ deploy_prod:
   variables:
     SITE_ID: "auran.netlify.com"
     BACKEND_URL: "https:\\/\\/prod-terralego-auran.makina-corpus.net\\/api"
+    ADMIN_HOST: "https:\\/\\/auran.netlify.com\\/"
