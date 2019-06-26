@@ -14,7 +14,7 @@ before_script:
 npm_test:
   before_script:
     - npm ci
-  tags: [shared-ci-docker]
+  tags: [auran-cicd]
   stage: tests
   script:
     - npm run coverage
@@ -23,7 +23,7 @@ npm_test:
 npm_run_lint:
   before_script:
     - npm ci
-  tags: [shared-ci-docker]
+  tags: [auran-cicd]
   stage: tests
   script:
     - npm run lint
@@ -33,7 +33,7 @@ npm_run_lint:
 build:
   before_script:
     - npm ci
-  tags: [shared-ci-docker]
+  tags: [auran-cicd]
   stage: tests
   script:
     - npm run build
@@ -43,7 +43,7 @@ build:
       - build/
 
 .deploy: &deploy # Deploy template
-  tags: [shared-ci-docker]
+  tags: [auran-cicd]
   stage: deploy
   when: manual
   variables:
