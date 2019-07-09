@@ -103,4 +103,17 @@
     text-align: center;
     margin-bottom: 4px;
   }
+
+  .details__list {
+
+    .details__column-label {
+      white-space: normal;
+      padding-right: 18px;
+    }
+
+    .details__column-value {
+      vertical-align: bottom;
+      white-space: nowrap;
+    }
+  }
 }
