@@ -214,7 +214,7 @@ it('should build query with range properties', () => {
     size: 42,
     properties: [{
       type: 'range',
-      value: [1, 2],
+      value: { min: 1, max: 2 },
     }],
   })).toEqual({
     size: 42,
@@ -226,6 +226,32 @@ it('should build query with range properties', () => {
               gte: 1,
               lte: 2,
             },
+          },
+        },
+      },
+    },
+  });
+});
+
+it('should build query with multiselect properties', () => {
+  expect(buildQuery({
+    size: 42,
+    properties: [
+      {
+        type: 'term', value: ['PAYS DE LA LOIRE', 'BRETAGNE'],
+      }],
+  })).toEqual({
+    size: 42,
+    query: {
+      bool: {
+        filter: {
+          bool: {
+            must: { bool: {} },
+            should: [
+              { term: { 0: 'PAYS DE LA LOIRE' } },
+              { wildcard: { 0: '*PAYS DE LA LOIRE*' } },
+              { term: { 0: 'BRETAGNE' } },
+              { wildcard: { 0: '*BRETAGNE*' } }],
           },
         },
       },
