@@ -36,19 +36,17 @@ export const buildQuery = ({
         if (typeof value.min === 'number' && typeof value.max === 'number') {
           const { min, max } = value;
           body.filter('range', property, { gte: +min, lte: +max });
-        } else
-        if (Array.isArray(value)) {
-          const bodyWithFilter = body.filter('bool', q => q);
-          value.forEach(v => {
-            bodyWithFilter.orFilter(type, property, v);
-            bodyWithFilter.orFilter('wildcard', property, `*${v}*`);
-          });
-        } else if (type === 'match' && typeof value === 'string') {
-          body.filter('bool', q => q
-            .orFilter(type, property, value)
-            .orFilter('wildcard', property, `*${value}*`));
         } else {
-          body.filter(type, property, value);
+          const values = Array.isArray(value) ? value : [value];
+          values.forEach(val => {
+            if (type === 'match' && typeof val === 'string') {
+              body.filter('bool', q => q
+                .orFilter(type, property, val)
+                .orFilter('wildcard', property, `*${val}*`));
+            } else {
+              body.filter(type, property, val);
+            }
+          });
         }
       }
     });

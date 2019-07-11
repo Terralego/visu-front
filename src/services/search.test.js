@@ -246,12 +246,10 @@ it('should build query with multiselect properties', () => {
       bool: {
         filter: {
           bool: {
-            must: { bool: {} },
-            should: [
+            must: [
               { term: { 0: 'PAYS DE LA LOIRE' } },
-              { wildcard: { 0: '*PAYS DE LA LOIRE*' } },
               { term: { 0: 'BRETAGNE' } },
-              { wildcard: { 0: '*BRETAGNE*' } }],
+            ],
           },
         },
       },
