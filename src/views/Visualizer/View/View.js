@@ -37,6 +37,33 @@ import translate from './translate';
 
 export const INTERACTION_DISPLAY_DETAILS = 'displayDetails';
 
+function getPropertiesToFilter (properties, propertiesForm, key) {
+  const { type } = propertiesForm.find(({ property }) => property === key);
+  if (properties[key]) {
+    switch (type) {
+      case 'many':
+        return {
+          [`${key}.keyword`]: {
+            type: 'term',
+            value: properties[key],
+          },
+        };
+      case 'range':
+        return {
+          [key]: {
+            type: 'range',
+            value: { min: properties[key][0], max: properties[key][1] },
+          },
+        };
+      case 'single':
+      default:
+        return { [key]: properties[key] };
+    }
+  } else {
+    return {};
+  }
+}
+
 const LayersTreeProps = PropTypes.shape({
   label: PropTypes.string.isRequired,
   layers: PropTypes.arrayOf(PropTypes.string),
@@ -310,16 +337,7 @@ export class Visualizer extends React.Component {
         properties: {
           ...Object.keys(properties).reduce((all, key) => ({
             ...all,
-            ...layer.filters.form.find(({ property }) => property === key).values
-              ? {
-                [`${key}.keyword`]: {
-                  type: 'term',
-                  value: properties[key],
-                },
-              }
-              : {
-                [key]: properties[key],
-              },
+            ...getPropertiesToFilter(properties, layer.filters.form, key),
           }), {}),
           [LAYER_PROPERTY]: { value: layer.filters.layer, type: 'term' },
         },
