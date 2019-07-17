@@ -10,8 +10,10 @@ import population from '../../../images/population.png';
 import habitat from '../../../images/habitat.png';
 import mobilite from '../../../images/mobilite.png';
 import economie from '../../../images/economie.png';
+import infoSign from '../../../images/info-sign.svg';
 
 import './styles.scss';
+import { PartnerButton } from './PartnerButton';
 
 const navHeader = [
   [
@@ -51,6 +53,13 @@ const navHeader = [
       icon: 'icon',
     },
   ], [],
+  [{
+    id: 'nav-partenaires',
+    label: 'Mention Légales',
+    iconPath: infoSign,
+    component: PartnerButton,
+  }],
+
 ];
 
 /* eslint-disable react/no-array-index-key */
