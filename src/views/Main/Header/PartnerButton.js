@@ -31,14 +31,13 @@ export class PartnerButton extends React.Component {
           className={classNames(
             Classes.OVERLAY_SCROLL_CONTAINER,
             Classes.LIGHT,
-            'modal-partner',
+            'modal-mentions-legales',
           )}
           isOpen={isOpen}
           onClose={close}
         >
           <div
             className={classNames(
-              Classes.CARD,
               Classes.ELEVATION_4,
             )}
           >
