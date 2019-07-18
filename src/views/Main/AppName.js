@@ -10,6 +10,7 @@ export const AppName = () => (
         alt="Cartenmain"
       />
     </span>
+    <span className="appName-version">Version Alpha</span>
   </div>
 );
 
