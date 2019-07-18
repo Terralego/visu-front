@@ -6,6 +6,7 @@ import InteractiveMap, { INTERACTION_DISPLAY_TOOLTIP, INTERACTION_ZOOM, INTERACT
 import { DEFAULT_CONTROLS, CONTROL_SEARCH, CONTROL_BACKGROUND_STYLES, CONTROL_PRINT, CONTROLS_TOP_RIGHT } from '@terralego/core/modules/Map';
 import { toggleLayerVisibility, setLayerOpacity } from '@terralego/core/modules/Map/services/mapUtils';
 import { LayersTree } from '@terralego/core/modules/Visualizer';
+import LayersTreeProps from '@terralego/core/modules/Visualizer/types/Layer';
 import classnames from 'classnames';
 import debounce from 'debounce';
 import turfCenter from '@turf/center';
@@ -64,27 +65,6 @@ function getPropertiesToFilter (properties, propertiesForm, key) {
   }
 }
 
-const LayersTreeProps = PropTypes.shape({
-  label: PropTypes.string.isRequired,
-  layers: PropTypes.arrayOf(PropTypes.string),
-  initialState: PropTypes.shape({
-    active: PropTypes.bool,
-    opacity: PropTypes.number,
-  }),
-  // Only displayed to authenticated users
-  private: PropTypes.bool,
-  filters: PropTypes.shape({
-    // Name of layer to apply the filters
-    layer: PropTypes.string,
-  }),
-});
-
-const LayersTreeGroupProps = PropTypes.shape({
-  group: PropTypes.string.isRequired,
-  layers: PropTypes.arrayOf(LayersTreeProps.isRequired),
-  private: PropTypes.bool,
-});
-
 const LAYER_PROPERTY = 'layer.keyword';
 
 const getControls = memoize((displaySearch, displayBackgroundStyles) => [
@@ -105,10 +85,7 @@ const getControls = memoize((displaySearch, displayBackgroundStyles) => [
 export class Visualizer extends React.Component {
   static propTypes = {
     view: PropTypes.shape({
-      layersTree: PropTypes.arrayOf(PropTypes.oneOfType([
-        LayersTreeProps,
-        LayersTreeGroupProps,
-      ])),
+      layersTree: PropTypes.arrayOf(LayersTreeProps),
       interactions: PropTypes.arrayOf(PropTypes.shape({
         interaction: PropTypes.oneOf([
           INTERACTION_DISPLAY_DETAILS,
