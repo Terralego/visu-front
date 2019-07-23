@@ -11,6 +11,13 @@ import Header from './Header';
 
 import './styles.scss';
 
+const sort = (data, column = 0) => data
+  .map((line, index) => ({
+    value: line[column], index,
+  }))
+  .sort((a, b) => a.value - b.value)
+  .map(({ index }) => data[index]);
+
 export class DataTable extends React.Component {
   static propTypes = {
     displayedLayer: PropTypes.shape({
@@ -201,7 +208,7 @@ export class DataTable extends React.Component {
 
     const { hits: { hits, total: resultsTotal } } = resp;
     const newColumns = columns || extractColumns(fields, hits);
-    const results = prepareData(newColumns, hits);
+    const results = sort(prepareData(newColumns, hits));
 
     this.setState({ features: hits, results, resultsTotal, columns: newColumns, loading: false });
   }
