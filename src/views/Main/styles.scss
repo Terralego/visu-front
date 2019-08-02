@@ -118,3 +118,31 @@
     }
   }
 }
+
+// Fix temporary waiting upgrade TerraLego
+.visualizer {
+  .interactive-map__legends {
+    overflow: unset;
+    overflow-y: scroll;
+
+    .tf-legend {
+      min-width: unset;
+      max-width: none;
+      max-height: 350px;
+
+      .tf-legend__only-circles {
+        width: 300px;
+        height: 280px;
+
+        .tf-legend__item {
+          bottom: 50px;
+        }
+      }
+    }
+
+    .tf-legend__title {
+      display: flex;
+      align-self: center;
+    }
+  }
+}
