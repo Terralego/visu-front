@@ -1,7 +1,7 @@
 image: node:10.9.0 # Should match .nvmrc content
 
 stages:
-  - tests
+  - prepare
   - deploy
 
 before_script:
@@ -11,30 +11,30 @@ before_script:
 
 # Tests stage
 
-npm_test:
+Tests:
   before_script:
     - npm ci
   tags: [auran-cicd]
-  stage: tests
+  stage: prepare
   script:
     - npm run coverage
   coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
 
-npm_run_lint:
+Lint:
   before_script:
     - npm ci
   tags: [auran-cicd]
-  stage: tests
+  stage: prepare
   script:
     - npm run lint
 
 # Deploy story book
 
-build:
+Build:
   before_script:
     - npm ci
   tags: [auran-cicd]
-  stage: tests
+  stage: prepare
   script:
     - npm run build
   artifacts:
@@ -51,17 +51,18 @@ build:
     BACKEND_URL: "yourbackend.makina.com"
     ADMIN_HOST: "https:\\/\\/terra-admin-dev.netlify.com\\/"
   dependencies:
-    - build
+    - Build
   script:
     - cat ./build/env.dist.json | sed
       -e "s/<BACKEND_URL>/${BACKEND_URL}/g" > ./build/env.json
     - cat ./build/env.json
-    - cat ./build/_redirects.dist | sed
+    - cat ./_redirects.dist | sed
       -e "s/<ADMIN_HOST>/${ADMIN_HOST}/g" | sed
       -e "s/<BACKEND_URL>/${BACKEND_URL}/g" > ./build/_redirects
-    - npx netlify-cli deploy --site=$SITE_ID --auth=$NETLIFY_ACCESS_TOKEN  --dir=./build --prod
+    - npm i -g netlify-cli
+    - npx netlify deploy --site=$SITE_ID --auth=$NETLIFY_ACCESS_TOKEN  --dir=./build --prod
 
-deploy_predev: &deploy_predev
+Deploy Dev (force): &deploy_predev
   <<: *deploy
   environment:
     name: dev
@@ -71,13 +72,13 @@ deploy_predev: &deploy_predev
     BACKEND_URL: "https:\\/\\/dev-terralego-auran.makina-corpus.net\\/api"
     ADMIN_HOST: "https:\\/\\/terra-admin-dev.netlify.com\\/"
 
-deploy_dev:
+Deploy Dev:
   <<: *deploy_predev
   only:
     - master
   when: always
 
-deploy_qa:
+Deploy QA:
   <<: *deploy
   only:
     - master
@@ -89,7 +90,7 @@ deploy_qa:
     BACKEND_URL: "https:\\/\\/qa-terralego-auran.makina-corpus.net\\/api"
     ADMIN_HOST: "https:\\/\\/terra-admin-qa.netlify.com\\/"
 
-deploy_staging:
+Deploy Staging:
   <<: *deploy
   only:
     - master
@@ -101,7 +102,7 @@ deploy_staging:
     BACKEND_URL: "https:\\/\\/staging-terralego-auran.makina-corpus.net\\/api"
     ADMIN_HOST: "https:\\/\\/terra-adim-staging.netlify.com\\/"
 
-deploy_prod:
+Deploy Prod:
   <<: *deploy
   only:
     - master
