@@ -37,7 +37,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && cp _headers.dist ./build/_headers && cp _redirects.dist ./build/_redirects.dist",
+    "build": "react-scripts build && cp _headers.dist ./build/_headers",
     "test": "react-scripts test",
     "lint": "eslint src",
     "coverage": "npm test -- --coverage",
