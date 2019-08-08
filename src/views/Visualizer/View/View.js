@@ -103,6 +103,9 @@ export class Visualizer extends React.Component {
     }),
     setMap: PropTypes.func,
     initLayersState: PropTypes.func,
+    initialState: PropTypes.shape({
+      tree: PropTypes.bool,
+    }),
   };
 
   static defaultProps = {
@@ -113,6 +116,7 @@ export class Visualizer extends React.Component {
     },
     setMap () {},
     initLayersState () {},
+    initialState: {},
   };
 
   state = {
@@ -128,12 +132,11 @@ export class Visualizer extends React.Component {
   storyRef = React.createRef();
 
   componentDidMount () {
-    const { view: { state: { query } = {} }, getHashContext } = this.props;
+    const { view: { state: { query } = {} }, initialState: { tree } } = this.props;
     if (query) {
       this.debouncedSearchQuery();
     }
-    const { isLayersTreeVisible } = getHashContext();
-    if (isLayersTreeVisible === 'false') {
+    if (tree === false) {
       this.setState({ isLayersTreeVisible: false });
     }
     this.setInteractions();
@@ -297,12 +300,12 @@ export class Visualizer extends React.Component {
   }
 
   toggleLayersTree = () => {
-    const { setHashContext } = this.props;
+    const { setCurrentState } = this.props;
     this.setState(({ isLayersTreeVisible }) => ({
       isLayersTreeVisible: !isLayersTreeVisible,
     }), () => {
       const { isLayersTreeVisible } = this.state;
-      return setHashContext(!isLayersTreeVisible && this.state);
+      return setCurrentState({ tree: isLayersTreeVisible && undefined });
     });
   };
 
@@ -744,7 +747,6 @@ export class Visualizer extends React.Component {
                   <LayersTree
                     layersTree={layersTree}
                     onChange={this.updateLayersTreeState}
-                    initialState={layersTreeState}
                     fetchPropertyValues={fetchPropertyValues}
                     fetchPropertyRange={fetchPropertyRange}
                   />
@@ -785,4 +787,4 @@ export class Visualizer extends React.Component {
   }
 }
 
-export default withHashContext('isLayersTreeVisible')(withRouter(Visualizer));
+export default connectState('initialState', 'setCurrentState')(withRouter(Visualizer));
