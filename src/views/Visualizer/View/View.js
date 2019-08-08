@@ -2,9 +2,21 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { Classes } from '@blueprintjs/core';
-import { withHashContext } from '@terralego/core/modules/Hash/withHashContext';
-import InteractiveMap, { INTERACTION_DISPLAY_TOOLTIP, INTERACTION_ZOOM, INTERACTION_HIGHLIGHT, INTERACTION_FN } from '@terralego/core/modules/Map/InteractiveMap';
-import { DEFAULT_CONTROLS, CONTROL_SEARCH, CONTROL_BACKGROUND_STYLES, CONTROL_PRINT, CONTROLS_TOP_RIGHT } from '@terralego/core/modules/Map';
+import { connectState } from '@terralego/core/modules/State/context';
+import InteractiveMap, {
+  INTERACTION_DISPLAY_TOOLTIP,
+  INTERACTION_ZOOM,
+  INTERACTION_HIGHLIGHT,
+  INTERACTION_FN,
+} from '@terralego/core/modules/Map/InteractiveMap';
+import {
+  DEFAULT_CONTROLS,
+  CONTROL_SEARCH,
+  CONTROL_BACKGROUND_STYLES,
+  CONTROL_PRINT,
+  CONTROLS_TOP_RIGHT,
+  CONTROL_PERMALINK,
+} from '@terralego/core/modules/Map';
 import { toggleLayerVisibility, setLayerOpacity } from '@terralego/core/modules/Map/services/mapUtils';
 import { LayersTree } from '@terralego/core/modules/Visualizer';
 import LayersTreeProps from '@terralego/core/modules/Visualizer/types/Layer';
@@ -79,6 +91,9 @@ const getControls = memoize((displaySearch, displayBackgroundStyles) => [
     position: CONTROLS_TOP_RIGHT,
   }, {
     control: CONTROL_PRINT,
+    position: CONTROLS_TOP_RIGHT,
+  }, {
+    control: CONTROL_PERMALINK,
     position: CONTROLS_TOP_RIGHT,
   },
 ].filter(defined => defined));
