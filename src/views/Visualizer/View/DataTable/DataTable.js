@@ -1,4 +1,3 @@
-
 import React from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
@@ -208,7 +207,9 @@ export class DataTable extends React.Component {
 
     const { hits: { hits, total: resultsTotal } } = resp;
     const newColumns = columns || extractColumns(fields, hits);
-    const results = sort(prepareData(newColumns, hits));
+    const results = sort(prepareData(newColumns, hits, {
+      decimals: 1,
+    }));
 
     this.setState({ features: hits, results, resultsTotal, columns: newColumns, loading: false });
   }
