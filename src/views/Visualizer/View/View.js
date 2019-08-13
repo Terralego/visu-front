@@ -762,6 +762,7 @@ export class Visualizer extends React.Component {
                   <LayersTree
                     layersTree={layersTree}
                     onChange={this.updateLayersTreeState}
+                    initialLayersTreeState={layersTreeState}
                     fetchPropertyValues={fetchPropertyValues}
                     fetchPropertyRange={fetchPropertyRange}
                   />
