@@ -48,6 +48,8 @@ import Widgets from './Widgets';
 import { generateClusterList } from './interactions';
 import BoundingBoxObserver from '../../../components/BoundingBoxObserver';
 import translate from './translate';
+import brandLogo from '../../../images/logo-auran.svg';
+import appLogo from '../../../images/cart_en_main.png';
 
 export const INTERACTION_DISPLAY_DETAILS = 'displayDetails';
 
@@ -737,7 +739,20 @@ export class Visualizer extends React.Component {
           controls={controls}
           hash
           hashName="map"
-        />
+        >
+          <div className="interactive-map__header">
+            <img src={appLogo} alt="Cart'en main" className="app-logo" />
+            {!!legends.length && (
+              <h2>
+                {legends.map(legend => legend.title).join(',')}
+              </h2>
+            )}
+            <img src={brandLogo} alt="Auran" className="brand-logo" />
+          </div>
+          <div className="interactive-map__footer">
+            Sources : Cart'en Main - AURAN -  INSEE, RP 2015.
+          </div>
+        </InteractiveMap>
         <div className={`
           visualizer-view
           ${isLayersTreeVisible ? 'is-layers-tree-visible' : ''}
