@@ -1,8 +1,9 @@
 $transitionSpeed: .2s;
+$bg-visualizer: rgb(49, 64, 77);
 
 .visualizer {
   width: 100%;
-  background: rgb(49, 64, 77);
+  background: $bg-visualizer;
 
   &-view {
     position: relative;
@@ -160,6 +161,10 @@ $transitionSpeed: .2s;
       }
     }
   }
+}
+
+.visualizer .visualizer__print + .visualizer-view {
+  background: $bg-visualizer;
 }
 
 .bp3-transition-container {

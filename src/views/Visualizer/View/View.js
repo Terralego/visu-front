@@ -2,8 +2,21 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { Classes } from '@blueprintjs/core';
-import InteractiveMap, { INTERACTION_DISPLAY_TOOLTIP, INTERACTION_ZOOM, INTERACTION_HIGHLIGHT, INTERACTION_FN } from '@terralego/core/modules/Map/InteractiveMap';
-import { DEFAULT_CONTROLS, CONTROL_SEARCH, CONTROL_BACKGROUND_STYLES, CONTROL_PRINT, CONTROLS_TOP_RIGHT } from '@terralego/core/modules/Map';
+import { connectState } from '@terralego/core/modules/State/context';
+import InteractiveMap, {
+  INTERACTION_DISPLAY_TOOLTIP,
+  INTERACTION_ZOOM,
+  INTERACTION_HIGHLIGHT,
+  INTERACTION_FN,
+} from '@terralego/core/modules/Map/InteractiveMap';
+import {
+  DEFAULT_CONTROLS,
+  CONTROL_SEARCH,
+  CONTROL_BACKGROUND_STYLES,
+  CONTROL_PRINT,
+  CONTROLS_TOP_RIGHT,
+  CONTROL_PERMALINK,
+} from '@terralego/core/modules/Map';
 import { toggleLayerVisibility, setLayerOpacity } from '@terralego/core/modules/Map/services/mapUtils';
 import { LayersTree } from '@terralego/core/modules/Visualizer';
 import LayersTreeProps from '@terralego/core/modules/Visualizer/types/Layer';
@@ -79,6 +92,9 @@ const getControls = memoize((displaySearch, displayBackgroundStyles) => [
   }, {
     control: CONTROL_PRINT,
     position: CONTROLS_TOP_RIGHT,
+  }, {
+    control: CONTROL_PERMALINK,
+    position: CONTROLS_TOP_RIGHT,
   },
 ].filter(defined => defined));
 
@@ -102,6 +118,9 @@ export class Visualizer extends React.Component {
     }),
     setMap: PropTypes.func,
     initLayersState: PropTypes.func,
+    initialState: PropTypes.shape({
+      tree: PropTypes.bool,
+    }),
   };
 
   static defaultProps = {
@@ -112,6 +131,7 @@ export class Visualizer extends React.Component {
     },
     setMap () {},
     initLayersState () {},
+    initialState: {},
   };
 
   state = {
@@ -127,9 +147,12 @@ export class Visualizer extends React.Component {
   storyRef = React.createRef();
 
   componentDidMount () {
-    const { view: { state: { query } = {} } } = this.props;
+    const { view: { state: { query } = {} }, initialState: { tree } } = this.props;
     if (query) {
       this.debouncedSearchQuery();
+    }
+    if (tree === false) {
+      this.setState({ isLayersTreeVisible: false });
     }
     this.setInteractions();
   }
@@ -292,10 +315,14 @@ export class Visualizer extends React.Component {
   }
 
   toggleLayersTree = () => {
+    const { setCurrentState } = this.props;
     this.setState(({ isLayersTreeVisible }) => ({
       isLayersTreeVisible: !isLayersTreeVisible,
-    }));
-  }
+    }), () => {
+      const { isLayersTreeVisible } = this.state;
+      return setCurrentState({ tree: isLayersTreeVisible && undefined });
+    });
+  };
 
   searchQuery = ({ target: { value: query } }) => {
     const { searchQuery } = this.props;
@@ -709,6 +736,7 @@ export class Visualizer extends React.Component {
           translate={translate}
           controls={controls}
           hash
+          hashName="map"
         />
         <div className={`
           visualizer-view
@@ -734,7 +762,7 @@ export class Visualizer extends React.Component {
                   <LayersTree
                     layersTree={layersTree}
                     onChange={this.updateLayersTreeState}
-                    initialState={layersTreeState}
+                    initialLayersTreeState={layersTreeState}
                     fetchPropertyValues={fetchPropertyValues}
                     fetchPropertyRange={fetchPropertyRange}
                   />
@@ -775,4 +803,4 @@ export class Visualizer extends React.Component {
   }
 }
 
-export default withRouter(Visualizer);
+export default connectState('initialState', 'setCurrentState')(withRouter(Visualizer));
