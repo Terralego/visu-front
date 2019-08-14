@@ -5,7 +5,7 @@ import { Card } from '@blueprintjs/core';
 const PartnerPage = () => (
   <Card>
     <div className="Mentionss-legales">
-      <h3 className="Mentionss-legales-title">Mentions Légales</h3>
+      <h3 className="Mentionss-legales-title">Mentions légales</h3>
       <div className="Mentionss-legales-container">
         <p>
           Le portail Cart’en main est édité par l'Agence d'Urbanisme de la Région Nantaise (Auran).
