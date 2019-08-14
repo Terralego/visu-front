@@ -737,20 +737,19 @@ export class Visualizer extends React.Component {
           onClusterUpdate={onClusterUpdate}
           translate={translate}
           controls={controls}
-          hash
-          hashName="map"
+          hash="map"
         >
           <div className="interactive-map__header">
             <img src={appLogo} alt="Cart'en main" className="app-logo" />
             {!!legends.length && (
               <h2>
-                {legends.map(legend => legend.title).join(',')}
+                {legends.map(legend => legend.title).join(', ')}
               </h2>
             )}
             <img src={brandLogo} alt="Auran" className="brand-logo" />
           </div>
           <div className="interactive-map__footer">
-            Sources : Cart'en Main - AURAN -  INSEE, RP 2015.
+            Sources : Cart'en Main - AURAN - INSEE, RP 2016.
           </div>
         </InteractiveMap>
         <div className={`
