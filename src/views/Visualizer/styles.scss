@@ -163,8 +163,55 @@ $bg-visualizer: rgb(49, 64, 77);
   }
 }
 
-.visualizer .visualizer__print + .visualizer-view {
-  background: $bg-visualizer;
+.interactive-map__header {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: #e0e0e0;
+  height: 50px;
+
+  img {
+    height: 50px;
+    width: auto;
+  }
+  h2 {
+    float: left;
+  }
+  .app-logo {
+    background: url('../../images/AURAN-fond.png');
+    float: left;
+    margin-right: 1em;
+  }
+  .brand-logo {
+    float: right;
+  }
+}
+
+.interactive-map__footer {
+  display: none;
+  position: absolute;
+  padding: .5em;
+  bottom: 0;
+  left: 2em;
+  background: #ffffff;
+  transform: rotate(270deg);
+  transform-origin: bottom left;
+}
+
+.visualizer .visualizer__print {
+  + .visualizer-view {
+    background: $bg-visualizer;
+    left: 58px;
+  }
+
+  .mapboxgl-ctrl-bottom-left {
+    display: none;
+  }
+  .interactive-map__header, .interactive-map__footer {
+    display: block;
+  }
 }
 
 .bp3-transition-container {
