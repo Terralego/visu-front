@@ -55,7 +55,7 @@ const navHeader = [
   ], [],
   [{
     id: 'nav-partenaires',
-    label: 'Mentions Légales',
+    label: 'Mentions légales',
     iconPath: infoSign,
     component: PartnerButton,
   }],
