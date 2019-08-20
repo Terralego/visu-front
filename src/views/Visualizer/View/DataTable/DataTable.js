@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Table from '@terralego/core/modules/Table';
 import debounce from 'debounce';
 
-import { extractColumns, prepareData, exportData } from './dataUtils';
+import { extractColumns, prepareData, exportSpreadsheet } from './dataUtils';
 import searchService, { getExtent } from '../../../../services/search';
 import Header from './Header';
 
@@ -146,7 +146,7 @@ export class DataTable extends React.Component {
     const data = [columnLabels, ...results]
       .map(dataLine => exportableColumnIndexes.map(index => dataLine[index]));
 
-    exportData({ data, name });
+    exportSpreadsheet({ name, data, source: ['Sources : Cart\'en Main - AURAN - INSEE, RP 2015.'] });
   }
 
   resetColumns () {
