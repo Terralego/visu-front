@@ -16,6 +16,7 @@ import {
   CONTROL_PRINT,
   CONTROLS_TOP_RIGHT,
   CONTROL_PERMALINK,
+  CONTROL_HOME,
 } from '@terralego/core/modules/Map';
 import { toggleLayerVisibility, setLayerOpacity } from '@terralego/core/modules/Map/services/mapUtils';
 import { LayersTree } from '@terralego/core/modules/Visualizer';
@@ -85,6 +86,9 @@ const LAYER_PROPERTY = 'layer.keyword';
 const getControls = memoize((displaySearch, displayBackgroundStyles) => [
   displaySearch && {
     control: CONTROL_SEARCH,
+    position: CONTROLS_TOP_RIGHT,
+  }, {
+    control: CONTROL_HOME,
     position: CONTROLS_TOP_RIGHT,
   },
   ...DEFAULT_CONTROLS,
