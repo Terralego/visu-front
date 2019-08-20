@@ -98,7 +98,10 @@ export const exportData = async ({ name, data }) => {
   const xlsx = await import('xlsx');
   const workbook = xlsx.utils.book_new();
   const sheet = xlsx.utils.aoa_to_sheet(data);
-  xlsx.utils.book_append_sheet(workbook, sheet, name);
+  // xslx has a hard limit to 31 non-special chars
+  // see https://support.office.com/en-us/article/Rename-a-worksheet-3F1F7148-EE83-404D-8EF0-9FF99FBAD1F9
+  const cleanedName = name.replace(/[\][*?/\\:]/gi, '').substring(0, 30);
+  xlsx.utils.book_append_sheet(workbook, sheet, cleanedName);
   xlsx.writeFile(workbook, `${name}.xlsx`);
 };
 
