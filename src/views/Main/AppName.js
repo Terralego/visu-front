@@ -10,7 +10,7 @@ export const AppName = () => (
         alt="Cartenmain"
       />
     </span>
-    <span className="appName-version">Version Alpha</span>
+    <span className="appName-version">Version bêta</span>
   </div>
 );
 
