@@ -13,7 +13,7 @@ $bg-visualizer: rgb(49, 64, 77);
     flex: auto;
     overflow: hidden;
     width: 100%;
-    
+
     &__center,
     .col-data,
     .col-widgets {
@@ -22,15 +22,18 @@ $bg-visualizer: rgb(49, 64, 77);
       flex-direction: column;
       min-width: 0;
     }
+
     .col-data {
       position: relative;
     }
+
     .col-widgets {
       flex: none;
       @media print {
         display: none;
       }
     }
+
     .row {
       flex: auto;
       display: flex;
@@ -46,6 +49,7 @@ $bg-visualizer: rgb(49, 64, 77);
         opacity: 1;
         transition: opacity 0.2s ease-in;
       }
+
       &--is-resizing {
         .mapboxgl-canvas {
           width: 100% !important;
@@ -62,29 +66,36 @@ $bg-visualizer: rgb(49, 64, 77);
     &-anchor-top-right .mapboxgl-popup-tip {
       border-bottom-color: #394b59;
     }
+
     &-anchor-bottom .mapboxgl-popup-tip,
     &-anchor-bottom-left .mapboxgl-popup-tip,
     &-anchor-bottom-right .mapboxgl-popup-tip {
       border-top-color: #394b59;
     }
+
     &-anchor-left .mapboxgl-popup-tip {
       border-right-color: #394b59;
     }
+
     &-anchor-right .mapboxgl-popup-tip {
       border-left-color: #394b59;
     }
+
     .mapboxgl-popup-content {
       color: #fff;
       background-color: #394b59;
       font-size: 1.2em;
       padding: 5px 15px;
+
       h1 {
         font-size: 1em;
       }
+
       ul {
         padding: 0;
         list-style-position: inside;
       }
+
       .mapboxgl-popup-close-button {
         display: none;
       }
@@ -99,50 +110,60 @@ $bg-visualizer: rgb(49, 64, 77);
     transition: transform .2s ease-in;
     z-index: 999;
   }
+
   .mapboxgl-ctrl-top-left,
   .mapboxgl-ctrl-bottom-left {
     transform: translate3d(3rem, 0, 0);
   }
+
   &--with {
     $layersTreeWidth: 22.5rem;
     $tableHeight: 33vh;
     $widgetsWidth: 20rem;
     $detailsWidth: 30.5rem;
+
     &-layers-tree {
       .mapboxgl-ctrl-top-left,
       .mapboxgl-ctrl-bottom-left {
         transform: translate3d($layersTreeWidth, 0, 0);
       }
     }
+
     &-table {
       .mapboxgl-ctrl-bottom-left {
         transform: translate3d(3rem, -$tableHeight, 0);
       }
+
       .mapboxgl-ctrl-bottom-right,
       .interactive-map__legends {
         transform: translate3d(0, -$tableHeight, 0);
       }
+
       &.visualizer--with-layers-tree .mapboxgl-ctrl-bottom-left {
         transform: translate3d($layersTreeWidth, -$tableHeight, 0);
       }
     }
+
     &-widgets {
       .mapboxgl-ctrl-top-right,
       .mapboxgl-ctrl-bottom-right,
       .interactive-map__legends {
         transform: translate3d(-$widgetsWidth, 0, 0);
       }
+
       &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
       &.visualizer--with-table .interactive-map__legends {
         transform: translate3d(-$widgetsWidth, -$tableHeight, 0);
       }
     }
+
     &-details {
       .mapboxgl-ctrl-top-right,
       .mapboxgl-ctrl-bottom-right,
       .interactive-map__legends {
         transform: translate3d(-$detailsWidth, 0, 0);
       }
+
       &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
       &.visualizer--with-table .interactive-map__legends {
         transform: translate3d(-$detailsWidth, -$tableHeight, 0);
@@ -154,6 +175,7 @@ $bg-visualizer: rgb(49, 64, 77);
         .interactive-map__legends {
           transform: translate3d(-#{$widgetsWidth + $detailsWidth}, 0, 0);
         }
+
         &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
         &.visualizer--with-table .interactive-map__legends {
           transform: translate3d(-#{$widgetsWidth + $detailsWidth}, -$tableHeight, 0);
@@ -176,14 +198,17 @@ $bg-visualizer: rgb(49, 64, 77);
     height: 50px;
     width: auto;
   }
+
   h2 {
     float: left;
   }
+
   .app-logo {
     background: url('../../images/AURAN-fond.png');
     float: left;
     margin-right: 1em;
   }
+
   .brand-logo {
     float: right;
   }
@@ -209,6 +234,7 @@ $bg-visualizer: rgb(49, 64, 77);
   .mapboxgl-ctrl-bottom-left {
     display: none;
   }
+
   .interactive-map__header, .interactive-map__footer {
     display: block;
   }
@@ -253,6 +279,7 @@ $bg-visualizer: rgb(49, 64, 77);
     font-family: "SFProText-Regular", Arial, Helvetica, sans-serif;
     margin-right: 8px;
   }
+
   &-version {
     font-size: 0.8rem;
     font-family: "SFProText-light", Arial, Helvetica, sans-serif;
@@ -274,7 +301,12 @@ $bg-visualizer: rgb(49, 64, 77);
       display: inline;
     }
   }
-  .tf-legend{
+
+  .interactive-map__legends {
+    margin-right: 30px;
+  }
+
+  .tf-legend {
     max-width: 280px;
 
     &__title {
