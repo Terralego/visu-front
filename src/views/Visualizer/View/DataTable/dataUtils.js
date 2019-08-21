@@ -90,14 +90,23 @@ export const prepareData = (fields = [], results, settings) => {
 /**
  * Export data in xls from state
  *
- * @param {string} name
+ * @param {string} name Filename
  * @param {[]} data
+ * @param {string[]} source References displayed at the end
  * @returns {Promise<void>}
  */
-export const exportData = async ({ name, data }) => {
+export const exportSpreadsheet = async ({ name, data, source }) => {
   const xlsx = await import('xlsx');
   const workbook = xlsx.utils.book_new();
   const sheet = xlsx.utils.aoa_to_sheet(data);
+
+  if (source.length > 0) {
+    xlsx.utils.sheet_add_aoa(sheet, [
+      [],
+      source,
+    ], { origin: -1 });
+  }
+
   // xslx has a hard limit to 31 non-special chars
   // see https://support.office.com/en-us/article/Rename-a-worksheet-3F1F7148-EE83-404D-8EF0-9FF99FBAD1F9
   const cleanedName = name.replace(/[\][*?/\\:]/gi, '').substring(0, 30);
