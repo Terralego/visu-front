@@ -83,10 +83,11 @@ function getPropertiesToFilter (properties, propertiesForm, key) {
 
 const LAYER_PROPERTY = 'layer.keyword';
 
-const getControls = memoize((displaySearch, displayBackgroundStyles) => [
+const getControls = memoize((displaySearch, displayBackgroundStyles, disableSearch) => [
   displaySearch && {
     control: CONTROL_SEARCH,
     position: CONTROLS_TOP_RIGHT,
+    disabled: disableSearch,
   }, {
     control: CONTROL_HOME,
     position: CONTROLS_TOP_RIGHT,
@@ -249,6 +250,12 @@ export class Visualizer extends React.Component {
           && Object
             .values(filters)
             .some(a => a));
+  }
+
+  get activeAndSearchableLayers () {
+    const { layersTreeState } = this.props;
+    return filterLayersStatesFromLayersState(layersTreeState, ({ active }) => !!active)
+      .filter(([{ filters: { layer, mainField } = {} }]) => layer && mainField);
   }
 
   setInteractions () {
@@ -483,9 +490,10 @@ export class Visualizer extends React.Component {
   };
 
   searchInMap = async query => {
-    const { layersTreeState } = this.props;
-    const layers = filterLayersStatesFromLayersState(layersTreeState, ({ active }) => !!active)
-      .filter(([{ filters: { layer, mainField } = {} }]) => layer && mainField);
+    const { activeAndSearchableLayers: layers } = this;
+
+    if (!layers.length) return undefined;
+
     const { responses } = await searchService.msearch(layers.map(([{ filters: { layer } }]) => ({
       query,
       properties: {
@@ -695,6 +703,7 @@ export class Visualizer extends React.Component {
       setLegends,
       storyRef,
       onClusterUpdate,
+      activeAndSearchableLayers,
     } = this;
     const isDetailsVisible = !!details;
     const [{ features: featuresForDetail = [] } = {}] = isDetailsVisible
@@ -708,6 +717,7 @@ export class Visualizer extends React.Component {
     const controls = getControls(
       displaySearchInMap,
       Array.isArray(mapProps.backgroundStyle),
+      !activeAndSearchableLayers.length,
     );
 
     if (displaySearchInMap) {
