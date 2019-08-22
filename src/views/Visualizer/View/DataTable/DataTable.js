@@ -146,7 +146,7 @@ export class DataTable extends React.Component {
     const data = [columnLabels, ...results]
       .map(dataLine => exportableColumnIndexes.map(index => dataLine[index]));
 
-    exportSpreadsheet({ name, data, source: ['Sources : Cart\'en Main - AURAN - INSEE, RP 2015.'] });
+    exportSpreadsheet({ name, data, source: ['Sources : Cart\'en Main - AURAN - INSEE, RP 2016.'] });
   }
 
   resetColumns () {
