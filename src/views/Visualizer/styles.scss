@@ -61,6 +61,8 @@ $bg-visualizer: rgb(49, 64, 77);
   }
 
   .mapboxgl-popup {
+    z-index: 9999;
+
     &-anchor-top .mapboxgl-popup-tip,
     &-anchor-top-left .mapboxgl-popup-tip,
     &-anchor-top-right .mapboxgl-popup-tip {
@@ -294,7 +296,6 @@ $bg-visualizer: rgb(49, 64, 77);
   right: 0;
   bottom: 0;
   left: 0;
-  z-index: 1;
 
   .mapboxgl-ctrl-attrib {
     p {
