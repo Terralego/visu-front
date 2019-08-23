@@ -6,7 +6,7 @@
     "@blueprintjs/core": "^3.8.0",
     "@blueprintjs/datetime": "^3.7.2",
     "@blueprintjs/icons": "^3.3.0",
-    "@terralego/core": "^1.2.1",
+    "@terralego/core": "^1.2.2",
     "@turf/bbox": "^6.0.1",
     "@turf/center": "^6.0.1",
     "bodybuilder": "^2.2.16",
