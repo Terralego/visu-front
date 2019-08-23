@@ -13,7 +13,7 @@ $transitionSpeed: .2s;
   flex-shrink: 0;
   border-radius: 0;
   padding: 0 0.7rem;
-  z-index: 100;
+  z-index: 99;
   box-shadow: 8px 0 8px 8px rgba(16,22,26,0.20), 9px 8px 24px 0 rgba(16,22,26,0.40);
   
   &__header {
