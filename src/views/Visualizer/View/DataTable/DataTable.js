@@ -65,7 +65,7 @@ export class DataTable extends React.Component {
 
   componentDidUpdate({
     displayedLayer: {
-      filters: { layer: prevLayer } = {},
+      filters: { layer: prevLayer, fields: prevFields } = {},
       state: { filters: prevFilters } = {},
     } = {},
     query: prevQuery,
@@ -75,15 +75,15 @@ export class DataTable extends React.Component {
     const {
       displayedLayer,
       displayedLayer: {
-        filters: { layer } = {},
+        filters: { layer, fields } = {},
         state: { filters } = {},
       } = {},
       query,
     } = this.props;
     const { extent } = this.state;
-
     if (displayedLayer) {
-      if (layer !== prevLayer) {
+      if (layer !== prevLayer
+       || prevFields !== fields) {
         this.resetColumns();
       }
 
@@ -91,6 +91,7 @@ export class DataTable extends React.Component {
         || query !== prevQuery
         || filters !== prevFilters
         || (extent && this.extentChanged())
+        || prevFields !== fields
         || extent !== prevExtent) { // This test must keep at last position
         this.debouncedLoadResults();
       }
