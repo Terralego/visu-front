@@ -19,7 +19,7 @@ import {
   CONTROL_HOME,
 } from '@terralego/core/modules/Map';
 import { toggleLayerVisibility, setLayerOpacity } from '@terralego/core/modules/Map/services/mapUtils';
-import { LayersTree } from '@terralego/core/modules/Visualizer';
+import { LayersTreeProvider, LayersTree } from '@terralego/core/modules/Visualizer/LayersTree';
 import LayersTreeProps from '@terralego/core/modules/Visualizer/types/Layer';
 import classnames from 'classnames';
 import debounce from 'debounce';
@@ -54,7 +54,7 @@ import appLogo from '../../../images/terravisu-logo.png';
 
 export const INTERACTION_DISPLAY_DETAILS = 'displayDetails';
 
-function getPropertiesToFilter(properties, propertiesForm, key) {
+function getPropertiesToFilter (properties, propertiesForm, key) {
   const { type } = propertiesForm.find(({ property }) => property === key);
   if (properties[key]) {
     switch (type) {
@@ -136,8 +136,8 @@ export class Visualizer extends React.Component {
       interactions: [],
       map: {},
     },
-    setMap() { },
-    initLayersState() { },
+    setMap () { },
+    initLayersState () { },
     initialState: {},
   };
 
@@ -153,7 +153,7 @@ export class Visualizer extends React.Component {
 
   storyRef = React.createRef();
 
-  componentDidMount() {
+  componentDidMount () {
     const { view: { state: { query } = {} }, initialState: { tree } } = this.props;
     if (query) {
       this.debouncedSearchQuery();
@@ -164,7 +164,7 @@ export class Visualizer extends React.Component {
     this.setInteractions();
   }
 
-  componentDidUpdate({
+  componentDidUpdate ({
     view: {
       interactions: prevInteractions,
       layersTree: prevLayersTree,
@@ -212,7 +212,7 @@ export class Visualizer extends React.Component {
     }
   }
 
-  get legends() {
+  get legends () {
     const { layersTreeState } = this.props;
     const { legends } = this.state;
     const legendsFromLayersTree = Array.from(layersTreeState.entries())
@@ -240,7 +240,7 @@ export class Visualizer extends React.Component {
     return [...(legends || []), ...(legendsFromLayersTree || [])];
   }
 
-  get isSearching() {
+  get isSearching () {
     const { query, layersTreeState } = this.props;
     return query
       || filterLayersStatesFromLayersState(layersTreeState)
@@ -252,13 +252,13 @@ export class Visualizer extends React.Component {
             .some(a => a));
   }
 
-  get activeAndSearchableLayers() {
+  get activeAndSearchableLayers () {
     const { layersTreeState } = this.props;
     return filterLayersStatesFromLayersState(layersTreeState, ({ active }) => !!active)
       .filter(([{ filters: { layer, mainField } = {} }]) => layer && mainField);
   }
 
-  setInteractions() {
+  setInteractions () {
     const { view: { interactions = [] } } = this.props;
     const newInteractions = interactions.map(interaction => {
       if (interaction.interaction === INTERACTION_DISPLAY_DETAILS) {
@@ -408,7 +408,7 @@ export class Visualizer extends React.Component {
 
     const totalFeatures = idsResponses.reduce((fullTotal, { hits: { total = 0 } = {} }) =>
       fullTotal + total,
-      0);
+    0);
 
     this.setLayersResult(filters.map(({ layer }, index) => {
       const total = countResponses[index].hits
@@ -564,7 +564,7 @@ export class Visualizer extends React.Component {
     setLayersTreeState(layersTreeState);
   }
 
-  displayDetails(feature, interaction, { addHighlight, removeHighlight }) {
+  displayDetails (feature, interaction, { addHighlight, removeHighlight }) {
     const { details: { hide = () => { } } = {} } = this.state;
     const { highlight } = interaction;
     hide();
@@ -596,7 +596,7 @@ export class Visualizer extends React.Component {
   }
 
 
-  updateLayersTree() {
+  updateLayersTree () {
     const { map } = this.props;
     const { features } = this.state;
 
@@ -664,7 +664,7 @@ export class Visualizer extends React.Component {
     if (current) current.displayStep();
   }
 
-  updatePrivateLayers() {
+  updatePrivateLayers () {
     const { layersTreeState: prevLayersTreeState, setLayersTreeState, authenticated } = this.props;
     const layersTreeState = new Map(Array.from(prevLayersTreeState).map(([layer, state]) => [
       layer,
@@ -676,7 +676,7 @@ export class Visualizer extends React.Component {
     setLayersTreeState(layersTreeState);
   }
 
-  render() {
+  render () {
     const {
       layersTreeState,
       view: {
@@ -732,103 +732,105 @@ export class Visualizer extends React.Component {
     const isStory = layersTree.type === 'story';
 
     return (
-      <div className={classnames({
-        visualizer: true,
-        'visualizer--with-layers-tree': isLayersTreeVisible,
-        'visualizer--with-table': isTableVisible,
-        'visualizer--with-widgets': isWidgetsVisible,
-        'visualizer--with-details': isDetailsVisible,
-      })}
+      <LayersTreeProvider
+        layersTree={layersTree}
+        onChange={this.updateLayersTreeState}
+        initialLayersTreeState={layersTreeState}
+        fetchPropertyValues={fetchPropertyValues}
+        fetchPropertyRange={fetchPropertyRange}
       >
-        <div className={`
-          visualizer-view
-          ${isLayersTreeVisible ? 'is-layers-tree-visible' : ''}
-        `}
+        <div className={classnames({
+          visualizer: true,
+          'visualizer--with-layers-tree': isLayersTreeVisible,
+          'visualizer--with-table': isTableVisible,
+          'visualizer--with-widgets': isWidgetsVisible,
+          'visualizer--with-details': isDetailsVisible,
+        })}
         >
-          {layersTree && (
-            <MapNavigation
-              title={title}
-              toggleLayersTree={toggleLayersTree}
-              visible={isLayersTreeVisible}
-              renderHeader={renderHeader}
-            >
-              {isStory
-                ? (
-                  <Story
-                    ref={storyRef}
-                    story={layersTreeToStory(layersTree)}
-                    setLegends={setLegends}
-                  />
-                )
-                : (
-                  <LayersTree
-                    layersTree={layersTree}
-                    onChange={this.updateLayersTreeState}
-                    initialLayersTreeState={layersTreeState}
-                    fetchPropertyValues={fetchPropertyValues}
-                    fetchPropertyRange={fetchPropertyRange}
-                  />
-                )}
-            </MapNavigation>
-          )}
+          <div className={`
+            visualizer-view
+            ${isLayersTreeVisible ? 'is-layers-tree-visible' : ''}
+          `}
+          >
+            {layersTree && (
+              <MapNavigation
+                title={title}
+                toggleLayersTree={toggleLayersTree}
+                visible={isLayersTreeVisible}
+                renderHeader={renderHeader}
+              >
+                {isStory
+                  ? (
+                    <Story
+                      ref={storyRef}
+                      story={layersTreeToStory(layersTree)}
+                      setLegends={setLegends}
+                    />
+                  )
+                  : (
+                    <LayersTree />
+                  )}
+              </MapNavigation>
+            )}
 
-          <div className="visualizer-view__center col">
-            <div className="row">
-              <div className="col-data">
-                <BoundingBoxObserver
-                  onChange={setVisibleBoundingBox}
-                  className={classnames({
-                    'visualizer-view__map': true,
-                    'visualizer-view__map--is-resizing': mapIsResizing,
-                  })}
-                >
-                  <TooManyResults count={totalFeatures} />
+            <div className="visualizer-view__center col">
+              <div className="row">
+                <div className="col-data">
+                  <BoundingBoxObserver
+                    onChange={setVisibleBoundingBox}
+                    className={classnames({
+                      'visualizer-view__map': true,
+                      'visualizer-view__map--is-resizing': mapIsResizing,
+                    })}
+                  >
+                    <TooManyResults count={totalFeatures} />
 
-                  <Details
-                    visible={isDetailsVisible}
-                    features={featuresForDetail.map(_id => ({ _id }))}
-                    {...details}
-                    onClose={hideDetails}
-                    onChange={this.onHighlightChange}
-                  />
-                </BoundingBoxObserver>
-                <DataTable />
-              </div>
-              <div className="col-widgets">
-                <Widgets />
+                    <Details
+                      visible={isDetailsVisible}
+                      features={featuresForDetail.map(_id => ({ _id }))}
+                      {...details}
+                      onClose={hideDetails}
+                      onChange={this.onHighlightChange}
+                    />
+                  </BoundingBoxObserver>
+                  <DataTable />
+                </div>
+                <div className="col-widgets">
+                  <Widgets />
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <InteractiveMap
-          {...mapProps}
-          className={Classes.DARK}
-          interactions={interactions}
-          legends={legends}
-          onMapLoaded={resetMap}
-          onMapUpdate={refreshLayers}
-          onStyleChange={refreshLayers}
-          onClusterUpdate={onClusterUpdate}
-          translate={translate}
-          controls={controls}
-          hash="map"
-        >
-          <div className="interactive-map__header">
-            <img src={appLogo} alt="TerraVisu" className="app-logo" />
-            {/* Waiting more information from customer */}
-            {/* {!!legends.length && (
-              <h2>
-                {legends.map(legend => legend.title).join(', ')}
-              </h2>
-            )} */}
-            <img src={brandLogo} alt="TerraVisu" className="brand-logo" />
-          </div>
-          <div className="interactive-map__footer">
-            Credits…
-          </div>
-        </InteractiveMap>
-      </div>
+          <InteractiveMap
+            {...mapProps}
+            className={Classes.DARK}
+            interactions={interactions}
+            legends={legends}
+            onMapLoaded={resetMap}
+            onMapUpdate={refreshLayers}
+            onStyleChange={refreshLayers}
+            onClusterUpdate={onClusterUpdate}
+            translate={translate}
+            controls={controls}
+            hash="map"
+          >
+            <div className="interactive-map__header">
+              <img src={appLogo} alt="TerraVisu" className="app-logo" />
+              {/* Waiting more information from customer */}
+              {/* {!!legends.length && (
+                <h2>
+                  {legends.map(legend => legend.title).join(', ')}
+                </h2>
+              )} */}
+              <img src={brandLogo} alt="TerraVisu" className="brand-logo" />
+            </div>
+            <div className="interactive-map__footer">
+              Credits…
+            </div>
+          </InteractiveMap>
+        </div>
+      </LayersTreeProvider>
     );
   }
 }
