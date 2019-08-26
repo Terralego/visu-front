@@ -1,0 +1,29 @@
+.search {
+  width: calc(100% - 400px);
+  padding: 5px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  
+  &__label {
+    margin-right: 8px;
+    font-size: 14px;
+    letter-spacing: 0.75px;
+    cursor: pointer;
+  }
+  
+  &__input {
+    min-width: 240px;
+    width: 33vw;
+
+    .bp3-input {
+      font-weight: 300;
+    }
+  }
+
+  @media print {
+    display: none;
+  }
+}
+

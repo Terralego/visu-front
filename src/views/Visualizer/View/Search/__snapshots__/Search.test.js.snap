@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render correctly 1`] = `
+<div
+  className="bp3-dark search"
+>
+  <label
+    className="search__label"
+    htmlFor="visualiser-search"
+  >
+    Rechercher
+  </label>
+  <p>
+    InputGroup
+  </p>
+</div>
+`;

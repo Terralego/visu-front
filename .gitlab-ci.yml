@@ -1,0 +1,79 @@
+image: node:10.9.0 # Should match .nvmrc content
+
+stages:
+  - prepare
+  - deploy
+
+before_script:
+  - node --version
+  - npm --version
+  - ls -alh
+
+# Tests stage
+
+Tests:
+  before_script:
+    - npm ci
+  tags: [visu-cicd]
+  stage: prepare
+  script:
+    - npm run coverage
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+
+Lint:
+  before_script:
+    - npm ci
+  tags: [visu-cicd]
+  stage: prepare
+  script:
+    - npm run lint
+
+# Deploy story book
+
+Build:
+  before_script:
+    - npm ci
+  tags: [visu-cicd]
+  stage: prepare
+  script:
+    - npm run build
+  artifacts:
+    expire_in: 3 days
+    paths:
+      - build/
+
+.deploy: &deploy # Deploy template
+  tags: [visu-cicd]
+  stage: deploy
+  when: manual
+  variables:
+    SITE_ID: "yournamehere.netlify.com"
+    BACKEND_URL: "yourbackend.makina.com"
+    ADMIN_HOST: "https:\\/\\/terra-admin-dev.netlify.com\\/"
+  dependencies:
+    - Build
+  script:
+    - cat ./build/env.dist.json | sed
+      -e "s/<BACKEND_URL>/${BACKEND_URL}/g" > ./build/env.json
+    - cat ./build/env.json
+    - cat ./_redirects.dist | sed
+      -e "s/<ADMIN_HOST>/${ADMIN_HOST}/g" | sed
+      -e "s/<BACKEND_URL>/${BACKEND_URL}/g" > ./build/_redirects
+    - npm i -g netlify-cli
+    - npx netlify deploy --site=$SITE_ID --auth=$NETLIFY_ACCESS_TOKEN  --dir=./build --prod
+
+Deploy Dev (force): &deploy_predev
+  <<: *deploy
+  environment:
+    name: dev
+    url: https://terravisu-demo.netlify.com
+  variables:
+    SITE_ID: "terravisu-demo.netlify.com"
+    BACKEND_URL: "https:\\/\\/terravisu-demo.makina-corpus.net\\/api"
+    ADMIN_HOST: "https:\\/\\/terra-admin-dev.netlify.com\\/"
+
+Deploy Dev:
+  <<: *deploy_predev
+  only:
+    - master
+  when: always

@@ -1,0 +1,161 @@
+@mixin breakpoint($point) {
+  @if $point == desktop {
+    @media (min-width: 70em) {
+      @content ;
+    }
+  } @else if $point == laptop {
+    @media (min-width: 64em) {
+      @content ;
+    }
+  } @else if $point == tablet {
+    @media (min-width: 50em) {
+      @content ;
+    }
+  } @else if $point == phablet {
+    @media (min-width: 37.5em) {
+      @content ;
+    }
+  } @else if $point == mobileonly {
+    @media (max-width: 37.5em) {
+      @content ;
+    }
+
+  }
+}
+
+
+.navBar .navBar__group .active .welcome {
+  background-color: #156571;
+  margin-bottom: .3rem;
+
+  img {
+    width: 2.4rem;
+    height: auto;
+  }
+}
+
+.logo {
+  max-width: 100%;
+}
+
+.header-button {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  .icon {
+    opacity: 1;
+    width: 1.5rem;
+    transition: .2s ease-in filter;
+  }
+}
+
+.bp3-navbar-group .active .header-button {
+  background-color: #2FB0C5;
+}
+
+.modal-signin {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  &__form {
+    max-width: 30rem;
+  }
+}
+
+.modal-mentions-legales {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  z-index: 112;
+
+  .bp3-overlay-content {
+    border-radius: 30px;
+
+    @include breakpoint(mobileonly) {
+      max-width: 14rem;
+      max-height: 30rem;
+    }
+
+    @include breakpoint(phablet) {
+      max-width: 40rem;
+      max-height: 50rem;
+    }
+
+    @include breakpoint(tablet) {
+      max-width: 40rem;
+      max-height: 60rem;
+    }
+
+    @include breakpoint(laptop) {
+      max-width: 70rem;
+      max-height: 60rem;
+    }
+
+  }
+
+  .bp3-card {
+    border-radius: 30px;
+  }
+
+  .mentions-legales {
+    color: #394b59;
+    padding: 2em 8em;
+
+    @include breakpoint(mobileonly) {
+      padding: 0;
+    }
+
+    .mentions-legales-container {
+      font-family: "SFProText-Regular", Arial, Helvetica, sans-serif;
+    }
+
+    &-title {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 500;
+      font-family: "SFProText-Medium", Arial, Helvetica, sans-serif;
+    }
+
+    .container-block {
+      > h4 {
+        margin-bottom: 0;
+        font-family: "SFProText-Medium", Arial, Helvetica, sans-serif;
+        padding-bottom: 0.4rem;
+      }
+
+      > address {
+        font-style: normal;
+      }
+
+      p {
+        margin-bottom: 0.2rem;
+      }
+
+      a {
+        color: #394b59;
+      }
+
+      a:hover {
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+.navBar__group {
+  padding-top: .2rem;
+
+  button {
+    outline: none;
+  }
+
+  .bp3-popover-wrapper {
+    margin: 0 0 1rem 0;
+    background-color: transparent;
+  }
+}
