@@ -19,7 +19,7 @@ import {
   CONTROL_HOME,
 } from '@terralego/core/modules/Map';
 import { toggleLayerVisibility, setLayerOpacity } from '@terralego/core/modules/Map/services/mapUtils';
-import { LayersTree } from '@terralego/core/modules/Visualizer';
+import { LayersTreeProvider, LayersTree } from '@terralego/core/modules/Visualizer/LayersTree';
 import LayersTreeProps from '@terralego/core/modules/Visualizer/types/Layer';
 import classnames from 'classnames';
 import debounce from 'debounce';
@@ -732,103 +732,105 @@ export class Visualizer extends React.Component {
     const isStory = layersTree.type === 'story';
 
     return (
-      <div className={classnames({
-        visualizer: true,
-        'visualizer--with-layers-tree': isLayersTreeVisible,
-        'visualizer--with-table': isTableVisible,
-        'visualizer--with-widgets': isWidgetsVisible,
-        'visualizer--with-details': isDetailsVisible,
-      })}
+      <LayersTreeProvider
+        layersTree={layersTree}
+        onChange={this.updateLayersTreeState}
+        initialLayersTreeState={layersTreeState}
+        fetchPropertyValues={fetchPropertyValues}
+        fetchPropertyRange={fetchPropertyRange}
       >
-        <div className={`
-          visualizer-view
-          ${isLayersTreeVisible ? 'is-layers-tree-visible' : ''}
-        `}
+        <div className={classnames({
+          visualizer: true,
+          'visualizer--with-layers-tree': isLayersTreeVisible,
+          'visualizer--with-table': isTableVisible,
+          'visualizer--with-widgets': isWidgetsVisible,
+          'visualizer--with-details': isDetailsVisible,
+        })}
         >
-          {layersTree && (
-            <MapNavigation
-              title={title}
-              toggleLayersTree={toggleLayersTree}
-              visible={isLayersTreeVisible}
-              renderHeader={renderHeader}
-            >
-              {isStory
-                ? (
-                  <Story
-                    ref={storyRef}
-                    story={layersTreeToStory(layersTree)}
-                    setLegends={setLegends}
-                  />
-                )
-                : (
-                  <LayersTree
-                    layersTree={layersTree}
-                    onChange={this.updateLayersTreeState}
-                    initialLayersTreeState={layersTreeState}
-                    fetchPropertyValues={fetchPropertyValues}
-                    fetchPropertyRange={fetchPropertyRange}
-                  />
-                )}
-            </MapNavigation>
-          )}
+          <div className={`
+            visualizer-view
+            ${isLayersTreeVisible ? 'is-layers-tree-visible' : ''}
+          `}
+          >
+            {layersTree && (
+              <MapNavigation
+                title={title}
+                toggleLayersTree={toggleLayersTree}
+                visible={isLayersTreeVisible}
+                renderHeader={renderHeader}
+              >
+                {isStory
+                  ? (
+                    <Story
+                      ref={storyRef}
+                      story={layersTreeToStory(layersTree)}
+                      setLegends={setLegends}
+                    />
+                  )
+                  : (
+                    <LayersTree />
+                  )}
+              </MapNavigation>
+            )}
 
-          <div className="visualizer-view__center col">
-            <div className="row">
-              <div className="col-data">
-                <BoundingBoxObserver
-                  onChange={setVisibleBoundingBox}
-                  className={classnames({
-                    'visualizer-view__map': true,
-                    'visualizer-view__map--is-resizing': mapIsResizing,
-                  })}
-                >
-                  <TooManyResults count={totalFeatures} />
+            <div className="visualizer-view__center col">
+              <div className="row">
+                <div className="col-data">
+                  <BoundingBoxObserver
+                    onChange={setVisibleBoundingBox}
+                    className={classnames({
+                      'visualizer-view__map': true,
+                      'visualizer-view__map--is-resizing': mapIsResizing,
+                    })}
+                  >
+                    <TooManyResults count={totalFeatures} />
 
-                  <Details
-                    visible={isDetailsVisible}
-                    features={featuresForDetail.map(_id => ({ _id }))}
-                    {...details}
-                    onClose={hideDetails}
-                    onChange={this.onHighlightChange}
-                  />
-                </BoundingBoxObserver>
-                <DataTable />
-              </div>
-              <div className="col-widgets">
-                <Widgets />
+                    <Details
+                      visible={isDetailsVisible}
+                      features={featuresForDetail.map(_id => ({ _id }))}
+                      {...details}
+                      onClose={hideDetails}
+                      onChange={this.onHighlightChange}
+                    />
+                  </BoundingBoxObserver>
+                  <DataTable />
+                </div>
+                <div className="col-widgets">
+                  <Widgets />
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <InteractiveMap
-          {...mapProps}
-          className={Classes.DARK}
-          interactions={interactions}
-          legends={legends}
-          onMapLoaded={resetMap}
-          onMapUpdate={refreshLayers}
-          onStyleChange={refreshLayers}
-          onClusterUpdate={onClusterUpdate}
-          translate={translate}
-          controls={controls}
-          hash="map"
-        >
-          <div className="interactive-map__header">
-            <img src={appLogo} alt="Cart'en main" className="app-logo" />
-            {/* Waiting more information from customer */}
-            {/* {!!legends.length && (
-              <h2>
-                {legends.map(legend => legend.title).join(', ')}
-              </h2>
-            )} */}
-            <img src={brandLogo} alt="Auran" className="brand-logo" />
-          </div>
-          <div className="interactive-map__footer">
-            Sources : Cart'en Main - AURAN - INSEE, RP 2016.
-          </div>
-        </InteractiveMap>
-      </div>
+          <InteractiveMap
+            {...mapProps}
+            className={Classes.DARK}
+            interactions={interactions}
+            legends={legends}
+            onMapLoaded={resetMap}
+            onMapUpdate={refreshLayers}
+            onStyleChange={refreshLayers}
+            onClusterUpdate={onClusterUpdate}
+            translate={translate}
+            controls={controls}
+            hash="map"
+          >
+            <div className="interactive-map__header">
+              <img src={appLogo} alt="Cart'en main" className="app-logo" />
+              {/* Waiting more information from customer */}
+              {/* {!!legends.length && (
+                <h2>
+                  {legends.map(legend => legend.title).join(', ')}
+                </h2>
+              )} */}
+              <img src={brandLogo} alt="Auran" className="brand-logo" />
+            </div>
+            <div className="interactive-map__footer">
+              Sources : Cart'en Main - AURAN - INSEE, RP 2016.
+            </div>
+          </InteractiveMap>
+        </div>
+      </LayersTreeProvider>
     );
   }
 }
