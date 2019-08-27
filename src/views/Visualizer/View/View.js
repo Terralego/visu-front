@@ -660,6 +660,7 @@ export class Visualizer extends React.Component {
         map: mapProps,
         layersTree,
       },
+      map,
       mapIsResizing,
       setVisibleBoundingBox,
       renderHeader,
@@ -709,6 +710,7 @@ export class Visualizer extends React.Component {
 
     return (
       <LayersTreeProvider
+        map={map}
         layersTree={layersTree}
         onChange={this.updateLayersTreeState}
         initialLayersTreeState={layersTreeState}
