@@ -5,7 +5,10 @@ import Table from '@terralego/core/modules/Table';
 import debounce from 'debounce';
 
 import { extractColumns, prepareData, exportSpreadsheet } from './dataUtils';
-import searchService, { getExtent } from '../../../../services/search';
+import searchService, {
+  getExtent,
+  getSearchParamFromProperty,
+} from '../../../../services/search';
 import Header from './Header';
 
 import './styles.scss';
@@ -181,16 +184,7 @@ export class DataTable extends React.Component {
       properties: {
         ...Object.keys(filters).reduce((all, key) => ({
           ...all,
-          ...form.find(({ property }) => property === key).values
-            ? {
-              [`${key}.keyword`]: {
-                type: 'term',
-                value: filters[key],
-              },
-            }
-            : {
-              [key]: filters[key],
-            },
+          ...getSearchParamFromProperty(filters, form, key),
         }), {}),
         'layer.keyword': { value: layer, type: 'term' },
       },
