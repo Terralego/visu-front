@@ -725,6 +725,33 @@ export class Visualizer extends React.Component {
           'visualizer--with-details': isDetailsVisible,
         })}
         >
+          <InteractiveMap
+            {...mapProps}
+            className={Classes.DARK}
+            interactions={interactions}
+            legends={legends}
+            onMapLoaded={resetMap}
+            onMapUpdate={refreshLayers}
+            onStyleChange={refreshLayers}
+            onClusterUpdate={onClusterUpdate}
+            translate={translate}
+            controls={controls}
+            hash="map"
+          >
+            <div className="interactive-map__header">
+              <img src={appLogo} alt="TerraVisu" className="app-logo" />
+              {/* Waiting more information from customer */}
+              {/* {!!legends.length && (
+                <h2>
+                  {legends.map(legend => legend.title).join(', ')}
+                </h2>
+              )} */}
+              <img src={brandLogo} alt="TerraVisu" className="brand-logo" />
+            </div>
+            <div className="interactive-map__footer">
+              Credits…
+            </div>
+          </InteractiveMap>
           <div className={`
             visualizer-view
             ${isLayersTreeVisible ? 'is-layers-tree-visible' : ''}
@@ -779,34 +806,6 @@ export class Visualizer extends React.Component {
               </div>
             </div>
           </div>
-
-          <InteractiveMap
-            {...mapProps}
-            className={Classes.DARK}
-            interactions={interactions}
-            legends={legends}
-            onMapLoaded={resetMap}
-            onMapUpdate={refreshLayers}
-            onStyleChange={refreshLayers}
-            onClusterUpdate={onClusterUpdate}
-            translate={translate}
-            controls={controls}
-            hash="map"
-          >
-            <div className="interactive-map__header">
-              <img src={appLogo} alt="TerraVisu" className="app-logo" />
-              {/* Waiting more information from customer */}
-              {/* {!!legends.length && (
-                <h2>
-                  {legends.map(legend => legend.title).join(', ')}
-                </h2>
-              )} */}
-              <img src={brandLogo} alt="TerraVisu" className="brand-logo" />
-            </div>
-            <div className="interactive-map__footer">
-              Credits…
-            </div>
-          </InteractiveMap>
         </div>
       </LayersTreeProvider>
     );
