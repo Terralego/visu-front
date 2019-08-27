@@ -11,6 +11,42 @@ export const getExtent = map => {
   return [[lngMin, latMax], [lngMax, latMin]];
 };
 
+/**
+ * Construct an object representing the current properties to search on.
+ *
+ * @param properties {{}} Filter properties
+ * @param form {{}} Schema form containing filters
+ * @param key {string} Property key
+ * @return {{}} An object usable by searchService (Search.search() or Search.msearch())
+ */
+export const getSearchParamFromProperty = (properties, form, key) => {
+  const { type, values } = form.find(({ property }) => property === key);
+  if (properties[key]) {
+    // First case, we have a range, the search should be within its bounds
+    if (type === 'range') {
+      return {
+        [key]: {
+          type: 'range',
+          value: { min: properties[key][0], max: properties[key][1] },
+        },
+      };
+    }
+    // Else we have a single or many, the form depends on if we provided values
+    if (values) {
+      // Then its a keyword, because we already know the values
+      return {
+        [`${key}.keyword`]: {
+          type: 'term',
+          value: properties[key],
+        },
+      };
+    }
+    // Or else its a "full text" search
+    return { [key]: properties[key] };
+  }
+  return {};
+};
+
 export const buildQuery = ({
   query = '',
   boundingBox,
