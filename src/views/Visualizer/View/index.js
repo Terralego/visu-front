@@ -1,5 +1,6 @@
 import React from 'react';
 import { connectAuthProvider } from '@terralego/core/modules/Auth';
+import { withTranslation } from 'react-i18next';
 
 import { connectView } from './context';
 import View from './View';
@@ -17,7 +18,7 @@ const ConnectedView = connectAuthProvider('authenticated')(connectView(
   'searchQuery',
   'setVisibleBoundingBox',
   'visibleBoundingBox',
-)(View));
+)(withTranslation()(View)));
 
 export default props => (
   <ViewProvider {...props}>
