@@ -115,7 +115,6 @@ $bg-visualizer: rgb(49, 64, 77);
   .mapboxgl-ctrl-top-left,
   .mapboxgl-ctrl-bottom-left {
     transform: translate3d(3rem, 0, 0);
-    margin: -0.5rem 0.5rem ;
   }
 
   &--with {
@@ -128,7 +127,6 @@ $bg-visualizer: rgb(49, 64, 77);
       .mapboxgl-ctrl-top-left,
       .mapboxgl-ctrl-bottom-left {
         transform: translate3d($layersTreeWidth, 0, 0);
-        margin: -0.5rem 0.5rem;
       }
     }
 
@@ -162,7 +160,6 @@ $bg-visualizer: rgb(49, 64, 77);
 
     &-details {
       .mapboxgl-ctrl-top-right,
-      .mapboxgl-ctrl-bottom-right,
       .interactive-map__legends {
         transform: translate3d(-$detailsWidth, 0, 0);
       }
@@ -289,29 +286,6 @@ $bg-visualizer: rgb(49, 64, 77);
   }
 }
 
-// Override Mapbox position logo
-.visualizer {
-  &.visualizer--with-layers-tree {
-    .mapboxgl-ctrl-logo {
-      pointer-events: none;
-      position: absolute;
-      width: 100%;
-      left: calc(100vw - 733px);
-      bottom: 0.75rem;
-    }
-  }
-
-  &:not(.visualizer--with-layers-tree) {
-    .mapboxgl-ctrl-logo {
-      pointer-events: none;
-      position: absolute;
-      width: 100%;
-      left: calc(100vw - 420px);
-      bottom: 0.75rem;
-    }
-  }
-}
-
 .interactive-map {
   position: absolute;
   height: auto;
@@ -328,17 +302,12 @@ $bg-visualizer: rgb(49, 64, 77);
     }
   }
 
-  .mapboxgl-ctrl:hover{
-    color: #202B33;
-  }
-
   .interactive-map__legends {
     margin-right: 2rem;
   }
 
   .tf-legend {
     max-width: 280px;
-    margin-bottom: 1em;
 
     &__title {
       max-width: 248px;

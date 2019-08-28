@@ -1,5 +1,15 @@
 @import '../../theme.scss';
 
+$navWidth: 4rem;
+$layersTreeWidth: 22.5rem;
+$widgetsWidth: 20rem;
+$detailsWidth: 30.5rem;
+$mapboxContributionsWidth: 18.5rem;
+$mapboxControlScaleWidth: 4rem;
+
+$tableHeight: 33vh;
+
+
 .main {
   display: flex;
 
@@ -143,6 +153,62 @@
     .tf-legend__title {
       display: flex;
       align-self: center;
+    }
+  }
+}
+
+// Override TerraLego
+.mapboxgl-ctrl:hover {
+  color: #202B33;
+}
+
+.interactive-map {
+  .tf-legend {
+    margin-bottom: 1em;
+  }
+}
+
+.visualizer {
+  .mapboxgl-ctrl-bottom-left {
+    transform: translate3d(3rem, 0, 0);
+    margin: -0.5rem 0.5rem;
+  }
+
+  & .visualizer--with-layers-tree {
+    .mapboxgl-ctrl-bottom-left {
+      transition: none;
+      transform: none;
+      margin: -0.5rem 0.5rem;
+    }
+
+    .mapboxgl-ctrl-bottom-left > .mapboxgl-ctrl-scale {
+      transition: transform .2s ease-in;
+      transition-delay: 4s;
+      transform: translate3d($layersTreeWidth, 0, 0);
+    }
+  }
+
+}
+
+// Override Mapbox position logo
+.visualizer {
+  &.visualizer--with-layers-tree {
+    .mapboxgl-ctrl-logo {
+      pointer-events: none;
+      position: absolute;
+      width: 100%;
+      left: calc(100vw - (#{$layersTreeWidth} + #{$navWidth} + #{$mapboxContributionsWidth}));
+      bottom: 0.75rem;
+    }
+  }
+
+  &:not(.visualizer--with-layers-tree) {
+    .mapboxgl-ctrl-logo {
+      pointer-events: none;
+      position: absolute;
+      width: 100%;
+      left: calc(100vw - (#{$navWidth} + #{$mapboxContributionsWidth} + 3rem));
+      bottom: 0.75rem;
     }
   }
 }
