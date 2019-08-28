@@ -88,6 +88,22 @@ const getControls = memoize((
   },
 ].filter(Boolean));
 
+/**
+ * Get an array of active layers state from layersTreeState
+ *
+ * @param {Map} layersTreeState
+ * @returns {Array} Array of active layers & corresponding state
+ */
+const getActiveLayersState = layersTreeState => {
+  const activeLayersState = [];
+  layersTreeState.forEach((layerState, layer) => {
+    if (layerState.active) {
+      activeLayersState.push([layer, layerState]);
+    }
+  });
+  return activeLayersState;
+};
+
 export class Visualizer extends React.Component {
   static propTypes = {
     view: PropTypes.shape({
@@ -545,7 +561,20 @@ export class Visualizer extends React.Component {
   }
 
   updateLayersTreeState = layersTreeState => {
-    const { setLayersTreeState } = this.props;
+    const { setLayersTreeState, layersTreeState: prevLayersTreeState } = this.props;
+
+    const prevActiveItems = getActiveLayersState(prevLayersTreeState);
+    const activeItems = getActiveLayersState(layersTreeState);
+
+    /**
+     * Disable all previously enabled layers
+     * (So we limit enabling only a single layer at a time)
+     */
+    if (activeItems.length > prevActiveItems.length) {
+      prevActiveItems.forEach(([prevItem, prevItemState]) =>
+        layersTreeState.set(prevItem, { ...prevItemState, active: false }));
+    }
+
     setLayersTreeState(layersTreeState);
   }
 
