@@ -2,14 +2,68 @@
 
 .main {
   display: flex;
-
   &__header {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    flex: 0 0 50px;
-  }
+    flex: 0 0 3.35rem;
+    z-index: 100;
 
+    &__target {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      z-index: 105;
+    }
+   
+    &--mobile {
+      flex: 0 0 10rem;
+      transform: translateX(0rem);
+      margin-left: -7.65rem;
+      transition: transform .2s ease-in;
+
+      .navBar__group {
+        display: flex;
+        padding: .5rem;
+
+        a, >span {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          align-content: space-between;
+          font-size: .7rem;
+          text-align: right;
+          outline: none;
+          text-decoration: none;
+          width: 9.5rem;
+          height: 3rem;
+
+          .header-button-label {
+            color: #f5f8fa;
+            display: table-cell;
+            padding-right: 1rem;
+            width: 10rem;
+            margin: 0;
+          }
+        }
+        .header-button {
+          width: 2.25rem;
+          height: 2.25rem;
+          margin: auto;
+          align-items: center;
+        }
+        .active .header-button-label {
+          font-weight: 600;
+          font-size: .75rem;
+        }
+      }
+      &--open {
+        transform: translateX(7.65rem);
+      }
+    }
+  }
   &__content {
     display: flex;
     flex: 1;
@@ -29,21 +83,17 @@
   }
 }
 
-.main .navBar {
+.navBar {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: auto;
   flex: 1;
   padding: 0;
-  z-index: 1000;
-  background-color: #156571;
-
   &__group {
     flex-direction: column;
     height: auto;
   }
-
   // Below override blueprint
   .bp3-overlay {
     white-space: nowrap;
@@ -109,7 +159,6 @@
 
     .details__column-label {
       white-space: normal;
-      padding-right: 18px;
     }
 
     .details__column-value {

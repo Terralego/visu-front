@@ -1,3 +1,5 @@
+@import '../variables.scss'; 
+
 $transitionSpeed: .2s;
 $bg-visualizer: rgb(49, 64, 77);
 
@@ -286,6 +288,7 @@ $bg-visualizer: rgb(49, 64, 77);
   &-version {
     font-size: 0.8rem;
     font-family: "SFProText-light", Arial, Helvetica, sans-serif;
+    font-weight: 400;
   }
 }
 
@@ -297,7 +300,7 @@ $bg-visualizer: rgb(49, 64, 77);
   right: 0;
   bottom: 0;
   left: 0;
-  z-index: 1;
+  z-index: 40;
 
   .mapboxgl-ctrl-attrib {
     p {
@@ -319,5 +322,98 @@ $bg-visualizer: rgb(49, 64, 77);
 }
 
 .filters-panel {
-  z-index: 999;
+  z-index: 90;
+}
+
+@media(min-width: $breakpoints-tablet) and (max-width: $breakpoints-desktop) and (orientation: landscape) {
+  #welcome {
+    img {
+      width: 2.4rem / $scaleRatio;
+    }
+  }
+
+  .modal-signin__form {
+    max-width: 30rem / $scaleRatio;
+    min-width: 20rem / $scaleRatio;
+  }
+  .partner-logo {
+    max-width: 10rem / $scaleRatio;
+    margin: 1rem / $scaleRatio;
+    max-height: 6.25rem / $scaleRatio;
+  }
+  .navBar__group {
+    padding-top: .2rem / $scaleRatio;
+    .bp3-popover-wrapper {
+      margin: 0 0 (1rem / $scaleRatio) 0;
+    }
+  }
+
+  .main__header {
+    flex: 0 0 3.35rem;
+  }
+
+  .profile-form {
+    width: 20rem / $scaleRatio;
+  }
+
+  .appName {
+    &-title {
+      font-size: 1.4rem / $scaleRatio;
+      margin-right: .5rem / $scaleRatio;
+    }
+    &-version {
+      font-size: 0.8rem / $scaleRatio;
+    }
+  }
+  .visualizer {
+    &--with {
+      $layersTreeWidth: 20.2rem;
+      $tableHeight: 33vh;
+      $widgetsWidth: 16rem;
+      $detailsWidth: 16.5rem;
+      &-layers-tree {
+        .mapboxgl-ctrl-top-left,
+        .mapboxgl-ctrl-bottom-left {
+          transform: translate3d($layersTreeWidth, 0, 0);
+        }
+        &.visualizer--with-table .mapboxgl-ctrl-bottom-left {
+          transform: translate3d($layersTreeWidth, -$tableHeight, 0);
+        }
+      }
+      &-widgets {
+        .mapboxgl-ctrl-top-right,
+        .mapboxgl-ctrl-bottom-right,
+        .interactive-map__legends {
+          transform: translate3d(-$widgetsWidth, 0, 0);
+        }
+        &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
+        &.visualizer--with-table .interactive-map__legends {
+          transform: translate3d(-$widgetsWidth, -$tableHeight, 0);
+        }
+      }
+      &-details {
+        .mapboxgl-ctrl-top-right,
+        .mapboxgl-ctrl-bottom-right,
+        .interactive-map__legends {
+          transform: translate3d(-$detailsWidth, 0, 0);
+        }
+        &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
+        &.visualizer--with-table .interactive-map__legends {
+          transform: translate3d(-$detailsWidth, -$tableHeight, 0);
+        }
+
+        &.visualizer--with-widgets {
+          .mapboxgl-ctrl-top-right,
+          .mapboxgl-ctrl-bottom-right,
+          .interactive-map__legends {
+            transform: translate3d(-#{$widgetsWidth + $detailsWidth}, 0, 0);
+          }
+          &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
+          &.visualizer--with-table .interactive-map__legends {
+            transform: translate3d(-#{$widgetsWidth + $detailsWidth}, -$tableHeight, 0);
+          }
+        }
+      }
+    }
+  }
 }
