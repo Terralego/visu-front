@@ -10,7 +10,7 @@ export const AppName = () => (
         alt="TerraVisu"
       />
     </span>
-    <span className="appName-version">Version bêta</span>
+    <span className="appName-version">v0.1</span>
   </div>
 );
 
