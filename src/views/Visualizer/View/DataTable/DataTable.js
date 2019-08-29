@@ -59,14 +59,14 @@ export class DataTable extends React.Component {
 
   debouncedLoadResults = debounce(() => this.loadResults(), 500);
 
-  componentDidMount() {
+  componentDidMount () {
     const { displayedLayer } = this.props;
     if (displayedLayer) {
       this.debouncedLoadResults();
     }
   }
 
-  componentDidUpdate({
+  componentDidUpdate ({
     displayedLayer: {
       filters: { layer: prevLayer, fields: prevFields } = {},
       state: { filters: prevFilters } = {},
@@ -86,7 +86,7 @@ export class DataTable extends React.Component {
     const { extent } = this.state;
     if (displayedLayer) {
       if (layer !== prevLayer
-       || prevFields !== fields) {
+        || prevFields !== fields) {
         this.resetColumns();
       }
 
@@ -150,14 +150,32 @@ export class DataTable extends React.Component {
     const data = [columnLabels, ...results]
       .map(dataLine => exportableColumnIndexes.map(index => dataLine[index]));
 
-    exportSpreadsheet({ name, data, source: ['Source: Terravisu'] });
-  }
+    exportSpreadsheet({
+      name,
+      data,
+      callback: (xlsx, sheet) => {
+        xlsx.utils.sheet_add_aoa(sheet, [
+          [],
+          ['Source: Terravisu'],
+        ], { origin: -1 });
+        const wholeRange = xlsx.utils.decode_range(sheet['!ref']);
+        const lastCell = sheet[xlsx.utils.encode_cell({
+          c: 0,
+          r: wholeRange.e.r,
+        })];
+        lastCell.l = {
+          Target: 'http://github.com/terralego',
+          Tooltip: 'Terravisu',
+        };
+      },
+    });
+  };
 
-  resetColumns() {
+  resetColumns () {
     this.setState({ columns: null });
   }
 
-  extentChanged() {
+  extentChanged () {
     const { map, visibleBoundingBox } = this.props;
     const prevExtent = this.prevExtent || [[], []];
     this.prevExtent = getExtent(map, visibleBoundingBox);
@@ -166,7 +184,7 @@ export class DataTable extends React.Component {
     return !(a === aa && b === bb && c === cc && d === dd);
   }
 
-  async loadResults() {
+  async loadResults () {
     const {
       displayedLayer: { filters: { layer, fields, form }, state: { filters = {} } = {} },
       query,
@@ -209,7 +227,7 @@ export class DataTable extends React.Component {
     this.setState({ features: hits, results, resultsTotal, columns: newColumns, loading: false });
   }
 
-  render() {
+  render () {
     const { displayedLayer } = this.props;
 
     const {
