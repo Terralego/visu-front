@@ -55,7 +55,7 @@ export class Visualizer extends React.Component {
     const cached = this.getCurrentViewSetting();
     if (cached) {
       await true; // This await is needed to force a unmount of View component
-      this.setState({ loading: false });
+      this.setState({ loading: false, notfound: false });
       return;
     }
     const viewConfig = await fetchViewConfig(viewName);
@@ -76,6 +76,7 @@ export class Visualizer extends React.Component {
           table: [],
         },
       },
+      notfound: false,
       loading: false,
     });
   }

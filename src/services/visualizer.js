@@ -5,6 +5,10 @@ import population from '../images/population.png';
 import economie from '../images/economie.png';
 import mobilite from '../images/mobilite.png';
 
+// logos path map for view usage.
+// This is a quick workaround to be able to choose an icon
+// from the backend. Next step is to have a media management
+// from admin
 const logos = {
   population,
   economie,
@@ -13,12 +17,19 @@ const logos = {
 
 export const fetchViewConfig = async viewName => {
   try {
+    console.log('loading', viewName);
     const config = await Api.request(`geolayer/view/${viewName}/`);
+
+    // Replace '/api/' part in urls with the API_HOST value to be able to reach the
+    // configured backend
     const configWithHost = JSON.parse(JSON.stringify(config).replace(/"\/api(\/[^"]+)"/g, `"${Api.host}$1"`));
+
     const { layersTree, map: { customStyle: { layers } = {} } = {} } = configWithHost;
+
     configWithHost.map = configWithHost.map || {};
     configWithHost.map.customStyle = configWithHost.map.customStyle || {};
     configWithHost.map.customStyle.layers = sortCustomLayers(layers, layersTree);
+
     return configWithHost;
   } catch (e) {
     return null;
