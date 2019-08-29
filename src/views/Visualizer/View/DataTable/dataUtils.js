@@ -92,19 +92,16 @@ export const prepareData = (fields = [], results, settings) => {
  *
  * @param {string} name Filename
  * @param {[]} data
- * @param {string[]} source References displayed at the end
+ * @param {function} callback Function to be called just before saving sheet
  * @returns {Promise<void>}
  */
-export const exportSpreadsheet = async ({ name, data, source }) => {
+export const exportSpreadsheet = async ({ name, data, callback }) => {
   const xlsx = await import('xlsx');
   const workbook = xlsx.utils.book_new();
   const sheet = xlsx.utils.aoa_to_sheet(data);
 
-  if (source.length > 0) {
-    xlsx.utils.sheet_add_aoa(sheet, [
-      [],
-      source,
-    ], { origin: -1 });
+  if (callback) {
+    callback(xlsx, sheet, workbook);
   }
 
   // xslx has a hard limit to 31 non-special chars
