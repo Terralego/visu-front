@@ -150,8 +150,26 @@ export class DataTable extends React.Component {
     const data = [columnLabels, ...results]
       .map(dataLine => exportableColumnIndexes.map(index => dataLine[index]));
 
-    exportSpreadsheet({ name, data, source: ['Sources : Cart\'en Main - AURAN - INSEE, RP 2016.'] });
-  }
+    exportSpreadsheet({
+      name,
+      data,
+      callback: (xlsx, sheet) => {
+        xlsx.utils.sheet_add_aoa(sheet, [
+          [],
+          ["Sources : Cart'en Main - AURAN - INSEE, RP 2016."],
+        ], { origin: -1 });
+        const wholeRange = xlsx.utils.decode_range(sheet['!ref']);
+        const lastCell = sheet[xlsx.utils.encode_cell({
+          c: 0,
+          r: wholeRange.e.r,
+        })];
+        lastCell.l = {
+          Target: 'http://cartenmain.auran.org/',
+          Tooltip: "Cart'en Main - AURAN",
+        };
+      },
+    });
+  };
 
   resetColumns () {
     this.setState({ columns: null });
