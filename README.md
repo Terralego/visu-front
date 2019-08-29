@@ -2,7 +2,7 @@ Visu - Front
 
 ## Install
 
-    $ npm i
+    $ npm ci
     $ cp public/env.dist.json public/env.json
 
 You may have to change some data in your personnal env.json file.
