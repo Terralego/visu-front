@@ -193,10 +193,12 @@ $bg-visualizer: rgb(49, 64, 77);
   left: 0;
   width: 100%;
   background: #e0e0e0;
-  height: 50px;
+  height: 75px;
+  background: url('../../images/visu-background.png');
+  justify-content: space-between;
+  align-items: center;
 
   img {
-    height: 50px;
     width: auto;
   }
 
@@ -205,13 +207,16 @@ $bg-visualizer: rgb(49, 64, 77);
   }
 
   .app-logo {
-    background: url('../../images/visu-background.png');
+    /* background: url('../../images/visu-background.png');
     float: left;
-    margin-right: 1em;
+    margin-right: 1em; */
+    margin-left: 3.5em;
+    height: 50px;
   }
 
   .brand-logo {
-    float: right;
+    margin-right: 3.5em;
+    height: 55px;
   }
 }
 
@@ -237,7 +242,7 @@ $bg-visualizer: rgb(49, 64, 77);
   }
 
   .interactive-map__header, .interactive-map__footer {
-    display: block;
+    display: flex;
   }
 }
 
