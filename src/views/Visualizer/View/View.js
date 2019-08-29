@@ -52,7 +52,7 @@ import Widgets from './Widgets';
 import { generateClusterList } from './interactions';
 import BoundingBoxObserver from '../../../components/BoundingBoxObserver';
 import translate from './translate';
-import brandLogo from '../../../images/logo-auran.svg';
+import brandLogo from '../../../images/AURAN-logo-blanc.svg';
 import appLogo from '../../../images/cart_en_main.png';
 
 export const INTERACTION_DISPLAY_DETAILS = 'displayDetails';
