@@ -115,3 +115,9 @@
     }
   }
 }
+
+@media(min-width: $breakpoints-phone) and (max-width: $breakpoints-tablet) and (orientation: portrait) {
+  .data-table {
+    display: none;
+  }
+}

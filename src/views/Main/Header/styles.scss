@@ -119,3 +119,13 @@
     }
   }
 }
+
+@media(min-width: $breakpoints-phone) and (max-width: $breakpoints-tablet) and (orientation: portrait) {
+  .modal-mentions-legales {
+    .bp3-overlay-content {
+      max-width: 90%;
+      max-height: 90%;
+      overflow: scroll;
+    }
+  }
+}
