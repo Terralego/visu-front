@@ -65,7 +65,7 @@ const navHeader = [
   }],
 
 ];
-
+/* eslint-disable react/no-array-index-key */
 export class Header extends React.Component {
   static propTypes = {
     isHeaderOpen: PropTypes.bool,

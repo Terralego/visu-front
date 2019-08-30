@@ -60,7 +60,12 @@ export const INTERACTION_DISPLAY_DETAILS = 'displayDetails';
 
 const LAYER_PROPERTY = 'layer.keyword';
 
-const getControls = memoize((displaySearch, displayBackgroundStyles, disableSearch, isMobileSized) => [
+const getControls = memoize((
+  displaySearch,
+  displayBackgroundStyles,
+  disableSearch,
+  isMobileSized,
+) => [
   displaySearch && {
     control: CONTROL_SEARCH,
     position: CONTROLS_TOP_RIGHT,
@@ -713,7 +718,6 @@ export class Visualizer extends React.Component {
     const isWidgetsVisible = hasWidget(layersTreeState);
 
     const isStory = layersTree.type === 'story';
-    console.log(this.props.isMobileSized);
     return (
       <LayersTreeProvider
         map={map}
