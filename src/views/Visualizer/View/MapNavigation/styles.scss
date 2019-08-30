@@ -146,7 +146,7 @@ $transitionSpeed: .2s;
   .visualizer-view {
     &.is-layers-tree-visible {
       .map-navigation__button {
-        transform: scaleX(-1) translate3d(2.4rem, 0, 0);
+        transform: scaleX(-1) translate3d(2.4rem, -0.15rem, 0);
       }
     }
   }
