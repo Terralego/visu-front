@@ -1,5 +1,15 @@
 @import '../../theme.scss';
 
+$navWidth: 4rem;
+$layersTreeWidth: 22.5rem;
+$widgetsWidth: 20rem;
+$detailsWidth: 30.5rem;
+$mapboxContributionsWidth: 18.5rem;
+$mapboxControlScaleWidth: 4rem;
+
+$tableHeight: 33vh;
+
+
 .main {
   display: flex;
 
@@ -145,4 +155,65 @@
       align-self: center;
     }
   }
+}
+
+// Override TerraLego
+.mapboxgl-ctrl:hover {
+  color: #202B33;
+}
+
+.interactive-map {
+  .tf-legend {
+    margin-bottom: 1em;
+  }
+}
+
+.visualizer {
+  mapboxgl-control-container {
+    transition: all .2s ease-in;
+  }
+  .mapboxgl-ctrl-top-left,
+  .mapboxgl-ctrl-bottom-left {
+    transform: none;
+    transition: all .2s ease-in;
+  }
+
+  .mapboxgl-ctrl-bottom-left {
+    transform: none;
+    margin: -0.5rem 0.5rem;
+    left: 0rem;
+    right: 22rem;
+    transition: all .2s ease-in;
+  }
+
+  &.visualizer--with-layers-tree {
+    .mapboxgl-ctrl-bottom-left {
+      transform: none;
+      margin: -0.5rem 0.5rem;
+      left: $layersTreeWidth;
+      right: 22rem;
+      transition: all .2s ease-in;
+    }
+
+  }
+
+}
+
+// Override Mapbox position logo
+.visualizer {
+
+  .mapboxgl-ctrl-logo {
+    position: absolute;
+    right: 10px;
+    bottom: 15px;
+    transition: all .2s ease-in;
+
+  }
+  &.visualizer--with-layers-tree {
+    .mapboxgl-ctrl-logo {
+      right: -38px;
+      bottom: 15px;
+    }
+  }
+
 }

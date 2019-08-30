@@ -160,7 +160,6 @@ $bg-visualizer: rgb(49, 64, 77);
 
     &-details {
       .mapboxgl-ctrl-top-right,
-      .mapboxgl-ctrl-bottom-right,
       .interactive-map__legends {
         transform: translate3d(-$detailsWidth, 0, 0);
       }
