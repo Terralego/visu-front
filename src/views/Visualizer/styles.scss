@@ -407,7 +407,9 @@ $bg-visualizer: rgb(49, 64, 77);
         &.visualizer--with-table .interactive-map__legends {
           transform: translate3d(-$detailsWidth, -$tableHeight, 0);
         }
-
+        &.visualizer--with-table .interactive-map__legends {
+          transform: scale(#{1 / $scaleRatioTablet}) translate3d(-$detailsWidth, -#{$tableHeight + 4.5}, 0);
+        }
         &.visualizer--with-widgets {
           .mapboxgl-ctrl-top-right,
           .mapboxgl-ctrl-bottom-right,
@@ -420,7 +422,18 @@ $bg-visualizer: rgb(49, 64, 77);
           }
         }
       }
+      &-table {
+        .mapboxgl-ctrl-bottom-left {
+          transform: none;
+        }
+        .interactive-map__legends {
+          transform: scale(#{1 / $scaleRatioTablet}) translate3d(5rem, -#{$tableHeight + 4.5}, 0) ;
+        }
+      }
     }
+  }
+  .interactive-map__legends {
+    transform: scale(#{1 / $scaleRatioTablet}) translate3d(5rem, 1.5rem, 0);
   }
 }
 
@@ -461,6 +474,9 @@ $bg-visualizer: rgb(49, 64, 77);
           transform: translate3d(-$detailsWidth, -$tableHeight, 0);
         }
       }
+    }
+    .interactive-map__legends {
+      transform: scale(#{1 / $scaleRatioPhone}) translate3d(8rem, 5rem, 0);;
     }
   }
 }
