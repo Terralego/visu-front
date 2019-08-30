@@ -51,7 +51,7 @@ import DataTable from './DataTable';
 import Widgets from './Widgets';
 import { generateClusterList } from './interactions';
 import BoundingBoxObserver from '../../../components/BoundingBoxObserver';
-import translate from './translate';
+
 import brandLogo from '../../../images/AURAN-logo-blanc.svg';
 import appLogo from '../../../images/cart_en_main.png';
 
@@ -654,6 +654,7 @@ export class Visualizer extends React.Component {
 
   render () {
     const {
+      t,
       layersTreeState,
       view: {
         title,
@@ -716,6 +717,7 @@ export class Visualizer extends React.Component {
         initialLayersTreeState={layersTreeState}
         fetchPropertyValues={fetchPropertyValues}
         fetchPropertyRange={fetchPropertyRange}
+        translate={t}
       >
         <div className={classnames({
           visualizer: true,
@@ -734,7 +736,7 @@ export class Visualizer extends React.Component {
             onMapUpdate={refreshLayers}
             onStyleChange={refreshLayers}
             onClusterUpdate={onClusterUpdate}
-            translate={translate}
+            translate={t}
             controls={controls}
             hash="map"
           >
