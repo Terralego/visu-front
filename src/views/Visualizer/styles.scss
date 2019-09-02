@@ -277,11 +277,17 @@ $bg-visualizer: rgb(49, 64, 77);
 }
 
 .appName {
+  margin-left: .5rem;
 
   &-title {
     font-size: 1.4rem;
     font-family: "SFProText-Regular", Arial, Helvetica, sans-serif;
-    margin-right: 8px;
+    margin-right: .5rem;
+
+    &-logo {
+      height: 2rem;
+      margin-top: .5rem;
+    }
   }
 
   &-version {
@@ -327,23 +333,23 @@ $bg-visualizer: rgb(49, 64, 77);
 @media(min-width: $breakpoints-tablet) and (max-width: $breakpoints-desktop) and (orientation: landscape) {
   #welcome {
     img {
-      width: 2.4rem / $scaleRatio;
+      width: 2.4rem / $scaleRatioTablet;
     }
   }
 
   .modal-signin__form {
-    max-width: 30rem / $scaleRatio;
-    min-width: 20rem / $scaleRatio;
+    max-width: 30rem / $scaleRatioTablet;
+    min-width: 20rem / $scaleRatioTablet;
   }
   .partner-logo {
-    max-width: 10rem / $scaleRatio;
-    margin: 1rem / $scaleRatio;
-    max-height: 6.25rem / $scaleRatio;
+    max-width: 10rem / $scaleRatioTablet;
+    margin: 1rem / $scaleRatioTablet;
+    max-height: 6.25rem / $scaleRatioTablet;
   }
   .navBar__group {
-    padding-top: .2rem / $scaleRatio;
+    padding-top: .2rem / $scaleRatioTablet;
     .bp3-popover-wrapper {
-      margin: 0 0 (1rem / $scaleRatio) 0;
+      margin: 0 0 (1rem / $scaleRatioTablet) 0;
     }
   }
 
@@ -352,16 +358,16 @@ $bg-visualizer: rgb(49, 64, 77);
   }
 
   .profile-form {
-    width: 20rem / $scaleRatio;
+    width: 20rem / $scaleRatioTablet;
   }
 
   .appName {
     &-title {
-      font-size: 1.4rem / $scaleRatio;
-      margin-right: .5rem / $scaleRatio;
+      font-size: 1.4rem / $scaleRatioTablet;
+      margin-right: .5rem / $scaleRatioTablet;
     }
     &-version {
-      font-size: 0.8rem / $scaleRatio;
+      font-size: 0.8rem / $scaleRatioTablet;
     }
   }
   .visualizer {
@@ -400,7 +406,9 @@ $bg-visualizer: rgb(49, 64, 77);
         &.visualizer--with-table .interactive-map__legends {
           transform: translate3d(-$detailsWidth, -$tableHeight, 0);
         }
-
+        &.visualizer--with-table .interactive-map__legends {
+          transform: scale(#{1 / $scaleRatioTablet}) translate3d(-$detailsWidth, -#{$tableHeight + 4.5}, 0);
+        }
         &.visualizer--with-widgets {
           .mapboxgl-ctrl-top-right,
           .mapboxgl-ctrl-bottom-right,
@@ -413,6 +421,61 @@ $bg-visualizer: rgb(49, 64, 77);
           }
         }
       }
+      &-table {
+        .mapboxgl-ctrl-bottom-left {
+          transform: none;
+        }
+        .interactive-map__legends {
+          transform: scale(#{1 / $scaleRatioTablet}) translate3d(5rem, -#{$tableHeight + 4.5}, 0) ;
+        }
+      }
+    }
+  }
+  .interactive-map__legends {
+    transform: scale(#{1 / $scaleRatioTablet}) translate3d(5rem, 1.5rem, 0);
+  }
+}
+
+@media(min-width: $breakpoints-phone) and (max-width: $breakpoints-tablet) and (orientation: portrait) {
+  #welcome {
+    img {
+      width: 2.4rem / $scaleRatioTablet;
+    }
+  }
+
+  .appName {
+    &-title-logo {
+      height: 2rem / $scaleRatioTablet;
+    }
+    &-version {
+      font-size: 0.8rem / $scaleRatioPhone;
+    }
+  }
+  .visualizer {
+    &--with {
+      $layersTreeWidth: 14rem;
+      $tableHeight: 33vh;
+      $detailsWidth: 16.5rem;
+      &-layers-tree {
+        .mapboxgl-ctrl-top-left,
+        .mapboxgl-ctrl-bottom-left {
+          transform: translate3d($layersTreeWidth, 0, 0);
+        }
+      }
+      &-details {
+        .mapboxgl-ctrl-top-right,
+        .mapboxgl-ctrl-bottom-right,
+        .interactive-map__legends {
+          transform: translate3d(-$detailsWidth, 0, 0);
+        }
+        &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
+        &.visualizer--with-table .interactive-map__legends {
+          transform: translate3d(-$detailsWidth, -$tableHeight, 0);
+        }
+      }
+    }
+    .interactive-map__legends {
+      transform: scale(#{1 / $scaleRatioPhone}) translate3d(8rem, 5rem, 0);;
     }
   }
 }

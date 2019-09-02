@@ -18,18 +18,21 @@ $transitionSpeed: .2s;
   z-index: 80;
   box-shadow: 8px 0 8px 8px rgba(16,22,26,0.20), 9px 8px 24px 0 rgba(16,22,26,0.40);
   
-  &__header {
+  &__header {    
     opacity: 1;
     width: 100%;
     transition: opacity $transitionSpeed ease-in;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: center;
+    background-image: url('../../../../images/AURAN-fond.png');
+    height: 3rem;
   }
-
   &__title {
-    margin-top: 4px;
+    padding-left: .5rem;
+    margin-bottom: .5rem;
+    margin-top: .25rem;
     font-weight: 300;
     letter-spacing: 1.25px;
     font-size: 1.2rem;
@@ -81,7 +84,7 @@ $transitionSpeed: .2s;
       padding: 0 0.7rem;
   
       &__button {
-        transform: scaleX(-1) translate3d(-8px, 0, 0);
+        transform: scaleX(-1) translate3d(-0.5rem, 0, 0);
       }
   
       &__content {
@@ -115,16 +118,16 @@ $transitionSpeed: .2s;
     transition: margin $transitionSpeed ease-in;
   
     &__title {
-      margin-top: .5rem / $scaleRatio;
-      font-size: 1.2rem / $scaleRatio;
+      margin-top: .5rem / $scaleRatioTablet;
+      font-size: 1.2rem / $scaleRatioTablet;
     }
   
     &__button {
-      width: 1.5rem / $scaleRatio;
-      height: 1.5rem / $scaleRatio;
+      width: 1.5rem / $scaleRatioTablet;
+      height: 1.5rem / $scaleRatioTablet;
       border-radius: 0;
-      margin: .5rem 0 / $scaleRatio;
-      transform: translate3d((.5rem / $scaleRatio), 0, 0);
+      margin: .5rem 0 / $scaleRatioTablet;
+      transform: translate3d((.5rem / $scaleRatioTablet), 0, 0);
     }
 
     &__content {
@@ -134,7 +137,37 @@ $transitionSpeed: .2s;
     }
 
     &__content::-webkit-scrollbar {
-      width: .5rem / $scaleRatio;
+      width: .5rem / $scaleRatioTablet;
+    }
+  }
+}
+
+@media(min-width: $breakpoints-phone) and (max-width: $breakpoints-tablet) and (orientation: portrait) {
+  .visualizer-view {
+    &.is-layers-tree-visible {
+      .map-navigation__button {
+        transform: scaleX(-1) translate3d(2.4rem, -0.15rem, 0);
+      }
+    }
+  }
+  .map-navigation {
+    width: 14rem;
+    margin-left: -14rem;
+
+    &__header {
+      height: 4rem;
+    }
+  
+    &__title {
+      font-size: 1.2rem / $scaleRatioTablet;
+    }
+    &__content {
+      .layerstree-panel-list {
+        padding: 0 .25rem 0 .5rem;
+      }
+    }
+    &__content::-webkit-scrollbar {
+      width: .5rem / $scaleRatioTablet;
     }
   }
 }
