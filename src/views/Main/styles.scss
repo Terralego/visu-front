@@ -182,7 +182,7 @@ $tableHeight: 33vh;
 }
 
 .visualizer {
-  mapboxgl-control-container {
+  .mapboxgl-control-container {
     transition: all .2s ease-in;
   }
   .mapboxgl-ctrl-top-left,
@@ -197,6 +197,10 @@ $tableHeight: 33vh;
     left: 0rem;
     right: 22rem;
     transition: all .2s ease-in;
+
+    .mapboxgl-ctrl {
+      float: none;
+    }
   }
 
   &.visualizer--with-layers-tree {
