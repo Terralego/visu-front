@@ -16,7 +16,7 @@ import {
   CONTROL_BACKGROUND_STYLES,
   CONTROL_PRINT,
   CONTROLS_TOP_RIGHT,
-  CONTROL_PERMALINK,
+  CONTROL_SHARE,
   CONTROL_HOME,
 } from '@terralego/core/modules/Map';
 import { toggleLayerVisibility, setLayerOpacity } from '@terralego/core/modules/Map/services/mapUtils';
@@ -82,7 +82,7 @@ const getControls = memoize((
     control: CONTROL_PRINT,
     position: CONTROLS_TOP_RIGHT,
   }, {
-    control: CONTROL_PERMALINK,
+    control: CONTROL_SHARE,
     position: CONTROLS_TOP_RIGHT,
   },
 ].filter(Boolean));
