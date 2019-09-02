@@ -1,32 +1,11 @@
-@mixin breakpoint($point) {
-  @if $point == desktop {
-    @media (min-width: 70em) {
-      @content ;
-    }
-  } @else if $point == laptop {
-    @media (min-width: 64em) {
-      @content ;
-    }
-  } @else if $point == tablet {
-    @media (min-width: 50em) {
-      @content ;
-    }
-  } @else if $point == phablet {
-    @media (min-width: 37.5em) {
-      @content ;
-    }
-  } @else if $point == mobileonly {
-    @media (max-width: 37.5em) {
-      @content ;
-    }
+@import '../../variables.scss';
 
-  }
+.bp3-navbar.bp3-dark {
+  background-color:#156571;
 }
 
-
 .navBar .navBar__group .active .welcome {
-  background-color: #156571;
-  margin-bottom: .3rem;
+  background-color:#156571;
 
   img {
     width: 2.4rem;
@@ -44,7 +23,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   .icon {
     opacity: 1;
     width: 1.5rem;
@@ -71,44 +49,15 @@
   justify-content: center;
   align-items: center;
   border: none;
-  z-index: 112;
-
-  .bp3-overlay-content {
-    border-radius: 30px;
-
-    @include breakpoint(mobileonly) {
-      max-width: 14rem;
-      max-height: 30rem;
-    }
-
-    @include breakpoint(phablet) {
-      max-width: 40rem;
-      max-height: 50rem;
-    }
-
-    @include breakpoint(tablet) {
-      max-width: 40rem;
-      max-height: 60rem;
-    }
-
-    @include breakpoint(laptop) {
-      max-width: 70rem;
-      max-height: 60rem;
-    }
-
-  }
+  z-index: 130;
 
   .bp3-card {
-    border-radius: 30px;
+    padding: 0;
   }
 
   .mentions-legales {
     color: #394b59;
-    padding: 2em 8em;
-
-    @include breakpoint(mobileonly) {
-      padding: 0;
-    }
+    padding: 1.5rem;
 
     .mentions-legales-container {
       font-family: "SFProText-Regular", Arial, Helvetica, sans-serif;
@@ -119,6 +68,7 @@
       font-size: 1.5rem;
       font-weight: 500;
       font-family: "SFProText-Medium", Arial, Helvetica, sans-serif;
+      margin: 0 0 2rem 0;
     }
 
     .container-block {
@@ -157,5 +107,15 @@
   .bp3-popover-wrapper {
     margin: 0 0 1rem 0;
     background-color: transparent;
+  }
+}
+
+@media(min-width: $breakpoints-tablet) and (max-width: $breakpoints-desktop) and (orientation: landscape) {
+  .modal-mentions-legales {  
+    .bp3-overlay-content {
+      max-width: 75%;
+      max-height: 95%;
+      overflow: scroll;
+    }
   }
 }
