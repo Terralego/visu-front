@@ -89,6 +89,15 @@ const getControls = memoize((
 ].filter(Boolean));
 
 /**
+ * [monkey patch]
+ * Test if provided layer is a border layer
+ *
+ * @param {Object} layer.filters.layer The layer to test
+ */
+const isAdminBorderLayer = ({ filters: { layer } = {} } = {}) =>
+  ['departements', 'intercommunalites', 'communes'].includes(layer);
+
+/**
  * Get an array of active layers state from layersTreeState
  *
  * @param {Map} layersTreeState
@@ -97,7 +106,7 @@ const getControls = memoize((
 const getActiveLayersState = layersTreeState => {
   const activeLayersState = [];
   layersTreeState.forEach((layerState, layer) => {
-    if (layerState.active) {
+    if (layerState.active && !isAdminBorderLayer(layer)) {
       activeLayersState.push([layer, layerState]);
     }
   });
