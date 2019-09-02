@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { Classes } from '@blueprintjs/core';
 import { connectState } from '@terralego/core/modules/State/context';
+import withDeviceSize from '@terralego/core/utils/withDeviceSize';
 import InteractiveMap, {
   INTERACTION_DISPLAY_TOOLTIP,
   INTERACTION_ZOOM,
@@ -59,7 +60,12 @@ export const INTERACTION_DISPLAY_DETAILS = 'displayDetails';
 
 const LAYER_PROPERTY = 'layer.keyword';
 
-const getControls = memoize((displaySearch, displayBackgroundStyles, disableSearch) => [
+const getControls = memoize((
+  displaySearch,
+  displayBackgroundStyles,
+  disableSearch,
+  isMobileSized,
+) => [
   displaySearch && {
     control: CONTROL_SEARCH,
     position: CONTROLS_TOP_RIGHT,
@@ -72,14 +78,15 @@ const getControls = memoize((displaySearch, displayBackgroundStyles, disableSear
   displayBackgroundStyles && {
     control: CONTROL_BACKGROUND_STYLES,
     position: CONTROLS_TOP_RIGHT,
-  }, {
+  },
+  !isMobileSized && {
     control: CONTROL_PRINT,
     position: CONTROLS_TOP_RIGHT,
   }, {
     control: CONTROL_PERMALINK,
     position: CONTROLS_TOP_RIGHT,
   },
-].filter(defined => defined));
+].filter(Boolean));
 
 export class Visualizer extends React.Component {
   static propTypes = {
@@ -104,6 +111,7 @@ export class Visualizer extends React.Component {
     initialState: PropTypes.shape({
       tree: PropTypes.bool,
     }),
+    isMobileSized: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -115,6 +123,7 @@ export class Visualizer extends React.Component {
     setMap () {},
     initLayersState () {},
     initialState: {},
+    isMobileSized: false,
   };
 
   state = {
@@ -665,6 +674,7 @@ export class Visualizer extends React.Component {
       mapIsResizing,
       setVisibleBoundingBox,
       renderHeader,
+      isMobileSized,
     } = this.props;
     const {
       details,
@@ -696,6 +706,7 @@ export class Visualizer extends React.Component {
       displaySearchInMap,
       Array.isArray(mapProps.backgroundStyle),
       !activeAndSearchableLayers.length,
+      isMobileSized,
     );
 
     if (displaySearchInMap) {
@@ -708,7 +719,6 @@ export class Visualizer extends React.Component {
     const isWidgetsVisible = hasWidget(layersTreeState);
 
     const isStory = layersTree.type === 'story';
-
     return (
       <LayersTreeProvider
         map={map}
@@ -814,4 +824,4 @@ export class Visualizer extends React.Component {
   }
 }
 
-export default connectState('initialState', 'setCurrentState')(withRouter(Visualizer));
+export default connectState('initialState', 'setCurrentState')(withDeviceSize()(withRouter(Visualizer)));

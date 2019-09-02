@@ -1,3 +1,5 @@
+@import '../../../variables.scss'; 
+
 $transitionSpeed: .2s;
 
 .map-navigation {
@@ -13,7 +15,7 @@ $transitionSpeed: .2s;
   flex-shrink: 0;
   border-radius: 0;
   padding: 0 0.7rem;
-  z-index: 99;
+  z-index: 80;
   box-shadow: 8px 0 8px 8px rgba(16,22,26,0.20), 9px 8px 24px 0 rgba(16,22,26,0.40);
   
   &__header {
@@ -35,7 +37,6 @@ $transitionSpeed: .2s;
 
   &__button-container {
     margin-left: auto;
-    z-index: 4;
     position: absolute;
     right: -2rem;
   }
@@ -51,7 +52,7 @@ $transitionSpeed: .2s;
   }
 
   &__button-tooltip {
-    z-index: 102;
+    z-index: 120;
     position: relative;
   }
 
@@ -104,5 +105,36 @@ $transitionSpeed: .2s;
   .map-navigation__content::-webkit-scrollbar-thumb {
     background-color: #202B33;
   }
+}
 
+@media(min-width: $breakpoints-tablet) and (max-width: $breakpoints-desktop) and (orientation: landscape) {
+
+  .map-navigation {
+    width: 17.5rem;
+    margin-left: -17.5rem;
+    transition: margin $transitionSpeed ease-in;
+  
+    &__title {
+      margin-top: .5rem / $scaleRatio;
+      font-size: 1.2rem / $scaleRatio;
+    }
+  
+    &__button {
+      width: 1.5rem / $scaleRatio;
+      height: 1.5rem / $scaleRatio;
+      border-radius: 0;
+      margin: .5rem 0 / $scaleRatio;
+      transform: translate3d((.5rem / $scaleRatio), 0, 0);
+    }
+
+    &__content {
+      .layerstree-panel-list {
+        padding: 0 .25rem 0 .5rem;
+      }
+    }
+
+    &__content::-webkit-scrollbar {
+      width: .5rem / $scaleRatio;
+    }
+  }
 }

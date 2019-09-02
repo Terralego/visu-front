@@ -5,12 +5,20 @@ import {
   Classes,
 } from '@blueprintjs/core';
 
-import NavBarItem from './NavBarItem';
+import withDeviceSize from '@terralego/core/utils/withDeviceSize';
+
+
+import NavBarItemDesktop from './NavBarItemDesktop';
+import NavBarItemTablet from './NavBarItemTablet';
 import PartnerPage from './PartnerPage';
 
 export class PartnerButton extends React.Component {
   state = {
     isOpen: false,
+  }
+
+  static defaultProps = {
+    isMobileSized: false,
   }
 
   open = () => this.setState({ isOpen: true })
@@ -19,14 +27,12 @@ export class PartnerButton extends React.Component {
 
   render () {
     const { isOpen } = this.state;
+    const { isMobileSized } = this.props;
     const { open, close } = this;
-
+    const NavBarItem = isMobileSized ? NavBarItemTablet : NavBarItemDesktop;
     return (
       <>
-        <NavBarItem
-          {...this.props}
-          onClick={open}
-        />
+        <NavBarItem {...this.props} onClick={open} />
         <Overlay
           className={classNames(
             Classes.OVERLAY_SCROLL_CONTAINER,
@@ -38,6 +44,7 @@ export class PartnerButton extends React.Component {
         >
           <div
             className={classNames(
+              Classes.CARD,
               Classes.ELEVATION_4,
             )}
           >
@@ -48,4 +55,4 @@ export class PartnerButton extends React.Component {
     );
   }
 }
-export default PartnerButton;
+export default withDeviceSize()(PartnerButton);
