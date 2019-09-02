@@ -93,8 +93,8 @@ const getControls = memoize((
  *
  * @param {Object} layer.filters.layer The layer to test
  */
-const isAdminBorderLayer = ({ filters: { layer } = {} } = {}) =>
-  ['departements', 'intercommunalites', 'communes'].includes(layer);
+const isAdminBorderLayer = ({ label } = {}) =>
+  ['Départements', 'Intercommunalités', 'Communes'].includes(label);
 
 /**
  * Get an array of active layers state from layersTreeState
