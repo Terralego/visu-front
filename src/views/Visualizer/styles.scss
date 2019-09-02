@@ -63,7 +63,7 @@ $bg-visualizer: rgb(49, 64, 77);
   }
 
   .mapboxgl-popup {
-    z-index: 9999;
+    z-index: 120;
 
     &-anchor-top .mapboxgl-popup-tip,
     &-anchor-top-left .mapboxgl-popup-tip,

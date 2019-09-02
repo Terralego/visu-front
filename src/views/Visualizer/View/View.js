@@ -839,7 +839,7 @@ export class Visualizer extends React.Component {
             onMapUpdate={refreshLayers}
             onStyleChange={refreshLayers}
             onClusterUpdate={onClusterUpdate}
-            translate={translate}
+            translate={t}
             controls={controls}
             hash="map"
           >
