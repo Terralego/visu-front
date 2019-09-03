@@ -16,7 +16,7 @@
       "print_control": {
         "button_label": "Impression vers PDF",
         "portrait_label": "Portrait",
-        "lanscape_label": "Landscape"
+        "landscape_label": "Landscape"
       },
       "share_control": {
         "link": "Partager la carte",
