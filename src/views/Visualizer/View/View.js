@@ -64,6 +64,7 @@ const getControls = memoize((
   displayBackgroundStyles,
   disableSearch,
   isMobileSized,
+  onToggle,
 ) => [
   displaySearch && {
     control: CONTROL_SEARCH,
@@ -81,6 +82,7 @@ const getControls = memoize((
   !isMobileSized && {
     control: CONTROL_PRINT,
     position: CONTROLS_TOP_RIGHT,
+    onToggle,
   }, {
     control: CONTROL_SHARE,
     position: CONTROLS_TOP_RIGHT,
@@ -528,6 +530,8 @@ export class Visualizer extends React.Component {
     return results;
   }
 
+  onPrintToggle = printIsOpened => this.setState({ printIsOpened })
+
   searchResultClick = ({
     result,
     result: { label, layers, id },
@@ -720,6 +724,7 @@ export class Visualizer extends React.Component {
       interactions,
       totalFeatures,
       features,
+      printIsOpened,
     } = this.state;
     const {
       refreshLayers,
@@ -730,6 +735,7 @@ export class Visualizer extends React.Component {
       onClusterUpdate,
       activeAndSearchableLayers,
     } = this;
+    const displayLayersTree = isLayersTreeVisible && !printIsOpened;
     const isDetailsVisible = !!details;
     const [{ features: featuresForDetail = [] } = {}] = isDetailsVisible
       ? features.filter(({ layer }) => layer === sourceLayer)
@@ -744,6 +750,7 @@ export class Visualizer extends React.Component {
       Array.isArray(mapProps.backgroundStyle),
       !activeAndSearchableLayers.length,
       isMobileSized,
+      this.onPrintToggle,
     );
 
     if (displaySearchInMap) {
@@ -768,7 +775,7 @@ export class Visualizer extends React.Component {
       >
         <div className={classnames({
           visualizer: true,
-          'visualizer--with-layers-tree': isLayersTreeVisible,
+          'visualizer--with-layers-tree': displayLayersTree,
           'visualizer--with-table': isTableVisible,
           'visualizer--with-widgets': isWidgetsVisible,
           'visualizer--with-details': isDetailsVisible,
@@ -776,14 +783,14 @@ export class Visualizer extends React.Component {
         >
           <div className={`
             visualizer-view
-            ${isLayersTreeVisible ? 'is-layers-tree-visible' : ''}
+            ${displayLayersTree ? 'is-layers-tree-visible' : ''}
           `}
           >
             {layersTree && (
               <MapNavigation
                 title={title}
                 toggleLayersTree={toggleLayersTree}
-                visible={isLayersTreeVisible}
+                visible={displayLayersTree}
                 renderHeader={renderHeader}
               >
                 {isStory
