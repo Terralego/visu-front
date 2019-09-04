@@ -475,30 +475,17 @@ export class Visualizer extends React.Component {
     return Array.from(cleanedFeatures.values());
   }
 
-  onHighlightChangeFactory = (layerId, addHighlight, removeHighlight, color) => index => {
-    const { map } = this.props;
-    const {
-      features = [],
-      details,
-      details: {
-        feature: { sourceLayer } = {},
-      } = {},
-    } = this.state;
-    const { features: list = [] } = features.find(({ layer }) => layer === sourceLayer) || {};
-    const id = list[index];
-
-    const [feature] = map.queryRenderedFeatures({
-      layers: [layerId],
-      filter: ['==', '_id', id],
-    });
+  onHighlightChangeFactory = (layerId, featureId, addHighlight, removeHighlight, color) => {
+    const { details = {} } = this.state;
 
     addHighlight({
-      feature,
+      layerId,
+      featureId,
       highlightColor: color,
       unique: true,
     });
 
-    details.hide = () => removeHighlight({ feature });
+    details.hide = () => removeHighlight({ layerId, featureId });
   };
 
   searchInMap = async query => {
@@ -592,24 +579,29 @@ export class Visualizer extends React.Component {
   }
 
   displayDetails (feature, interaction, { addHighlight, removeHighlight }) {
+    const { layer: { id: layerId }, properties: { _id: featureId }, source } = feature;
     const { details: { hide = () => {} } = {} } = this.state;
-    const { highlight } = interaction;
+    const { highlight_color: highlightColor } = interaction;
     hide();
 
     this.onHighlightChange = () => null;
 
-    if (highlight) {
+    if (highlightColor) {
       addHighlight({
-        feature,
-        highlightColor: highlight.color,
+        layerId,
+        featureId,
+        highlightColor,
         unique: true,
+        source,
       });
 
+
       this.onHighlightChange = this.onHighlightChangeFactory(
-        feature.layer.id,
+        layerId,
+        featureId,
         addHighlight,
         removeHighlight,
-        highlight.color,
+        highlightColor,
       );
     }
 
@@ -617,11 +609,10 @@ export class Visualizer extends React.Component {
       details: {
         feature,
         interaction,
-        hide: () => removeHighlight({ feature }),
+        hide: () => removeHighlight({ layerId, featureId }),
       },
     });
   }
-
 
   updateLayersTree () {
     const { map } = this.props;
@@ -727,6 +718,7 @@ export class Visualizer extends React.Component {
       features,
       printIsOpened,
     } = this.state;
+
     const {
       refreshLayers,
       resetMap, hideDetails, toggleLayersTree,
@@ -736,8 +728,11 @@ export class Visualizer extends React.Component {
       onClusterUpdate,
       activeAndSearchableLayers,
     } = this;
+
     const displayLayersTree = isLayersTreeVisible && !printIsOpened;
+
     const isDetailsVisible = !!details;
+
     const [{ features: featuresForDetail = [] } = {}] = isDetailsVisible
       ? features.filter(({ layer }) => layer === sourceLayer)
       : [];
