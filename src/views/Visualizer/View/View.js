@@ -146,8 +146,8 @@ export class Visualizer extends React.Component {
       interactions: [],
       map: {},
     },
-    setMap() { },
-    initLayersState() { },
+    setMap () { },
+    initLayersState () { },
     initialState: {},
     isMobileSized: false,
   };
@@ -164,7 +164,7 @@ export class Visualizer extends React.Component {
 
   storyRef = React.createRef();
 
-  componentDidMount() {
+  componentDidMount () {
     const { view: { state: { query } = {} }, initialState: { tree } } = this.props;
     if (query) {
       this.debouncedSearchQuery();
@@ -175,7 +175,7 @@ export class Visualizer extends React.Component {
     this.setInteractions();
   }
 
-  componentDidUpdate({
+  componentDidUpdate ({
     view: {
       interactions: prevInteractions,
       layersTree: prevLayersTree,
@@ -223,7 +223,7 @@ export class Visualizer extends React.Component {
     }
   }
 
-  get legends() {
+  get legends () {
     const { layersTreeState } = this.props;
     const { legends } = this.state;
     const legendsFromLayersTree = Array.from(layersTreeState.entries())
@@ -251,7 +251,7 @@ export class Visualizer extends React.Component {
     return [...(legends || []), ...(legendsFromLayersTree || [])];
   }
 
-  get isSearching() {
+  get isSearching () {
     const { query, layersTreeState } = this.props;
     return query
       || filterLayersStatesFromLayersState(layersTreeState)
@@ -263,13 +263,13 @@ export class Visualizer extends React.Component {
             .some(a => a));
   }
 
-  get activeAndSearchableLayers() {
+  get activeAndSearchableLayers () {
     const { layersTreeState } = this.props;
     return filterLayersStatesFromLayersState(layersTreeState, ({ active }) => !!active)
       .filter(([{ filters: { layer, mainField } = {} }]) => layer && mainField);
   }
 
-  setInteractions() {
+  setInteractions () {
     const { view: { interactions = [] } } = this.props;
     const newInteractions = interactions.map(interaction => {
       if (interaction.interaction === INTERACTION_DISPLAY_DETAILS) {
@@ -419,7 +419,7 @@ export class Visualizer extends React.Component {
 
     const totalFeatures = idsResponses.reduce((fullTotal, { hits: { total = 0 } = {} }) =>
       fullTotal + total,
-      0);
+    0);
 
     this.setLayersResult(filters.map(({ layer }, index) => {
       const total = countResponses[index].hits
@@ -474,30 +474,17 @@ export class Visualizer extends React.Component {
     return Array.from(cleanedFeatures.values());
   }
 
-  onHighlightChangeFactory = (layerId, addHighlight, removeHighlight, color) => index => {
-    const { map } = this.props;
-    const {
-      features = [],
-      details,
-      details: {
-        feature: { sourceLayer } = {},
-      } = {},
-    } = this.state;
-    const { features: list = [] } = features.find(({ layer }) => layer === sourceLayer) || {};
-    const id = list[index];
-
-    const [feature] = map.queryRenderedFeatures({
-      layers: [layerId],
-      filter: ['==', '_id', id],
-    });
+  onHighlightChangeFactory = (layerId, featureId, addHighlight, removeHighlight, color) => {
+    const { details = {} } = this.state;
 
     addHighlight({
-      feature,
+      layerId,
+      featureId,
       highlightColor: color,
       unique: true,
     });
 
-    details.hide = () => removeHighlight({ feature });
+    details.hide = () => removeHighlight({ layerId, featureId });
   };
 
   searchInMap = async query => {
@@ -590,25 +577,30 @@ export class Visualizer extends React.Component {
     setLayersTreeState(layersTreeState);
   }
 
-  displayDetails(feature, interaction, { addHighlight, removeHighlight }) {
+  displayDetails (feature, interaction, { addHighlight, removeHighlight }) {
+    const { layer: { id: layerId }, properties: { _id: featureId }, source } = feature;
     const { details: { hide = () => { } } = {} } = this.state;
-    const { highlight } = interaction;
+    const { highlight_color: highlightColor } = interaction;
     hide();
 
     this.onHighlightChange = () => null;
 
-    if (highlight) {
+    if (highlightColor) {
       addHighlight({
-        feature,
-        highlightColor: highlight.color,
+        layerId,
+        featureId,
+        highlightColor,
         unique: true,
+        source,
       });
 
+
       this.onHighlightChange = this.onHighlightChangeFactory(
-        feature.layer.id,
+        layerId,
+        featureId,
         addHighlight,
         removeHighlight,
-        highlight.color,
+        highlightColor,
       );
     }
 
@@ -616,13 +608,12 @@ export class Visualizer extends React.Component {
       details: {
         feature,
         interaction,
-        hide: () => removeHighlight({ feature }),
+        hide: () => removeHighlight({ layerId, featureId }),
       },
     });
   }
 
-
-  updateLayersTree() {
+  updateLayersTree () {
     const { map } = this.props;
     const { features } = this.state;
 
@@ -690,7 +681,7 @@ export class Visualizer extends React.Component {
     if (current) current.displayStep();
   }
 
-  updatePrivateLayers() {
+  updatePrivateLayers () {
     const { layersTreeState: prevLayersTreeState, setLayersTreeState, authenticated } = this.props;
     const layersTreeState = new Map(Array.from(prevLayersTreeState).map(([layer, state]) => [
       layer,
@@ -702,7 +693,7 @@ export class Visualizer extends React.Component {
     setLayersTreeState(layersTreeState);
   }
 
-  render() {
+  render () {
     const {
       t,
       layersTreeState,
@@ -726,6 +717,7 @@ export class Visualizer extends React.Component {
       features,
       printIsOpened,
     } = this.state;
+
     const {
       refreshLayers,
       resetMap, hideDetails, toggleLayersTree,
@@ -735,8 +727,11 @@ export class Visualizer extends React.Component {
       onClusterUpdate,
       activeAndSearchableLayers,
     } = this;
+
     const displayLayersTree = isLayersTreeVisible && !printIsOpened;
+
     const isDetailsVisible = !!details;
+
     const [{ features: featuresForDetail = [] } = {}] = isDetailsVisible
       ? features.filter(({ layer }) => layer === sourceLayer)
       : [];
