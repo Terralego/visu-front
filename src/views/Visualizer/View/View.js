@@ -384,7 +384,7 @@ export class Visualizer extends React.Component {
     // Query for bbox result ids
     const queryIds = filters.map(({ properties }) => ({
       properties,
-      include: [],
+      include: ['_feature_id'],
       query,
       boundingBox,
     }));
@@ -410,7 +410,10 @@ export class Visualizer extends React.Component {
         if (!filters[k]) { return all; }
 
         const { [LAYER_PROPERTY]: { value: layer } } = filters[k].properties;
-        return [...all, ...hits.map(({ _id: id }) => ({ layer, id }))];
+        return [
+          ...all,
+          ...hits.map(({ _source: { _feature_id: id } }) => ({ layer, id })),
+        ];
       }, []);
 
     const features = filters.map(({ properties: { [LAYER_PROPERTY]: { value: layer } } }) => ({
