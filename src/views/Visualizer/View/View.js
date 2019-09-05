@@ -66,6 +66,7 @@ const getControls = memoize((
   disableSearch,
   isMobileSized,
   onToggle,
+  viewState,
 ) => [
   displaySearch && {
     control: CONTROL_SEARCH,
@@ -87,6 +88,7 @@ const getControls = memoize((
   }, {
     control: CONTROL_SHARE,
     position: CONTROLS_TOP_RIGHT,
+    initialState: viewState,
   },
 ].filter(Boolean));
 
@@ -717,6 +719,7 @@ export class Visualizer extends React.Component {
       setVisibleBoundingBox,
       renderHeader,
       isMobileSized,
+      viewState,
     } = this.props;
     const {
       details,
@@ -752,6 +755,7 @@ export class Visualizer extends React.Component {
       !activeAndSearchableLayers.length,
       isMobileSized,
       this.onPrintToggle,
+      viewState,
     );
 
     if (displaySearchInMap) {
