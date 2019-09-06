@@ -192,7 +192,10 @@ export const fetchPropertyRange = async (layer, { property }) => {
 };
 
 export const layersTreeToStory = layersTree => {
-  const story = layersTree.reduce(({
+  if (!layersTree[0] || !layersTree[0].layers) {
+    throw new Error('Story\'s layers should be in a group');
+  }
+  const story = layersTree[0].layers.reduce(({
     beforeEach: [beforeEachConfig],
     slides,
   }, {
