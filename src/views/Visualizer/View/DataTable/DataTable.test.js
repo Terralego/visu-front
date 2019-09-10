@@ -2,7 +2,7 @@ import React from 'react';
 import renderer from 'react-test-renderer';
 import DataTable from './DataTable';
 
-jest.mock('../../../../services/search', () => ({
+jest.mock('@terralego/core/modules/Visualizer/services/search', () => ({
   search: jest.fn(() => ({
     hits: {
       hits: [{
