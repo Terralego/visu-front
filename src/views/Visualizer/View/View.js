@@ -22,12 +22,10 @@ import {
 import { toggleLayerVisibility, setLayerOpacity } from '@terralego/core/modules/Map/services/mapUtils';
 import { LayersTreeProvider, LayersTree } from '@terralego/core/modules/Visualizer/LayersTree';
 import LayersTreeProps from '@terralego/core/modules/Visualizer/types/Layer';
-import classnames from 'classnames';
-import debounce from 'debounce';
-import turfCenter from '@turf/center';
-import turfBbox from '@turf/bbox';
-import memoize from 'memoize-one';
-
+import searchService, {
+  getExtent,
+  getSearchParamFromProperty,
+} from '@terralego/core/modules/Visualizer/services/search';
 import {
   filterFeatures,
   resetFilters,
@@ -39,11 +37,13 @@ import {
   fetchPropertyValues,
   fetchPropertyRange,
   layersTreeToStory,
-} from './layersTreeUtils';
-import searchService, {
-  getExtent,
-  getSearchParamFromProperty,
-} from '../../../services/search';
+} from '@terralego/core/modules/Visualizer/services/layersTreeUtils';
+import classnames from 'classnames';
+import debounce from 'debounce';
+import turfCenter from '@turf/center';
+import turfBbox from '@turf/bbox';
+import memoize from 'memoize-one';
+
 import Details from './Details';
 import MapNavigation from './MapNavigation';
 import Story from './Story';

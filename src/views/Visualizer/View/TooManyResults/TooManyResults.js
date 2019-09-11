@@ -1,7 +1,7 @@
 import React from 'react';
 import { Callout } from '@blueprintjs/core';
 
-import { MAX_SIZE } from '../../../../services/search';
+import { MAX_SIZE } from '@terralego/core/modules/Visualizer/services/search';
 
 import './styles.scss';
 
