@@ -2,13 +2,13 @@ import React from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import Table from '@terralego/core/modules/Table';
-import debounce from 'debounce';
-
-import { extractColumns, prepareData, exportSpreadsheet } from './dataUtils';
 import searchService, {
   getExtent,
   getSearchParamFromProperty,
-} from '../../../../services/search';
+} from '@terralego/core/modules/Visualizer/services/search';
+import debounce from 'debounce';
+
+import { extractColumns, prepareData, exportSpreadsheet } from './dataUtils';
 import Header from './Header';
 
 import './styles.scss';

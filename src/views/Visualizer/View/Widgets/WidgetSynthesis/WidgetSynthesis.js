@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import nunjucks from 'nunjucks';
 import isEqual from 'react-fast-compare';
 import debounce from 'debounce';
+import searchService, { getExtent } from '@terralego/core/modules/Visualizer/services/search';
 
-import searchService, { getExtent } from '../../../../../services/search';
 import Loading from './Loading';
 
 const env = nunjucks.configure();
