@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { Classes } from '@blueprintjs/core';
 import { connectState } from '@terralego/core/modules/State/context';
-import withDeviceSize from '@terralego/core/utils/withDeviceSize';
+import withDeviceSize from '@terralego/core/hoc/withDeviceSize';
 import InteractiveMap, {
   INTERACTION_DISPLAY_TOOLTIP,
   INTERACTION_ZOOM,
@@ -38,13 +38,13 @@ import {
   fetchPropertyRange,
   layersTreeToStory,
 } from '@terralego/core/modules/Visualizer/services/layersTreeUtils';
+import Details from '@terralego/core/modules/Visualizer/Details';
 import classnames from 'classnames';
 import debounce from 'debounce';
 import turfCenter from '@turf/center';
 import turfBbox from '@turf/bbox';
 import memoize from 'memoize-one';
 
-import Details from './Details';
 import MapNavigation from './MapNavigation';
 import Story from './Story';
 import TooManyResults from './TooManyResults';

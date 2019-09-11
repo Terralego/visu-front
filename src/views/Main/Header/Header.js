@@ -5,7 +5,7 @@ import {
   NavbarGroup,
 } from '@blueprintjs/core';
 import classnames from 'classnames';
-import withDeviceSize from '@terralego/core/utils/withDeviceSize';
+import withDeviceSize from '@terralego/core/hoc/withDeviceSize';
 
 import NavBarItemDesktop from './NavBarItemDesktop';
 import NavBarItemTablet from './NavBarItemTablet';
