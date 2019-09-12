@@ -150,21 +150,12 @@ $tableHeight: 33vh;
 // Fix temporary waiting upgrade TerraLego
 .visualizer {
   .interactive-map__legends {
-    overflow: unset;
-    overflow-y: scroll;
 
     .tf-legend {
-      min-width: unset;
       max-width: none;
-      max-height: 22rem;
-
-      .tf-legend__only-circles {
-        width: 18rem;
-      }
     }
 
     .tf-legend__title {
-      display: flex;
       align-self: center;
     }
   }
