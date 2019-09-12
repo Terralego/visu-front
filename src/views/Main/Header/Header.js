@@ -4,7 +4,7 @@ import {
   NavbarGroup,
 } from '@blueprintjs/core';
 import classnames from 'classnames';
-import withDeviceSize from '@terralego/core/utils/withDeviceSize';
+import withDeviceSize from '@terralego/core/hoc/withDeviceSize';
 
 import { fetchViewList } from '../../../services/visualizer';
 
