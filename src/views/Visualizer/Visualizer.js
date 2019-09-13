@@ -1,7 +1,6 @@
 import React from 'react';
 
 import { fetchViewConfig } from '../../services/visualizer';
-import SearchProvider from '../../components/SearchProvider';
 import Loading from '../../components/Loading';
 import View from './View';
 import NotFound from './NotFound';
@@ -88,21 +87,14 @@ export class Visualizer extends React.Component {
     const viewSettings = this.getCurrentViewSetting();
 
     if (notfound) return <NotFound />;
-
+    if (loading || !viewSettings) return <Loading />;
     return (
-      <SearchProvider>
-        {(loading || !viewSettings)
-          ? <Loading />
-          : (
-            <View
-              key={viewName}
-              view={viewSettings}
-              onViewStateUpdate={onViewStateUpdate}
-              {...props}
-            />
-          )
-        }
-      </SearchProvider>
+      <View
+        key={viewName}
+        view={viewSettings}
+        onViewStateUpdate={onViewStateUpdate}
+        {...props}
+      />
     );
   }
 }
