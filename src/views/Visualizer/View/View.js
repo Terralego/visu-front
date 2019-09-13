@@ -21,6 +21,7 @@ import {
 } from '@terralego/core/modules/Map';
 import { toggleLayerVisibility, setLayerOpacity } from '@terralego/core/modules/Map/services/mapUtils';
 import { LayersTreeProvider, LayersTree } from '@terralego/core/modules/Visualizer/LayersTree';
+import { Details, MapNavigation, Story, TooManyResults } from '@terralego/core/modules/Visualizer';
 import LayersTreeProps from '@terralego/core/modules/Visualizer/types/Layer';
 import searchService, {
   getExtent,
@@ -38,16 +39,12 @@ import {
   fetchPropertyRange,
   layersTreeToStory,
 } from '@terralego/core/modules/Visualizer/services/layersTreeUtils';
-import Details from '@terralego/core/modules/Visualizer/Details';
 import classnames from 'classnames';
 import debounce from 'debounce';
 import turfCenter from '@turf/center';
 import turfBbox from '@turf/bbox';
 import memoize from 'memoize-one';
 
-import MapNavigation from './MapNavigation';
-import Story from './Story';
-import TooManyResults from './TooManyResults';
 import DataTable from './DataTable';
 import Widgets from './Widgets';
 import { generateClusterList } from './interactions';
@@ -799,6 +796,7 @@ export class Visualizer extends React.Component {
                 {isStory
                   ? (
                     <Story
+                      map={map}
                       ref={storyRef}
                       story={layersTreeToStory(layersTree)}
                       setLegends={setLegends}
@@ -820,7 +818,10 @@ export class Visualizer extends React.Component {
                       'visualizer-view__map--is-resizing': mapIsResizing,
                     })}
                   >
-                    <TooManyResults count={totalFeatures} />
+                    <TooManyResults
+                      count={totalFeatures}
+                      translate={t}
+                    />
 
                     <Details
                       visible={isDetailsVisible}
