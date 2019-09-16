@@ -112,6 +112,19 @@ $tableHeight: 33vh;
 
 .main .map-navigation {
   padding: 0 ! important;
+  
+  &__header {
+    background-image: url('../../images/AURAN-fond.png');
+
+    .appName-title-logo {
+      margin-top: 0;
+    }
+  }
+}
+
+// Override Terralego
+.main .visualizer-view.is-layers-tree-visible .map-navigation {
+  background-color: #30404d;
 }
 
 .layerstree-group:first-child {
