@@ -12,6 +12,7 @@ $tableHeight: 33vh;
 
 .main {
   display: flex;
+
   &__header {
     display: flex;
     flex-direction: column;
@@ -27,7 +28,7 @@ $tableHeight: 33vh;
       right: 0;
       z-index: 105;
     }
-   
+
     &--mobile {
       flex: 0 0 10rem;
       transform: translateX(0rem);
@@ -38,7 +39,7 @@ $tableHeight: 33vh;
         display: flex;
         padding: .5rem;
 
-        a, >span {
+        a, > span {
           display: flex;
           flex-direction: row;
           align-items: center;
@@ -58,22 +59,26 @@ $tableHeight: 33vh;
             margin: 0;
           }
         }
+
         .header-button {
           width: 2.25rem;
           height: 2.25rem;
           margin: auto;
           align-items: center;
         }
+
         .active .header-button-label {
           font-weight: 600;
           font-size: .75rem;
         }
       }
+
       &--open {
         transform: translateX(7.65rem);
       }
     }
   }
+
   &__content {
     display: flex;
     flex: 1;
@@ -100,10 +105,12 @@ $tableHeight: 33vh;
   height: auto;
   flex: 1;
   padding: 0;
+
   &__group {
     flex-direction: column;
     height: auto;
   }
+
   // Below override blueprint
   .bp3-overlay {
     white-space: nowrap;
@@ -112,7 +119,7 @@ $tableHeight: 33vh;
 
 .main .map-navigation {
   padding: 0 ! important;
-  
+
   &__header {
     background-image: url('../../images/AURAN-fond.png');
 
@@ -189,6 +196,7 @@ $tableHeight: 33vh;
   .mapboxgl-control-container {
     transition: all .2s ease-in;
   }
+
   .mapboxgl-ctrl-top-left,
   .mapboxgl-ctrl-bottom-left {
     transform: none;
@@ -218,6 +226,12 @@ $tableHeight: 33vh;
 
   }
 
+  .mapboxgl-popup {
+
+    .mapboxgl-popup-content {
+      text-align: center;
+    }
+  }
 }
 
 // Override Mapbox position logo
@@ -230,6 +244,7 @@ $tableHeight: 33vh;
     transition: all .2s ease-in;
 
   }
+
   &.visualizer--with-layers-tree {
     .mapboxgl-ctrl-logo {
       right: -38px;
