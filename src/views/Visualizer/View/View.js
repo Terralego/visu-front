@@ -791,6 +791,7 @@ export class Visualizer extends React.Component {
                 toggleLayersTree={toggleLayersTree}
                 visible={displayLayersTree}
                 renderHeader={renderHeader}
+                translate={t}
               >
                 {isStory
                   ? (
