@@ -69,7 +69,7 @@ Deploy Dev (force): &deploy_predev
     url: https://auran-dev.netlify.com
   variables:
     SITE_ID: "auran-dev.netlify.com"
-    BACKEND_URL: "https:\\/\\/dev-terralego-auran.makina-corpus.net\\/api"
+    BACKEND_URL: "https:\\/\\/dev-terralego-auran.makina-corpus.net\\/"
     ADMIN_HOST: "https:\\/\\/terra-admin-dev.netlify.com\\/"
 
 Deploy Dev:
@@ -87,7 +87,7 @@ Deploy QA:
     url: https://auran-qa.netlify.com
   variables:
     SITE_ID: "auran-qa.netlify.com"
-    BACKEND_URL: "https:\\/\\/qa-terralego-auran.makina-corpus.net\\/api"
+    BACKEND_URL: "https:\\/\\/qa-terralego-auran.makina-corpus.net\\/"
     ADMIN_HOST: "https:\\/\\/terra-admin-qa.netlify.com\\/"
 
 Deploy Staging:
@@ -99,7 +99,7 @@ Deploy Staging:
     url: https://auran-staging.netlify.com
   variables:
     SITE_ID: "auran-staging.netlify.com"
-    BACKEND_URL: "https:\\/\\/staging-terralego-auran.makina-corpus.net\\/api"
+    BACKEND_URL: "https:\\/\\/staging-terralego-auran.makina-corpus.net\\/"
     ADMIN_HOST: "https:\\/\\/terra-adim-staging.netlify.com\\/"
 
 Deploy Prod:
@@ -111,5 +111,5 @@ Deploy Prod:
     url: https://auran.netlify.com
   variables:
     SITE_ID: "auran.netlify.com"
-    BACKEND_URL: "https:\\/\\/prod-terralego-auran.makina-corpus.net\\/api"
+    BACKEND_URL: "https:\\/\\/prod-terralego-auran.makina-corpus.net\\/"
     ADMIN_HOST: "https:\\/\\/terra-admin.netlify.com\\/"
