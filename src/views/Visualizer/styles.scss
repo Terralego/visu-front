@@ -123,7 +123,7 @@ $bg-visualizer: rgb(49, 64, 77);
     $layersTreeWidth: 22.5rem;
     $tableHeight: 33vh;
     $widgetsWidth: 20rem;
-    $detailsWidth: 30.5rem;
+    $detailsWidth: 25.5rem;
 
     &-layers-tree {
       .mapboxgl-ctrl-top-left,
@@ -381,7 +381,7 @@ $bg-visualizer: rgb(49, 64, 77);
       $layersTreeWidth: 20.2rem;
       $tableHeight: 33vh;
       $widgetsWidth: 16rem;
-      $detailsWidth: 16.5rem;
+      $detailsWidth: 17rem;
       &-layers-tree {
         .mapboxgl-ctrl-top-left,
         .mapboxgl-ctrl-bottom-left {
@@ -461,7 +461,7 @@ $bg-visualizer: rgb(49, 64, 77);
     &--with {
       $layersTreeWidth: 14rem;
       $tableHeight: 33vh;
-      $detailsWidth: 16.5rem;
+      $detailsWidth: 17rem;
       &-layers-tree {
         .mapboxgl-ctrl-top-left,
         .mapboxgl-ctrl-bottom-left {
