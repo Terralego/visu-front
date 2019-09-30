@@ -158,11 +158,12 @@ $tableHeight: 33vh;
 
     .details__column-label {
       white-space: normal;
+      font-size: .85rem;
+      width: 10.5rem;
     }
 
     .details__column-value {
       vertical-align: bottom;
-      white-space: nowrap;
     }
   }
 }
