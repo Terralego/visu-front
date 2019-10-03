@@ -7,6 +7,8 @@ import {
 import classnames from 'classnames';
 import withDeviceSize from '@terralego/core/hoc/withDeviceSize';
 
+import { fetchAllViews } from '../../../services/visualizer';
+
 import NavBarItemDesktop from './NavBarItemDesktop';
 import NavBarItemTablet from './NavBarItemTablet';
 import PartnerButton from './PartnerButton';
@@ -19,52 +21,13 @@ import infoSign from '../../../images/info-sign.svg';
 
 import './styles.scss';
 
-const navHeader = [
-  [
-    {
-      id: 'welcome',
-      label: 'Accueil',
-      href: '/',
-      iconPath: logo,
-      icon: null,
-    },
-    {
-      id: 'nav-population',
-      label: 'Population',
-      href: '/{{VIEW_ROOT_PATH}}/population',
-      iconPath: population,
-      icon: 'icon',
-    },
-    {
-      id: 'nav-habitat',
-      label: 'Habitat',
-      href: '/{{VIEW_ROOT_PATH}}/habitat',
-      iconPath: habitat,
-      icon: 'icon',
-    },
-    {
-      id: 'nav-mobilite',
-      label: 'Mobilité',
-      href: '/{{VIEW_ROOT_PATH}}/mobilite',
-      iconPath: mobilite,
-      icon: 'icon',
-    },
-    {
-      id: 'nav-economie',
-      label: 'Économie',
-      href: '/{{VIEW_ROOT_PATH}}/economie',
-      iconPath: economie,
-      icon: 'icon',
-    },
-  ], [],
-  [{
-    id: 'nav-partenaires',
-    label: 'Mentions légales',
-    iconPath: infoSign,
-    component: PartnerButton,
-  }],
+const logos = {
+  population,
+  habitat,
+  economie,
+  mobilite,
+};
 
-];
 /* eslint-disable react/no-array-index-key */
 export class Header extends React.Component {
   static propTypes = {
@@ -75,12 +38,17 @@ export class Header extends React.Component {
   static defaultProps = {
     isHeaderOpen: false,
     toggleHeader: () => {},
-  }
+  };
+
+  state = {
+    navItems: [],
+  };
 
   containerRef = React.createRef();
 
   componentDidMount () {
     document.body.addEventListener('touchstart', this.listener);
+    this.getAllViews();
   }
 
   componentWillUnmount () {
@@ -94,11 +62,52 @@ export class Header extends React.Component {
       return;
     }
     toggleHeader(false);
-  }
+  };
+
+  getAllViews = async () => {
+    const allViews = await fetchAllViews();
+    const navViews = allViews.map(({
+      name,
+      slug,
+      custom_icon: customIcon,
+    }) => ({
+      id: `nav-${slug}`,
+      label: name,
+      href: `/{{VIEW_ROOT_PATH}}/${slug}`,
+      // Todo: Remove logos[slug] when terra-admin is able to interact with this app
+      iconPath: customIcon || logos[slug],
+      icon: 'icon',
+    }));
+
+    const navItems = [
+      [
+        {
+          id: 'welcome',
+          label: 'Accueil',
+          href: '/',
+          iconPath: logo,
+          icon: null,
+        },
+        ...navViews,
+      ],
+      [],
+      [{
+        id: 'nav-partenaires',
+        label: 'Mentions légales',
+        iconPath: infoSign,
+        component: PartnerButton,
+      }],
+    ];
+
+    this.setState({
+      navItems,
+    });
+  };
 
 
   render () {
     const { isMobileSized, isHeaderOpen } = this.props;
+    const { navItems } = this.state;
     const { containerRef } = this;
 
     return (
@@ -112,7 +121,7 @@ export class Header extends React.Component {
       >
         <Navbar className="navBar bp3-dark">
           {
-            navHeader.map((group, index) => (
+            navItems.map((group, index) => (
               <NavbarGroup key={index} className="navBar__group">
                 {group.map(({ component: Component = isMobileSized
                   ? NavBarItemTablet : NavBarItemDesktop, ...item }) => (
