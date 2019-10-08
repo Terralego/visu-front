@@ -80,11 +80,11 @@ export class Header extends React.Component {
   containerRef = React.createRef();
 
   componentDidMount () {
-    document.body.addEventListener('click', this.listener);
+    document.body.addEventListener('touchstart', this.listener);
   }
 
   componentWillUnmount () {
-    document.body.removeEventListener('click', this.listener);
+    document.body.removeEventListener('touchstart', this.listener);
   }
 
   listener = ({ target }) => {
