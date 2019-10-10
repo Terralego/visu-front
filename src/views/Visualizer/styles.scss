@@ -6,6 +6,7 @@ $bg-visualizer: rgb(49, 64, 77);
 .visualizer {
   width: 100%;
   background: $bg-visualizer;
+  position: relative;
 
   &-view {
     position: relative;
@@ -280,7 +281,6 @@ $bg-visualizer: rgb(49, 64, 77);
 }
 
 .appName {
-  margin-left: .5rem;
 
   &-title {
     font-size: 1.4rem;
@@ -446,6 +446,8 @@ $bg-visualizer: rgb(49, 64, 77);
   }
 
   .appName {
+    height: 3rem;
+    
     &-title-logo {
       height: 2rem / $scaleRatioTablet;
     }
@@ -477,7 +479,7 @@ $bg-visualizer: rgb(49, 64, 77);
       }
     }
     .interactive-map__legends {
-      transform: scale(#{1 / $scaleRatioPhone}) translate3d(8rem, 5rem, 0);;
+      transform: scale(#{1 / $scaleRatioPhone}) translate3d(8rem, 5rem, 0);
     }
   }
 }
