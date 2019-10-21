@@ -573,7 +573,7 @@ export class Visualizer extends React.Component {
      */
     if (activeItems.length > prevActiveItems.length) {
       prevActiveItems.forEach(([prevItem, prevItemState]) =>
-        layersTreeState.set(prevItem, { ...prevItemState, active: false }));
+        layersTreeState.set(prevItem, { ...prevItemState, active: false, table: false }));
     }
 
     setLayersTreeState(layersTreeState);
