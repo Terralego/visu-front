@@ -1,4 +1,4 @@
-import { Api } from '@terralego/core';
+import Api from '@terralego/core/modules/Api';
 import { sortCustomLayers } from '@terralego/core/modules/Visualizer/services/layersTreeUtils';
 
 export const fetchViewConfig = async viewName => {
