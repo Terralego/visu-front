@@ -18,6 +18,7 @@ import habitat from '../../../images/habitat.png';
 import mobilite from '../../../images/mobilite.png';
 import economie from '../../../images/economie.png';
 import infoSign from '../../../images/info-sign.svg';
+import defaultIcon from '../../../images/heatmap.svg';
 
 import './styles.scss';
 
@@ -66,6 +67,7 @@ export class Header extends React.Component {
 
   getAllViews = async () => {
     const allViews = await fetchAllViews();
+    const getLogo = slug => logos[slug] || defaultIcon;
     const navViews = allViews.map(({
       name,
       slug,
@@ -75,7 +77,7 @@ export class Header extends React.Component {
       label: name,
       href: `/{{VIEW_ROOT_PATH}}/${slug}`,
       // Todo: Remove logos[slug] when terra-admin is able to interact with this app
-      iconPath: customIcon || logos[slug],
+      iconPath: customIcon || getLogo(slug),
       icon: 'icon',
     }));
 
