@@ -5,6 +5,7 @@ import population from '../images/population.png';
 import economie from '../images/economie.png';
 import mobilite from '../images/mobilite.png';
 import habitat from '../images/habitat.png';
+import defaultIcon from '../../../images/heatmap.svg';
 
 // logos path map for view usage.
 // This is a quick workaround to be able to choose an icon
@@ -39,6 +40,8 @@ export const fetchViewConfig = async viewName => {
 };
 
 
+const getLogo = slug => logos[slug] || defaultIcon;
+
 export const fetchAllViews = async () => {
   try {
     const config = await Api.request('geolayer/scene/');
@@ -52,7 +55,7 @@ export const fetchAllViews = async () => {
       label: name,
       href: `/{{VIEW_ROOT_PATH}}/${slug}`,
       // Todo: Remove logos[slug] when terra-admin is able to interact with this app
-      iconPath: customIcon || logos[slug],
+      iconPath: customIcon || getLogo(slug),
       icon: 'icon',
     }));
   } catch (e) {
