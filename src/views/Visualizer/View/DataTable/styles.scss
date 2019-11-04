@@ -97,11 +97,11 @@
 @media(min-width: $breakpoints-tablet) and (max-width: $breakpoints-desktop) and (orientation: landscape) {
   .data-table .table-header {
     padding: .8rem .5rem;
-    
+
     &__title {
       min-width: 0;
       max-width: 65%;
-      
+
       &--label {
         overflow: hidden;
         text-overflow: ellipsis;
