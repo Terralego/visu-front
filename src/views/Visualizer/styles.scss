@@ -1,4 +1,4 @@
-@import '../variables.scss'; 
+@import '../variables.scss';
 
 $transitionSpeed: .2s;
 $bg-visualizer: rgb(49, 64, 77);
@@ -447,7 +447,7 @@ $bg-visualizer: rgb(49, 64, 77);
 
   .appName {
     height: 3rem;
-    
+
     &-title-logo {
       height: 2rem / $scaleRatioTablet;
     }
