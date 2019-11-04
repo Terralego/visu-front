@@ -226,6 +226,17 @@ $tableHeight: 33vh;
       transition: all .2s ease-in;
     }
 
+    &.visualizer--with-table {
+      .mapboxgl-ctrl-bottom-left {
+        left: 0;
+        transition: none;
+      }
+
+      .mapboxgl-ctrl-logo {
+        right: 19.5rem;
+        transition: none;
+      }
+    }
   }
 
   .mapboxgl-popup {
