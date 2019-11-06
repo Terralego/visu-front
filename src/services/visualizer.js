@@ -5,7 +5,7 @@ import population from '../images/population.png';
 import economie from '../images/economie.png';
 import mobilite from '../images/mobilite.png';
 import habitat from '../images/habitat.png';
-import defaultIcon from '../../../images/heatmap.svg';
+import defaultIcon from '../images/heatmap.svg';
 
 // logos path map for view usage.
 // This is a quick workaround to be able to choose an icon
@@ -20,7 +20,6 @@ const logos = {
 
 export const fetchViewConfig = async viewName => {
   try {
-    console.log('loading', viewName);
     const config = await Api.request(`geolayer/view/${viewName}/`);
 
     // Replace '/api/' part in urls with the API_HOST value to be able to reach the
@@ -38,7 +37,6 @@ export const fetchViewConfig = async viewName => {
     return null;
   }
 };
-
 
 const getLogo = slug => logos[slug] || defaultIcon;
 
