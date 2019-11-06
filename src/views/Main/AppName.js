@@ -4,11 +4,7 @@ import logo from '../../images/terravisu-logo.png';
 export const AppName = () => (
   <div className="bp3-dark appName">
     <span className="appName-title">
-      <img
-        className="appName-title-logo"
-        src={logo}
-        alt="TerraVisu"
-      />
+      TerraVisu
     </span>
     <span className="appName-version">v0.1</span>
   </div>
