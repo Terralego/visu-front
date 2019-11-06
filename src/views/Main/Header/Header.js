@@ -42,8 +42,8 @@ export const Header = ({
   toggleHeader = () => { },
   isMobileSized,
 }) => {
-  const [navItems, setNavItems] = useState([]);
-  const containerRef = React.useRef();
+  const [navItems, setNavItems] = useState(navItemsBase);
+  const containerRef = React.useRef(null);
 
   useEffect(() => {
     let isUnmounted = false;
