@@ -6,7 +6,7 @@ import {
 import classnames from 'classnames';
 import withDeviceSize from '@terralego/core/hoc/withDeviceSize';
 
-import { fetchViewList } from '../../../services/visualizer';
+import { fetchAllViews } from '../../../services/visualizer';
 
 import NavBarItemDesktop from './NavBarItemDesktop';
 import NavBarItemTablet from './NavBarItemTablet';
@@ -51,7 +51,7 @@ export const Header = ({
     const loadViewList = async () => {
       /** Load the view list and add it to base menu only if component mounted */
       if (isUnmounted) return;
-      const views = await fetchViewList();
+      const views = await fetchAllViews();
       const newNavItems = JSON.parse(JSON.stringify(navItemsBase));
       newNavItems[0] = newNavItems[0].concat(views);
       setNavItems(newNavItems);
