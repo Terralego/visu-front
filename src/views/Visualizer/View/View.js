@@ -520,7 +520,10 @@ export class Visualizer extends React.Component {
     return results;
   }
 
-  onPrintToggle = printIsOpened => this.setState({ printIsOpened })
+  onPrintToggle = printIsOpened => {
+    this.hideDetails();
+    this.setState({ printIsOpened });
+  }
 
   searchResultClick = ({
     result,
