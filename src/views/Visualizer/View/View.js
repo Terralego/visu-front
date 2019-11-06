@@ -54,8 +54,6 @@ import appLogo from '../../../images/terravisu-logo.png';
 
 export const INTERACTION_DISPLAY_DETAILS = 'displayDetails';
 
-const LAYER_PROPERTY = 'layer.keyword';
-
 const getControls = memoize((
   displaySearch,
   displayBackgroundStyles,
@@ -340,8 +338,8 @@ export class Visualizer extends React.Component {
             ...all,
             ...getSearchParamFromProperty(properties, layer.filters.form, key),
           }), {}),
-          [LAYER_PROPERTY]: { value: layer.filters.layer, type: 'term' },
         },
+        index: layer.filters.layer,
       }));
 
     if (!this.isSearching) {
@@ -379,14 +377,16 @@ export class Visualizer extends React.Component {
         // Skip results that are only counts (index (k) higher than filters)
         if (!filters[k]) { return all; }
 
-        const { [LAYER_PROPERTY]: { value: layer } } = filters[k].properties;
         return [
           ...all,
-          ...hits.map(({ _source: { _feature_id: id } }) => ({ layer, id })),
+          ...hits.map(({ _index, _source: { _feature_id: id } }) => ({
+            layer: _index,
+            id,
+          })),
         ];
       }, []);
 
-    const features = filters.map(({ properties: { [LAYER_PROPERTY]: { value: layer } } }) => ({
+    const features = filters.map(({ index: layer }) => ({
       layer,
       features: allFeatures
         .filter(({ layer: fLayer }) => layer === fLayer)
@@ -471,9 +471,7 @@ export class Visualizer extends React.Component {
 
     const { responses } = await searchService.msearch(layers.map(([{ filters: { layer } }]) => ({
       query,
-      properties: {
-        [LAYER_PROPERTY]: { value: layer, type: 'term' },
-      },
+      index: layer,
       size: 6,
     })));
     const results = layers.map(([{
