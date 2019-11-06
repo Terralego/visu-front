@@ -9,7 +9,7 @@ $containerWidth: 20rem;
   background: rgb(48,64,77);
   will-change: width;
   overflow: hidden;
-  
+
   &--visible {
     width: $containerWidth;
   }
@@ -82,14 +82,14 @@ $containerWidth: 20rem;
     @keyframes points-loader {
       from {
         transform: scale(0.2);
-        opacity: 0; 
+        opacity: 0;
       }
       to {
         transform: scale(1.5);
         opacity: 1;
       }
     }
-    
+
 
     &__label {
       font-size: .8rem;
