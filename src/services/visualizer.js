@@ -1,4 +1,4 @@
-import { Api } from '@terralego/core';
+import Api from '@terralego/core/modules/Api';
 import { sortCustomLayers } from '@terralego/core/modules/Visualizer/services/layersTreeUtils';
 
 export const fetchViewConfig = async viewName => {
@@ -15,4 +15,13 @@ export const fetchViewConfig = async viewName => {
   }
 };
 
-export default { fetchViewConfig };
+export const fetchAllViews = async () => {
+  try {
+    const config = await Api.request('geolayer/scene/');
+    return JSON.parse(JSON.stringify(config.results).replace(/"\/api(\/[^"]+)"/g, `"${Api.host}$1"`));
+  } catch (e) {
+    return null;
+  }
+};
+
+export default { fetchViewConfig, fetchAllViews };
