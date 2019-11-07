@@ -1,7 +1,7 @@
 import React from 'react';
+import search from '@terralego/core/modules/Visualizer/services/search';
 
 import { fetchViewConfig } from '../../services/visualizer';
-import SearchProvider from '../../components/SearchProvider';
 import Loading from '../../components/Loading';
 import View from './View';
 import NotFound from './NotFound';
@@ -82,27 +82,22 @@ export class Visualizer extends React.Component {
   }
 
   render () {
-    const { match: { params: { viewName } }, ...props } = this.props;
+    const { match: { params: { viewName } }, env: { API_HOST }, ...props } = this.props;
     const { loading, notfound } = this.state;
     const { onViewStateUpdate } = this;
     const viewSettings = this.getCurrentViewSetting();
 
-    if (notfound) return <NotFound />;
+    search.host = API_HOST.replace(/api$/, 'elasticsearch');
 
+    if (notfound) return <NotFound />;
+    if (loading || !viewSettings) return <Loading />;
     return (
-      <SearchProvider>
-        {(loading || !viewSettings)
-          ? <Loading />
-          : (
-            <View
-              key={viewName}
-              view={viewSettings}
-              onViewStateUpdate={onViewStateUpdate}
-              {...props}
-            />
-          )
-        }
-      </SearchProvider>
+      <View
+        key={viewName}
+        view={viewSettings}
+        onViewStateUpdate={onViewStateUpdate}
+        {...props}
+      />
     );
   }
 }

@@ -69,7 +69,7 @@ Deploy Dev (force): &deploy_predev
     url: https://terravisu-demo.netlify.com
   variables:
     SITE_ID: "terravisu-demo.netlify.com"
-    BACKEND_URL: "https:\\/\\/terravisu-demo.makina-corpus.net\\/api"
+    BACKEND_URL: "https:\\/\\/terravisu-demo.makina-corpus.net\\/"
     ADMIN_HOST: "https:\\/\\/terra-admin-dev.netlify.com\\/"
 
 Deploy Dev:

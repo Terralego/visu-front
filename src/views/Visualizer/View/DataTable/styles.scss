@@ -1,3 +1,5 @@
+@import '../../../variables.scss';
+
 .data-table {
   flex-shrink: 0;
   padding: 0;
@@ -6,7 +8,7 @@
   display: flex;
   position: relative;
   height: 0;
-  z-index: 99;
+  z-index: 80;
   will-change: height;
 
   &--visible {
@@ -90,4 +92,32 @@
 
 .table-columns-selector__toggle-all {
   font-style: italic;
+}
+
+@media(min-width: $breakpoints-tablet) and (max-width: $breakpoints-desktop) and (orientation: landscape) {
+  .data-table .table-header {
+    padding: .8rem .5rem;
+
+    &__title {
+      min-width: 0;
+      max-width: 65%;
+
+      &--label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin: 0;
+      }
+    }
+
+    &__counter {
+      margin-left: .5rem;
+    }
+  }
+}
+
+@media(min-width: $breakpoints-phone) and (max-width: $breakpoints-tablet) and (orientation: portrait) {
+  .data-table {
+    display: none;
+  }
 }

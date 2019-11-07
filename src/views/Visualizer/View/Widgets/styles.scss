@@ -5,11 +5,11 @@ $containerWidth: 20rem;
   width: 0;
   height: 100%;
   transition: width .2s ease-in;
-  z-index: 1;
+  z-index: 80;
   background: rgb(48,64,77);
   will-change: width;
   overflow: hidden;
-  
+
   &--visible {
     width: $containerWidth;
   }
@@ -82,14 +82,14 @@ $containerWidth: 20rem;
     @keyframes points-loader {
       from {
         transform: scale(0.2);
-        opacity: 0; 
+        opacity: 0;
       }
       to {
         transform: scale(1.5);
         opacity: 1;
       }
     }
-    
+
 
     &__label {
       font-size: .8rem;

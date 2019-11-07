@@ -1,5 +1,15 @@
 @import '../../theme.scss';
 
+$navWidth: 4rem;
+$layersTreeWidth: 22.5rem;
+$widgetsWidth: 20rem;
+$detailsWidth: 25.5rem;
+$mapboxContributionsWidth: 18.5rem;
+$mapboxControlScaleWidth: 4rem;
+
+$tableHeight: 33vh;
+
+
 .main {
   display: flex;
 
@@ -7,7 +17,66 @@
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    flex: 0 0 50px;
+    flex: 0 0 3.35rem;
+    z-index: 100;
+
+    &__target {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      z-index: 105;
+    }
+
+    &--mobile {
+      flex: 0 0 10rem;
+      transform: translateX(0rem);
+      margin-left: -7.65rem;
+      transition: transform .2s ease-in;
+
+      .navBar__group {
+        display: flex;
+        padding: .5rem;
+
+        a, > span {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          align-content: space-between;
+          font-size: .7rem;
+          text-align: right;
+          outline: none;
+          text-decoration: none;
+          width: 9.5rem;
+          height: 3rem;
+
+          .header-button-label {
+            color: #f5f8fa;
+            display: table-cell;
+            padding-right: 1rem;
+            width: 10rem;
+            margin: 0;
+          }
+        }
+
+        .header-button {
+          width: 2.25rem;
+          height: 2.25rem;
+          margin: auto;
+          align-items: center;
+        }
+
+        .active .header-button-label {
+          font-weight: 600;
+          font-size: .75rem;
+        }
+      }
+
+      &--open {
+        transform: translateX(7.65rem);
+      }
+    }
   }
 
   &__content {
@@ -29,15 +98,13 @@
   }
 }
 
-.main .navBar {
+.navBar {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   height: auto;
   flex: 1;
   padding: 0;
-  z-index: 1000;
-  background-color: #156571;
 
   &__group {
     flex-direction: column;
@@ -50,39 +117,21 @@
   }
 }
 
-.appName {
-  padding-left: 0.5rem;
-
-  &-title {
-    font-size: 1.4rem;
-    font-family: "SFProText-Regular", Arial, Helvetica, sans-serif;
-    margin-right: .5rem;
-
-    &-logo {
-      height: 2rem;
-      margin-top: .5rem;
-    }
-  }
-
-  &-version {
-    font-size: 0.8rem;
-    font-family: "SFProText-light", Arial, Helvetica, sans-serif;
-    font-weight: bold;
-  }
-}
-
 .main .map-navigation {
   padding: 0 ! important;
 
   &__header {
     background-image: url('../../images/visu-background.png');
-    height: 3rem;
-  }
 
-  &__title {
-    padding-left: 0.5rem;
-    margin-bottom: 0.5rem;
+    .appName-title-logo {
+      margin-top: 0;
+    }
   }
+}
+
+// Override Terralego
+.main .visualizer-view.is-layers-tree-visible .map-navigation {
+  background-color: #30404d;
 }
 
 .layerstree-group:first-child {
@@ -109,12 +158,13 @@
 
     .details__column-label {
       white-space: normal;
-      padding-right: 18px;
+      font-size: .85rem;
+      width: 15.5rem;
+      padding-right: .5rem;
     }
 
     .details__column-value {
       vertical-align: bottom;
-      white-space: nowrap;
     }
   }
 }
@@ -122,27 +172,97 @@
 // Fix temporary waiting upgrade TerraLego
 .visualizer {
   .interactive-map__legends {
-    overflow: unset;
-    overflow-y: scroll;
 
     .tf-legend {
-      min-width: unset;
       max-width: none;
-      max-height: 350px;
-
-      .tf-legend__only-circles {
-        width: 300px;
-        height: 280px;
-
-        .tf-legend__item {
-          bottom: 50px;
-        }
-      }
     }
 
     .tf-legend__title {
-      display: flex;
       align-self: center;
     }
   }
+}
+
+// Override TerraLego
+.mapboxgl-ctrl:hover {
+  color: #202B33;
+}
+
+.interactive-map {
+  .tf-legend {
+    margin-bottom: 1em;
+  }
+}
+
+.visualizer {
+  .mapboxgl-control-container {
+    transition: all .2s ease-in;
+  }
+
+  .mapboxgl-ctrl-top-left,
+  .mapboxgl-ctrl-bottom-left {
+    transform: none;
+    transition: all .2s ease-in;
+  }
+
+  .mapboxgl-ctrl-bottom-left {
+    transform: none;
+    margin: -0.5rem 0.5rem;
+    left: 0rem;
+    right: 22rem;
+    transition: all .2s ease-in;
+
+    .mapboxgl-ctrl {
+      float: none;
+    }
+  }
+
+  &.visualizer--with-layers-tree {
+    .mapboxgl-ctrl-bottom-left {
+      transform: none;
+      margin: -0.5rem 0.5rem;
+      left: $layersTreeWidth;
+      right: 22rem;
+      transition: all .2s ease-in;
+    }
+
+    &.visualizer--with-table {
+      .mapboxgl-ctrl-bottom-left {
+        left: 0;
+        transition: none;
+      }
+
+      .mapboxgl-ctrl-logo {
+        right: 19.5rem;
+        transition: none;
+      }
+    }
+  }
+
+  .mapboxgl-popup {
+
+    .mapboxgl-popup-content {
+      text-align: center;
+    }
+  }
+}
+
+// Override Mapbox position logo
+.visualizer {
+
+  .mapboxgl-ctrl-logo {
+    position: absolute;
+    right: 10px;
+    bottom: 15px;
+    transition: all .2s ease-in;
+
+  }
+
+  &.visualizer--with-layers-tree {
+    .mapboxgl-ctrl-logo {
+      right: -38px;
+      bottom: 15px;
+    }
+  }
+
 }

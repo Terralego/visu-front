@@ -9,6 +9,7 @@ import './app.scss';
 import '@blueprintjs/datetime/lib/css/blueprint-datetime.css';
 
 import withEnv from './config/withEnv';
+import './config/i18n';
 import Main from './views/Main';
 
 const App = ({ env: { API_HOST } }) => (

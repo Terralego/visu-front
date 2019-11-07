@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { Classes } from '@blueprintjs/core';
 import { connectState } from '@terralego/core/modules/State/context';
+import withDeviceSize from '@terralego/core/hoc/withDeviceSize';
 import InteractiveMap, {
   INTERACTION_DISPLAY_TOOLTIP,
   INTERACTION_ZOOM,
@@ -15,18 +16,17 @@ import {
   CONTROL_BACKGROUND_STYLES,
   CONTROL_PRINT,
   CONTROLS_TOP_RIGHT,
-  CONTROL_PERMALINK,
+  CONTROL_SHARE,
   CONTROL_HOME,
 } from '@terralego/core/modules/Map';
 import { toggleLayerVisibility, setLayerOpacity } from '@terralego/core/modules/Map/services/mapUtils';
-import { LayersTree } from '@terralego/core/modules/Visualizer';
+import { LayersTreeProvider, LayersTree } from '@terralego/core/modules/Visualizer/LayersTree';
+import { Details, MapNavigation, Story, TooManyResults } from '@terralego/core/modules/Visualizer';
 import LayersTreeProps from '@terralego/core/modules/Visualizer/types/Layer';
-import classnames from 'classnames';
-import debounce from 'debounce';
-import turfCenter from '@turf/center';
-import turfBbox from '@turf/bbox';
-import memoize from 'memoize-one';
-
+import searchService, {
+  getExtent,
+  getSearchParamFromProperty,
+} from '@terralego/core/modules/Visualizer/services/search';
 import {
   filterFeatures,
   resetFilters,
@@ -38,52 +38,32 @@ import {
   fetchPropertyValues,
   fetchPropertyRange,
   layersTreeToStory,
-} from './layersTreeUtils';
-import searchService, { getExtent } from '../../../services/search';
-import Details from './Details';
-import MapNavigation from './MapNavigation';
-import Story from './Story';
-import TooManyResults from './TooManyResults';
+} from '@terralego/core/modules/Visualizer/services/layersTreeUtils';
+import classnames from 'classnames';
+import debounce from 'debounce';
+import turfCenter from '@turf/center';
+import turfBbox from '@turf/bbox';
+import memoize from 'memoize-one';
+
 import DataTable from './DataTable';
 import Widgets from './Widgets';
 import { generateClusterList } from './interactions';
 import BoundingBoxObserver from '../../../components/BoundingBoxObserver';
-import translate from './translate';
 import brandLogo from '../../../images/terravisu-logo.svg';
 import appLogo from '../../../images/terravisu-logo.png';
 
 export const INTERACTION_DISPLAY_DETAILS = 'displayDetails';
 
-function getPropertiesToFilter (properties, propertiesForm, key) {
-  const { type } = propertiesForm.find(({ property }) => property === key);
-  if (properties[key]) {
-    switch (type) {
-      case 'many':
-        return {
-          [`${key}.keyword`]: {
-            type: 'term',
-            value: properties[key],
-          },
-        };
-      case 'range':
-        return {
-          [key]: {
-            type: 'range',
-            value: { min: properties[key][0], max: properties[key][1] },
-          },
-        };
-      case 'single':
-      default:
-        return { [key]: properties[key] };
-    }
-  } else {
-    return {};
-  }
-}
-
 const LAYER_PROPERTY = 'layer.keyword';
 
-const getControls = memoize((displaySearch, displayBackgroundStyles, disableSearch) => [
+const getControls = memoize((
+  displaySearch,
+  displayBackgroundStyles,
+  disableSearch,
+  isMobileSized,
+  onToggle,
+  viewState,
+) => [
   displaySearch && {
     control: CONTROL_SEARCH,
     position: CONTROLS_TOP_RIGHT,
@@ -96,14 +76,42 @@ const getControls = memoize((displaySearch, displayBackgroundStyles, disableSear
   displayBackgroundStyles && {
     control: CONTROL_BACKGROUND_STYLES,
     position: CONTROLS_TOP_RIGHT,
-  }, {
+  },
+  !isMobileSized && {
     control: CONTROL_PRINT,
     position: CONTROLS_TOP_RIGHT,
+    onToggle,
   }, {
-    control: CONTROL_PERMALINK,
+    control: CONTROL_SHARE,
     position: CONTROLS_TOP_RIGHT,
+    initialState: viewState,
   },
-].filter(defined => defined));
+].filter(Boolean));
+
+/**
+ * [monkey patch]
+ * Test if provided layer is a border layer
+ *
+ * @param {Object} layer.filters.layer The layer to test
+ */
+const isAdminBorderLayer = ({ label } = {}) =>
+  ['Départements', 'Intercommunalités', 'Communes'].includes(label);
+
+/**
+ * Get an array of active layers state from layersTreeState
+ *
+ * @param {Map} layersTreeState
+ * @returns {Array} Array of active layers & corresponding state
+ */
+const getActiveLayersState = layersTreeState => {
+  const activeLayersState = [];
+  layersTreeState.forEach((layerState, layer) => {
+    if (layerState.active && !isAdminBorderLayer(layer)) {
+      activeLayersState.push([layer, layerState]);
+    }
+  });
+  return activeLayersState;
+};
 
 export class Visualizer extends React.Component {
   static propTypes = {
@@ -128,6 +136,7 @@ export class Visualizer extends React.Component {
     initialState: PropTypes.shape({
       tree: PropTypes.bool,
     }),
+    isMobileSized: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -139,6 +148,7 @@ export class Visualizer extends React.Component {
     setMap () { },
     initLayersState () { },
     initialState: {},
+    isMobileSized: false,
   };
 
   state = {
@@ -354,7 +364,7 @@ export class Visualizer extends React.Component {
         properties: {
           ...Object.keys(properties).reduce((all, key) => ({
             ...all,
-            ...getPropertiesToFilter(properties, layer.filters.form, key),
+            ...getSearchParamFromProperty(properties, layer.filters.form, key),
           }), {}),
           [LAYER_PROPERTY]: { value: layer.filters.layer, type: 'term' },
         },
@@ -370,7 +380,7 @@ export class Visualizer extends React.Component {
     // Query for bbox result ids
     const queryIds = filters.map(({ properties }) => ({
       properties,
-      include: [],
+      include: ['_feature_id'],
       query,
       boundingBox,
     }));
@@ -396,7 +406,10 @@ export class Visualizer extends React.Component {
         if (!filters[k]) { return all; }
 
         const { [LAYER_PROPERTY]: { value: layer } } = filters[k].properties;
-        return [...all, ...hits.map(({ _id: id }) => ({ layer, id }))];
+        return [
+          ...all,
+          ...hits.map(({ _source: { _feature_id: id } }) => ({ layer, id })),
+        ];
       }, []);
 
     const features = filters.map(({ properties: { [LAYER_PROPERTY]: { value: layer } } }) => ({
@@ -463,30 +476,17 @@ export class Visualizer extends React.Component {
     return Array.from(cleanedFeatures.values());
   }
 
-  onHighlightChangeFactory = (layerId, addHighlight, removeHighlight, color) => index => {
-    const { map } = this.props;
-    const {
-      features = [],
-      details,
-      details: {
-        feature: { sourceLayer } = {},
-      } = {},
-    } = this.state;
-    const { features: list = [] } = features.find(({ layer }) => layer === sourceLayer) || {};
-    const id = list[index];
-
-    const [feature] = map.queryRenderedFeatures({
-      layers: [layerId],
-      filter: ['==', '_id', id],
-    });
+  onHighlightChangeFactory = (layerId, featureId, addHighlight, removeHighlight, color) => {
+    const { details = {} } = this.state;
 
     addHighlight({
-      feature,
+      layerId,
+      featureId,
       highlightColor: color,
       unique: true,
     });
 
-    details.hide = () => removeHighlight({ feature });
+    details.hide = () => removeHighlight({ layerId, featureId });
   };
 
   searchInMap = async query => {
@@ -518,6 +518,8 @@ export class Visualizer extends React.Component {
 
     return results;
   }
+
+  onPrintToggle = printIsOpened => this.setState({ printIsOpened })
 
   searchResultClick = ({
     result,
@@ -560,29 +562,47 @@ export class Visualizer extends React.Component {
   }
 
   updateLayersTreeState = layersTreeState => {
-    const { setLayersTreeState } = this.props;
+    const { setLayersTreeState, layersTreeState: prevLayersTreeState } = this.props;
+
+    const prevActiveItems = getActiveLayersState(prevLayersTreeState);
+    const activeItems = getActiveLayersState(layersTreeState);
+
+    /**
+     * Disable all previously enabled layers
+     * (So we limit enabling only a single layer at a time)
+     */
+    if (activeItems.length > prevActiveItems.length) {
+      prevActiveItems.forEach(([prevItem, prevItemState]) =>
+        layersTreeState.set(prevItem, { ...prevItemState, active: false, table: false }));
+    }
+
     setLayersTreeState(layersTreeState);
   }
 
   displayDetails (feature, interaction, { addHighlight, removeHighlight }) {
+    const { layer: { id: layerId }, properties: { _id: featureId }, source } = feature;
     const { details: { hide = () => { } } = {} } = this.state;
-    const { highlight } = interaction;
+    const { highlight_color: highlightColor } = interaction;
     hide();
 
     this.onHighlightChange = () => null;
 
-    if (highlight) {
+    if (highlightColor) {
       addHighlight({
-        feature,
-        highlightColor: highlight.color,
+        layerId,
+        featureId,
+        highlightColor,
         unique: true,
+        source,
       });
 
+
       this.onHighlightChange = this.onHighlightChangeFactory(
-        feature.layer.id,
+        layerId,
+        featureId,
         addHighlight,
         removeHighlight,
-        highlight.color,
+        highlightColor,
       );
     }
 
@@ -590,11 +610,10 @@ export class Visualizer extends React.Component {
       details: {
         feature,
         interaction,
-        hide: () => removeHighlight({ feature }),
+        hide: () => removeHighlight({ layerId, featureId }),
       },
     });
   }
-
 
   updateLayersTree () {
     const { map } = this.props;
@@ -678,15 +697,19 @@ export class Visualizer extends React.Component {
 
   render () {
     const {
+      t,
       layersTreeState,
       view: {
         title,
         map: mapProps,
         layersTree,
       },
+      map,
       mapIsResizing,
       setVisibleBoundingBox,
       renderHeader,
+      isMobileSized,
+      viewState,
     } = this.props;
     const {
       details,
@@ -695,7 +718,9 @@ export class Visualizer extends React.Component {
       interactions,
       totalFeatures,
       features,
+      printIsOpened,
     } = this.state;
+
     const {
       refreshLayers,
       resetMap, hideDetails, toggleLayersTree,
@@ -705,7 +730,11 @@ export class Visualizer extends React.Component {
       onClusterUpdate,
       activeAndSearchableLayers,
     } = this;
+
+    const displayLayersTree = isLayersTreeVisible && !printIsOpened;
+
     const isDetailsVisible = !!details;
+
     const [{ features: featuresForDetail = [] } = {}] = isDetailsVisible
       ? features.filter(({ layer }) => layer === sourceLayer)
       : [];
@@ -718,6 +747,9 @@ export class Visualizer extends React.Component {
       displaySearchInMap,
       Array.isArray(mapProps.backgroundStyle),
       !activeAndSearchableLayers.length,
+      isMobileSized,
+      this.onPrintToggle,
+      viewState,
     );
 
     if (displaySearchInMap) {
@@ -730,104 +762,115 @@ export class Visualizer extends React.Component {
     const isWidgetsVisible = hasWidget(layersTreeState);
 
     const isStory = layersTree.type === 'story';
-
     return (
-      <div className={classnames({
-        visualizer: true,
-        'visualizer--with-layers-tree': isLayersTreeVisible,
-        'visualizer--with-table': isTableVisible,
-        'visualizer--with-widgets': isWidgetsVisible,
-        'visualizer--with-details': isDetailsVisible,
-      })}
+      <LayersTreeProvider
+        map={map}
+        layersTree={layersTree}
+        onChange={this.updateLayersTreeState}
+        initialLayersTreeState={layersTreeState}
+        fetchPropertyValues={fetchPropertyValues}
+        fetchPropertyRange={fetchPropertyRange}
+        translate={t}
       >
-        <div className={`
-          visualizer-view
-          ${isLayersTreeVisible ? 'is-layers-tree-visible' : ''}
-        `}
+        <div className={classnames({
+          visualizer: true,
+          'visualizer--with-layers-tree': displayLayersTree,
+          'visualizer--with-table': isTableVisible,
+          'visualizer--with-widgets': isWidgetsVisible,
+          'visualizer--with-details': isDetailsVisible,
+        })}
         >
-          {layersTree && (
-            <MapNavigation
-              title={title}
-              toggleLayersTree={toggleLayersTree}
-              visible={isLayersTreeVisible}
-              renderHeader={renderHeader}
-            >
-              {isStory
-                ? (
-                  <Story
-                    ref={storyRef}
-                    story={layersTreeToStory(layersTree)}
-                    setLegends={setLegends}
-                  />
-                )
-                : (
-                  <LayersTree
-                    layersTree={layersTree}
-                    onChange={this.updateLayersTreeState}
-                    initialLayersTreeState={layersTreeState}
-                    fetchPropertyValues={fetchPropertyValues}
-                    fetchPropertyRange={fetchPropertyRange}
-                  />
-                )}
-            </MapNavigation>
-          )}
+          <div className={`
+            visualizer-view
+            ${displayLayersTree ? 'is-layers-tree-visible' : ''}
+          `}
+          >
+            {layersTree && (
+              <MapNavigation
+                title={title}
+                toggleLayersTree={toggleLayersTree}
+                visible={displayLayersTree}
+                renderHeader={renderHeader}
+                translate={t}
+              >
+                {isStory
+                  ? (
+                    <Story
+                      map={map}
+                      ref={storyRef}
+                      story={layersTreeToStory(layersTree)}
+                      setLegends={setLegends}
+                    />
+                  )
+                  : (
+                    <LayersTree />
+                  )}
+              </MapNavigation>
+            )}
 
-          <div className="visualizer-view__center col">
-            <div className="row">
-              <div className="col-data">
-                <BoundingBoxObserver
-                  onChange={setVisibleBoundingBox}
-                  className={classnames({
-                    'visualizer-view__map': true,
-                    'visualizer-view__map--is-resizing': mapIsResizing,
-                  })}
-                >
-                  <TooManyResults count={totalFeatures} />
+            <div className="visualizer-view__center col">
+              <div className="row">
+                <div className="col-data">
+                  <BoundingBoxObserver
+                    onChange={setVisibleBoundingBox}
+                    className={classnames({
+                      'visualizer-view__map': true,
+                      'visualizer-view__map--is-resizing': mapIsResizing,
+                    })}
+                  >
+                    <TooManyResults
+                      count={totalFeatures}
+                      translate={t}
+                    />
 
-                  <Details
-                    visible={isDetailsVisible}
-                    features={featuresForDetail.map(_id => ({ _id }))}
-                    {...details}
-                    onClose={hideDetails}
-                    onChange={this.onHighlightChange}
-                  />
-                </BoundingBoxObserver>
-                <DataTable />
-              </div>
-              <div className="col-widgets">
-                <Widgets />
+                    <Details
+                      visible={isDetailsVisible}
+                      features={featuresForDetail.map(_id => ({ _id }))}
+                      {...details}
+                      onClose={hideDetails}
+                      onChange={this.onHighlightChange}
+                    />
+                  </BoundingBoxObserver>
+                  <DataTable />
+                </div>
+                <div className="col-widgets">
+                  <Widgets />
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <InteractiveMap
-          {...mapProps}
-          className={Classes.DARK}
-          interactions={interactions}
-          legends={legends}
-          onMapLoaded={resetMap}
-          onMapUpdate={refreshLayers}
-          onStyleChange={refreshLayers}
-          onClusterUpdate={onClusterUpdate}
-          translate={translate}
-          controls={controls}
-          hash="map"
-        >
-          <div className="interactive-map__header">
-            <img src={appLogo} alt="TerraVisu" className="app-logo" />
-            {/* Waiting more information from customer */}
-            {/* {!!legends.length && (
-              <h2>
-                {legends.map(legend => legend.title).join(', ')}
-              </h2>
-            )} */}
-            <img src={brandLogo} alt="TerraVisu" className="brand-logo" />
-          </div>
-        </InteractiveMap>
-      </div>
+          <InteractiveMap
+            {...mapProps}
+            className={Classes.DARK}
+            interactions={interactions}
+            legends={legends}
+            onMapLoaded={resetMap}
+            onMapUpdate={refreshLayers}
+            onStyleChange={refreshLayers}
+            onClusterUpdate={onClusterUpdate}
+            translate={t}
+            controls={controls}
+            hash="map"
+          >
+            <div className="interactive-map__header">
+              <img src={appLogo} alt="TerraVisu" className="app-logo" />
+              {/* Waiting more information from customer */}
+              {/* {!!legends.length && (
+                <h2>
+                  {legends.map(legend => legend.title).join(', ')}
+                </h2>
+              )} */}
+              <img src={brandLogo} alt="TerraVisu" className="brand-logo" />
+            </div>
+            <div className="interactive-map__footer">
+              Credits…
+            </div>
+          </InteractiveMap>
+        </div>
+      </LayersTreeProvider>
     );
   }
 }
 
-export default connectState('initialState', 'setCurrentState')(withRouter(Visualizer));
+export default connectState('initialState', 'setCurrentState')(withDeviceSize()(withRouter(Visualizer)));
