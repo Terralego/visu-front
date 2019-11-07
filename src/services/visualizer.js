@@ -57,7 +57,9 @@ export const fetchAllViews = async () => {
       icon: 'icon',
     }));
   } catch (e) {
-    return null;
+    // eslint-disable-next-line no-console
+    console.log(e);
+    return [];
   }
 };
 
