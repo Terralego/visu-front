@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from '../../images/terravisu-logo.png';
 
 export const AppName = () => (
   <div className="bp3-dark appName">
