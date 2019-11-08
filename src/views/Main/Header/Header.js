@@ -76,7 +76,6 @@ export class Header extends React.Component {
       id: `nav-${slug}`,
       label: name,
       href: `/{{VIEW_ROOT_PATH}}/${slug}`,
-      // Todo: Remove logos[slug] when terra-admin is able to interact with this app
       iconPath: customIcon || getLogo(slug),
       icon: 'icon',
     }));
