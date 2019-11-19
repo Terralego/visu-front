@@ -737,7 +737,7 @@ export class Visualizer extends React.Component {
 
     const displayLayersTree = isLayersTreeVisible && !printIsOpened;
 
-    const isDetailsVisible = !!details;
+    const isDetailsVisible = !!details && !printIsOpened;
 
     const [{ features: featuresForDetail = [] } = {}] = isDetailsVisible
       ? features.filter(({ layer }) => layer === sourceLayer)
