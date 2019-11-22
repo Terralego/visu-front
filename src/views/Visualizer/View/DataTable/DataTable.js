@@ -37,6 +37,7 @@ export class DataTable extends React.Component {
         })),
       }),
     }),
+    isTableVisible: PropTypes.bool,
     query: PropTypes.string,
     filters: PropTypes.shape({
       // anyKey: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
@@ -45,9 +46,10 @@ export class DataTable extends React.Component {
 
   static defaultProps = {
     displayedLayer: undefined,
+    isTableVisible: true,
     query: '',
     filters: {},
-  }
+  };
 
   state = {
     columns: null,
@@ -85,8 +87,7 @@ export class DataTable extends React.Component {
     } = this.props;
     const { extent } = this.state;
     if (displayedLayer) {
-      if (layer !== prevLayer
-       || prevFields !== fields) {
+      if (layer !== prevLayer || prevFields !== fields) {
         this.resetColumns();
       }
 
@@ -228,7 +229,7 @@ export class DataTable extends React.Component {
   }
 
   render () {
-    const { displayedLayer } = this.props;
+    const { displayedLayer, isTableVisible } = this.props;
 
     const {
       label,
@@ -266,32 +267,34 @@ export class DataTable extends React.Component {
             'table-container--full': full,
           })}
         >
-          <Table
-            columns={columns || []}
-            data={results || []}
-            onSelection={onSelection}
-            Header={props => (
-              <Header
-                {...props}
-                resultsTotal={resultsTotal}
-                toggleExtent={toggleExtent}
-                extent={extent}
-                layer={layer}
-                compare={compare}
-                selectedFeatures={selectedFeatures || []}
-                loading={loading}
-                title={title || label}
-                full={full}
-                resize={resize}
-                exportData={showExportButton && exportDataAction}
-              />
-            )}
-            locales={{
-              sortAsc: 'Trier dans l\'ordre croissant',
-              sortDesc: 'Trier dans l\'ordre décroissant',
-            }}
-            loading={firstLoading}
-          />
+          {isTableVisible && (
+            <Table
+              columns={columns || []}
+              data={results || []}
+              onSelection={onSelection}
+              Header={props => (
+                <Header
+                  {...props}
+                  resultsTotal={resultsTotal}
+                  toggleExtent={toggleExtent}
+                  extent={extent}
+                  layer={layer}
+                  compare={compare}
+                  selectedFeatures={selectedFeatures || []}
+                  loading={loading}
+                  title={title || label}
+                  full={full}
+                  resize={resize}
+                  exportData={showExportButton && exportDataAction}
+                />
+              )}
+              locales={{
+                sortAsc: 'Trier dans l\'ordre croissant',
+                sortDesc: 'Trier dans l\'ordre décroissant',
+              }}
+              loading={firstLoading}
+            />
+          )}
         </div>
       </div>
     );

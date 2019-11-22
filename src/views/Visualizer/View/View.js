@@ -835,7 +835,7 @@ export class Visualizer extends React.Component {
                       onChange={this.onHighlightChange}
                     />
                   </BoundingBoxObserver>
-                  <DataTable />
+                  <DataTable isTableVisible={isTableVisible} />
                 </div>
                 <div className="col-widgets">
                   <Widgets />
