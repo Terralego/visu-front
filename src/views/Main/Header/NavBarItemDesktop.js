@@ -8,7 +8,14 @@ import withEnv from '../../../config/withEnv';
 import HeaderLink from './HeaderLink';
 import HeaderButton from './HeaderButton';
 
-export const NavBarItemDesktop = ({ id, content, iconPath, env: { VIEW_ROOT_PATH }, ...item }) => (
+export const NavBarItemDesktop = ({
+  id,
+  content,
+  iconPath,
+  classNameIcon,
+  env: { VIEW_ROOT_PATH },
+  ...item
+}) => (
   <Tooltip
     content={item.label}
     position={Position.RIGHT}
@@ -23,6 +30,7 @@ export const NavBarItemDesktop = ({ id, content, iconPath, env: { VIEW_ROOT_PATH
         id={id}
         iconPath={iconPath}
         alt={item.label}
+        classNameIcon={classNameIcon}
       >
         {item.content}
       </HeaderButton>
