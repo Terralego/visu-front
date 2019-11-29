@@ -56,6 +56,7 @@ export const INTERACTION_DISPLAY_DETAILS = 'displayDetails';
 
 const LAYER_PROPERTY = 'layer.keyword';
 
+
 const getControls = memoize((
   displaySearch,
   displayBackgroundStyles,
@@ -112,6 +113,45 @@ const getActiveLayersState = layersTreeState => {
   });
   return activeLayersState;
 };
+
+/**
+ * Drop a filter state for a layer, by its property name
+ *
+ * @param {Map} layersTreeState
+ * @param {Object} layer - The layer structure, used as index
+ * @param {string} property - Filter property name
+ */
+const dropFilterState = (layersTreeState, layer, property) => {
+  const prevState = layersTreeState.get(layer);
+  const { filters: prevFilters } = prevState;
+  layersTreeState.set(layer, {
+    ...prevState,
+    filters: { ...prevFilters, [property]: undefined },
+  });
+};
+
+/**
+ * Copy filter fetched values from a form to a property
+ *
+ * @param from
+ * @param property
+ * @param propertyName
+ */
+function copyFilterValues (from, property, propertyName) {
+  const sameProp = from.find(({ property: name }) => name === propertyName);
+  if (sameProp && !property.values && !property.min && !property.max) {
+    const { values, min, max } = sameProp;
+    /* eslint-disable no-param-reassign */
+    if (values) {
+      property.values = values;
+    }
+    if (min || max) {
+      property.min = min;
+      property.max = max;
+    }
+    /* eslint-enable no-param-reassign */
+  }
+}
 
 export class Visualizer extends React.Component {
   static propTypes = {
@@ -200,7 +240,7 @@ export class Visualizer extends React.Component {
       || layersTreeStatesHaveChanged(prevLayersTreeState, layersTreeState, ['active', 'filters'])
       || map !== prevMap) {
       if (this.isSearching) {
-        this.debouncedSearchQuery();
+        this.search();
       } else if (map) {
         resetFilters(map, layersTreeState);
         this.resetSearch();
@@ -562,7 +602,7 @@ export class Visualizer extends React.Component {
       });
       map.fire('updateMap');
     });
-  }
+  };
 
   updateLayersTreeState = layersTreeState => {
     const { setLayersTreeState, layersTreeState: prevLayersTreeState } = this.props;
@@ -579,8 +619,37 @@ export class Visualizer extends React.Component {
         layersTreeState.set(prevItem, { ...prevItemState, active: false, table: false }));
     }
 
+    /**
+     * When changing layers, drop the filters that are not shared and copy
+     * filters values to the others (if needed)
+     */
+    if (activeItems.length && prevActiveItems.length && activeItems !== prevActiveItems) {
+      const [prevLayer] = prevActiveItems[0];
+      const { filters: { layer: prevScale, form: prevForm } } = prevLayer;
+      const [currentLayer] = activeItems[0];
+      const { filters: { layer: scale, form } } = currentLayer;
+      if (prevScale === scale) {
+        // We are on the same scale, copy values
+        form.forEach(prop => {
+          const { property } = prop;
+          copyFilterValues(prevForm, prop, property);
+        });
+        // Except for the properties that are not shared, drop them on the prevLayer
+        prevForm.forEach(({ property }) => {
+          if (!prevForm.find(({ property: name }) => name === property)) {
+            dropFilterState(layersTreeState, prevLayer, property);
+          }
+        });
+      } else {
+        // We changed scale, all filters are dropped
+        form.forEach(({ property }) => {
+          dropFilterState(layersTreeState, currentLayer, property);
+        });
+      }
+    }
+
     setLayersTreeState(layersTreeState);
-  }
+  };
 
   displayDetails (feature, interaction, { addHighlight, removeHighlight }) {
     const { layer: { id: layerId }, properties: { _id: featureId }, source } = feature;
