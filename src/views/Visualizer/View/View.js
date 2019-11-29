@@ -833,6 +833,7 @@ export class Visualizer extends React.Component {
                       {...details}
                       onClose={hideDetails}
                       onChange={this.onHighlightChange}
+                      enableCarousel={false}
                     />
                   </BoundingBoxObserver>
                   <DataTable isTableVisible={isTableVisible} />
