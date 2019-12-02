@@ -847,7 +847,7 @@ export class Visualizer extends React.Component {
         <div className={classnames({
           visualizer: true,
           'visualizer--with-layers-tree': displayLayersTree,
-          'visualizer--with-table': isTableVisible,
+          'visualizer--with-table': isTableVisible && !printIsOpened,
           'visualizer--with-widgets': isWidgetsVisible,
           'visualizer--with-details': isDetailsVisible,
         })}
@@ -904,7 +904,7 @@ export class Visualizer extends React.Component {
                       enableCarousel={false}
                     />
                   </BoundingBoxObserver>
-                  <DataTable isTableVisible={isTableVisible} />
+                  <DataTable isTableVisible={isTableVisible && !printIsOpened} />
                 </div>
                 <div className="col-widgets">
                   <Widgets />
