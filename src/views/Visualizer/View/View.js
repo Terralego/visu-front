@@ -626,6 +626,7 @@ export class Visualizer extends React.Component {
         layersTreeState.set(prevItem, { ...prevItemState, active: false, table: false }));
     }
 
+
     /**
      * When changing layers, drop the filters that are not shared and copy
      * filters values to the others (if needed)
@@ -641,10 +642,11 @@ export class Visualizer extends React.Component {
           const { property } = prop;
           copyFilterValues(prevForm, prop, property);
         });
-        // Except for the properties that are not shared, drop them on the prevLayer
+        // Except for the properties that are not shared, drop them
         prevForm.forEach(({ property }) => {
-          if (!prevForm.find(({ property: name }) => name === property)) {
+          if (!form.find(({ property: name }) => name === property)) {
             dropFilterState(layersTreeState, prevLayer, property);
+            dropFilterState(layersTreeState, currentLayer, property);
           }
         });
       } else {
