@@ -122,13 +122,20 @@ const getActiveLayersState = layersTreeState => {
  * @param {Object} layer - The layer structure, used as index
  * @param {string} property - Filter property name
  */
-const dropFilterState = (layersTreeState, layer, property) => {
+const dropFilterState = (layersTreeState, layer, property = '') => {
   const prevState = layersTreeState.get(layer);
-  const { filters: prevFilters } = prevState;
-  layersTreeState.set(layer, {
-    ...prevState,
-    filters: { ...prevFilters, [property]: undefined },
-  });
+  const { filters: prevFilters = {} } = prevState;
+  if (!property) {
+    layersTreeState.set(layer, {
+      ...prevState,
+      filters: {},
+    });
+  } else if (property in prevFilters) {
+    layersTreeState.set(layer, {
+      ...prevState,
+      filters: { ...prevFilters, [property]: undefined },
+    });
+  }
 };
 
 /**
@@ -138,7 +145,7 @@ const dropFilterState = (layersTreeState, layer, property) => {
  * @param property
  * @param propertyName
  */
-function copyFilterValues (from, property, propertyName) {
+const copyFilterValues = (from, property, propertyName) => {
   const sameProp = from.find(({ property: name }) => name === propertyName);
   if (sameProp && !property.values && !property.min && !property.max) {
     const { values, min, max } = sameProp;
@@ -152,7 +159,7 @@ function copyFilterValues (from, property, propertyName) {
     }
     /* eslint-enable no-param-reassign */
   }
-}
+};
 
 export class Visualizer extends React.Component {
   static propTypes = {
@@ -643,9 +650,7 @@ export class Visualizer extends React.Component {
         });
       } else {
         // We changed scale, all filters are dropped
-        form.forEach(({ property }) => {
-          dropFilterState(layersTreeState, currentLayer, property);
-        });
+        dropFilterState(layersTreeState, currentLayer);
       }
     }
 
