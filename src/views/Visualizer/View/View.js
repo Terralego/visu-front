@@ -502,10 +502,11 @@ export class Visualizer extends React.Component {
         prevLayersTreeState,
       ), layersTreeState);
 
-    const { onViewStateUpdate } = this.props;
+    const { onViewStateUpdate, setLayersTreeState } = this.props;
     onViewStateUpdate(({
       layersTreeState: newLayersTreeState,
     }));
+    setLayersTreeState(newLayersTreeState);
   }
 
   onClusterUpdate = ({ features, sourceLayer }) => {
