@@ -129,11 +129,13 @@ const dropFilterState = (layersTreeState, layer, property = '') => {
     layersTreeState.set(layer, {
       ...prevState,
       filters: {},
+      total: null,
     });
   } else if (property in prevFilters) {
     layersTreeState.set(layer, {
       ...prevState,
       filters: { ...prevFilters, [property]: undefined },
+      total: null,
     });
   }
 };
@@ -248,7 +250,7 @@ export class Visualizer extends React.Component {
         || layersTreeStatesHaveChanged(prevLayersTreeState, layersTreeState, ['active', 'filters'])
         || map !== prevMap) {
       if (this.isSearching) {
-        this.search();
+        this.debouncedSearchQuery();
       } else if (map) {
         resetFilters(map, layersTreeState);
         this.resetSearch();
@@ -633,27 +635,30 @@ export class Visualizer extends React.Component {
      * When changing layers, drop the filters that are not shared and copy
      * filters values to the others (if needed)
      */
-    if (activeItems.length && prevActiveItems.length && activeItems !== prevActiveItems) {
+
+    if (activeItems.length && prevActiveItems.length) {
       const [prevLayer] = prevActiveItems[0];
-      const { filters: { layer: prevScale, form: prevForm } } = prevLayer;
       const [currentLayer] = activeItems[0];
-      const { filters: { layer: scale, form } } = currentLayer;
-      if (prevScale === scale) {
-        // We are on the same scale, copy values
-        form.forEach(prop => {
-          const { property } = prop;
-          copyFilterValues(prevForm, prop, property);
-        });
-        // Except for the properties that are not shared, drop them
-        prevForm.forEach(({ property }) => {
-          if (!form.find(({ property: name }) => name === property)) {
-            dropFilterState(layersTreeState, prevLayer, property);
-            dropFilterState(layersTreeState, currentLayer, property);
-          }
-        });
-      } else {
-        // We changed scale, all filters are dropped
-        dropFilterState(layersTreeState, currentLayer);
+      if (prevLayer !== currentLayer) {
+        const { filters: { layer: prevScale, form: prevForm } } = prevLayer;
+        const { filters: { layer: scale, form } } = currentLayer;
+        if (prevScale === scale) {
+          // We are on the same scale, copy values
+          form.forEach(prop => {
+            const { property } = prop;
+            copyFilterValues(prevForm, prop, property);
+          });
+          // Except for the properties that are not shared, drop them
+          prevForm.forEach(({ property }) => {
+            if (!form.some(({ property: name }) => name === property)) {
+              dropFilterState(layersTreeState, prevLayer, property);
+              dropFilterState(layersTreeState, currentLayer, property);
+            }
+          });
+        } else {
+          // We changed scale, all filters are dropped
+          dropFilterState(layersTreeState, currentLayer);
+        }
       }
     }
 
