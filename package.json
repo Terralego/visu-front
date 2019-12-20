@@ -54,6 +54,7 @@
     "collectCoverageFrom": [
       "src/**/*.js",
       "!src/App.js",
+      "!src/config/i18n.js",
       "!src/**/index.js"
     ],
     "coverageThreshold": {
