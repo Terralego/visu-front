@@ -20,6 +20,8 @@ import logOut from '../../../images/log-out.svg';
 
 import './styles.scss';
 
+
+
 const generateMenus = (authenticated, views, { theme: { logo = '' } = {} } = {}) => {
   const navItems = [
     [
@@ -124,6 +126,20 @@ export const Header = ({
       }
     </div>
   );
+};
+
+Header.propTypes = {
+  isHeaderOpen: PropTypes.bool,
+  isMobileSized: PropTypes.bool,
+  toggleHeader: PropTypes.func,
+  authenticated: PropTypes.bool,
+};
+
+Header.defaultProps = {
+  isHeaderOpen: false,
+  isMobileSized: false,
+  toggleHeader: () => {},
+  authenticated: false,
 };
 
 export default withDeviceSize()(connectAuthProvider('authenticated', 'logoutAction')(Header));
