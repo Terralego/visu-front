@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render 1`] = `
+<div
+  className="bp3-dark appName"
+>
+  <span
+    className="appName-title"
+  >
+    <img
+      alt="Cartenmain"
+      className="appName-title-logo"
+      src="cart_en_main.png"
+    />
+  </span>
+  <span
+    className="appName-version"
+  >
+    Version bêta
+  </span>
+</div>
+`;
