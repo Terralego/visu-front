@@ -1,7 +1,13 @@
 import React from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
+import PropTypes from 'prop-types';
 
 export class VisibleBoundingBox extends React.Component {
+  static propTypes = {
+    onChange: PropTypes.func,
+    as: PropTypes.string,
+  };
+
   static defaultProps = {
     onChange () {},
     as: 'div',
