@@ -56,7 +56,6 @@ export const INTERACTION_DISPLAY_DETAILS = 'displayDetails';
 
 const LAYER_PROPERTY = 'layer.keyword';
 
-
 const getControls = memoize((
   displaySearch,
   displayBackgroundStyles,
@@ -226,19 +225,16 @@ export class Visualizer extends React.Component {
   componentDidUpdate ({
     view: {
       interactions: prevInteractions,
-      layersTree: prevLayersTree,
     },
     layersTreeState: prevLayersTreeState,
     query: prevQuery,
     map: prevMap,
-    authenticated: prevAuthenticated,
   }, { features: prevFeatures }) {
     const {
-      view: { interactions, layersTree },
+      view: { interactions },
       map,
       layersTreeState,
       query,
-      authenticated,
     } = this.props;
     const { features } = this.state;
     if (prevLayersTreeState !== layersTreeState
@@ -263,11 +259,6 @@ export class Visualizer extends React.Component {
 
     if (interactions !== prevInteractions) {
       this.setInteractions();
-    }
-
-    if (authenticated !== prevAuthenticated
-      || layersTree !== prevLayersTree) {
-      this.updatePrivateLayers();
     }
   }
 
@@ -376,7 +367,6 @@ export class Visualizer extends React.Component {
     map.on('updateMap', onMapUpdate);
     map.on('load', () => this.updateLayersTree());
     initLayersState();
-    this.updatePrivateLayers();
     map.resize();
   }
 
@@ -766,18 +756,6 @@ export class Visualizer extends React.Component {
 
     const { current } = this.storyRef;
     if (current) current.displayStep();
-  }
-
-  updatePrivateLayers () {
-    const { layersTreeState: prevLayersTreeState, setLayersTreeState, authenticated } = this.props;
-    const layersTreeState = new Map(Array.from(prevLayersTreeState).map(([layer, state]) => [
-      layer,
-      {
-        ...state,
-        hidden: !authenticated && layer.private,
-      },
-    ]));
-    setLayersTreeState(layersTreeState);
   }
 
   render () {
