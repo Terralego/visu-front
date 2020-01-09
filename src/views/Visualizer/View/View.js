@@ -88,54 +88,6 @@ const getControls = memoize((
   },
 ].filter(Boolean));
 
-/**
- * Drop a filter state for a layer, by its property name
- *
- * @param {Map} layersTreeState
- * @param {Object} layer - The layer structure, used as index
- * @param {string} property - Filter property name
- */
-const dropFilterState = (layersTreeState, layer, property = '') => {
-  const prevState = layersTreeState.get(layer);
-  const { filters: prevFilters = {} } = prevState;
-  if (!property) {
-    layersTreeState.set(layer, {
-      ...prevState,
-      filters: {},
-      total: null,
-    });
-  } else if (property in prevFilters) {
-    layersTreeState.set(layer, {
-      ...prevState,
-      filters: { ...prevFilters, [property]: undefined },
-      total: null,
-    });
-  }
-};
-
-/**
- * Copy filter fetched values from a form to a property
- *
- * @param from
- * @param property
- * @param propertyName
- */
-const copyFilterValues = (from, property, propertyName) => {
-  const sameProp = from.find(({ property: name }) => name === propertyName);
-  if (sameProp && !property.values && !property.min && !property.max) {
-    const { values, min, max } = sameProp;
-    /* eslint-disable no-param-reassign */
-    if (values) {
-      property.values = values;
-    }
-    if (min || max) {
-      property.min = min;
-      property.max = max;
-    }
-    /* eslint-enable no-param-reassign */
-  }
-};
-
 export class Visualizer extends React.Component {
   static propTypes = {
     view: PropTypes.shape({
@@ -581,7 +533,6 @@ export class Visualizer extends React.Component {
 
   updateLayersTreeState = layersTreeState => {
     const { setLayersTreeState } = this.props;
-
     setLayersTreeState(layersTreeState);
   };
 
