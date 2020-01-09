@@ -120,8 +120,8 @@ export class Visualizer extends React.Component {
       interactions: [],
       map: {},
     },
-    setMap () { },
-    initLayersState () { },
+    setMap() { },
+    initLayersState() { },
     initialState: {},
     isMobileSized: false,
   };
@@ -138,7 +138,7 @@ export class Visualizer extends React.Component {
 
   storyRef = React.createRef();
 
-  componentDidMount () {
+  componentDidMount() {
     const { view: { state: { query } = {} }, initialState: { tree } } = this.props;
     if (query) {
       this.debouncedSearchQuery();
@@ -149,22 +149,19 @@ export class Visualizer extends React.Component {
     this.setInteractions();
   }
 
-  componentDidUpdate ({
+  componentDidUpdate({
     view: {
       interactions: prevInteractions,
-      layersTree: prevLayersTree,
     },
     layersTreeState: prevLayersTreeState,
     query: prevQuery,
     map: prevMap,
-    authenticated: prevAuthenticated,
   }, { features: prevFeatures }) {
     const {
-      view: { interactions, layersTree },
+      view: { interactions },
       map,
       layersTreeState,
       query,
-      authenticated,
     } = this.props;
     const { features } = this.state;
     if (prevLayersTreeState !== layersTreeState
@@ -190,14 +187,9 @@ export class Visualizer extends React.Component {
     if (interactions !== prevInteractions) {
       this.setInteractions();
     }
-
-    if (authenticated !== prevAuthenticated
-      || layersTree !== prevLayersTree) {
-      this.updatePrivateLayers();
-    }
   }
 
-  get legends () {
+  get legends() {
     const { layersTreeState } = this.props;
     const { legends } = this.state;
     const legendsFromLayersTree = Array.from(layersTreeState.entries())
@@ -225,7 +217,7 @@ export class Visualizer extends React.Component {
     return [...(legends || []), ...(legendsFromLayersTree || [])];
   }
 
-  get isSearching () {
+  get isSearching() {
     const { query, layersTreeState } = this.props;
     return query
       || filterLayersStatesFromLayersState(layersTreeState)
@@ -237,13 +229,13 @@ export class Visualizer extends React.Component {
             .some(a => a));
   }
 
-  get activeAndSearchableLayers () {
+  get activeAndSearchableLayers() {
     const { layersTreeState } = this.props;
     return filterLayersStatesFromLayersState(layersTreeState, ({ active }) => !!active)
       .filter(([{ filters: { layer, mainField } = {} }]) => layer && mainField);
   }
 
-  setInteractions () {
+  setInteractions() {
     const { view: { interactions = [] } } = this.props;
     const newInteractions = interactions.map(interaction => {
       if (interaction.interaction === INTERACTION_DISPLAY_DETAILS) {
@@ -302,7 +294,6 @@ export class Visualizer extends React.Component {
     map.on('updateMap', onMapUpdate);
     map.on('load', () => this.updateLayersTree());
     initLayersState();
-    this.updatePrivateLayers();
     map.resize();
   }
 
@@ -396,7 +387,7 @@ export class Visualizer extends React.Component {
 
     const totalFeatures = idsResponses.reduce((fullTotal, { hits: { total = 0 } = {} }) =>
       fullTotal + total,
-    0);
+      0);
 
     this.setLayersResult(filters.map(({ layer }, index) => {
       const total = countResponses[index].hits
@@ -429,10 +420,11 @@ export class Visualizer extends React.Component {
         prevLayersTreeState,
       ), layersTreeState);
 
-    const { onViewStateUpdate } = this.props;
+    const { onViewStateUpdate, setLayersTreeState } = this.props;
     onViewStateUpdate(({
       layersTreeState: newLayersTreeState,
     }));
+    setLayersTreeState(newLayersTreeState);
   }
 
   onClusterUpdate = ({ features, sourceLayer }) => {
@@ -494,7 +486,10 @@ export class Visualizer extends React.Component {
     return results;
   }
 
-  onPrintToggle = printIsOpened => this.setState({ printIsOpened })
+  onPrintToggle = printIsOpened => {
+    this.hideDetails();
+    this.setState({ printIsOpened });
+  }
 
   searchResultClick = ({
     result,
@@ -534,14 +529,14 @@ export class Visualizer extends React.Component {
       });
       map.fire('updateMap');
     });
-  }
+  };
 
   updateLayersTreeState = layersTreeState => {
     const { setLayersTreeState } = this.props;
     setLayersTreeState(layersTreeState);
-  }
+  };
 
-  displayDetails (feature, interaction, { addHighlight, removeHighlight }) {
+  displayDetails(feature, interaction, { addHighlight, removeHighlight }) {
     const { layer: { id: layerId }, properties: { _id: featureId }, source } = feature;
     const { details: { hide = () => { } } = {} } = this.state;
     const { highlight_color: highlightColor } = interaction;
@@ -577,7 +572,7 @@ export class Visualizer extends React.Component {
     });
   }
 
-  updateLayersTree () {
+  updateLayersTree() {
     const { map } = this.props;
     const { features } = this.state;
 
@@ -645,19 +640,7 @@ export class Visualizer extends React.Component {
     if (current) current.displayStep();
   }
 
-  updatePrivateLayers () {
-    const { layersTreeState: prevLayersTreeState, setLayersTreeState, authenticated } = this.props;
-    const layersTreeState = new Map(Array.from(prevLayersTreeState).map(([layer, state]) => [
-      layer,
-      {
-        ...state,
-        hidden: !authenticated && layer.private,
-      },
-    ]));
-    setLayersTreeState(layersTreeState);
-  }
-
-  render () {
+  render() {
     const {
       t,
       layersTreeState,
@@ -695,7 +678,7 @@ export class Visualizer extends React.Component {
 
     const displayLayersTree = isLayersTreeVisible && !printIsOpened;
 
-    const isDetailsVisible = !!details;
+    const isDetailsVisible = !!details && !printIsOpened;
 
     const [{ features: featuresForDetail = [] } = {}] = isDetailsVisible
       ? features.filter(({ layer }) => layer === sourceLayer)
@@ -737,7 +720,7 @@ export class Visualizer extends React.Component {
         <div className={classnames({
           visualizer: true,
           'visualizer--with-layers-tree': displayLayersTree,
-          'visualizer--with-table': isTableVisible,
+          'visualizer--with-table': isTableVisible && !printIsOpened,
           'visualizer--with-widgets': isWidgetsVisible,
           'visualizer--with-details': isDetailsVisible,
         })}
@@ -791,9 +774,10 @@ export class Visualizer extends React.Component {
                       {...details}
                       onClose={hideDetails}
                       onChange={this.onHighlightChange}
+                      enableCarousel={false}
                     />
                   </BoundingBoxObserver>
-                  <DataTable />
+                  <DataTable isTableVisible={isTableVisible && !printIsOpened} />
                 </div>
                 <div className="col-widgets">
                   <Widgets />

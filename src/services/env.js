@@ -1,10 +1,10 @@
-async function fetchEnv () {
+export async function fetchEnv () {
   const rawEnv = await fetch('/env.json');
   return rawEnv.json();
 }
 
 const promise = fetchEnv();
 
-export const getEnv = async () => promise;
+export const getEnv = () => promise;
 
-export default { getEnv };
+export default { getEnv, fetchEnv };

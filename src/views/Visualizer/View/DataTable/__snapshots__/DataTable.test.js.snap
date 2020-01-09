@@ -103,3 +103,13 @@ exports[`should render correctly with results 1`] = `
   </div>
 </div>
 `;
+
+exports[`should render unvisible correctly 1`] = `
+<div
+  className="data-table"
+>
+  <div
+    className="table-container"
+  />
+</div>
+`;

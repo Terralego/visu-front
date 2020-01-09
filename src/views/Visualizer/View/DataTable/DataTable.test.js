@@ -36,6 +36,13 @@ it('should render correctly', () => {
   expect(tree).toMatchSnapshot();
 });
 
+it('should render unvisible correctly', () => {
+  const tree = renderer.create((
+    <DataTable isTableVisible={false} />
+  )).toJSON();
+  expect(tree).toMatchSnapshot();
+});
+
 it('should render correctly with results', async done => {
   const tree = renderer.create((
     <DataTable
