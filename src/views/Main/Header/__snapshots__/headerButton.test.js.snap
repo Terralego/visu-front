@@ -1,0 +1,21 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render correctly 1`] = `
+<button
+  className="bp3-button bp3-minimal bp3-minimal header-button theme"
+  id="theme"
+  onKeyDown={[Function]}
+  onKeyUp={[Function]}
+  type="button"
+>
+  <span
+    className="bp3-button-text"
+  >
+    <img
+      alt=""
+      className="icon"
+      src=""
+    />
+  </span>
+</button>
+`;
