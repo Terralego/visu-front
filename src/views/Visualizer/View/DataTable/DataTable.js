@@ -205,8 +205,8 @@ export class DataTable extends React.Component {
           ...all,
           ...getSearchParamFromProperty(filters, form, key),
         }), {}),
-        'layer.keyword': { value: layer, type: 'term' },
       },
+      index: layer,
       boundingBox,
       include: fields && fields.reduce((all, { value }) => {
         const interpolation = value.match(/\{[^}]+\}/g);
