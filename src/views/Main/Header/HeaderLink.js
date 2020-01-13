@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { NavLink } from 'react-router-dom';
 
 export const HeaderLink = ({ href, children, ...props }) => {
@@ -11,4 +12,12 @@ export const HeaderLink = ({ href, children, ...props }) => {
   );
 };
 
+HeaderLink.propTypes = {
+  children: PropTypes.element.isRequired,
+  href: PropTypes.string,
+};
+
+HeaderLink.defaultProps = {
+  href: '',
+};
 export default HeaderLink;
