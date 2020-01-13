@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import {
   Position,
   Tooltip,
@@ -10,9 +12,7 @@ import HeaderButton from './HeaderButton';
 
 export const NavBarItemDesktop = ({
   id,
-  content,
   iconPath,
-  classNameIcon,
   env: { VIEW_ROOT_PATH },
   ...item
 }) => (
@@ -30,12 +30,30 @@ export const NavBarItemDesktop = ({
         id={id}
         iconPath={iconPath}
         alt={item.label}
-        classNameIcon={classNameIcon}
-      >
-        {item.content}
-      </HeaderButton>
+      />
     </HeaderLink>
   </Tooltip>
 );
+
+NavBarItemDesktop.propTypes = {
+  env: PropTypes.shape({
+    VIEW_ROOT_PATH: PropTypes.string,
+  }).isRequired,
+  id: PropTypes.string.isRequired,
+  iconPath: PropTypes.string,
+  item: PropTypes.shape({
+    href: PropTypes.string,
+    label: PropTypes.string,
+  }),
+};
+
+NavBarItemDesktop.defaultProps = {
+  iconPath: '',
+  item: {
+    href: '',
+    label: '',
+    onClick () {},
+  },
+};
 
 export default withEnv(NavBarItemDesktop);
