@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import classNames from 'classnames';
 import {
   Overlay,
@@ -7,7 +9,6 @@ import {
 
 import withDeviceSize from '@terralego/core/hoc/withDeviceSize';
 
-
 import NavBarItemDesktop from './NavBarItemDesktop';
 import NavBarItemTablet from './NavBarItemTablet';
 import PartnerPage from './PartnerPage';
@@ -15,15 +16,19 @@ import PartnerPage from './PartnerPage';
 export class PartnerButton extends React.Component {
   state = {
     isOpen: false,
-  }
+  };
+
+  static propTypes = {
+    isMobileSized: PropTypes.bool,
+  };
 
   static defaultProps = {
     isMobileSized: false,
-  }
+  };
 
-  open = () => this.setState({ isOpen: true })
+  open = () => this.setState({ isOpen: true });
 
-  close = () => this.setState({ isOpen: false })
+  close = () => this.setState({ isOpen: false });
 
   render () {
     const { isOpen } = this.state;
