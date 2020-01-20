@@ -32,32 +32,32 @@ jest.mock('../../../services/visualizer', () => (
 ));
 
 it('should render correctly', () => {
-  const tree = renderer.create((
-    <Header />
-  )).toJSON();
+  const tree = renderer.create(
+    <Header />,
+  ).toJSON();
   expect(tree).toMatchSnapshot();
 });
 
 it('should render correctly with header open in mobile view', () => {
-  const tree = renderer.create((
+  const tree = renderer.create(
     <Header
       isMobileSized
       isHeaderOpen
-    />
-  )).toJSON();
+    />,
+  ).toJSON();
   expect(tree).toMatchSnapshot();
 });
 
 it('should render correctly with header close in mobile view', () => {
-  const tree = renderer.create((
+  const tree = renderer.create(
     <Header
       location={{ pathname: '/' }}
       env={{ VIEW_ROOT_PATH: '' }}
       settings={{}}
       isMobileSized
       isHeaderOpen={false}
-    />
-  )).toJSON();
+    />,
+  ).toJSON();
   expect(tree).toMatchSnapshot();
 });
 

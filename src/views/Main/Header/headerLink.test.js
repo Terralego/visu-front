@@ -7,29 +7,29 @@ jest.mock('react-router-dom', () => ({
 }));
 
 it('should render correctly with no href', () => {
-  const tree = renderer.create((
+  const tree = renderer.create(
     <HeaderLink>
       <span>Test</span>
-    </HeaderLink>
-  )).toJSON();
+    </HeaderLink>,
+  ).toJSON();
   expect(tree).toMatchSnapshot();
 });
 
 
 it('should render correctly with http link', () => {
-  const tree = renderer.create((
+  const tree = renderer.create(
     <HeaderLink href="https://foo.com">
       <span>Foo</span>
-    </HeaderLink>
-  )).toJSON();
+    </HeaderLink>,
+  ).toJSON();
   expect(tree).toMatchSnapshot();
 });
 
 it('should render correctly with navigation', () => {
-  const tree = renderer.create((
+  const tree = renderer.create(
     <HeaderLink href="foo">
       <span>Bar</span>
-    </HeaderLink>
-  )).toJSON();
+    </HeaderLink>,
+  ).toJSON();
   expect(tree).toMatchSnapshot();
 });
