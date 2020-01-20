@@ -7,16 +7,16 @@ jest.mock('./NavBarItemTablet', () => () => <div className="container">NavBarIte
 jest.mock('./NavBarItemDesktop', () => () => <div className="container">NavBarItemDesktop</div>);
 
 it('should render correctly in mode desktop', () => {
-  const tree = renderer.create((
-    <PartnerButton />
-  )).toJSON();
+  const tree = renderer.create(
+    <PartnerButton />,
+  ).toJSON();
   expect(tree).toMatchSnapshot();
 });
 
 it('should render correctly in mode mobile', () => {
-  const tree = renderer.create((
-    <PartnerButton isMobileSized />
-  )).toJSON();
+  const tree = renderer.create(
+    <PartnerButton isMobileSized />,
+  ).toJSON();
   expect(tree).toMatchSnapshot();
 });
 
