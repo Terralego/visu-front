@@ -144,7 +144,7 @@ $bg-visualizer: rgb(49, 64, 77);
       }
 
       &.visualizer--with-layers-tree .mapboxgl-ctrl-bottom-left {
-        transform: translate3d($layersTreeWidth, -$tableHeight, 0);
+        transform: translate3d(0, -$tableHeight, 0);
       }
     }
 
