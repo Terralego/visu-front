@@ -178,7 +178,7 @@ export class Visualizer extends React.Component {
       }
     }
 
-    if (query !== prevQuery || layersTreeStatesHaveChanged(prevLayersTreeState, layersTreeState, ['active', 'filters'])) {
+    if (map !== prevMap) {
       if (this.isSearching) {
         this.debouncedSearchQuery();
       }
