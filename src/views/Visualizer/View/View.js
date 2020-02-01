@@ -328,6 +328,7 @@ export class Visualizer extends React.Component {
     const { query, layersTreeState, map, visibleBoundingBox } = this.props;
 
     if (!map) return;
+
     const filters = filterLayersStatesFromLayersState(layersTreeState)
       .filter(([{ filters: { layer } = {} }, { filters: layerFilters }]) =>
         layer && (query || layerFilters))
@@ -351,20 +352,20 @@ export class Visualizer extends React.Component {
 
     // Query for bbox result ids
     const queryIds = filters.map(({ properties, index }) => ({
-      properties,
-      include: ['_feature_id'],
-      query,
       index,
+      query,
+      properties,
       boundingBox,
+      include: ['_feature_id'],
     }));
 
     // Query for all result counts
     const queryCounts = filters.map(({ properties, index }) => ({
+      index,
+      query,
       properties,
       include: [],
       size: 0,
-      index,
-      query,
     }));
 
     const { responses } = await searchService.msearch([...queryIds, ...queryCounts]);
