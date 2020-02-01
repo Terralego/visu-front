@@ -41,7 +41,7 @@ export class Widgets extends React.Component {
         })}
       >
         <div className="widgets-panel__container">
-          {(widgets).map(({ widget, filters }, index) => {
+          {(widgets).map(({ widget, filters, layer, form }, index) => {
             const { component } = widget;
             const Component = getComponent(component);
             return Component && (
@@ -50,7 +50,7 @@ export class Widgets extends React.Component {
                 widget={widget}
                 {...props}
               >
-                <Component {...widget} filters={filters} />
+                <Component {...widget} filters={filters} layer={layer} form={form} />
               </WidgetLayout>
             );
           })}

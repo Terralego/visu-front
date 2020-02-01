@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import searchService, { getExtent, getSearchParamFromProperty } from '@terralego/core/modules/Visualizer/services/search';
 import nunjucks from 'nunjucks';
 import isEqual from 'react-fast-compare';
 import debounce from 'debounce';
-import searchService, { getExtent } from '@terralego/core/modules/Visualizer/services/search';
 
 import Loading from './Loading';
 
@@ -46,6 +46,7 @@ export class WidgetSynthesis extends React.Component {
 
   componentDidMount () {
     const { map } = this.props;
+    if (!map) return;
     this.debouncedLoad();
     map.on('moveend', this.debouncedLoad);
     map.on('zoomend', this.debouncedLoad);
@@ -66,10 +67,11 @@ export class WidgetSynthesis extends React.Component {
   }
 
   componentWillUnmount () {
+    this.isUnmount = true;
     const { map } = this.props;
+    if (!map) return;
     map.off('moveend', this.debouncedLoad);
     map.off('zoomend', this.debouncedLoad);
-    this.isUnmount = true;
   }
 
   resetValues () {
@@ -77,23 +79,31 @@ export class WidgetSynthesis extends React.Component {
   }
 
   async load () {
-    const { items, filters, query, map, visibleBoundingBox } = this.props;
+    const { items, filters, form, layer, query, map, visibleBoundingBox } = this.props;
 
     if (!map) return;
+    const boundingBox = getExtent(map, visibleBoundingBox);
 
     const aggregations = items.map(({ name, type, field }) => ({
       name, type, field,
     }));
 
-    const boundingBox = getExtent(map, visibleBoundingBox);
+    const properties = {
+      ...Object.keys(filters).reduce((all, key) => ({
+        ...all,
+        ...getSearchParamFromProperty(filters, form, key),
+      }), {}),
+    };
 
     const data = await searchService.search({
-      aggregations,
-      properties: filters,
+      index: layer,
       query,
+      properties,
       boundingBox,
+      aggregations,
       size: 0,
     });
+
 
     if (data.status !== 200) {
       return;

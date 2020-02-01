@@ -1,5 +1,4 @@
 import { connectLayersTree } from '@terralego/core/modules/Visualizer/LayersTree';
-
 import Widgets from './Widgets';
 
 export default connectLayersTree(({ layersTreeState, setLayerState }) => {
@@ -13,25 +12,9 @@ export default connectLayersTree(({ layersTreeState, setLayerState }) => {
       ...(layerWidgets
         .map(layerWidget => ({
           widget: layerWidget,
-          filters: {
-            ...Object.keys(filters).reduce((all, key) => ({
-              ...all,
-              ...form.find(({ property }) => property === key).values
-                ? {
-                  [`${key}.keyword`]: {
-                    type: 'term',
-                    value: filters[key],
-                  },
-                }
-                : {
-                  [key]: filters[key],
-                },
-            }), {}),
-            'layer.keyword': {
-              value: layer,
-              type: 'term',
-            },
-          },
+          filters,
+          form,
+          layer,
         }))
       ),
     ], []);
