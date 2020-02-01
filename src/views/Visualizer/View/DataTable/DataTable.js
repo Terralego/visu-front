@@ -198,15 +198,18 @@ export class DataTable extends React.Component {
 
     this.prevExtent = extent && getExtent(map, visibleBoundingBox);
     const boundingBox = this.prevExtent;
+
+    const properties = {
+      ...Object.keys(filters).reduce((all, key) => ({
+        ...all,
+        ...getSearchParamFromProperty(filters, form, key),
+      }), {}),
+    };
+
     const resp = await searchService.search({
-      query,
-      properties: {
-        ...Object.keys(filters).reduce((all, key) => ({
-          ...all,
-          ...getSearchParamFromProperty(filters, form, key),
-        }), {}),
-      },
       index: layer,
+      query,
+      properties,
       boundingBox,
       include: fields && fields.reduce((all, { value }) => {
         const interpolation = value.match(/\{[^}]+\}/g);
