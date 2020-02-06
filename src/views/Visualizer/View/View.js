@@ -350,18 +350,20 @@ export class Visualizer extends React.Component {
     const boundingBox = getExtent(map, visibleBoundingBox);
 
     // Query for bbox result ids
-    const queryIds = filters.map(({ properties }) => ({
+    const queryIds = filters.map(({ properties, index }) => ({
       properties,
       include: ['_feature_id'],
       query,
+      index,
       boundingBox,
     }));
 
     // Query for all result counts
-    const queryCounts = filters.map(({ properties }) => ({
+    const queryCounts = filters.map(({ properties, index }) => ({
       properties,
       include: [],
       size: 0,
+      index,
       query,
     }));
 
