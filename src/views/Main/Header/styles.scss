@@ -32,6 +32,16 @@
 
   &__form {
     max-width: 30rem;
+    min-width: 20rem;
+
+    &-buttons {
+      display: flex;
+      justify-content: center;
+
+      button {
+        margin: .25rem;
+      }
+    }
   }
 }
 
