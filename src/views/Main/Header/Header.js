@@ -5,44 +5,59 @@ import {
 } from '@blueprintjs/core';
 import classnames from 'classnames';
 import withDeviceSize from '@terralego/core/hoc/withDeviceSize';
+import { connectAuthProvider } from '@terralego/core/modules/Auth';
 
 import { fetchAllViews } from '../../../services/visualizer';
 
 import NavBarItemDesktop from './NavBarItemDesktop';
 import NavBarItemTablet from './NavBarItemTablet';
+import LoginButton from './LoginButton';
 import PartnerButton from './PartnerButton';
 import logo from '../../../images/terravisu-logo.svg';
 
 import infoSign from '../../../images/info-sign.svg';
+import logIn from '../../../images/log-in.svg';
+import logOut from '../../../images/log-out.svg';
 
 import './styles.scss';
 
-const navItemsBase = [
-  [
-    {
-      id: 'welcome',
-      label: 'Accueil',
-      href: '/',
-      iconPath: logo,
-      icon: null,
-    },
-  ], [],
-  [{
-    id: 'nav-partenaires',
-    label: 'Mentions légales',
-    iconPath: infoSign,
-    component: PartnerButton,
-  }],
-
-];
+const generateMenus = (authenticated, views) => {
+  const navItems = [
+    [
+      {
+        id: 'welcome',
+        label: 'Accueil',
+        href: '/',
+        iconPath: logo,
+        icon: null,
+      },
+    ],
+    [],
+    [{
+      id: 'nav-partenaires',
+      label: 'Mentions légales',
+      iconPath: infoSign,
+      component: PartnerButton,
+    }, {
+      id: 'nav-connexion',
+      label: authenticated ? 'Déconnexion' : 'Connexion',
+      iconPath:  authenticated ? logOut : logIn,
+      component: LoginButton,
+      classNameIcon: authenticated ? 'icon_out' : 'icon',
+    }],
+  ];
+  navItems[0] = navItems[0].concat(views);
+  return navItems;
+};
 
 /* eslint-disable react/no-array-index-key */
 export const Header = ({
   isHeaderOpen = false,
   toggleHeader = () => { },
   isMobileSized,
+  authenticated,
 }) => {
-  const [navItems, setNavItems] = useState(navItemsBase);
+  const [navItems, setNavItems] = useState([]);
   const containerRef = React.useRef(null);
 
   useEffect(() => {
@@ -52,9 +67,7 @@ export const Header = ({
       /** Load the view list and add it to base menu only if component mounted */
       if (isUnmounted) return;
       const views = await fetchAllViews();
-      const newNavItems = JSON.parse(JSON.stringify(navItemsBase));
-      newNavItems[0] = newNavItems[0].concat(views);
-      setNavItems(newNavItems);
+      setNavItems(generateMenus(authenticated, views));
     };
 
     loadViewList();
@@ -62,8 +75,7 @@ export const Header = ({
     return () => {
       isUnmounted = true;
     };
-  }, []);
-
+  }, [authenticated]);
 
   useEffect(() => {
     const listener = ({ target }) => {
@@ -80,7 +92,6 @@ export const Header = ({
       document.body.removeEventListener('click', listener);
     };
   }, [toggleHeader]);
-
 
   return (
     <div
@@ -100,6 +111,7 @@ export const Header = ({
                   <Component
                     key={item.label}
                     {...item}
+                    authenticated={authenticated}
                   />
               ))}
             </NavbarGroup>
@@ -113,4 +125,4 @@ export const Header = ({
   );
 };
 
-export default withDeviceSize()(Header);
+export default withDeviceSize()(connectAuthProvider('authenticated', 'logoutAction')(Header));
