@@ -1,14 +1,3 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`should render correctly 1`] = `
-<main
-  className="main"
->
-  <div>
-    Header
-  </div>
-  <div>
-    Content
-  </div>
-</main>
-`;
+exports[`should render correctly 1`] = `null`;

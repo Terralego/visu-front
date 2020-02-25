@@ -5,21 +5,21 @@ import withEnv from '../../../config/withEnv';
 import { contextSettings } from './context';
 
 const { Provider } = contextSettings;
-const defaultSettings = {
+const DEFAULT_SETTINGS = {
   favicon: '/favicon.png',
   title: 'terra-visu',
   theme: {
     logo: '/images/terravisu-logo.png',
-    style: ['<URL>'],
+    style: [],
   },
 };
-const getSettings =  async SETTINGS => {
+const getSettings =  async settingsPath => {
   try {
-    const customSettings = await fetch(`/${SETTINGS}`);
+    const customSettings = await fetch(`/${settingsPath}`);
     return await customSettings.json();
   } catch (e) {
-    console.error('settings.json is invalid. Please create a public/settings.json from public/settings.dist.json');
-    return defaultSettings;
+    console.error('settings.json is missing. Please create a public/settings.json from public/settings.dist.json');
+    return DEFAULT_SETTINGS;
   }
 };
 

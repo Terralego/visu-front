@@ -1,8 +1,8 @@
 {
-  "favicon": "/favicon.png",
-  "title": "mock_title",
+  "favicon": "<FAVICON>",
+  "title": "<TITLE>",
   "theme": { 
-    "logo": "/images/mocked-logo.png",
-    "style": ["<URL>"]
+    "logo": "<LOGO_PATH>",
+    "style": ["<STYLE_PATH>"]
   }
 }

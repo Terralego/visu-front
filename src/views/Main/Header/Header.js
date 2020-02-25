@@ -20,7 +20,7 @@ import logOut from '../../../images/log-out.svg';
 
 import './styles.scss';
 
-const generateMenus = (authenticated, views, settings = {}) => {
+const generateMenus = (authenticated, views, { theme: { logo = '' } = {} } = {}) => {
   const navItems = [
     [
       {
@@ -28,7 +28,7 @@ const generateMenus = (authenticated, views, settings = {}) => {
         label: 'Accueil',
         href: '/',
         icon: null,
-        iconPath: settings.theme && settings.theme.logo,
+        iconPath: logo,
       },
     ],
     [],
