@@ -26,6 +26,7 @@
     "react-ctx-connect": "^1.0.2",
     "react-dom": "^16.9.0",
     "react-fast-compare": "^2.0.4",
+    "react-helmet": "^5.2.1",
     "react-i18next": "^10.12.2",
     "react-router": "^4.3.1",
     "react-router-dom": "~4.3.1",

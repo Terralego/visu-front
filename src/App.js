@@ -8,6 +8,7 @@ import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import './app.scss';
 import '@blueprintjs/datetime/lib/css/blueprint-datetime.css';
 
+import SettingsProvider from './views/Main/Provider';
 import withEnv from './config/withEnv';
 import './config/i18n';
 import Main from './views/Main';
@@ -17,7 +18,9 @@ const App = ({ env: { API_HOST } }) => (
     <AuthProvider>
       <StateProvider>
         <BrowserRouter>
-          <Main />
+          <SettingsProvider>
+            <Main />
+          </SettingsProvider>
         </BrowserRouter>
       </StateProvider>
     </AuthProvider>

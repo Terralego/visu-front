@@ -14,6 +14,7 @@ it('should render correctly', () => {
     <Header
       location={{ pathname: '/' }}
       env={{ VIEW_ROOT_PATH: '' }}
+      settings={{}}
     />
   )).toJSON();
   expect(tree).toMatchSnapshot();

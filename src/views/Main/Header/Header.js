@@ -13,23 +13,24 @@ import NavBarItemDesktop from './NavBarItemDesktop';
 import NavBarItemTablet from './NavBarItemTablet';
 import LoginButton from './LoginButton';
 import PartnerButton from './PartnerButton';
-import logo from '../../../images/terravisu-logo.svg';
 
 import infoSign from '../../../images/info-sign.svg';
 import logIn from '../../../images/log-in.svg';
 import logOut from '../../../images/log-out.svg';
+import defaultLogo from '../../../images/terravisu-logo.svg';
 
 import './styles.scss';
 
-const generateMenus = (authenticated, views) => {
+const generateMenus = (authenticated, views, settings = {}) => {
+  const hasCustomLogo  = settings.theme && settings.theme.logo && settings.theme.logo.length;
   const navItems = [
     [
       {
         id: 'welcome',
         label: 'Accueil',
         href: '/',
-        iconPath: logo,
         icon: null,
+        iconPath: hasCustomLogo ? settings.theme.logo : defaultLogo,
       },
     ],
     [],
@@ -56,6 +57,7 @@ export const Header = ({
   toggleHeader = () => { },
   isMobileSized,
   authenticated,
+  settings,
 }) => {
   const [navItems, setNavItems] = useState([]);
   const containerRef = React.useRef(null);
@@ -67,7 +69,7 @@ export const Header = ({
       /** Load the view list and add it to base menu only if component mounted */
       if (isUnmounted) return;
       const views = await fetchAllViews();
-      setNavItems(generateMenus(authenticated, views));
+      setNavItems(generateMenus(authenticated, views, settings));
     };
 
     loadViewList();
@@ -75,7 +77,7 @@ export const Header = ({
     return () => {
       isUnmounted = true;
     };
-  }, [authenticated]);
+  }, [authenticated, settings]);
 
   useEffect(() => {
     const listener = ({ target }) => {
@@ -110,6 +112,7 @@ export const Header = ({
                 ? NavBarItemTablet : NavBarItemDesktop, ...item }) => (
                   <Component
                     key={item.label}
+                    iconPath={item.iconPath}
                     {...item}
                     authenticated={authenticated}
                   />
