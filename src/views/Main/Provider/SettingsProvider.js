@@ -1,34 +1,44 @@
 import React, { useState, useEffect } from 'react';
 
+import withEnv from '../../../config/withEnv';
+
 import { contextSettings } from './context';
 
-import mockedSettings from '../settings_mock.json';
-
 const { Provider } = contextSettings;
-
-const getSettings =  async () => {
-  // MOCK
-  const response = mockedSettings;
-  return response;
+const defaultSettings = {
+  favicon: '/favicon.png',
+  title: 'terra-visu',
+  theme: {
+    logo: '/images/terravisu-logo.png',
+    style: ['<URL>'],
+  },
+};
+const getSettings =  async SETTINGS => {
+  try {
+    const customSettings = await fetch(`/${SETTINGS}`);
+    return await customSettings.json();
+  } catch (e) {
+    console.error('settings.json is invalid. Please create a public/settings.json from public/settings.dist.json');
+    return defaultSettings;
+  }
 };
 
-export const SettingsProvider = ({ children }) => {
-  
+export const SettingsProvider = ({ env: { SETTINGS }, children }) => {
   const [settings, setSettings] = useState({});
 
-  
+
   useEffect(() => {
     let isMounted = true;
     const loadSettings = async () => {
-        const settings = await getSettings();
-        if (!isMounted) return;
-        setSettings(settings);
-      };
+      const nextSettings = await getSettings(SETTINGS);
+      if (!isMounted) return;
+      setSettings(nextSettings);
+    };
 
     loadSettings();
 
-    return (()=> isMounted = false)
-  }, []);
+    return () => { isMounted = false; };
+  }, [SETTINGS, setSettings]);
 
   const value = { settings };
 
@@ -36,7 +46,7 @@ export const SettingsProvider = ({ children }) => {
     <Provider value={value}>
       {children}
     </Provider>
-  )
+  );
 };
 
-export default SettingsProvider;
+export default withEnv(SettingsProvider);

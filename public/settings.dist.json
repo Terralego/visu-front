@@ -1,0 +1,8 @@
+{
+  "favicon": "/favicon.png",
+  "title": "mock_title",
+  "theme": { 
+    "logo": "/images/mocked-logo.png",
+    "style": ["<URL>"]
+  }
+}
