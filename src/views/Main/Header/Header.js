@@ -17,12 +17,10 @@ import PartnerButton from './PartnerButton';
 import infoSign from '../../../images/info-sign.svg';
 import logIn from '../../../images/log-in.svg';
 import logOut from '../../../images/log-out.svg';
-import defaultLogo from '../../../images/terravisu-logo.svg';
 
 import './styles.scss';
 
 const generateMenus = (authenticated, views, settings = {}) => {
-  const hasCustomLogo  = settings.theme && settings.theme.logo && settings.theme.logo.length;
   const navItems = [
     [
       {
@@ -30,7 +28,7 @@ const generateMenus = (authenticated, views, settings = {}) => {
         label: 'Accueil',
         href: '/',
         icon: null,
-        iconPath: hasCustomLogo ? settings.theme.logo : defaultLogo,
+        iconPath: settings.theme && settings.theme.logo,
       },
     ],
     [],
