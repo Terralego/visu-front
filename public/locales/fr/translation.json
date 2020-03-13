@@ -1,7 +1,35 @@
 {
-  "terralego": {
-    "controls": {
-      "noValues": "Aucune valeur disponible"
+    "auth": {
+      "loginform": {
+        "submit": "Connexion"
+      },
+      "signupform": {
+        "submit": "Créer mon compte",
+        "done": "Veuillez consulter l'email contenant le lien de validation qui vous a été envoyé."
+      },
+      "logout": {
+        "confirm": {
+          "label": "Voulez-vous vraiment vous déconnecter ?",
+          "button_label": "Confirmer"
+        },
+        "cancel": {
+          "button_label": "Annuler"
+        }
+      }
+    },
+    "terralego": {
+      "map": {
+        "home_control": {
+          "button_label": "Retour à l'emprise d'origine"
+        },
+        "NavigationControl.ResetBearing": "Orienter vers le nord",
+        "NavigationControl.ZoomIn": "Zoomer",
+        "NavigationControl.ZoomOut": "Dézoomer"
+      },
+      "legend":{
+          "novalue": "Aucune valeur",
+          "label": "De {{lower}} à {{upper}}"
+      }
     }
   }
-}
+  
