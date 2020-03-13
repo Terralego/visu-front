@@ -32,7 +32,7 @@ it('should fail to fetch view\'s config if response not suitable ', async done =
   };
   global.fetch = jest.fn(() => fetched);
 
-  const resp = await fetchViewConfig('some/url/foo');
+  const resp = await fetchViewConfig('some/url/bar');
 
   expect(resp).toBe(null);
 
