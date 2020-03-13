@@ -1,24 +1,8 @@
 import Api from '@terralego/core/modules/Api';
 import { sortCustomLayers } from '@terralego/core/modules/Visualizer/services/layersTreeUtils';
+import memoizee from 'memoizee';
 
-import population from '../images/population.png';
-import economie from '../images/economie.png';
-import mobilite from '../images/mobilite.png';
-import habitat from '../images/habitat.png';
-import defaultIcon from '../images/heatmap.svg';
-
-// logos path map for view usage.
-// This is a quick workaround to be able to choose an icon
-// from the backend. Next step is to have a media management
-// from admin
-const logos = {
-  population,
-  habitat,
-  economie,
-  mobilite,
-};
-
-export const fetchViewConfig = async viewName => {
+export const fetchViewConfig = memoizee(async viewName => {
   try {
     const config = await Api.request(`geolayer/view/${viewName}/`);
 
@@ -36,7 +20,7 @@ export const fetchViewConfig = async viewName => {
   } catch (e) {
     return null;
   }
-};
+}, { promise: true });
 
 const getLogo = slug => logos[slug] || defaultIcon;
 
