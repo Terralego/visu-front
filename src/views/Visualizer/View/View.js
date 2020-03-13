@@ -663,6 +663,10 @@ export class Visualizer extends React.Component {
       renderHeader,
       isMobileSized,
       viewState,
+      i18n: {
+        language,
+        store: { data: { [language]: { translation: { terralego: { map: mapLocale } } } } },
+      },
     } = this.props;
     const {
       details,
@@ -804,6 +808,7 @@ export class Visualizer extends React.Component {
             onStyleChange={refreshLayers}
             onClusterUpdate={onClusterUpdate}
             translate={t}
+            locale={mapLocale}
             controls={controls}
             hash="map"
           >
