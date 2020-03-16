@@ -18,9 +18,10 @@ export class ViewProvider extends React.Component {
   setMapState = mapState => {
     const { onViewStateUpdate } = this.props;
     onViewStateUpdate({ map: mapState });
-  }
+  };
 
-  setLayersTreeState = layersTreeState => this.setState({ layersTreeState });
+  setLayersTreeState = layersTreeState =>
+    !this.isUnmount && this.setState({ layersTreeState });
 
   setLayerState = ({ layer, state }) => {
     const { layersTreeState: prevLayersTreeState } = this.state;
@@ -28,14 +29,14 @@ export class ViewProvider extends React.Component {
     const newState = { ...layersTreeState.get(layer), ...state };
     layersTreeState.set(layer, newState);
     this.setLayersTreeState(layersTreeState);
-  }
+  };
 
   searchQuery = query => {
     const { onViewStateUpdate } = this.props;
     onViewStateUpdate({ query });
   };
 
-  setVisibleBoundingBox = bbox => this.setState({ bbox })
+  setVisibleBoundingBox = bbox => !this.isUnmount && this.setState({ bbox });
 
   render () {
     const {
@@ -51,7 +52,8 @@ export class ViewProvider extends React.Component {
     const {
       setLayersTreeState,
       setLayerState,
-      setMap, setMapState,
+      setMap,
+      setMapState,
       setVisibleBoundingBox,
       searchQuery,
     } = this;
@@ -69,11 +71,7 @@ export class ViewProvider extends React.Component {
       setVisibleBoundingBox,
       visibleBoundingBox: bbox,
     };
-    return (
-      <Provider value={value}>
-        {children}
-      </Provider>
-    );
+    return <Provider value={value}>{children}</Provider>;
   }
 }
 
