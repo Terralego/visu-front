@@ -665,8 +665,16 @@ export class Visualizer extends React.Component {
       viewState,
       i18n: {
         language,
-        store: { data: { [language]: { translation: { terralego: { map: mapLocale } } } } },
-      },
+        store: {
+          data: {
+            [language]: {
+              translation: {
+                terralego: { map: mapLocale },
+              },
+            } = {},
+          } = {},
+        } = {},
+      } = {},
     } = this.props;
     const {
       details,
