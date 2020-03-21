@@ -58,7 +58,12 @@ export class Visualizer extends React.Component {
       this.setState({ loading: false, notfound: false });
       return;
     }
+
+
     const viewConfig = await fetchViewConfig(viewName);
+
+    // Deep copy to avoid modifications
+    const newViewConfig = JSON.parse(JSON.stringify(viewConfig));
 
     if (this.isUnmount) return;
 
@@ -69,7 +74,7 @@ export class Visualizer extends React.Component {
 
     this.setState({
       [viewName]: {
-        ...viewConfig,
+        ...newViewConfig,
         state: {
           layersTreeState: new Map(),
           query: '',
