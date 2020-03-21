@@ -233,10 +233,10 @@ export class DataTable extends React.Component {
 
     const {
       label,
+      compare,
       filters: {
         layer,
         table: { title } = {},
-        compare,
         exportable,
         fields = [],
       } = {},
