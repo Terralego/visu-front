@@ -8,6 +8,7 @@ import {
   Button,
 } from '@blueprintjs/core';
 import { LoginForm, SignupForm } from '@terralego/core/modules/Auth';
+import withDeviceSize from '@terralego/core/hoc/withDeviceSize';
 
 import NavBarItemDesktop from '../NavBarItemDesktop';
 import NavBarItemTablet from '../NavBarItemTablet';
@@ -130,4 +131,4 @@ export class LoginButton extends React.Component {
   }
 }
 
-export default LoginButton;
+export default withDeviceSize()(LoginButton);

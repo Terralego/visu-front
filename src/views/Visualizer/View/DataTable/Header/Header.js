@@ -34,7 +34,7 @@ export const Header = ({
     })}
   >
     <div className="table-header__title">
-      {title}
+      <p className="table-header__title--label">{title}</p>
       <div className="table-header__counter">
         {loading && (
           <Loading

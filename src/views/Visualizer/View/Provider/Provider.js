@@ -71,7 +71,11 @@ export class ViewProvider extends React.Component {
       setVisibleBoundingBox,
       visibleBoundingBox: bbox,
     };
-    return <Provider value={value}>{children}</Provider>;
+    return (
+      <Provider value={value}>
+        {children}
+      </Provider>
+    );
   }
 }
 
