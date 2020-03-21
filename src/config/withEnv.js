@@ -22,6 +22,7 @@ export const withEnv = WrappedComponent =>
 
     render () {
       const { env } = this.state;
+
       if (!env) return null;
       return <WrappedComponent env={env} {...this.props} />;
     }

@@ -87,7 +87,8 @@ export class DataTable extends React.Component {
     } = this.props;
     const { extent } = this.state;
     if (displayedLayer) {
-      if (layer !== prevLayer || prevFields !== fields) {
+      if (layer !== prevLayer
+       || prevFields !== fields) {
         this.resetColumns();
       }
 

@@ -15,13 +15,13 @@ import {
   CONTROL_SEARCH,
   CONTROL_BACKGROUND_STYLES,
   CONTROL_PRINT,
-  CONTROLS_TOP_RIGHT,
-  CONTROL_SHARE,
   CONTROL_HOME,
+  CONTROL_SHARE,
+  CONTROLS_TOP_RIGHT,
 } from '@terralego/core/modules/Map';
 import { toggleLayerVisibility, setLayerOpacity } from '@terralego/core/modules/Map/services/mapUtils';
 import { LayersTreeProvider, LayersTree } from '@terralego/core/modules/Visualizer/LayersTree';
-import { Details, MapNavigation, Story, TooManyResults } from '@terralego/core/modules/Visualizer';
+import { Details, MapNavigation, Story, TooManyResults, PrivateLayers } from '@terralego/core/modules/Visualizer';
 import LayersTreeProps from '@terralego/core/modules/Visualizer/types/Layer';
 import searchService, {
   getExtent,
@@ -53,6 +53,12 @@ import brandLogo from '../../../images/terravisu-logo.svg';
 import appLogo from '../../../images/terravisu-logo.png';
 
 export const INTERACTION_DISPLAY_DETAILS = 'displayDetails';
+
+const LayersTreeGroupProps = PropTypes.shape({
+  group: PropTypes.string.isRequired,
+  layers: PropTypes.arrayOf(LayersTreeProps.isRequired),
+  private: PropTypes.bool,
+});
 
 const getControls = memoize((
   displaySearch,
@@ -89,7 +95,10 @@ const getControls = memoize((
 export class Visualizer extends React.Component {
   static propTypes = {
     view: PropTypes.shape({
-      layersTree: PropTypes.arrayOf(LayersTreeProps),
+      layersTree: PropTypes.arrayOf(PropTypes.oneOfType([
+        LayersTreeProps,
+        LayersTreeGroupProps,
+      ])),
       interactions: PropTypes.arrayOf(PropTypes.shape({
         interaction: PropTypes.oneOf([
           INTERACTION_DISPLAY_DETAILS,
@@ -278,6 +287,13 @@ export class Visualizer extends React.Component {
       return interaction;
     });
     this.setState({ interactions: newInteractions });
+  }
+
+  interactiveMapInit = interactiveMapInstance => {
+    this.setState({
+      // eslint-disable-next-line react/no-unused-state
+      interactiveMapInstance,
+    });
   }
 
   setLegends = legends => this.setState({ legends });
@@ -546,14 +562,19 @@ export class Visualizer extends React.Component {
   };
 
   displayDetails (feature, interaction, { addHighlight, removeHighlight }) {
+<<<<<<< HEAD
     const { layer: { id: layerId }, properties: { _id: featureId }, source } = feature;
     const { details: { hide = () => { } } = {} } = this.state;
+=======
+    const { layer: { id: layerId } = {}, properties: { _id: featureId }, source } = feature;
+    const { details: { hide = () => {} } = {} } = this.state;
+>>>>>>> First step of merging
     const { highlight_color: highlightColor } = interaction;
     hide();
 
     this.onHighlightChange = () => null;
 
-    if (highlightColor) {
+    if (layerId && highlightColor) {
       addHighlight({
         layerId,
         featureId,
@@ -576,7 +597,7 @@ export class Visualizer extends React.Component {
       details: {
         feature,
         interaction,
-        hide: () => removeHighlight({ layerId, featureId }),
+        hide: () => layerId && removeHighlight({ layerId, featureId }),
       },
     });
   }
@@ -657,6 +678,7 @@ export class Visualizer extends React.Component {
         title,
         map: mapProps,
         layersTree,
+        type,
       },
       map,
       mapIsResizing,
@@ -677,6 +699,7 @@ export class Visualizer extends React.Component {
         } = {},
       } = {},
     } = this.props;
+
     const {
       details,
       details: { feature: { sourceLayer } = {} } = {},
@@ -698,7 +721,6 @@ export class Visualizer extends React.Component {
     } = this;
 
     const displayLayersTree = isLayersTreeVisible && !printIsOpened;
-
     const isDetailsVisible = !!details && !printIsOpened;
 
     const [{ features: featuresForDetail = [] } = {}] = isDetailsVisible
@@ -727,7 +749,7 @@ export class Visualizer extends React.Component {
     const isTableVisible = hasTable(layersTreeState);
     const isWidgetsVisible = hasWidget(layersTreeState);
 
-    const isStory = layersTree.type === 'story';
+    const isStory = type === 'story';
     return (
       <LayersTreeProvider
         map={map}
@@ -738,6 +760,7 @@ export class Visualizer extends React.Component {
         fetchPropertyRange={fetchPropertyRange}
         translate={t}
       >
+        <PrivateLayers layersTree={layersTree} />
         <div className={classnames({
           visualizer: true,
           'visualizer--with-layers-tree': displayLayersTree,
@@ -806,7 +829,6 @@ export class Visualizer extends React.Component {
               </div>
             </div>
           </div>
-
           <InteractiveMap
             {...mapProps}
             className={Classes.DARK}

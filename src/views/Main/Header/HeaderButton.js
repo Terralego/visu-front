@@ -5,16 +5,19 @@ import {
   Button,
   Classes,
 } from '@blueprintjs/core';
-import classnames from 'classnames';
+import classNames from 'classnames';
 import './styles.scss';
 
-export const HeaderButton = ({ id, icon, iconPath, alt }) => (
+export const HeaderButton = ({ id, icon, iconPath, alt, classNameIcon }) => (
   <Button
-    className={`${Classes.MINIMAL} header-button ${id}`}
+    className={classNames(
+      `${Classes.MINIMAL} header-button ${id}`,
+      classNameIcon === 'icon' ? 'header-button' : 'header-button__out',
+    )}
     minimal
     id={id}
   >
-    <img src={iconPath} alt={alt} className={classnames({ icon })} />
+    <img src={iconPath} alt={alt} className={classNameIcon} />
   </Button>
 );
 

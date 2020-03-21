@@ -12,7 +12,9 @@ import HeaderButton from './HeaderButton';
 
 export const NavBarItemDesktop = ({
   id,
+  content,
   iconPath,
+  classNameIcon,
   env: { VIEW_ROOT_PATH },
   ...item
 }) => (
@@ -30,7 +32,10 @@ export const NavBarItemDesktop = ({
         id={id}
         iconPath={iconPath}
         alt={item.label}
-      />
+        classNameIcon={classNameIcon}
+      >
+        {item.content}
+      </HeaderButton>
     </HeaderLink>
   </Tooltip>
 );
