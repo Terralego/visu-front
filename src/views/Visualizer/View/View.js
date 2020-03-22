@@ -44,13 +44,12 @@ import debounce from 'debounce';
 import turfCenter from '@turf/center';
 import turfBbox from '@turf/bbox';
 import memoize from 'memoize-one';
+import { connectSettings } from '../../Main/Provider/context';
 
 import DataTable from './DataTable';
 import Widgets from './Widgets';
 import { generateClusterList } from './interactions';
 import BoundingBoxObserver from '../../../components/BoundingBoxObserver';
-import brandLogo from '../../../images/terravisu-logo.svg';
-import appLogo from '../../../images/terravisu-logo.png';
 
 export const INTERACTION_DISPLAY_DETAILS = 'displayDetails';
 
@@ -694,6 +693,13 @@ export class Visualizer extends React.Component {
         } = {},
       } = {},
       exportCallback,
+      settings: {
+        theme: {
+          logo,
+          brandLogo,
+          mapCredits,
+        } = {},
+      },
     } = this.props;
 
     const {
@@ -841,17 +847,11 @@ export class Visualizer extends React.Component {
             onInit={this.interactiveMapInit}
           >
             <div className="interactive-map__header">
-              <img src={appLogo} alt="TerraVisu" className="app-logo" />
-              {/* Waiting more information from customer */}
-              {/* {!!legends.length && (
-                <h2>
-                  {legends.map(legend => legend.title).join(', ')}
-                </h2>
-              )} */}
-              <img src={brandLogo} alt="TerraVisu" className="brand-logo" />
+              <img src={logo} alt="TerraVisu" className="app-logo" />
+              {brandLogo && <img src={brandLogo} alt="TerraVisu" className="brand-logo" />}
             </div>
             <div className="interactive-map__footer">
-              Credits…
+              {mapCredits}
             </div>
           </InteractiveMap>
         </div>
@@ -860,4 +860,4 @@ export class Visualizer extends React.Component {
   }
 }
 
-export default connectState('initialState', 'setCurrentState')(withDeviceSize()(withRouter(Visualizer)));
+export default connectState('initialState', 'setCurrentState')(connectSettings('settings')(withDeviceSize()(withRouter(Visualizer))));
