@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
-import withEnv from '../../../config/withEnv';
-
 import { contextSettings } from './context';
 
 const { Provider } = contextSettings;
+
+const SETTINGS_PATH = '/settings.json';
+
 const DEFAULT_SETTINGS = {
   favicon: '/favicon.png',
   title: 'terra-visu',
@@ -13,9 +14,10 @@ const DEFAULT_SETTINGS = {
     style: [],
   },
 };
-const getSettings =  async settingsPath => {
+
+const getSettings =  async () => {
   try {
-    const customSettings = await fetch(`/${settingsPath}`);
+    const customSettings = await fetch(SETTINGS_PATH);
     return await customSettings.json();
   } catch (e) {
     console.error('settings.json is missing. Please create a public/settings.json from public/settings.dist.json');
@@ -23,14 +25,15 @@ const getSettings =  async settingsPath => {
   }
 };
 
-export const SettingsProvider = ({ env: { SETTINGS }, children }) => {
+export const SettingsProvider = ({ children }) => {
   const [settings, setSettings] = useState({});
 
 
   useEffect(() => {
     let isMounted = true;
+
     const loadSettings = async () => {
-      const nextSettings = await getSettings(SETTINGS);
+      const nextSettings = await getSettings();
       if (!isMounted) return;
       setSettings(nextSettings);
     };
@@ -38,7 +41,7 @@ export const SettingsProvider = ({ env: { SETTINGS }, children }) => {
     loadSettings();
 
     return () => { isMounted = false; };
-  }, [SETTINGS, setSettings]);
+  }, [setSettings]);
 
   const value = { settings };
 
@@ -49,4 +52,4 @@ export const SettingsProvider = ({ env: { SETTINGS }, children }) => {
   );
 };
 
-export default withEnv(SettingsProvider);
+export default SettingsProvider;
