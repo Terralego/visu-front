@@ -144,7 +144,7 @@ $bg-visualizer: rgb(49, 64, 77);
       }
 
       &.visualizer--with-layers-tree .mapboxgl-ctrl-bottom-left {
-        transform: translate3d(0, -$tableHeight, 0);
+        transform: translate3d($layersTreeWidth, -$tableHeight, 0);
       }
     }
 
@@ -194,9 +194,7 @@ $bg-visualizer: rgb(49, 64, 77);
   top: 0;
   left: 0;
   width: 100%;
-  background: #e0e0e0;
   height: 75px;
-  background: url('../../images/visu-background.png');
   justify-content: space-between;
   align-items: center;
 
@@ -209,9 +207,6 @@ $bg-visualizer: rgb(49, 64, 77);
   }
 
   .app-logo {
-    /* background: url('../../images/visu-background.png');
-    float: left;
-    margin-right: 1em; */
     margin-left: 3.5em;
     height: 50px;
   }
