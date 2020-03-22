@@ -85,7 +85,9 @@ export class DataTable extends React.Component {
       } = {},
       query,
     } = this.props;
+
     const { extent } = this.state;
+
     if (displayedLayer) {
       if (layer !== prevLayer
        || prevFields !== fields) {
@@ -102,7 +104,6 @@ export class DataTable extends React.Component {
       }
     }
   }
-
 
   resize = () => this.setState(({ full: prevFull }) => {
     const full = !prevFull;
@@ -132,6 +133,7 @@ export class DataTable extends React.Component {
         label: name,
         filters: { fields = [] } = {},
       },
+      exportCallback,
     } = this.props;
 
     if (!fields) return;
@@ -155,21 +157,7 @@ export class DataTable extends React.Component {
     exportSpreadsheet({
       name,
       data,
-      callback: (xlsx, sheet) => {
-        xlsx.utils.sheet_add_aoa(sheet, [
-          [],
-          ['Source: Terravisu'],
-        ], { origin: -1 });
-        const wholeRange = xlsx.utils.decode_range(sheet['!ref']);
-        const lastCell = sheet[xlsx.utils.encode_cell({
-          c: 0,
-          r: wholeRange.e.r,
-        })];
-        lastCell.l = {
-          Target: 'http://github.com/terralego',
-          Tooltip: 'Terravisu',
-        };
-      },
+      callback: exportCallback,
     });
   };
 
@@ -188,7 +176,7 @@ export class DataTable extends React.Component {
 
   async loadResults () {
     const {
-      displayedLayer: { filters: { layer, fields, form }, state: { filters = {} } = {} },
+      displayedLayer: { filters: { layer, fields, form } = {}, state: { filters = {} } = {} } = {},
       query,
       map,
       visibleBoundingBox,

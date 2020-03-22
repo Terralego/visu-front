@@ -562,13 +562,8 @@ export class Visualizer extends React.Component {
   };
 
   displayDetails (feature, interaction, { addHighlight, removeHighlight }) {
-<<<<<<< HEAD
-    const { layer: { id: layerId }, properties: { _id: featureId }, source } = feature;
-    const { details: { hide = () => { } } = {} } = this.state;
-=======
     const { layer: { id: layerId } = {}, properties: { _id: featureId }, source } = feature;
     const { details: { hide = () => {} } = {} } = this.state;
->>>>>>> First step of merging
     const { highlight_color: highlightColor } = interaction;
     hide();
 
@@ -698,6 +693,7 @@ export class Visualizer extends React.Component {
           } = {},
         } = {},
       } = {},
+      exportCallback,
     } = this.props;
 
     const {
@@ -821,7 +817,7 @@ export class Visualizer extends React.Component {
                       enableCarousel={false}
                     />
                   </BoundingBoxObserver>
-                  <DataTable isTableVisible={isTableVisible && !printIsOpened} />
+                  <DataTable isTableVisible={isTableVisible && !printIsOpened} exportCallback={exportCallback} />
                 </div>
                 <div className="col-widgets">
                   <Widgets />
