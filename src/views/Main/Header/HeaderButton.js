@@ -8,11 +8,11 @@ import {
 import classNames from 'classnames';
 import './styles.scss';
 
-export const HeaderButton = ({ id, icon, iconPath, alt, classNameIcon }) => (
+export const HeaderButton = ({ id, iconPath, alt, classNameIcon }) => (
   <Button
     className={classNames(
       `${Classes.MINIMAL} header-button ${id}`,
-      classNameIcon === 'icon' ? 'header-button' : 'header-button__out',
+      classNameIcon === 'icon_out' ? 'header-button__out' : 'header-button',
     )}
     minimal
     id={id}
@@ -23,13 +23,11 @@ export const HeaderButton = ({ id, icon, iconPath, alt, classNameIcon }) => (
 
 HeaderButton.propTypes = {
   id: PropTypes.string.isRequired,
-  icon: PropTypes.string,
   iconPath: PropTypes.string,
   alt: PropTypes.string,
 };
 
 HeaderButton.defaultProps = {
-  icon: 'icon',
   iconPath: '',
   alt: '',
 };

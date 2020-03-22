@@ -1,6 +1,7 @@
 import Api from '@terralego/core/modules/Api';
 import { sortCustomLayers } from '@terralego/core/modules/Visualizer/services/layersTreeUtils';
 import memoizee from 'memoizee';
+import defaultIcon from '../images/defaultLogo.svg';
 
 export const fetchViewConfig = memoizee(async viewName => {
   try {
@@ -22,8 +23,6 @@ export const fetchViewConfig = memoizee(async viewName => {
   }
 }, { promise: true });
 
-const getLogo = slug => logos[slug] || defaultIcon;
-
 export const fetchAllViews = async () => {
   try {
     const config = await Api.request('geolayer/scene/');
@@ -37,7 +36,7 @@ export const fetchAllViews = async () => {
       label: name,
       href: `/{{VIEW_ROOT_PATH}}/${slug}`,
       // Todo: Remove logos[slug] when terra-admin is able to interact with this app
-      iconPath: customIcon || getLogo(slug),
+      iconPath: customIcon || defaultIcon,
       icon: 'icon',
     }));
   } catch (e) {

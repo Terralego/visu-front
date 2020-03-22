@@ -18,10 +18,24 @@
   align-items: center;
   justify-content: center;
 
-  .icon {
+  &__out { // For signout button
+    background: radial-gradient(#5a91b3 0, transparent 70%) !important;
+    img {
+      filter: invert(.5) sepia(1) saturate(5) hue-rotate(175deg);
+    }
+  }
+
+  img {
     opacity: 1;
-    width: 1.5rem;
-    transition: .2s ease-in filter;
+    width: 1.25rem;
+    transition: .3s ease-in filter;
+  }
+}
+
+.active .header-button {
+  background: radial-gradient(#5a91b3 0, transparent 55%) !important;
+  img {
+    filter: invert(.5) sepia(1) saturate(5) hue-rotate(175deg);
   }
 }
 

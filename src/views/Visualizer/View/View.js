@@ -838,6 +838,7 @@ export class Visualizer extends React.Component {
             locale={mapLocale}
             controls={controls}
             hash="map"
+            onInit={this.interactiveMapInit}
           >
             <div className="interactive-map__header">
               <img src={appLogo} alt="TerraVisu" className="app-logo" />
