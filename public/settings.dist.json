@@ -1,8 +1,11 @@
 {
   "favicon": "<FAVICON>",
   "title": "<TITLE>",
+  "version": "<VERSION>",
   "theme": { 
     "logo": "<LOGO_PATH>",
-    "style": ["<STYLE_PATH>"]
-  }
+    "logoUrl": "<LOGO_URL>",
+    "styles": ["<STYLE_PATH>"]
+  },
+  "extraMenuItems": []
 }

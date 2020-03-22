@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 
 import withEnv from '../../../config/withEnv';
+import { connectSettings } from '../Provider/context';
 import Loading from '../../../components/Loading';
 import AppName from '../AppName';
 import VisualizerLoading from '../../Visualizer/Loading';
@@ -26,7 +27,7 @@ const exportCallback = (xlsx, sheet) => {
   };
 };
 
-const Content = ({ env: { VIEW_ROOT_PATH = 'view', DEFAULT_VIEWNAME = 'rechercher' } }) => (
+const Content = ({ env: { VIEW_ROOT_PATH = 'view', DEFAULT_VIEWNAME = 'rechercher' }, settings: { title, version } }) => (
   <div className="main__content">
     <Switch>
       <Route path="/create-account/:id/:token">
@@ -40,7 +41,7 @@ const Content = ({ env: { VIEW_ROOT_PATH = 'view', DEFAULT_VIEWNAME = 'recherche
       <Route path={`/${VIEW_ROOT_PATH}/:viewName`}>
         <Suspense fallback={<VisualizerLoading />}>
           <Visualizer
-            renderHeader={<AppName />}
+            renderHeader={<AppName title={title} version={version} />}
             exportCallback={exportCallback}
           />
         </Suspense>
@@ -58,4 +59,4 @@ const Content = ({ env: { VIEW_ROOT_PATH = 'view', DEFAULT_VIEWNAME = 'recherche
   </div>
 );
 
-export default withEnv(Content);
+export default withEnv(connectSettings('settings')(Content));

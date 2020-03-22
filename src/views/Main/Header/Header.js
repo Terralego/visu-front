@@ -6,6 +6,7 @@ import {
 import classnames from 'classnames';
 import withDeviceSize from '@terralego/core/hoc/withDeviceSize';
 import { connectAuthProvider } from '@terralego/core/modules/Auth';
+import PropTypes from 'prop-types';
 
 import { fetchAllViews } from '../../../services/visualizer';
 
@@ -20,20 +21,17 @@ import logOut from '../../../images/log-out.svg';
 
 import './styles.scss';
 
-
-
-const generateMenus = (authenticated, views, { theme: { logo = '' } = {} } = {}) => {
+const generateMenus = (authenticated, views, { theme: { logo = '', logoUrl = '/' } = {}, extraMenuItems = [] } = {}) => {
   const navItems = [
     [
       {
         id: 'welcome',
         label: 'Accueil',
-        href: '/',
-        icon: null,
+        href: logoUrl,
         iconPath: logo,
       },
     ],
-    [],
+    extraMenuItems,
     [{
       id: 'nav-partenaires',
       label: 'Mentions légales',
@@ -63,11 +61,11 @@ export const Header = ({
   const containerRef = React.useRef(null);
 
   useEffect(() => {
-    let isUnmounted = false;
+    let isMounted = true;
 
     const loadViewList = async () => {
       /** Load the view list and add it to base menu only if component mounted */
-      if (isUnmounted) return;
+      if (!isMounted) return;
       const views = await fetchAllViews();
       setNavItems(generateMenus(authenticated, views, settings));
     };
@@ -75,7 +73,7 @@ export const Header = ({
     loadViewList();
 
     return () => {
-      isUnmounted = true;
+      isMounted = false;
     };
   }, [authenticated, settings]);
 
