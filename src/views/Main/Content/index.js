@@ -1,8 +1,9 @@
 import React, { Suspense, lazy } from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
+import compose from '@terralego/core/utils/compose';
 
 import withEnv from '../../../config/withEnv';
-import { connectSettings } from '../Provider/context';
+import { connectSettings, connectMain } from '../Provider/context';
 import Loading from '../../../components/Loading';
 import AppName from '../AppName';
 import VisualizerLoading from '../../Visualizer/Loading';
@@ -59,4 +60,7 @@ const Content = ({ env: { VIEW_ROOT_PATH = 'view', DEFAULT_VIEWNAME = 'recherche
   </div>
 );
 
-export default withEnv(connectSettings('settings')(Content));
+export default compose(
+  withEnv,
+  connectSettings('settings'),
+)(Content);
