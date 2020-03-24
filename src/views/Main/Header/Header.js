@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Navbar,
-  NavbarGroup,
-} from '@blueprintjs/core';
+
 import classnames from 'classnames';
 import withDeviceSize from '@terralego/core/hoc/withDeviceSize';
 import { connectAuthProvider } from '@terralego/core/modules/Auth';
@@ -10,14 +7,15 @@ import PropTypes from 'prop-types';
 
 import { fetchAllViews } from '../../../services/visualizer';
 
-import NavBarItemDesktop from './NavBarItemDesktop';
-import NavBarItemTablet from './NavBarItemTablet';
+import MainMenu from './MainMenu';
+
 import LoginButton from './LoginButton';
 import PartnerButton from './PartnerButton';
 
 import infoSign from '../../../images/info-sign.svg';
 import logIn from '../../../images/log-in.svg';
 import logOut from '../../../images/log-out.svg';
+
 
 import './styles.scss';
 
@@ -102,23 +100,7 @@ export const Header = ({
       )}
       ref={containerRef}
     >
-      <Navbar className="navBar bp3-dark">
-        {
-          navItems.map((group, index) => (
-            <NavbarGroup key={index} className="navBar__group">
-              {group.map(({ component: Component = isMobileSized
-                ? NavBarItemTablet : NavBarItemDesktop, ...item }) => (
-                  <Component
-                    key={item.label}
-                    iconPath={item.iconPath}
-                    {...item}
-                    authenticated={authenticated}
-                  />
-              ))}
-            </NavbarGroup>
-          ))
-        }
-      </Navbar>
+      <MainMenu navItems={navItems} isMobileSized={isMobileSized} authenticated={authenticated} />
       {isMobileSized && !isHeaderOpen
         && <div ref={containerRef} className="main__header__target" />
       }
