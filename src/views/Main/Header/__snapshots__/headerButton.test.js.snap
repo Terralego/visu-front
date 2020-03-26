@@ -2,7 +2,7 @@
 
 exports[`should render correctly 1`] = `
 <button
-  className="bp3-button bp3-minimal bp3-minimal header-button theme"
+  className="bp3-button bp3-minimal bp3-minimal header-button theme header-button"
   id="theme"
   onKeyDown={[Function]}
   onKeyUp={[Function]}
@@ -13,7 +13,6 @@ exports[`should render correctly 1`] = `
   >
     <img
       alt=""
-      className="icon"
       src=""
     />
   </span>

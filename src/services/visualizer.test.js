@@ -64,7 +64,7 @@ it('should fail to fetch views', async done => {
 
   try {
     const resp = await fetchAllViews('some/url/foo');
-    expect(resp).toBe(null);
+    expect(resp).toEqual([]);
   } catch (e) {
     expect(e.message).toBe('not found');
   }
