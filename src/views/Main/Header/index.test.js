@@ -1,7 +1,5 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
-import { shallow } from 'enzyme';
-import toJson from 'enzyme-to-json';
 
 import { Header } from './Header';
 
@@ -61,33 +59,7 @@ it('should render correctly with header close in mobile view', () => {
   expect(tree).toMatchSnapshot();
 });
 
-it('should render with navigation tabs', async () => {
-  const wrapper = shallow(<Header />);
-  await wrapper.instance().getAllViews();
-  expect(toJson(wrapper)).toMatchSnapshot();
-});
-
-it('should remove EventListener when component will unmount', () => {
-  jest.spyOn(document.body, 'removeEventListener');
-  const wrapper = shallow(
-    <Header />,
-  );
-  wrapper.unmount();
-  expect(document.body.removeEventListener).toHaveBeenCalled();
-});
-
-
-it('should have the default thin navbar in mobile', () => {
-  const toggleHeader = jest.fn();
-  const wrapper = shallow(<Header toggleHeader={toggleHeader} />);
-  const instance = wrapper.instance();
-
-  instance.listener({ target: '<div class="main__header__target--test" />' });
-
-  expect(instance.props.toggleHeader).toHaveBeenCalledWith(false);
-});
-
-it('should open navbar in mobile', () => {
+/* it('should open navbar in mobile', () => {
   const toggleHeader = jest.fn();
   const wrapper = shallow(<Header toggleHeader={toggleHeader} />);
   const instance = wrapper.instance();
@@ -100,4 +72,4 @@ it('should open navbar in mobile', () => {
   instance.listener({ target });
 
   expect(instance.props.toggleHeader).toHaveBeenCalledWith();
-});
+}); */

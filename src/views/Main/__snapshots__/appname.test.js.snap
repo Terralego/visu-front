@@ -7,16 +7,12 @@ exports[`should render 1`] = `
   <span
     className="appName-title"
   >
-    <img
-      alt="Cartenmain"
-      className="appName-title-logo"
-      src="cart_en_main.png"
-    />
+    TerraVisu
   </span>
   <span
     className="appName-version"
   >
-    Version bêta
+    v1.0
   </span>
 </div>
 `;
