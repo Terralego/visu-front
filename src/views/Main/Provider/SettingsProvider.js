@@ -20,6 +20,7 @@ const getSettings =  async () => {
     const customSettings = await fetch(SETTINGS_PATH);
     return await customSettings.json();
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.error('settings.json is missing. Please create a public/settings.json from public/settings.dist.json');
     return DEFAULT_SETTINGS;
   }
