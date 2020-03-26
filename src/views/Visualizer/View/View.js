@@ -823,7 +823,10 @@ export class Visualizer extends React.Component {
                       enableCarousel={false}
                     />
                   </BoundingBoxObserver>
-                  <DataTable isTableVisible={isTableVisible && !printIsOpened} exportCallback={exportCallback} />
+                  <DataTable
+                    isTableVisible={isTableVisible && !printIsOpened}
+                    exportCallback={exportCallback}
+                  />
                 </div>
                 <div className="col-widgets">
                   <Widgets />
