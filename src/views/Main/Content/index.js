@@ -3,7 +3,7 @@ import { Route, Switch, Redirect } from 'react-router-dom';
 import compose from '@terralego/core/utils/compose';
 
 import withEnv from '../../../config/withEnv';
-import { connectSettings, connectMain } from '../Provider/context';
+import { connectSettings } from '../Provider/context';
 import Loading from '../../../components/Loading';
 import AppName from '../AppName';
 import VisualizerLoading from '../../Visualizer/Loading';
