@@ -41,7 +41,11 @@ export const MainMenu = ({
 MainMenu.propTypes = {
   isMobileSized: PropTypes.bool,
   authenticated: PropTypes.bool,
-  navItems: PropTypes.arrayOf(),
+  navItems: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string,
+    label: PropTypes.string,
+    iconPath: PropTypes.string,
+  }))),
 };
 
 MainMenu.defaultProps = {

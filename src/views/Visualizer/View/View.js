@@ -686,8 +686,8 @@ export class Visualizer extends React.Component {
           data: {
             [language]: {
               translation: {
-                terralego: { map: mapLocale },
-              },
+                terralego: { map: mapLocale } = {},
+              } = {},
             } = {},
           } = {},
         } = {},
