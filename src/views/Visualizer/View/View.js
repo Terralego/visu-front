@@ -694,10 +694,10 @@ export class Visualizer extends React.Component {
       } = {},
       exportCallback,
       settings: {
+        credits,
         theme: {
           logo,
           brandLogo,
-          mapCredits,
         } = {},
       },
     } = this.props;
@@ -854,7 +854,7 @@ export class Visualizer extends React.Component {
               {brandLogo && <img src={brandLogo} alt="TerraVisu" className="brand-logo" />}
             </div>
             <div className="interactive-map__footer">
-              {mapCredits}
+              {credits}
             </div>
           </InteractiveMap>
         </div>

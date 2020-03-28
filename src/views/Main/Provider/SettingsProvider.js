@@ -8,12 +8,18 @@ const SETTINGS_PATH = '/settings.json';
 
 const DEFAULT_SETTINGS = {
   favicon: '/favicon.png',
-  title: 'terra-visu',
+  title: 'TerraVisu',
+  version: 'v0.1',
+  credits: 'Source: Terravisu',
   theme: {
     logo: '/images/terravisu-logo.png',
-    style: [],
+    brandLogo: '/images/terravisu-logo.png',
+    logoUrl: '/',
+    styles: [],
   },
+  extraMenuItems: [],
 };
+
 
 const getSettings =  async () => {
   try {
