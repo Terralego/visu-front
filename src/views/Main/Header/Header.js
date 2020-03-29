@@ -32,7 +32,7 @@ const generateMenus = (authenticated, views, { theme: { logo = '', logoUrl = '/'
     extraMenuItems,
     [{
       id: 'nav-partenaires',
-      label: 'Mentions légales',
+      label: 'Informations',
       iconPath: infoSign,
       component: PartnerButton,
     }, {
