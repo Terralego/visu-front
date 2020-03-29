@@ -68,6 +68,17 @@ export class DataTable extends React.Component {
     }
   }
 
+  shouldComponentUpdate ({ isTableVisible }) {
+    const {
+      isTableVisible: prevTableVisible,
+    } = this.props;
+
+    if (isTableVisible !== prevTableVisible || isTableVisible) {
+      return true;
+    }
+    return false;
+  }
+
   componentDidUpdate ({
     displayedLayer: {
       filters: { layer: prevLayer, fields: prevFields } = {},
