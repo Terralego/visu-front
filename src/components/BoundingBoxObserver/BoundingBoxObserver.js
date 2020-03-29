@@ -1,48 +1,40 @@
 import React from 'react';
 import ResizeObserver from 'resize-observer-polyfill';
 import PropTypes from 'prop-types';
+import debounce from 'debounce';
 
-export class VisibleBoundingBox extends React.Component {
-  static propTypes = {
-    onChange: PropTypes.func,
-    as: PropTypes.string,
-  };
+const VisibleBoundingBox = ({ onChange, as: Component, children, ...props }) => {
+  const ref = React.useRef();
 
-  static defaultProps = {
-    onChange () {},
-    as: 'div',
-  };
-
-  ref = React.createRef();
-
-  componentDidMount () {
-    this.ro = new ResizeObserver(([{ target }]) => {
-      const { onChange } = this.props;
-      onChange(target.getBoundingClientRect());
+  React.useEffect(() => {
+    const debouncedOnChange = debounce(param => onChange(param), 500);
+    const ro = new ResizeObserver(([{ target }]) => {
+      debouncedOnChange(target.getBoundingClientRect());
     });
-    this.ro.observe(this.ref.current);
-  }
+    ro.observe(ref.current);
+  }, [onChange]);
 
-  componentWillUnmount () {
-    this.ro.disconnect();
-  }
-
-  render () {
-    const { as: Component, children, ...props } = this.props;
-    const { ref } = this;
-
-    if (typeof children === 'function') {
-      return (
-        children({ ref })
-      );
-    }
-
+  if (typeof children === 'function') {
     return (
-      <Component ref={ref} {...props}>
-        {children}
-      </Component>
+      children({ ref })
     );
   }
-}
+
+  return (
+    <Component ref={ref} {...props}>
+      {children}
+    </Component>
+  );
+};
+
+VisibleBoundingBox.propTypes = {
+  onChange: PropTypes.func,
+  as: PropTypes.string,
+};
+
+VisibleBoundingBox.defaultProps = {
+  onChange () {},
+  as: 'div',
+};
 
 export default VisibleBoundingBox;
