@@ -16,12 +16,14 @@ export const NavBarItemTablet = ({
     onClick={item.onClick}
     data-link-id={id}
   >
-    <p className="header-button-label">{item.label}</p>
-    <HeaderButton
-      id={id}
-      iconPath={iconPath}
-      alt={item.label}
-    />
+    <>
+      <p className="header-button-label">{item.label}</p>
+      <HeaderButton
+        id={id}
+        iconPath={iconPath}
+        alt={item.label}
+      />
+    </>
   </HeaderLink>
 );
 
