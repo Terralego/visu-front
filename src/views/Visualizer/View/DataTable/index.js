@@ -1,8 +1,8 @@
-import { connectLayersTree } from '@terralego/core/modules/Visualizer/LayersTree';
+import { connectView } from '../context';
 
 import DataTable from './DataTable';
 
-export default connectLayersTree(({ layersTreeState, query, map, visibleBoundingBox }) => ({
+export default connectView(({ layersTreeState, query, map, visibleBoundingBox }) => ({
   query,
   map,
   visibleBoundingBox,

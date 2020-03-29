@@ -1,7 +1,7 @@
-import { connectLayersTree } from '@terralego/core/modules/Visualizer/LayersTree';
 import Widgets from './Widgets';
+import { connectView } from '../context';
 
-export default connectLayersTree(({ layersTreeState, setLayerState }) => {
+export default connectView(({ layersTreeState, setLayerState }) => {
   const widgets = Array
     .from(layersTreeState)
     .reduce((prev, [
