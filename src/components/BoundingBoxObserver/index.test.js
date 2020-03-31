@@ -13,6 +13,8 @@ jest.mock('resize-observer-polyfill', () => jest.fn(callback => (
   }
 )));
 
+jest.mock('debounce', () => fn => () => fn());
+
 it('should render if children is a component', () => {
   const tree = renderer.create((
     <VisibleBoundingBox>
@@ -34,12 +36,13 @@ it('should render if children is a function', () => {
 });
 
 it('should call onChange', () => {
-  const wrapper = shallow(
-    <VisibleBoundingBox>
+  const onChange = jest.fn();
+  shallow(
+    <VisibleBoundingBox onChange={onChange}>
       <div>foo</div>
     </VisibleBoundingBox>,
   );
-  expect(wrapper.props().onChange.toHaveBeenCalled);
+  expect(onChange.toHaveBeenCalled);
 });
 
 it('should call disconnect when component will unmount', () => {
