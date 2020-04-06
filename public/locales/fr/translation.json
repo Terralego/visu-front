@@ -27,7 +27,7 @@
       "NavigationControl.ZoomOut": "Dézoomer"
     },
     "legend": {
-      "novalue": "Aucune valeur",
+      "nolabel": "-",
       "label": "De {{lower}} à {{upper}}"
     },
     "forms": {
