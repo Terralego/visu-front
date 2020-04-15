@@ -829,7 +829,7 @@ export class Visualizer extends React.Component {
                   />
                 </div>
                 <div className="col-widgets">
-                  <Widgets />
+                  <Widgets translate={t} />
                 </div>
               </div>
             </div>

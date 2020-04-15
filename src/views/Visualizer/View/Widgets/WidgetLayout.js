@@ -1,17 +1,6 @@
 import React from 'react';
 import { Icon } from '@blueprintjs/core';
 
-import { COMPONENT_SYNTHESIS } from './WidgetsTypes';
-
-const getTitle = component => {
-  switch (component) {
-    case COMPONENT_SYNTHESIS:
-      return 'Synthèse des espaces d\'activités';
-    default:
-      return component;
-  }
-};
-
 export class WidgetLayout extends React.Component {
   hideWidget = () => {
     const { widget, layersTreeState, setLayerState } = this.props;
@@ -27,9 +16,8 @@ export class WidgetLayout extends React.Component {
   }
 
   render () {
-    const { children, widget: { component } } = this.props;
+    const { children, title } = this.props;
     const { hideWidget } = this;
-    const title = getTitle(component);
 
     return (
       <div className="widget">

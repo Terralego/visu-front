@@ -5,7 +5,7 @@ export default connectView(({ layersTreeState, setLayerState }) => {
   const widgets = Array
     .from(layersTreeState)
     .reduce((prev, [
-      { filters: { layer, form } = {} },
+      { filters: { layer, form } = {}, label },
       { widgets: layerWidgets = [], filters = {} },
     ]) => [
       ...prev,
@@ -15,6 +15,7 @@ export default connectView(({ layersTreeState, setLayerState }) => {
           filters,
           form,
           layer,
+          layerLabel: label,
         }))
       ),
     ], []);

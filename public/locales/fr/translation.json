@@ -30,6 +30,14 @@
       "nolabel": "-",
       "label": "De {{lower}} à {{upper}}"
     },
+    "widget":{
+      "component": {
+        "synthesis": {
+          "name": "Synthèse",
+          "title": "Synthèse : {{layer}}"
+        }
+      }
+    },
     "forms": {
       "controls": {
         "noValues": "Aucune valeur disponible"
