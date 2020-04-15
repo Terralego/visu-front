@@ -6,6 +6,16 @@ import { COMPONENT_SYNTHESIS } from './WidgetsTypes';
 import WidgetLayout from './WidgetLayout';
 import './styles.scss';
 
+
+const getTitle = (translate, component, layerLabel) => {
+  switch (component) {
+    case COMPONENT_SYNTHESIS:
+      return translate('terralego.widget.component.synthesis.title', { layer: layerLabel });
+    default:
+      return translate(`terralego.widget.${component}.name`);
+  }
+};
+
 const getComponent = component => {
   switch (component) {
     case COMPONENT_SYNTHESIS:
@@ -30,7 +40,7 @@ export class Widgets extends React.Component {
   }
 
   render () {
-    const { visible, ...props } = this.props;
+    const { visible, translate, ...props } = this.props;
     const { widgets } = this.state;
 
     return (
@@ -41,13 +51,15 @@ export class Widgets extends React.Component {
         })}
       >
         <div className="widgets-panel__container">
-          {(widgets).map(({ widget, filters, layer, form }, index) => {
+          {(widgets).map(({ widget, filters, layer, form, layerLabel }, index) => {
             const { component } = widget;
             const Component = getComponent(component);
+            const title = getTitle(translate, component, layerLabel);
             return Component && (
               <WidgetLayout
                 key={`${component}${index}`} // eslint-disable-line react/no-array-index-key
                 widget={widget}
+                title={title}
                 {...props}
               >
                 <Component {...widget} filters={filters} layer={layer} form={form} />
