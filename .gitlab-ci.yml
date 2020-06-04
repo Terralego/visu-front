@@ -2,6 +2,7 @@ image: node:12.13 # Should match .nvmrc content
 
 stages:
   #- prepare
+  - e2e-tests
   - build
   - deploy
 
@@ -28,6 +29,100 @@ before_script:
 #  stage: prepare
 #  script:
 #    - npm run lint
+
+# End-to-end tests using Cypress
+
+cypress:
+  stage: e2e-tests
+  tags: [visu-cicd]
+  image: docker/compose:latest
+  services:
+    - docker:dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_DRIVER: overlay2
+    VISUBACK_COMMIT_ID: "master"
+    VISUBACK_IMAGE_NAME: "registry.makina-corpus.net/terralego/visu-back"
+    REGISTRY_URL: "registry.makina-corpus.net"
+    REGISTRY_USER: ""
+    REGISTRY_PASSWD: ""
+
+  before_script:
+    # This is required for bind-mounting $PWD inside visu-front container (running as user node)
+    - chown -R 1000:1000 .
+    - apk add git
+    - git clone https://github.com/Terralego/visu-back.git
+    - git -C visu-back reset --hard ${VISUBACK_COMMIT_ID}
+    - echo "${REGISTRY_PASSWD}" |docker login -u ${REGISTRY_USER} --password-stdin ${REGISTRY_URL}
+
+  script:
+    # Configure node app through env.json and settings.json file
+    - sed "s#<BACKEND_URL>#http://nginx/api#"
+        <public/env.dist.json |tee public/env.json
+    - sed 's/"<STYLE_PATH>"//'
+        <public/settings.dist.json |tee public/settings.json
+    # Configure django app through .env, docker.env and local.py files
+    - sed "s#^FRONT_URL=.*#FRONT_URL=visu-front-${CI_PIPELINE_ID}:3000#"
+        <visu-back/docker.env.dist |tee visu-back/docker.env
+    - sed "s#^DJANGO_IMAGE=.*#DJANGO_IMAGE=${VISUBACK_IMAGE_NAME}#;
+           s#^DJANGO_IMAGE_VERSION=.*#DJANGO_IMAGE_VERSION=${VISUBACK_COMMIT_ID}#"
+        <visu-back/.env.dist |tee visu-back/.env
+    - sed "s#^ALLOWED_HOSTS =.*#ALLOWED_HOSTS = ['nginx']#;
+           s#^CORS_ORIGIN_WHITELIST =.*#CORS_ORIGIN_WHITELIST = ('visu-front-${CI_PIPELINE_ID}:3000')#" 
+        <visu-back/src/project/settings/local.py.dist |tee visu-back/src/project/settings/local.py
+    # Run visu-back stack
+    # Note: we explicitly run a docker-compose pull first to fetch visu-back
+    # image so that docker-compose doesn't try to build it (because of the
+    # `build:` instruction set inside the main docker-compose.yml file)
+    - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env
+        -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
+        pull
+    - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env 
+        -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml 
+        up --detach --no-build
+    - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env 
+        -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml 
+        exec -T django sh -c "dockerize -wait http://setup-postgres -timeout 30s /code/venv/bin/python manage.py populatedata"
+    # Run visu-front app
+    - docker run 
+        --name visu-front-${CI_PIPELINE_ID} 
+        --network visu-back-${CI_PIPELINE_ID}_default 
+        --user node --workdir /home/node/ 
+        --expose 3000 
+        --volume $PWD/:/home/node/ 
+        --detach 
+        node:12.13 sh -c "npm ci && npm start"
+    # Run Cypress
+    - docker run 
+        --name cypress-${CI_PIPELINE_ID} 
+        --network visu-back-${CI_PIPELINE_ID}_default 
+        --user node --workdir /home/node/ 
+        --env CYPRESS_BASE_URL=http://visu-front-${CI_PIPELINE_ID}:3000/ 
+        --volume $PWD/package.json:/home/node/package.json 
+        --volume $PWD/package-lock.json:/home/node/package-lock.json 
+        --volume $PWD/cypress/:/home/node/cypress/ 
+        --volume $PWD/cypress.json:/home/node/cypress.json 
+        cypress/browsers sh -c "npm ci && npm run cypress:run -- --browser chrome"
+
+  after_script:
+    # Display logs in case of failure
+    - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env 
+        -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml 
+        logs
+    - docker logs visu-front-${CI_PIPELINE_ID}
+    # Cleanup: stop and purge everything
+    - docker rm -f visu-front-${CI_PIPELINE_ID}
+    - docker rm -f cypress-${CI_PIPELINE_ID}
+    - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env 
+        -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml 
+        down --rmi all --volumes --remove-orphans
+
+  artifacts:
+    paths:
+      - cypress/videos/
+      - cypress/screenshots/
+    expire_in: 3 days
+    when: always
 
 # Deploy story book
 
