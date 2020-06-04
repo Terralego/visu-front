@@ -1,7 +1,8 @@
 image: node:12.13 # Should match .nvmrc content
 
 stages:
-  - prepare
+  #- prepare
+  - build
   - deploy
 
 before_script:
@@ -11,22 +12,22 @@ before_script:
 
 # Tests stage
 
-Tests:
-  before_script:
-    - npm ci
-  tags: [visu-cicd]
-  stage: prepare
-  script:
-    - npm run coverage
-  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
-
-Lint:
-  before_script:
-    - npm ci
-  tags: [visu-cicd]
-  stage: prepare
-  script:
-    - npm run lint
+#Tests:
+#  before_script:
+#    - npm ci
+#  tags: [visu-cicd]
+#  stage: prepare
+#  script:
+#    - npm run coverage
+#  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+#
+#Lint:
+#  before_script:
+#    - npm ci
+#  tags: [visu-cicd]
+#  stage: prepare
+#  script:
+#    - npm run lint
 
 # Deploy story book
 
@@ -34,7 +35,7 @@ Build:
   before_script:
     - npm ci
   tags: [visu-cicd]
-  stage: prepare
+  stage: build
   script:
     - npm run build
   artifacts:
