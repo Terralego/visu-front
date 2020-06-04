@@ -16,7 +16,7 @@ before_script:
 #Tests:
 #  before_script:
 #    - npm ci
-#  tags: [visu-cicd]
+#  tags: [terralego-cicd]
 #  stage: prepare
 #  script:
 #    - npm run coverage
@@ -25,7 +25,7 @@ before_script:
 #Lint:
 #  before_script:
 #    - npm ci
-#  tags: [visu-cicd]
+#  tags: [terralego-cicd]
 #  stage: prepare
 #  script:
 #    - npm run lint
@@ -34,7 +34,7 @@ before_script:
 
 cypress:
   stage: e2e-tests
-  tags: [visu-cicd]
+  tags: [terralego-cicd]
   image: docker/compose:latest
   services:
     - docker:dind
@@ -129,7 +129,7 @@ cypress:
 Build:
   before_script:
     - npm ci
-  tags: [visu-cicd]
+  tags: [terralego-cicd]
   stage: build
   script:
     - npm run build
@@ -139,7 +139,7 @@ Build:
       - build/
 
 .deploy: &deploy # Deploy template
-  tags: [visu-cicd]
+  tags: [terralego-cicd]
   stage: deploy
   when: manual
   variables:
