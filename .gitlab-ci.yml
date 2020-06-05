@@ -93,6 +93,9 @@ cypress:
         --detach 
         node:12.13 sh -c "npm ci && npm start"
     # Run Cypress
+    # Note: the curl's here as a poor man's Docker wait-for-xxx.sh. We call
+    # cypress once visu-front has finished its startup. Cypress already does
+    # that but with too short timeout, which make it randomly fails.
     - docker run 
         --name cypress-${CI_PIPELINE_ID} 
         --network visu-back-${CI_PIPELINE_ID}_default 
@@ -102,7 +105,7 @@ cypress:
         --volume $PWD/package-lock.json:/home/node/package-lock.json 
         --volume $PWD/cypress/:/home/node/cypress/ 
         --volume $PWD/cypress.json:/home/node/cypress.json 
-        cypress/browsers sh -c "npm ci && npm run cypress:run -- --browser chrome"
+        cypress/browsers sh -c "npm ci && curl --silent --show-error --retry 20 --retry-delay 1 --retry-max-time 4 \$CYPRESS_BASE_URL >/dev/null && npm run cypress:run -- --browser chrome"
 
   after_script:
     # Display logs in case of failure
