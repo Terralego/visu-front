@@ -114,8 +114,8 @@ cypress:
     # Display logs in case of failure
     - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env 
         -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml 
-        logs || true
-    - docker logs visu-front-${CI_PIPELINE_ID} || true
+        logs &>visu-back.log || true
+    - docker logs visu-front-${CI_PIPELINE_ID} &>visu-front.log || true
     # Save images to local cache
     - mkdir -p "${DOCKER_IMAGE_CACHE}"
     - rm -rf "${DOCKER_IMAGE_CACHE}/*.tar"
@@ -134,6 +134,8 @@ cypress:
     paths:
       - cypress/videos/
       - cypress/screenshots/
+      - visu-back.log
+      - visu-front.log
     expire_in: 3 days
     when: always
 
