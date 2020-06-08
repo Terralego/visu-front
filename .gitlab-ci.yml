@@ -56,9 +56,7 @@ cypress:
     - git -C visu-back reset --hard ${VISUBACK_COMMIT_ID}
     - echo "${REGISTRY_PASSWD}" |docker login -u ${REGISTRY_USER} --password-stdin ${REGISTRY_URL}
     # Restore images from local cache
-    - test -d ${DOCKER_IMAGE_CACHE} && for img in ${DOCKER_IMAGE_CACHE}/*.tar; do
-          docker image load -i ${img};
-      done
+    - test -d "${DOCKER_IMAGE_CACHE}" && find "${DOCKER_IMAGE_CACHE}" -name "*.tar" -exec docker image load -i {} \;
 
   script:
     # Configure node app through env.json and settings.json file
@@ -118,18 +116,18 @@ cypress:
         -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml 
         logs
     - docker logs visu-front-${CI_PIPELINE_ID}
+    # Save images to local cache
+    - mkdir -p "${DOCKER_IMAGE_CACHE}"
+    - rm -rf "${DOCKER_IMAGE_CACHE}/*.tar"
+    - for img in $(docker image ls -q); do
+          docker image save -o "${DOCKER_IMAGE_CACHE}/${img}.tar" "${img}";
+      done
     # Cleanup: stop and purge everything
     - docker rm -f visu-front-${CI_PIPELINE_ID}
     - docker rm -f cypress-${CI_PIPELINE_ID}
     - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env 
         -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml 
         down --rmi all --volumes --remove-orphans
-    # Save images to local cache
-    - mkdir -p ${DOCKER_IMAGE_CACHE}
-    - rm -rf ${DOCKER_IMAGE_CACHE}/*.tar
-    - for img in $(docker image ls -q); do
-          docker image save -o ${DOCKER_IMAGE_CACHE}/${img}.tar;
-      done
 
   artifacts:
     paths:
