@@ -13,7 +13,10 @@ const Error404 = lazy(() => import('../../Error404'));
 const Visualizer = lazy(() => import('../../Visualizer'));
 
 
-const Content = ({ env: { VIEW_ROOT_PATH = 'view', DEFAULT_VIEWNAME = 'rechercher' }, settings: { title, version, credits, theme: { logoUrl } = {} } }) => {
+const Content = ({
+  env: { VIEW_ROOT_PATH = 'view', DEFAULT_VIEWNAME = 'rechercher' },
+  settings: { title, version, credits = 'credits', theme: { logoUrl } = {} },
+}) => {
   const exportCallback = React.useCallback((xlsx, sheet) => {
     xlsx.utils.sheet_add_aoa(sheet, [
       [],
