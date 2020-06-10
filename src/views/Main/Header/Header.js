@@ -56,7 +56,7 @@ export const Header = ({
   settings,
 }) => {
   const [navItems, setNavItems] = useState([]);
-  const containerRef = React.useRef(null);
+
 
   useEffect(() => {
     let isMounted = true;
@@ -75,34 +75,22 @@ export const Header = ({
     };
   }, [authenticated, settings]);
 
-  useEffect(() => {
-    const listener = ({ target }) => {
-      if (containerRef.current && containerRef.current.contains(target)) {
-        toggleHeader();
-        return;
-      }
-      toggleHeader(false);
-    };
-
-    document.body.addEventListener('click', listener);
-
-    return () => {
-      document.body.removeEventListener('click', listener);
-    };
-  }, [toggleHeader]);
-
   return (
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events
     <div
       className={classnames(
         'main__header',
         { 'main__header--mobile': isMobileSized },
         { 'main__header--mobile--open': isMobileSized && isHeaderOpen },
       )}
-      ref={containerRef}
+      onClick={() => toggleHeader()}
+      role="button"
+      tabIndex="-1"
     >
       <MainMenu navItems={navItems} isMobileSized={isMobileSized} authenticated={authenticated} />
       {isMobileSized && !isHeaderOpen
-        && <div ref={containerRef} className="main__header__target" />
+        // eslint-disable-next-line jsx-a11y/click-events-have-key-events
+        && <div className="main__header__target" role="button" tabIndex="-1" onClick={() => toggleHeader(false)} />
       }
     </div>
   );
