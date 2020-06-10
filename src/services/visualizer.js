@@ -23,7 +23,7 @@ export const fetchViewConfig = memoizee(async viewName => {
   }
 }, { promise: true });
 
-export const fetchAllViews = async () => {
+export const fetchAllViews = async (rootPath = '') => {
   try {
     const config = await Api.request('geolayer/scene/');
     const allViews = JSON.parse(JSON.stringify(config.results).replace(/"\/api(\/[^"]+)"/g, `"${Api.host}$1"`));
@@ -34,10 +34,8 @@ export const fetchAllViews = async () => {
     }) => ({
       id: `nav-${slug}`,
       label: name,
-      href: `/{{VIEW_ROOT_PATH}}/${slug}`,
-      // Todo: Remove logos[slug] when terra-admin is able to interact with this app
-      iconPath: customIcon || defaultIcon,
-      icon: 'icon',
+      href: rootPath ? `/${rootPath}/${slug}` : `/${slug}`,
+      icon: customIcon || defaultIcon,
     }));
   } catch (e) {
     // eslint-disable-next-line no-console
