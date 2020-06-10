@@ -1,48 +1,54 @@
 @import '../../variables.scss';
 
-.navBar .navBar__group .active .welcome {
-  img {
-    width: 2.4rem;
-    height: auto;
+.main__navbar {
+  justify-content: inherit !important;
+  
+  .navBar__header {
+    text-align: center;
+    margin: 0;
+
+    #welcome img {
+      width: 2.4rem;
+      height: auto;
+    };
   }
-}
 
-.logo {
-  max-width: 100%;
-}
+  .bp3-navbar-heading + .bp3-navbar-group {
+    margin-top: 0;
+  }
 
-#welcome  img {
-  width: 2.4rem;
-  height: auto;
-};
+  .bp3-navbar-group {
+    margin: auto 0;
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+  }
 
-.header-button {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  .header-button {
+    img,
+    svg {
+      width: 16px;
+      transition: .3s ease-in filter;
+    }
+  }
 
-  &__out { // For signout button
+  .log-out .header-button {
     background: radial-gradient(#5a91b3 0, transparent 70%) !important;
-    img {
+    img,
+    svg {
       filter: invert(.5) sepia(1) saturate(5) hue-rotate(175deg);
     }
   }
 
-  img {
-    opacity: 1;
-    width: 1.5rem;
-    transition: .3s ease-in filter;
+  .active .header-button {
+    background: radial-gradient(#5a91b3 0, transparent 55%) !important;
+    img,
+    svg {
+      filter: invert(.5) sepia(1) saturate(5) hue-rotate(175deg);
+    }
   }
 }
 
-.active .header-button {
-  background: radial-gradient(#5a91b3 0, transparent 55%) !important;
-  img {
-    filter: invert(.5) sepia(1) saturate(5) hue-rotate(175deg);
-  }
-}
 
 .modal-signin {
   display: flex;
@@ -121,20 +127,22 @@
 .navBar__group {
   padding-top: .2rem;
 
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  li {
+    margin: 0 0 1rem;
+  }
+
   button {
     outline: none;
   }
 
-  .bp3-popover-wrapper {
-    margin: 0 0 1rem 0;
-    background-color: transparent;
-  }
 }
 
 @media(min-width: $breakpoints-tablet) and (max-width: $breakpoints-desktop) and (orientation: landscape) {
-  .header-button .icon #welcome{
-    width: 2.4rem;
-  }
   .modal-partner {
     >.bp3-card {
       max-width: 50%;
