@@ -28,7 +28,7 @@ export const Header = ({
   const generateMenu = useCallback(views => ({
     navHeader: {
       id: 'welcome',
-      label: 'Accueil',
+      label: t('menu.home'),
       href: logoUrl,
       icon: logo,
     },
@@ -39,7 +39,7 @@ export const Header = ({
         id: 'nav-partenaires',
         component: () => (
           <PartnerButton
-            label="Informations"
+            label={t('menu.informations')}
             icon="info-sign"
           />
         ),
@@ -48,7 +48,7 @@ export const Header = ({
         component: () => (
           <LoginButton
             icon={authenticated ? 'log-out' : 'log-in'}
-            label={authenticated ? 'Déconnexion' : 'Connexion'}
+            label={authenticated ? t('menu.logout') : t('menu.login')}
             className={authenticated ? 'log-out' : 'log-in'}
             translate={t}
           />

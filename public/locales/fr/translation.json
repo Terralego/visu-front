@@ -17,6 +17,12 @@
       }
     }
   },
+  "menu": {
+    "home": "Accueil",
+    "informations": "Informations",
+    "login": "Connexion",
+    "logout": "Déconnexion"
+  },
   "terralego": {
     "map": {
       "home_control": {
