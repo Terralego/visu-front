@@ -13,12 +13,15 @@ exports[`should render correctly 1`] = `
 exports[`should render correctly with header close in mobile view 1`] = `
 <div
   className="main__header main__header--mobile"
+  onClick={[Function]}
+  role="button"
+  tabIndex="-1"
 >
   <div
-    className="bp3-navbar navBar bp3-dark"
-  />
-  <div
     className="main__header__target"
+    onClick={[Function]}
+    role="button"
+    tabIndex="-1"
   />
 </div>
 `;
