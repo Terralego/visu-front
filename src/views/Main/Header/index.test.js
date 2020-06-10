@@ -1,5 +1,5 @@
 import React from 'react';
-import renderer from 'react-test-renderer';
+import { act, create } from 'react-test-renderer';
 
 import { Header } from './Header';
 
@@ -12,51 +12,69 @@ jest.mock('react-router-dom', () => (
   }
 ));
 
+jest.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: text => text,
+  }),
+}));
+
+jest.mock('@terralego/core/components/MainMenu', () => props => <div {...props} />);
+
 jest.mock('./PartnerButton', () => () => 'PartnerButton');
 
 jest.mock('../../../services/visualizer', () => (
   {
-    fetchAllViews: jest.fn(() => [
-      {
-        name: 'foo',
-        slug: 'foo',
-        custom_icon: 'logo',
-      }, {
-        name: 'bar',
-        slug: 'bar',
-      },
-    ]),
+    fetchAllViews: jest.fn(() => [{
+      id: 'foo',
+      label: 'Foo',
+      href: '/foo',
+      icon: 'path/to/iconFoo',
+    }, {
+      id: 'bar',
+      label: 'Bar',
+      href: '/bar',
+      icon: 'path/to/iconBar',
+    }]),
   }
 ));
 
 it('should render correctly', () => {
-  const tree = renderer.create(
-    <Header />,
-  ).toJSON();
-  expect(tree).toMatchSnapshot();
+  let tree;
+  act(() => {
+    tree = create(
+      <Header />,
+    );
+  });
+  expect(tree.toJSON()).toMatchSnapshot();
 });
 
 it('should render correctly with header open in mobile view', () => {
-  const tree = renderer.create(
-    <Header
-      isMobileSized
-      isHeaderOpen
-    />,
-  ).toJSON();
-  expect(tree).toMatchSnapshot();
+  let tree;
+  act(() => {
+    tree = create(
+      <Header
+        isMobileSized
+        isHeaderOpen
+      />,
+    );
+  });
+  expect(tree.toJSON()).toMatchSnapshot();
 });
 
 it('should render correctly with header close in mobile view', () => {
-  const tree = renderer.create(
-    <Header
-      location={{ pathname: '/' }}
-      env={{ VIEW_ROOT_PATH: '' }}
-      settings={{}}
-      isMobileSized
-      isHeaderOpen={false}
-    />,
-  ).toJSON();
-  expect(tree).toMatchSnapshot();
+  let tree;
+  act(() => {
+    tree = create(
+      <Header
+        location={{ pathname: '/' }}
+        env={{ VIEW_ROOT_PATH: '' }}
+        settings={{}}
+        isMobileSized
+        isHeaderOpen={false}
+      />,
+    );
+  });
+  expect(tree.toJSON()).toMatchSnapshot();
 });
 
 /* it('should open navbar in mobile', () => {

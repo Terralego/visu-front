@@ -36,42 +36,43 @@ $tableHeight: 33vh;
       margin-left: -7.65rem;
       transition: transform .2s ease-in;
 
+      .header-link {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        align-content: space-between;
+        font-size: .7rem;
+        text-align: right;
+        outline: none;
+        text-decoration: none;
+        width: 9.5rem;
+        height: 3rem;
+
+        .header-button-label {
+          color: #f5f8fa;
+          display: table-cell;
+          padding-right: 1rem;
+          width: 10rem;
+          margin: 0;
+        }
+      }
+
+      .header-button {
+        width: 2.25rem;
+        height: 2.25rem;
+        margin: auto;
+        align-items: center;
+      }
+
+      .active .header-button-label {
+        font-weight: 600;
+        font-size: .75rem;
+      }
+
+      .navBar__header,
       .navBar__group {
         display: flex;
         padding: .5rem;
-
-        a, > span {
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          align-content: space-between;
-          font-size: .7rem;
-          text-align: right;
-          outline: none;
-          text-decoration: none;
-          width: 9.5rem;
-          height: 3rem;
-
-          .header-button-label {
-            color: #f5f8fa;
-            display: table-cell;
-            padding-right: 1rem;
-            width: 10rem;
-            margin: 0;
-          }
-        }
-
-        .header-button {
-          width: 2.25rem;
-          height: 2.25rem;
-          margin: auto;
-          align-items: center;
-        }
-
-        .active .header-button-label {
-          font-weight: 600;
-          font-size: .75rem;
-        }
       }
 
       &--open {

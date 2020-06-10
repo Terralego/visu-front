@@ -1,61 +1,61 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import classnames from 'classnames';
 import withDeviceSize from '@terralego/core/hoc/withDeviceSize';
 import { connectAuthProvider } from '@terralego/core/modules/Auth';
+import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 
+import MainMenu from '@terralego/core/components/MainMenu';
+import LoginButton from '@terralego/core/components/LoginButton';
 import { fetchAllViews } from '../../../services/visualizer';
 
-import MainMenu from './MainMenu';
-
-import LoginButton from './LoginButton';
 import PartnerButton from './PartnerButton';
-
-import infoSign from '../../../images/info-sign.svg';
-import logIn from '../../../images/log-in.svg';
-import logOut from '../../../images/log-out.svg';
-
 
 import './styles.scss';
 
-const generateMenus = (authenticated, views, { theme: { logo = '', logoUrl = '/' } = {}, extraMenuItems = [] } = {}) => {
-  const navItems = [
-    [
-      {
-        id: 'welcome',
-        label: 'Accueil',
-        href: logoUrl,
-        iconPath: logo,
-      },
-    ],
-    extraMenuItems,
-    [{
-      id: 'nav-partenaires',
-      label: 'Informations',
-      iconPath: infoSign,
-      component: PartnerButton,
-    }, {
-      id: 'nav-connexion',
-      label: authenticated ? 'Déconnexion' : 'Connexion',
-      iconPath:  authenticated ? logOut : logIn,
-      component: LoginButton,
-      classNameIcon: authenticated ? 'icon_out' : 'icon',
-    }],
-  ];
-  navItems[0] = navItems[0].concat(views);
-  return navItems;
-};
-
-/* eslint-disable react/no-array-index-key */
 export const Header = ({
-  isHeaderOpen = false,
-  toggleHeader = () => { },
+  env: { VIEW_ROOT_PATH },
+  isHeaderOpen,
   isMobileSized,
+  toggleHeader,
   authenticated,
-  settings,
+  settings: { theme: { logo = '', logoUrl = '/' } = {}, extraMenuItems = [] },
 }) => {
-  const [navItems, setNavItems] = useState([]);
+  const [menu, setMenu] = useState([]);
+  const { t } = useTranslation();
+
+  const generateMenu = useCallback(views => ({
+    navHeader: {
+      id: 'welcome',
+      label: 'Accueil',
+      href: logoUrl,
+      icon: logo,
+    },
+    navItems: [
+      views,
+      extraMenuItems,
+      [{
+        id: 'nav-partenaires',
+        component: () => (
+          <PartnerButton
+            label="Informations"
+            icon="info-sign"
+          />
+        ),
+      }, {
+        id: 'nav-connexion',
+        component: () => (
+          <LoginButton
+            icon={authenticated ? 'log-out' : 'log-in'}
+            label={authenticated ? 'Déconnexion' : 'Connexion'}
+            className={authenticated ? 'log-out' : 'log-in'}
+            translate={t}
+          />
+        ),
+      }],
+    ],
+  }), [authenticated, extraMenuItems, logo, logoUrl, t]);
 
 
   useEffect(() => {
@@ -63,9 +63,9 @@ export const Header = ({
 
     const loadViewList = async () => {
       /** Load the view list and add it to base menu only if component mounted */
+      const views = await fetchAllViews(VIEW_ROOT_PATH);
       if (!isMounted) return;
-      const views = await fetchAllViews();
-      setNavItems(generateMenus(authenticated, views, settings));
+      setMenu(generateMenu(views));
     };
 
     loadViewList();
@@ -73,7 +73,7 @@ export const Header = ({
     return () => {
       isMounted = false;
     };
-  }, [authenticated, settings]);
+  }, [VIEW_ROOT_PATH, generateMenu]);
 
   return (
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events
@@ -87,7 +87,7 @@ export const Header = ({
       role="button"
       tabIndex="-1"
     >
-      <MainMenu navItems={navItems} isMobileSized={isMobileSized} authenticated={authenticated} />
+      <MainMenu {...menu} className="main__navbar" />
       {isMobileSized && !isHeaderOpen
         // eslint-disable-next-line jsx-a11y/click-events-have-key-events
         && <div className="main__header__target" role="button" tabIndex="-1" onClick={() => toggleHeader(false)} />
@@ -97,10 +97,20 @@ export const Header = ({
 };
 
 Header.propTypes = {
+  env: PropTypes.shape({
+    VIEW_ROOT_PATH: PropTypes.string,
+  }),
   isHeaderOpen: PropTypes.bool,
   isMobileSized: PropTypes.bool,
   toggleHeader: PropTypes.func,
   authenticated: PropTypes.bool,
+  settings: PropTypes.shape({
+    theme: PropTypes.shape({
+      logo: PropTypes.string,
+      logoUrl: PropTypes.string,
+    }),
+    extraMenuItems: PropTypes.array,
+  }),
 };
 
 Header.defaultProps = {
@@ -108,6 +118,16 @@ Header.defaultProps = {
   isMobileSized: false,
   toggleHeader: () => {},
   authenticated: false,
+  settings: {
+    theme: {
+      logo: '',
+      logoUrl: '/',
+    },
+    extraMenuItems: [],
+  },
+  env: {
+    VIEW_ROOT_PATH: '',
+  },
 };
 
-export default withDeviceSize()(connectAuthProvider('authenticated', 'logoutAction')(Header));
+export default withDeviceSize()(connectAuthProvider('authenticated')(Header));

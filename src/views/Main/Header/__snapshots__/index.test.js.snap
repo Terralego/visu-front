@@ -3,9 +3,12 @@
 exports[`should render correctly 1`] = `
 <div
   className="main__header"
+  onClick={[Function]}
+  role="button"
+  tabIndex="-1"
 >
   <div
-    className="bp3-navbar navBar bp3-dark"
+    className="main__navbar"
   />
 </div>
 `;
@@ -18,6 +21,9 @@ exports[`should render correctly with header close in mobile view 1`] = `
   tabIndex="-1"
 >
   <div
+    className="main__navbar"
+  />
+  <div
     className="main__header__target"
     onClick={[Function]}
     role="button"
@@ -29,9 +35,12 @@ exports[`should render correctly with header close in mobile view 1`] = `
 exports[`should render correctly with header open in mobile view 1`] = `
 <div
   className="main__header main__header--mobile main__header--mobile--open"
+  onClick={[Function]}
+  role="button"
+  tabIndex="-1"
 >
   <div
-    className="bp3-navbar navBar bp3-dark"
+    className="main__navbar"
   />
 </div>
 `;
