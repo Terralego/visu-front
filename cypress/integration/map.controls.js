@@ -2,7 +2,7 @@
 
 describe('Map controls', () => {
   beforeEach(() => {
-    cy.visit('/visualiser/rechercher#7.28/44.064/5.974');
+    cy.visit('/view/test_map_scene#map=7.85/44.064/5.974');
 
     cy.get('.mapboxgl-ctrl-zoom-in', { timeout: 15000 });
 
@@ -18,7 +18,7 @@ describe('Map controls', () => {
       expect(
         mapElt
           .getStyle()
-          .layers.find(({ id }) => id === '467f57e3ed81809ad58f090426a3893a'),
+          .layers.find(({ id }) => id === '5b0371ebc5d25ba6f7ce7068a8a959a7'),
       ).to.exist;
     });
   });
@@ -30,6 +30,7 @@ describe('Map controls', () => {
       .as('prevZoom');
 
     // Click on button
+    cy.wait(1000); // in some browser, it can be longer to load.
     cy.get('.mapboxgl-ctrl-zoom-in').click();
     cy.wait(1000);
 
