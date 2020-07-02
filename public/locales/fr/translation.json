@@ -36,7 +36,7 @@
       "nolabel": "-",
       "label": "De {{lower}} à {{upper}}"
     },
-    "widget":{
+    "widget": {
       "component": {
         "synthesis": {
           "name": "Synthèse",
