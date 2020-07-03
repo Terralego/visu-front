@@ -85,7 +85,7 @@ cypress:
         up --detach --no-build
     - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env 
         -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml 
-        exec -T django sh -c "dockerize -wait http://setup-postgres -timeout 30s /code/venv/bin/python manage.py populatedata"
+        exec -T django sh -c "dockerize -wait http://setup-postgres -timeout 120s /code/venv/bin/python manage.py populatedata"
     # Run visu-front app
     - docker run 
         --name visu-front-${CI_PIPELINE_ID} 
