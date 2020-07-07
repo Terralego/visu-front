@@ -82,7 +82,9 @@ cypress:
            s#^DJANGO_IMAGE_VERSION=.*#DJANGO_IMAGE_VERSION=${VISUBACK_COMMIT_ID}#"
         <visu-back/.env.dist |tee visu-back/.env
     - sed "s#^ALLOWED_HOSTS =.*#ALLOWED_HOSTS = ['nginx']#;
-           s#^CORS_ORIGIN_WHITELIST =.*#CORS_ORIGIN_WHITELIST = ('visu-front-${CI_PIPELINE_ID}:3000')#" 
+           s#^CORS_ORIGIN_WHITELIST =.*#CORS_ORIGIN_WHITELIST = ('visu-front-${CI_PIPELINE_ID}:3000')#;
+           s#<your_mapbox_token>#${MAPBOX_ACCESS_TOKEN}#;
+           s#<your_background_style>#mapbox://styles/makinacorpus/cjpdvdqdj0b7a2slajmjqy3py#" 
         <visu-back/src/project/settings/local.py.dist |tee visu-back/src/project/settings/local.py
     # Run visu-back stack
     # Note: we explicitly run a docker-compose pull first to fetch visu-back
