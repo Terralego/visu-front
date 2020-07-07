@@ -65,6 +65,9 @@ cypress:
     - sed 's/"<STYLE_PATH>"//'
         <public/settings.dist.json |tee public/settings.json
     # Configure django app through .env, docker.env and local.py files
+    - sed "s#^FRONT_URL=.*#FRONT_URL=visu-front-${CI_PIPELINE_ID}:3000#;
+           \$a POSTGRES_STARTUP_TIMEOUT=300s"
+        <visu-back/docker.env.dist |tee visu-back/docker.env
     - |
         cat <<EOT >>visu-back/docker.env
         # Storage config
@@ -75,9 +78,6 @@ cypress:
         PYFILES_REGION_NAME=${PYFILES_REGION_NAME}
         PYFILES_BUCKET_NAME=${PYFILES_BUCKET_NAME}
         EOT
-    - sed "s#^FRONT_URL=.*#FRONT_URL=visu-front-${CI_PIPELINE_ID}:3000#;
-           \$a POSTGRES_STARTUP_TIMEOUT=300s"
-        <visu-back/docker.env.dist |tee visu-back/docker.env
     - sed "s#^DJANGO_IMAGE=.*#DJANGO_IMAGE=${VISUBACK_IMAGE_NAME}#;
            s#^DJANGO_IMAGE_VERSION=.*#DJANGO_IMAGE_VERSION=${VISUBACK_COMMIT_ID}#"
         <visu-back/.env.dist |tee visu-back/.env
