@@ -121,7 +121,7 @@ cypress:
     - mkdir -p "${DOCKER_IMAGE_CACHE}"
     - rm -rf "${DOCKER_IMAGE_CACHE}/*.tar"
     - for img in $(docker image ls -q); do
-          echo "${img}"
+          echo "${img}";
           docker image save -o "${DOCKER_IMAGE_CACHE}/${img}.tar" "${img}";
       done
     # Cleanup: stop and purge everything
