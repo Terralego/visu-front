@@ -65,7 +65,8 @@ cypress:
     - sed 's/"<STYLE_PATH>"//'
         <public/settings.dist.json |tee public/settings.json
     # Configure django app through .env, docker.env and local.py files
-    - sed "s#^FRONT_URL=.*#FRONT_URL=visu-front-${CI_PIPELINE_ID}:3000#"
+    - sed "s#^FRONT_URL=.*#FRONT_URL=visu-front-${CI_PIPELINE_ID}:3000#;
+           \$a POSTGRES_STARTUP_TIMEOUT=300s"
         <visu-back/docker.env.dist |tee visu-back/docker.env
     - sed "s#^DJANGO_IMAGE=.*#DJANGO_IMAGE=${VISUBACK_IMAGE_NAME}#;
            s#^DJANGO_IMAGE_VERSION=.*#DJANGO_IMAGE_VERSION=${VISUBACK_COMMIT_ID}#"
@@ -120,7 +121,7 @@ cypress:
     - mkdir -p "${DOCKER_IMAGE_CACHE}"
     - rm -rf "${DOCKER_IMAGE_CACHE}/*.tar"
     - for img in $(docker image ls -q); do
-          echo "${img}"
+          echo "${img}";
           docker image save -o "${DOCKER_IMAGE_CACHE}/${img}.tar" "${img}";
       done
     # Cleanup: stop and purge everything
