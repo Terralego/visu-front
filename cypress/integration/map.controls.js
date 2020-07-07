@@ -1,5 +1,12 @@
 /* globals cy */
 
+/**
+ * Layer id of the first layer from test data.
+ * The id is created from md5 of the db id and the layer source slug
+ * https://github.com/Terralego/terra-layer/blob/master/terra_layer/models.py#L190
+ */
+const testLayerId = '5b0371ebc5d25ba6f7ce7068a8a959a7';
+
 describe('Map controls', () => {
   beforeEach(() => {
     cy.visit('/view/test_map_scene#map=7.85/44.064/5.974');
@@ -18,7 +25,7 @@ describe('Map controls', () => {
       expect(
         mapElt
           .getStyle()
-          .layers.find(({ id }) => id === '5b0371ebc5d25ba6f7ce7068a8a959a7'),
+          .layers.find(({ id }) => id === testLayerId),
       ).to.exist;
     });
   });
