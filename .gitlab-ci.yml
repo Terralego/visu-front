@@ -65,8 +65,8 @@ cypress:
     - sed 's/"<STYLE_PATH>"//'
         <public/settings.dist.json |tee public/settings.json
     # Configure django app through .env, docker.env and local.py files
-    - >
-      cat <<EOT >>visu-back/docker.env
+    - |
+        cat <<EOT >>visu-back/docker.env
         # Storage config
         PYFILES_BACKEND=pyfiles.storages.s3storage.S3Storage
         PYFILES_ACCESS_KEY=${PYFILES_ACCESS_KEY}
