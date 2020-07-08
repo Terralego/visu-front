@@ -83,39 +83,39 @@ cypress:
         <visu-back/.env.dist |tee visu-back/.env
     - |
         cat <<EOT |tee visu-back/src/project/settings/local.py
-ALLOWED_HOSTS = ['nginx']
-CORS_ORIGIN_WHITELIST = ('visu-front-${CI_PIPELINE_ID}:3000')
-SECRET_KEY = 'super-hot-secret-123456789'
-TERRA_DEFAULT_MAP_SETTINGS = {
-    'accessToken': '${MAPBOX_ACCESS_TOKEN}',
-    "backgroundStyle": [
-      {
-        "label": "Clair",
-        "url": "mapbox://styles/makinacorpus/cjpdvdqdj0b7a2slajmjqy3py"
-      },
-      {
-        "label": "Photographies aériennes IGN",
-        "url": "/background-ign-satellite.json"
-      },
-      {
-        "label": "Plan IGN",
-        "url": "/background-ign-plan.json"
-      }
-    ],
-    'center': [5.386195159396806, 43.30072210972415],
-    'zoom': 9,
-    'maxZoom': 24,
-    'minZoom': 7,
-    'fitBounds': {
-        'coordinates': [[4.2301364, 42.9822468], [7.7184776, 45.1266002]]
-    }
-}
-TERRA_APPLIANCE_SETTINGS = {
-    'VIEW_ROOT_PATH': 'map',
-    'DEFAULT_VIEWNAME': 'test',
-    'enabled_modules': ['User', 'DataSource', 'DataLayer'],
-}
-EOT
+        ALLOWED_HOSTS = ['nginx']
+        CORS_ORIGIN_WHITELIST = ('visu-front-${CI_PIPELINE_ID}:3000')
+        SECRET_KEY = 'super-hot-secret-123456789'
+        TERRA_DEFAULT_MAP_SETTINGS = {
+            'accessToken': '${MAPBOX_ACCESS_TOKEN}',
+            "backgroundStyle": [
+              {
+                "label": "Clair",
+                "url": "mapbox://styles/makinacorpus/cjpdvdqdj0b7a2slajmjqy3py"
+              },
+              {
+                "label": "Photographies aériennes IGN",
+                "url": "/background-ign-satellite.json"
+              },
+              {
+                "label": "Plan IGN",
+                "url": "/background-ign-plan.json"
+              }
+            ],
+            'center': [5.386195159396806, 43.30072210972415],
+            'zoom': 9,
+            'maxZoom': 24,
+            'minZoom': 7,
+            'fitBounds': {
+                'coordinates': [[4.2301364, 42.9822468], [7.7184776, 45.1266002]]
+            }
+        }
+        TERRA_APPLIANCE_SETTINGS = {
+            'VIEW_ROOT_PATH': 'map',
+            'DEFAULT_VIEWNAME': 'test',
+            'enabled_modules': ['User', 'DataSource', 'DataLayer'],
+        }
+        EOT
 
     # Run visu-back stack
     # Note: we explicitly run a docker-compose pull first to fetch visu-back
