@@ -69,7 +69,7 @@ cypress:
            \$a POSTGRES_STARTUP_TIMEOUT=300s"
         <visu-back/docker.env.dist >visu-back/docker.env
     - |
-        cat <<EOT |tee -a visu-back/docker.env
+        cat <<EOT >>visu-back/docker.env
         # Storage config
         PYFILES_BACKEND=pyfiles.storages.s3storage.S3Storage
         PYFILES_ACCESS_KEY=${PYFILES_ACCESS_KEY}
@@ -78,6 +78,7 @@ cypress:
         PYFILES_REGION_NAME=${PYFILES_REGION_NAME}
         PYFILES_BUCKET_NAME=${PYFILES_BUCKET_NAME}
         EOT
+    - cat visu-back/docker.env
     - sed "s#^DJANGO_IMAGE=.*#DJANGO_IMAGE=${VISUBACK_IMAGE_NAME}#;
            s#^DJANGO_IMAGE_VERSION=.*#DJANGO_IMAGE_VERSION=${VISUBACK_COMMIT_ID}#"
         <visu-back/.env.dist |tee visu-back/.env
