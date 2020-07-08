@@ -67,9 +67,9 @@ cypress:
     # Configure django app through .env, docker.env and local.py files
     - sed "s#^FRONT_URL=.*#FRONT_URL=visu-front-${CI_PIPELINE_ID}:3000#;
            \$a POSTGRES_STARTUP_TIMEOUT=300s"
-        <visu-back/docker.env.dist |tee visu-back/docker.env
+        <visu-back/docker.env.dist >visu-back/docker.env
     - |
-        cat <<EOT >>visu-back/docker.env
+        cat <<EOT |tee -a visu-back/docker.env
         # Storage config
         PYFILES_BACKEND=pyfiles.storages.s3storage.S3Storage
         PYFILES_ACCESS_KEY=${PYFILES_ACCESS_KEY}
