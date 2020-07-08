@@ -84,9 +84,11 @@ cypress:
         <visu-back/.env.dist |tee visu-back/.env
     - |
         cat <<EOT |tee visu-back/src/project/settings/local.py
+        import os
         ALLOWED_HOSTS = ['nginx']
         CORS_ORIGIN_WHITELIST = ('visu-front-${CI_PIPELINE_ID}:3000')
         SECRET_KEY = 'super-hot-secret-123456789'
+        TERRA_TILES_HOSTNAMES = []
         TERRA_DEFAULT_MAP_SETTINGS = {
             'accessToken': '${MAPBOX_ACCESS_TOKEN}',
             "backgroundStyle": [
