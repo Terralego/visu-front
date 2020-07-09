@@ -88,7 +88,7 @@ cypress:
         ALLOWED_HOSTS = ['nginx']
         CORS_ORIGIN_WHITELIST = ('visu-front-${CI_PIPELINE_ID}:3000')
         SECRET_KEY = 'super-hot-secret-123456789'
-        TERRA_TILES_HOSTNAMES = []
+        TERRA_TILES_HOSTNAMES = ['nginx']
         TERRA_DEFAULT_MAP_SETTINGS = {
             'accessToken': '${MAPBOX_ACCESS_TOKEN}',
             "backgroundStyle": [
