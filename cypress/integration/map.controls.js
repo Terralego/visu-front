@@ -18,15 +18,14 @@ describe('Map controls', () => {
       .as('mapinstance');
 
     cy.get('@mapinstance', { timeout: 15000 }).should(mapElt => {
-      // Wait for tiles to be loaded
-      expect(mapElt.areTilesLoaded()).to.be.true;
       // Wait for layer to exists in mapbox layers
-      console.log(mapElt.getStyle().layers);
       expect(
         mapElt
           .getStyle()
           .layers.find(({ id }) => id === testLayerId),
       ).to.exist;
+      // Wait for tiles to be loaded
+      expect(mapElt.areTilesLoaded()).to.be.true;
     });
   });
 
@@ -37,9 +36,7 @@ describe('Map controls', () => {
       .as('prevZoom');
 
     // Click on button
-    cy.wait(1000); // in some browser, it can be longer to load.
     cy.get('.mapboxgl-ctrl-zoom-in').click();
-    cy.wait(1000);
 
     // Compare to new zoom
     cy.get('@mapinstance').then(mapInstance => {
@@ -55,10 +52,9 @@ describe('Map controls', () => {
 
     // Click on zoom out
     cy.get('.mapboxgl-ctrl-zoom-out').click();
-    cy.wait(1000);
 
     cy.get('@mapinstance').then(mapboxInstance => {
-      cy.get('@prevZoom').then(prevZoom => {
+      cy.get('@prevZoom').should(prevZoom => {
         expect(mapboxInstance.getZoom() < prevZoom).to.be.true;
       });
     });
