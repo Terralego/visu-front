@@ -195,6 +195,7 @@ Build:
   tags: [visu-cicd-docker]
   stage: build
   script:
+    - chmod -R 644 .
     - npm ci
     - npm run build
   artifacts:
