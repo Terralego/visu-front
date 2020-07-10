@@ -127,43 +127,43 @@ cypress:
     - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env
         -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
         pull
-    - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env 
-        -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml 
+    - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env
+        -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
         up --detach --no-build
-    - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env 
-        -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml 
+    - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env
+        -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
         exec -T django sh -c "dockerize -wait http://setup-postgres -timeout 120s /code/venv/bin/python manage.py migrate"
-    - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env 
-        -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml 
+    - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env
+        -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
         exec -T django sh -c "dockerize -wait http://setup-postgres -timeout 120s /code/venv/bin/python manage.py populatedata --test-data"
     # Run visu-front app
-    - docker run 
-        --name visu-front-${CI_PIPELINE_ID} 
-        --network visu-back-${CI_PIPELINE_ID}_default 
-        --user node --workdir /home/node/ 
-        --expose 3000 
-        --volume $PWD/:/home/node/ 
-        --detach 
+    - docker run
+        --name visu-front-${CI_PIPELINE_ID}
+        --network visu-back-${CI_PIPELINE_ID}_default
+        --user node --workdir /home/node/
+        --expose 3000
+        --volume $PWD/:/home/node/
+        --detach
         node:12.13 sh -c "npm ci && npm start"
     # Run Cypress
     # Note: the curl's here as a poor man's Docker wait-for-xxx.sh. We call
     # cypress once visu-front has finished its startup. Cypress already does
     # that but with too short timeout, which make it randomly fails.
-    - docker run 
-        --name cypress-${CI_PIPELINE_ID} 
-        --network visu-back-${CI_PIPELINE_ID}_default 
-        --user node --workdir /home/node/ 
-        --env CYPRESS_BASE_URL=http://visu-front-${CI_PIPELINE_ID}:3000/ 
-        --volume $PWD/package.json:/home/node/package.json 
-        --volume $PWD/package-lock.json:/home/node/package-lock.json 
-        --volume $PWD/cypress/:/home/node/cypress/ 
-        --volume $PWD/cypress.json:/home/node/cypress.json 
+    - docker run
+        --name cypress-${CI_PIPELINE_ID}
+        --network visu-back-${CI_PIPELINE_ID}_default
+        --user node --workdir /home/node/
+        --env CYPRESS_BASE_URL=http://visu-front-${CI_PIPELINE_ID}:3000/
+        --volume $PWD/package.json:/home/node/package.json
+        --volume $PWD/package-lock.json:/home/node/package-lock.json
+        --volume $PWD/cypress/:/home/node/cypress/
+        --volume $PWD/cypress.json:/home/node/cypress.json
         cypress/browsers sh -c "npm ci && curl --silent --show-error --retry 20 --retry-delay 1 --retry-max-time 4 \$CYPRESS_BASE_URL >/dev/null && npm run cypress:run -- --browser chrome"
 
   after_script:
     # Display logs in case of failure
-    - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env 
-        -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml 
+    - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env
+        -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
         logs &>visu-back.log || true
     - docker logs visu-front-${CI_PIPELINE_ID} &>visu-front.log || true
     # Save images to local cache
@@ -176,8 +176,8 @@ cypress:
     # Cleanup: stop and purge everything
     - docker rm -f visu-front-${CI_PIPELINE_ID} || true
     - docker rm -f cypress-${CI_PIPELINE_ID} || true
-    - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env 
-        -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml 
+    - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env
+        -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
         down --rmi all --volumes --remove-orphans || true
 
   artifacts:
@@ -192,11 +192,10 @@ cypress:
 # Deploy story book
 
 Build:
-  before_script:
-    - npm ci
   tags: [visu-cicd-docker]
   stage: build
   script:
+    - npm ci
     - npm run build
   artifacts:
     expire_in: 3 days
