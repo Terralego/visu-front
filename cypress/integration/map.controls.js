@@ -36,7 +36,7 @@ describe('Map controls', () => {
       .as('prevZoom');
 
     // Click on button
-    cy.get('.mapboxgl-ctrl-zoom-in').should('be.visible').click();
+    cy.get('.mapboxgl-ctrl-zoom-in').should('be.visible').click({ force: true });
 
     // Compare to new zoom
     cy.get('@mapinstance').then(mapInstance => {
