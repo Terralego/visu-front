@@ -55,6 +55,10 @@ cypress:
     - git clone https://github.com/Terralego/visu-back.git
     - git -C visu-back reset --hard ${VISUBACK_COMMIT_ID}
     - echo "${REGISTRY_PASSWD}" |docker login -u ${REGISTRY_USER} --password-stdin ${REGISTRY_URL}
+    - docker container prune
+    - docker volume ls
+    - docker volume prune
+    - docker network prune
     # Restore images from local cache
     - test -d "${DOCKER_IMAGE_CACHE}" && find "${DOCKER_IMAGE_CACHE}" -name "*.tar" -exec docker image load -i {} \; || true
 
@@ -159,7 +163,7 @@ cypress:
       --user node --workdir /home/node/
       --expose 3000
       --volume $PWD/:/home/node/
-      node:12.13 sh -c "npm ci && npm start"
+      node:12.13 sh -c "sudo chown -R 1000:1000 "/home/node/.npm" && npm ci && npm start"
     # --detach
     # Run Cypress
     # Note: wait-on wait for front server to start. We call
