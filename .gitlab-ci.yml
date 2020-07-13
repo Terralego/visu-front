@@ -159,12 +159,13 @@ cypress:
       --user node --workdir /home/node/
       --expose 3000
       --volume $PWD/:/home/node/
-      --detach
       node:12.13 sh -c "npm ci && npm start"
+    # --detach
     # Run Cypress
     # Note: wait-on wait for front server to start. We call
     # cypress once visu-front has finished its startup. Cypress already does
     # that but with too short timeout, which make it randomly fails.
+    - docker ps -a
     - docker run
       --name cypress-${CI_PIPELINE_ID}
       --network visu-back-${CI_PIPELINE_ID}_default
