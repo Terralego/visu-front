@@ -171,11 +171,12 @@ cypress:
       --network visu-back-${CI_PIPELINE_ID}_default
       --user node --workdir /home/node/
       --env CYPRESS_BASE_URL=http://visu-front-${CI_PIPELINE_ID}:3000/
+      --env WAIT_URL=http-get://visu-front-${CI_PIPELINE_ID}:3000/
       --volume $PWD/package.json:/home/node/package.json
       --volume $PWD/package-lock.json:/home/node/package-lock.json
       --volume $PWD/cypress/:/home/node/cypress/
       --volume $PWD/cypress.json:/home/node/cypress.json
-      cypress/browsers sh -c "npm ci && echo "\$CYPRESS_BASE_URL" && npx wait-on "\$CYPRESS_BASE_URL" && npm run cypress:run -- --browser chrome"
+      cypress/browsers sh -c "npm ci && echo "\$WAIT_URL" && npx wait-on "\$WAIT_URL" -v -t 60000 && npm run cypress:run -- --browser chrome"
 
   after_script:
     # Display logs in case of failure
