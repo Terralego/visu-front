@@ -64,19 +64,19 @@ cypress:
       <public/env.dist.json |tee public/env.json
     - sed 's/"<STYLE_PATH>"//'
       <public/settings.dist.json |tee public/settings.json
-    - sed 's/"<FAVICON>"/"/images/favicon.png"/'
+    - sed 's#<FAVICON>#\/images\/favicon.png#'
       <public/settings.json
-    - sed 's/"<TITLE>"/"Visu-front"/'
+    - sed 's#<TITLE>#Visu-front#'
       <public/settings.json
-    - sed 's/"<VERSION>"/"test"/'
+    - sed 's#<VERSION>#test#'
       <public/settings.json
-    - sed 's/"<CREDITS>"/"no credits"/'
+    - sed 's#<CREDITS>#no credits#'
       <public/setting.json
-    - sed 's/"<LOGO_PATH>"/"/images/terravisu-logo.png"/'
+    - sed 's#<LOGO_PATH>#\/images\/terravisu-logo.png#'
       <public/setting.json
-    - sed 's/"<BRAND_LOGO>"/"/images/terravisu-logo.png"/'
+    - sed 's#<BRAND_LOGO>#\/images\/terravisu-logo.png#'
       <public/setting.json
-    - sed 's/"<LOGO_URL>"/"/"/'
+    - sed 's#<LOGO_URL>#\/#'
       <public/setting.json
 
     # Configure django app through .env, docker.env and local.py files
