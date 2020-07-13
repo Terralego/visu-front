@@ -151,6 +151,9 @@ cypress:
       -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
       up --detach --no-build
     - docker ps -a
+    - sleep 20
+    - docker ps -a
+    - docker-compose -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml logs
     - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env
       -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
       exec -T django sh -c "dockerize -wait http://setup-postgres -timeout 240s /code/venv/bin/python manage.py migrate"
@@ -158,8 +161,12 @@ cypress:
       -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
       exec -T django sh -c "dockerize -wait http://setup-postgres -timeout 120s /code/venv/bin/python manage.py populatedata --test-data"
     # Run visu-front app
+    - ls -al $PWD
+    - ls -al $PWD/..
     - chown -R 1000:1000 $PWD/
     - ls $PWD
+    - ls -al $PWD
+    - ls -al $PWD/..
     - echo $PWD
     - docker run
       --name visu-front-${CI_PIPELINE_ID}
@@ -167,7 +174,7 @@ cypress:
       --user node --workdir /home/node/
       --expose 3000
       --volume $PWD/:/home/node/
-      node:12.13 sh -c "npm ci && npm start"
+      node:12.13 sh -c "ls -al /home/node && ls -al /home/node/.npm && npm ci && npm start"
     # --detach
     # Run Cypress
     # Note: wait-on wait for front server to start. We call
