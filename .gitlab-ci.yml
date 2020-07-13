@@ -65,19 +65,19 @@ cypress:
     - sed 's/"<STYLE_PATH>"//'
       <public/settings.dist.json |tee public/settings.json
     - sed 's#<FAVICON>#/images/favicon.png#'
-      <public/settings.json |tee public/setting.json
+      <public/settings.json |tee public/settings.json
     - sed 's#<TITLE>#Visu-front#'
-      <public/settings.json |tee public/setting.json
+      <public/settings.json |tee public/settings.json
     - sed 's#<VERSION>#test#'
-      <public/settings.json |tee public/setting.json
+      <public/settings.json |tee public/settings.json
     - sed 's#<CREDITS>#no credits#'
-      <public/setting.json |tee public/setting.json
+      <public/settings.json |tee public/settings.json
     - sed 's#<LOGO_PATH>#/images/terravisu-logo.png#'
-      <public/setting.json |tee public/setting.json
+      <public/settings.json |tee public/settings.json
     - sed 's#<BRAND_LOGO>#/images/terravisu-logo.png#'
-      <public/setting.json |tee public/setting.json
+      <public/settings.json |tee public/settings.json
     - sed 's#<LOGO_URL>#/#'
-      <public/setting.json |tee public/setting.json
+      <public/settings.json |tee public/settings.json
 
     # Configure django app through .env, docker.env and local.py files
     - sed "s#^FRONT_URL=.*#FRONT_URL=visu-front-${CI_PIPELINE_ID}:3000#;
