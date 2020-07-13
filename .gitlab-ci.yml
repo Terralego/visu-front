@@ -145,9 +145,10 @@ cypress:
     - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env
       -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
       up --detach --no-build
+    - docker ps -a
     - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env
       -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
-      exec -T django sh -c "docker ps -a && dockerize -wait http://setup-postgres -timeout 240s /code/venv/bin/python manage.py migrate"
+      exec -T django sh -c "dockerize -wait http://setup-postgres -timeout 240s /code/venv/bin/python manage.py migrate"
     - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env
       -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
       exec -T django sh -c "dockerize -wait http://setup-postgres -timeout 120s /code/venv/bin/python manage.py populatedata --test-data"
