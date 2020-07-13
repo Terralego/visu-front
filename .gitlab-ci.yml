@@ -157,7 +157,9 @@ cypress:
       -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
       exec -T django sh -c "dockerize -wait http://setup-postgres -timeout 120s /code/venv/bin/python manage.py populatedata --test-data"
     # Run visu-front app
-    - chown -R 1000:1000 .npm
+    - chown -R 1000:1000 $PWD/.npm
+    - ls $PWD
+    - echo $PWD
     - docker run
       --name visu-front-${CI_PIPELINE_ID}
       --network visu-back-${CI_PIPELINE_ID}_default
