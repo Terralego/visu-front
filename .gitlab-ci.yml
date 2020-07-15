@@ -174,10 +174,25 @@ cypress:
       --volume $PWD/:/home/node/
       node:12.13 sh -c "npm ci && npm run build"
     - ls -al $PWD/build/
+    - |
+      cat <<EOT >nginx.conf
+      server {
+        listen 80;
+        listen  [::]:80;
+        server_name  visu-front-${CI_PIPELINE_ID};
+        location / {
+          root   /usr/share/nginx/html;
+          try_files $uri $uri/ /index.html;
+          index  index.html index.htm;
+        }
+      }
+      EOT
+    - cat nginx.conf
     - docker run
       --name visu-front-${CI_PIPELINE_ID}
       --network visu-back-${CI_PIPELINE_ID}_default
       -p 80:80
+      --volume $PWD/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       --volume $PWD/build:/usr/share/nginx/html:ro
       --detach
       nginx
