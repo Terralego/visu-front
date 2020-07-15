@@ -182,18 +182,29 @@ cypress:
     #   --volume $PWD/cypress/:/home/node/cypress/
     #   --volume $PWD/cypress.json:/home/node/cypress.json
     #   cypress/browsers sh -c "npm ci && npx wait-on "\$WAIT_URL" -t 60000 && npm run cypress:run -- --browser chrome"
-
+    # - docker run
+    #   --name visu-wait-${CI_PIPELINE_ID}
+    #   --rm
+    #   --network visu-back-${CI_PIPELINE_ID}_default
+    #   node:12.13 sh -c "npx wait-on "\$WAIT_URL" -v -t 60000"
+    - |
+      cat <<EOT >start.sh
+      #!/bin/sh
+      npx wait-on http-get://visu-front-${CI_PIPELINE_ID}:3000/ -v -t 60000
+      cypress run --browser chrome
+      EOT
+    - chmod a+x start.sh
     - docker run
       --name cypress-${CI_PIPELINE_ID}
       --network visu-back-${CI_PIPELINE_ID}_default
       --user node --workdir /home/node/
       --env CYPRESS_BASE_URL=http://visu-front-${CI_PIPELINE_ID}:3000/
       --env WAIT_URL=http-get://visu-front-${CI_PIPELINE_ID}:3000/
-      --volume $PWD/package.json:/home/node/package.json
-      --volume $PWD/package-lock.json:/home/node/package-lock.json
       --volume $PWD/cypress/:/home/node/cypress/
       --volume $PWD/cypress.json:/home/node/cypress.json
-      cypress/included:4.9.0 sh -c "CYPRESS_INSTALL_BINARY=0 npm install cypress && npx wait-on "\$WAIT_URL" -t 60000 && cypress run --browser chrome"
+      --volume $PWD/start.sh:/home/node/start.sh
+      --entrypoint=./start.sh
+      cypress/included:4.9.0
 
   after_script:
     # Display logs in case of failure
