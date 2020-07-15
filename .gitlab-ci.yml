@@ -190,6 +190,7 @@ cypress:
 
   after_script:
     # Display logs in case of failure
+    - chown -R root:root .
     - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env
       -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
       logs &>visu-back.log || true
@@ -223,6 +224,8 @@ Build:
   tags: [visu-cicd-docker]
   stage: build
   script:
+    - ls -al /root/ || true
+    - ls -al /root/.npm || true
     - npm ci
     - npm run build
   artifacts:
