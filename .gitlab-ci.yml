@@ -164,6 +164,7 @@ cypress:
     - ls -al $PWD
     - ls -al $PWD/..
     - chown -R 1000:1000 $PWD/
+    - chmod a+x $PWD/
     - ls $PWD
     - ls -al $PWD
     - ls -al $PWD/..
