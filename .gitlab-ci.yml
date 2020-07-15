@@ -158,15 +158,28 @@ cypress:
       -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
       exec -T django sh -c "dockerize -wait http://setup-postgres -timeout 120s /code/venv/bin/python manage.py populatedata --test-data"
     # Run visu-front app
+    # - docker run
+    #   --name visu-front-${CI_PIPELINE_ID}
+    #   --network visu-back-${CI_PIPELINE_ID}_default
+    #   --user node --workdir /home/node/
+    #   --env CYPRESS_INSTALL_BINARY=0
+    #   --expose 3000
+    #   --volume $PWD/:/home/node/
+    #   --detach
+    #   node:12.13 sh -c "npm ci && npm start"
+    #### test
+    - docker run
+      --user node --workdir /home/node/
+      --env CYPRESS_INSTALL_BINARY=0
+      --volume $PWD/:/home/node/
+      node:12.13 sh -c "npm ci && npm run build"
     - docker run
       --name visu-front-${CI_PIPELINE_ID}
       --network visu-back-${CI_PIPELINE_ID}_default
-      --user node --workdir /home/node/
-      --env CYPRESS_INSTALL_BINARY=0
-      --expose 3000
-      --volume $PWD/:/home/node/
+      --expose 80
+      --volume $PWD/build:/usr/share/nginx/html:ro
       --detach
-      node:12.13 sh -c "npm ci && npm start"
+      nginx
     # Run Cypress
     # Note: wait-on wait for front server to start. We call
     # cypress once visu-front has finished its startup. Cypress already does
@@ -187,25 +200,24 @@ cypress:
     #   --rm
     #   --network visu-back-${CI_PIPELINE_ID}_default
     #   node:12.13 sh -c "npx wait-on "\$WAIT_URL" -v -t 60000"
-    - |
-      cat <<EOT >start.sh
-      #!/bin/sh
-      npx wait-on http-get://visu-front-${CI_PIPELINE_ID}:3000/ -v -t 60000
-      cypress run --browser chrome
-      EOT
-    - chmod a+x start.sh
+    # - |
+    #   cat <<EOT >start.sh
+    #   #!/bin/sh
+    #   npx wait-on http-get://visu-front-${CI_PIPELINE_ID}:3000/ -v -t 60000 && cypress run --browser chrome
+    #   EOT
+    # - cat start.sh
+    # - chmod a+x start.sh
     - docker run
       --name cypress-${CI_PIPELINE_ID}
       --network visu-back-${CI_PIPELINE_ID}_default
       --user node --workdir /home/node/
-      --env CYPRESS_BASE_URL=http://visu-front-${CI_PIPELINE_ID}:3000/
-      --env WAIT_URL=http-get://visu-front-${CI_PIPELINE_ID}:3000/
+      --env CYPRESS_BASE_URL=http://visu-front-${CI_PIPELINE_ID}/
       --volume $PWD/cypress/:/home/node/cypress/
       --volume $PWD/cypress.json:/home/node/cypress.json
-      --volume $PWD/start.sh:/home/node/start.sh
-      --entrypoint=./start.sh
       cypress/included:4.9.0
 
+    # --volume $PWD/start.sh:/home/node/start.sh
+    # --entrypoint=./start.sh
   after_script:
     # Display logs in case of failure
     - chown -R root:root .
