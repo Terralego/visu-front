@@ -50,9 +50,7 @@ cypress:
 
   before_script:
     # This is required for bind-mounting $PWD inside visu-front container (running as user node)
-    - ls -al $PWD/
     - chown -R 1000:1000 .
-    - ls -al $PWD/
     - apk add git
     - git clone https://github.com/Terralego/visu-back.git
     - git -C visu-back reset --hard ${VISUBACK_COMMIT_ID}
@@ -153,8 +151,6 @@ cypress:
     - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env
       -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
       up --detach --no-build
-    - docker-compose -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml logs --no-color --tail=200 db
-    - docker logs visu-back-${CI_PIPELINE_ID}_db_1
     - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env
       -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
       exec -T django sh -c "dockerize -wait http://setup-postgres -timeout 240s /code/venv/bin/python manage.py migrate"
@@ -175,18 +171,40 @@ cypress:
     # Note: wait-on wait for front server to start. We call
     # cypress once visu-front has finished its startup. Cypress already does
     # that but with too short timeout, which make it randomly fails.
-    - docker ps -a
+    # - docker run
+    #   --name cypress-${CI_PIPELINE_ID}
+    #   --network visu-back-${CI_PIPELINE_ID}_default
+    #   --user node --workdir /home/node/
+    #   --env CYPRESS_BASE_URL=http://visu-front-${CI_PIPELINE_ID}:3000/
+    #   --env WAIT_URL=http-get://visu-front-${CI_PIPELINE_ID}:3000/
+    #   --volume $PWD/package.json:/home/node/package.json
+    #   --volume $PWD/package-lock.json:/home/node/package-lock.json
+    #   --volume $PWD/cypress/:/home/node/cypress/
+    #   --volume $PWD/cypress.json:/home/node/cypress.json
+    #   cypress/browsers sh -c "npm ci && npx wait-on "\$WAIT_URL" -t 60000 && npm run cypress:run -- --browser chrome"
+    # - docker run
+    #   --name visu-wait-${CI_PIPELINE_ID}
+    #   --rm
+    #   --network visu-back-${CI_PIPELINE_ID}_default
+    #   node:12.13 sh -c "npx wait-on "\$WAIT_URL" -v -t 60000"
+    - |
+      cat <<EOT >start.sh
+      #!/bin/sh
+      npx wait-on http-get://visu-front-${CI_PIPELINE_ID}:3000/ -v -t 60000
+      cypress run --browser chrome
+      EOT
+    - chmod a+x start.sh
     - docker run
       --name cypress-${CI_PIPELINE_ID}
       --network visu-back-${CI_PIPELINE_ID}_default
       --user node --workdir /home/node/
       --env CYPRESS_BASE_URL=http://visu-front-${CI_PIPELINE_ID}:3000/
       --env WAIT_URL=http-get://visu-front-${CI_PIPELINE_ID}:3000/
-      --volume $PWD/package.json:/home/node/package.json
-      --volume $PWD/package-lock.json:/home/node/package-lock.json
       --volume $PWD/cypress/:/home/node/cypress/
       --volume $PWD/cypress.json:/home/node/cypress.json
-      cypress/browsers sh -c "npm ci && echo "\$WAIT_URL" && npx wait-on "\$WAIT_URL" -v -t 60000 && npm run cypress:run -- --browser chrome"
+      --volume $PWD/start.sh:/home/node/start.sh
+      --entrypoint=./start.sh
+      cypress/included:4.9.0
 
   after_script:
     # Display logs in case of failure
