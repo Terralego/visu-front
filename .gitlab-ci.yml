@@ -194,8 +194,8 @@ cypress:
       -p 80:80
       --volume $PWD/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       --volume $PWD/build:/usr/share/nginx/html:ro
-      --detach
       nginx
+    #--detach
     # Run Cypress
     # Note: wait-on wait for front server to start. We call
     # cypress once visu-front has finished its startup. Cypress already does
