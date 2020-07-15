@@ -50,16 +50,13 @@ cypress:
 
   before_script:
     # This is required for bind-mounting $PWD inside visu-front container (running as user node)
+    - ls -al $PWD/
     - chown -R 1000:1000 .
+    - ls -al $PWD/
     - apk add git
     - git clone https://github.com/Terralego/visu-back.git
     - git -C visu-back reset --hard ${VISUBACK_COMMIT_ID}
     - echo "${REGISTRY_PASSWD}" |docker login -u ${REGISTRY_USER} --password-stdin ${REGISTRY_URL}
-    - docker ps -a
-    - docker container prune -f
-    - docker volume ls
-    - docker volume prune -f
-    - docker network prune -f
     # Restore images from local cache
     - test -d "${DOCKER_IMAGE_CACHE}" && find "${DOCKER_IMAGE_CACHE}" -name "*.tar" -exec docker image load -i {} \; || true
 
@@ -98,6 +95,7 @@ cypress:
       PYFILES_REGION_NAME=${PYFILES_REGION_NAME}
       PYFILES_BUCKET_NAME=${PYFILES_BUCKET_NAME}
       NO_MIGRATE=1
+      LANG=C.UTF-8
       EOT
     - cat visu-back/docker.env
     - sed "s#^DJANGO_IMAGE=.*#DJANGO_IMAGE=${VISUBACK_IMAGE_NAME}#;
@@ -140,7 +138,7 @@ cypress:
           'enabled_modules': ['User', 'DataSource', 'DataLayer'],
       }
       EOT
-    # Emptied pg_tune.sh file to avoid unecessaries optims
+    # Emptied pg_tune.sh file to avoid broken optims on CI
     - |
       cat <<EOT >visu-back/prod/pg-tune.sh
       #!/bin/sh
@@ -155,9 +153,6 @@ cypress:
     - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env
       -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
       up --detach --no-build
-    - docker ps -a
-    - sleep 20
-    - docker ps -a
     - docker-compose -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml logs --no-color --tail=200 db
     - docker logs visu-back-${CI_PIPELINE_ID}_db_1
     - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env
@@ -168,17 +163,14 @@ cypress:
       exec -T django sh -c "dockerize -wait http://setup-postgres -timeout 120s /code/venv/bin/python manage.py populatedata --test-data"
     # Run visu-front app
     - ls -al $PWD
-    - ls -al $PWD/..
-    - chown -R 1000:1000 $PWD/
     - chmod a+x $PWD/
-    - ls $PWD
     - ls -al $PWD
-    - ls -al $PWD/..
     - echo $PWD
     - docker run
       --name visu-front-${CI_PIPELINE_ID}
       --network visu-back-${CI_PIPELINE_ID}_default
       --user node --workdir /home/node/
+      --end CYPRESS_INSTALL_BINARY=0
       --expose 3000
       --volume $PWD/:/home/node/
       node:12.13 sh -c "ls -al /home/node && npm ci && npm start"
@@ -235,7 +227,6 @@ Build:
   tags: [visu-cicd-docker]
   stage: build
   script:
-    - chmod -R 666 .
     - npm ci
     - npm run build
   artifacts:
