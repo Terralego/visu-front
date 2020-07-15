@@ -39,6 +39,7 @@ cypress:
   services:
     - docker:dind
   variables:
+    GIT_STRATEGY: clone
     DOCKER_HOST: "tcp://docker:2375/"
     DOCKER_DRIVER: overlay2
     VISUBACK_COMMIT_ID: "master"
@@ -170,7 +171,7 @@ cypress:
       --name visu-front-${CI_PIPELINE_ID}
       --network visu-back-${CI_PIPELINE_ID}_default
       --user node --workdir /home/node/
-      --end CYPRESS_INSTALL_BINARY=0
+      --env CYPRESS_INSTALL_BINARY=0
       --expose 3000
       --volume $PWD/:/home/node/
       node:12.13 sh -c "ls -al /home/node && npm ci && npm start"
