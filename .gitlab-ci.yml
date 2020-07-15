@@ -193,7 +193,7 @@ cypress:
       --volume $PWD/package-lock.json:/home/node/package-lock.json
       --volume $PWD/cypress/:/home/node/cypress/
       --volume $PWD/cypress.json:/home/node/cypress.json
-      cypress/included:latest sh -c "npx wait-on "\$WAIT_URL" -t 60000 && cypress run --browser chrome"
+      cypress/included sh -c "npx wait-on "\$WAIT_URL" -t 60000 && cypress run --browser chrome"
 
   after_script:
     # Display logs in case of failure
