@@ -173,10 +173,11 @@ cypress:
       --env CYPRESS_INSTALL_BINARY=0
       --volume $PWD/:/home/node/
       node:12.13 sh -c "npm ci && npm run build"
+    - ls -al $PWD/build/
     - docker run
       --name visu-front-${CI_PIPELINE_ID}
       --network visu-back-${CI_PIPELINE_ID}_default
-      --expose 80
+      -p 80:80
       --volume $PWD/build:/usr/share/nginx/html:ro
       --detach
       nginx
@@ -207,6 +208,11 @@ cypress:
     #   EOT
     # - cat start.sh
     # - chmod a+x start.sh
+    - docker run
+      --user node --workdir /home/node/
+      --env WAIT_URL=http://visu-front-${CI_PIPELINE_ID}/
+      --volume $PWD/:/home/node/
+      node:12.13 sh -c "npx wait-on \$WAIT_URL -v -t 10000"
     - docker run
       --name cypress-${CI_PIPELINE_ID}
       --network visu-back-${CI_PIPELINE_ID}_default
