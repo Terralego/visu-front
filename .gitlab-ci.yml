@@ -153,7 +153,7 @@ cypress:
     - docker ps -a
     - sleep 20
     - docker ps -a
-    - docker-compose -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml logs --tail=200 db |& tee test.txt
+    - docker-compose -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml logs --no-color --tail=200 db
     - cat test.txt
     - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env
       -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
