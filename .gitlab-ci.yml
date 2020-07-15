@@ -97,7 +97,7 @@ cypress:
       PYFILES_ENDPOINT_URL=${PYFILES_ENDPOINT_URL}
       PYFILES_REGION_NAME=${PYFILES_REGION_NAME}
       PYFILES_BUCKET_NAME=${PYFILES_BUCKET_NAME}
-      NO_MIGRATION=1
+      NO_MIGRATE=1
       EOT
     - cat visu-back/docker.env
     - sed "s#^DJANGO_IMAGE=.*#DJANGO_IMAGE=${VISUBACK_IMAGE_NAME}#;
@@ -181,7 +181,7 @@ cypress:
       --user node --workdir /home/node/
       --expose 3000
       --volume $PWD/:/home/node/
-      node:12.13 sh -c "ls -al /home/node && ls -al /home/node/.npm && npm ci && npm start"
+      node:12.13 sh -c "ls -al /home/node && npm ci && npm start"
     # --detach
     # Run Cypress
     # Note: wait-on wait for front server to start. We call
