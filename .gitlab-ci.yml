@@ -97,6 +97,7 @@ cypress:
       PYFILES_ENDPOINT_URL=${PYFILES_ENDPOINT_URL}
       PYFILES_REGION_NAME=${PYFILES_REGION_NAME}
       PYFILES_BUCKET_NAME=${PYFILES_BUCKET_NAME}
+      NO_MIGRATION=1
       EOT
     - cat visu-back/docker.env
     - sed "s#^DJANGO_IMAGE=.*#DJANGO_IMAGE=${VISUBACK_IMAGE_NAME}#;
@@ -139,7 +140,11 @@ cypress:
           'enabled_modules': ['User', 'DataSource', 'DataLayer'],
       }
       EOT
-
+    # Emptied pg_tune.sh file to avoid unecessaries optims
+    - |
+      cat <<EOT >visu-back/prod/pg-tune.sh
+      #!/bin/sh
+      EOT
     # Run visu-back stack
     # Note: we explicitly run a docker-compose pull first to fetch visu-back
     # image so that docker-compose doesn't try to build it (because of the
