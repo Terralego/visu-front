@@ -55,11 +55,11 @@ cypress:
     - git clone https://github.com/Terralego/visu-back.git
     - git -C visu-back reset --hard ${VISUBACK_COMMIT_ID}
     - echo "${REGISTRY_PASSWD}" |docker login -u ${REGISTRY_USER} --password-stdin ${REGISTRY_URL}
-    - docker ps
-    - docker container prune
+    - docker ps -a
+    - docker container prune -f
     - docker volume ls
-    - docker volume prune
-    - docker network prune
+    - docker volume prune -f
+    - docker network prune -f
     # Restore images from local cache
     - test -d "${DOCKER_IMAGE_CACHE}" && find "${DOCKER_IMAGE_CACHE}" -name "*.tar" -exec docker image load -i {} \; || true
 
