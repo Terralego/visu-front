@@ -26,7 +26,7 @@ describe('Map controls', () => {
       ).to.exist;
       // Wait for tiles to be loaded
       expect(mapElt.areTilesLoaded()).to.be.true;
-    });
+    }, { timeout: 10000 });
   });
 
   it('Should zoom in and out', () => {
