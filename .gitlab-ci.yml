@@ -60,76 +60,173 @@ cypress:
 
   script:
     # Configure node app through env.json and settings.json file
-    - sed "s#<BACKEND_URL>#http://nginx/api#"
-        <public/env.dist.json |tee public/env.json
-    - sed 's/"<STYLE_PATH>"//'
-        <public/settings.dist.json |tee public/settings.json
+    - sed "s#<BACKEND_URL>#http://nginx/api#" <public/env.dist.json |tee public/env.json
+    - |
+      cat <<EOT >public/env.json
+      {
+        "API_HOST": "http://nginx/api",
+        "VIEW_ROOT_PATH": "visualiser",
+        "DEFAULT_VIEWNAME": "test_map_scene"
+      }
+      EOT
+    - cat public/env.json
+    - |
+      cat <<EOT >public/settings.json
+      {
+        "favicon": "/images/favicon.png",
+        "title": "TerraVisu",
+        "version": "0.1",
+        "credits": "no credits",
+        "theme": {
+          "logo": "/images/terravisu-logo.png",
+          "brandLogo": "/images/terravisu-logo.png",
+          "logoUrl": "/",
+          "styles": []
+        },
+        "extraMenuItems": []
+      }
+      EOT
+    - cat public/settings.json
     # Configure django app through .env, docker.env and local.py files
-    - sed "s#^FRONT_URL=.*#FRONT_URL=visu-front-${CI_PIPELINE_ID}:3000#;
-           \$a POSTGRES_STARTUP_TIMEOUT=300s"
-        <visu-back/docker.env.dist |tee visu-back/docker.env
+    - sed "s#^FRONT_URL=.*#FRONT_URL=visu-front-${CI_PIPELINE_ID}#;
+      \$a POSTGRES_STARTUP_TIMEOUT=300s"
+      <visu-back/docker.env.dist >visu-back/docker.env
+    - |
+      cat <<EOT >>visu-back/docker.env
+      # Storage config
+      PYFILES_BACKEND=pyfiles.storages.s3storage.S3Storage
+      PYFILES_ACCESS_KEY=${PYFILES_ACCESS_KEY}
+      PYFILES_SECRET_KEY=${PYFILES_SECRET_KEY}
+      PYFILES_ENDPOINT_URL=${PYFILES_ENDPOINT_URL}
+      PYFILES_REGION_NAME=${PYFILES_REGION_NAME}
+      PYFILES_BUCKET_NAME=${PYFILES_BUCKET_NAME}
+      NO_MIGRATE=1
+      LANG=C.UTF-8
+      EOT
+    - cat visu-back/docker.env
     - sed "s#^DJANGO_IMAGE=.*#DJANGO_IMAGE=${VISUBACK_IMAGE_NAME}#;
-           s#^DJANGO_IMAGE_VERSION=.*#DJANGO_IMAGE_VERSION=${VISUBACK_COMMIT_ID}#"
-        <visu-back/.env.dist |tee visu-back/.env
-    - sed "s#^ALLOWED_HOSTS =.*#ALLOWED_HOSTS = ['nginx']#;
-           s#^CORS_ORIGIN_WHITELIST =.*#CORS_ORIGIN_WHITELIST = ('visu-front-${CI_PIPELINE_ID}:3000')#" 
-        <visu-back/src/project/settings/local.py.dist |tee visu-back/src/project/settings/local.py
+      s#^DJANGO_IMAGE_VERSION=.*#DJANGO_IMAGE_VERSION=${VISUBACK_COMMIT_ID}#"
+      <visu-back/.env.dist |tee visu-back/.env
+    - |
+      cat <<EOT |tee visu-back/src/project/settings/local.py
+      import os
+      # ALLOWED_HOSTS = ['nginx']
+      ALLOWED_HOSTS = ['*']
+      CORS_ORIGIN_WHITELIST = ('visu-front-${CI_PIPELINE_ID}')
+      CORS_ORIGIN_ALLOW_ALL = True
+      SECRET_KEY = 'super-hot-secret-123456789'
+      TERRA_TILES_HOSTNAMES = ['http://nginx/',]
+      TERRA_DEFAULT_MAP_SETTINGS = {
+          'accessToken': '${MAPBOX_ACCESS_TOKEN}',
+          "backgroundStyle": [
+            {
+              "label": "Clair",
+              "url": "mapbox://styles/makinacorpus/cjpdvdqdj0b7a2slajmjqy3py"
+            },
+            {
+              "label": "Photographies aériennes IGN",
+              "url": "/background-ign-satellite.json"
+            },
+            {
+              "label": "Plan IGN",
+              "url": "/background-ign-plan.json"
+            }
+          ],
+          'center': [5.386195159396806, 43.30072210972415],
+          'zoom': 9,
+          'maxZoom': 24,
+          'minZoom': 7,
+          'fitBounds': {
+              'coordinates': [[4.2301364, 42.9822468], [7.7184776, 45.1266002]]
+          }
+      }
+      TERRA_APPLIANCE_SETTINGS = {
+          'VIEW_ROOT_PATH': 'map',
+          'DEFAULT_VIEWNAME': 'test',
+          'enabled_modules': ['User', 'DataSource', 'DataLayer'],
+      }
+      EOT
+    # Emptied pg_tune.sh file to avoid broken optims on CI
+    - |
+      cat <<EOT >visu-back/prod/pg-tune.sh
+      #!/bin/sh
+      EOT
+    # Nginx conf with SPA config
+    - |
+      cat <<EOT >nginx.conf
+      server {
+        listen 80;
+        listen  [::]:80;
+        server_name  visu-front-${CI_PIPELINE_ID};
+        location / {
+          root   /usr/share/nginx/html;
+          try_files \$uri \$uri/ /index.html;
+          index  index.html index.htm;
+        }
+      }
+      EOT
+    - cat nginx.conf
     # Run visu-back stack
     # Note: we explicitly run a docker-compose pull first to fetch visu-back
     # image so that docker-compose doesn't try to build it (because of the
     # `build:` instruction set inside the main docker-compose.yml file)
     - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env
-        -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
-        pull
-    - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env 
-        -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml 
-        up --detach --no-build
-    - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env 
-        -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml 
-        exec -T django sh -c "dockerize -wait http://setup-postgres -timeout 120s /code/venv/bin/python manage.py populatedata"
-    # Run visu-front app
-    - docker run 
-        --name visu-front-${CI_PIPELINE_ID} 
-        --network visu-back-${CI_PIPELINE_ID}_default 
-        --user node --workdir /home/node/ 
-        --expose 3000 
-        --volume $PWD/:/home/node/ 
-        --detach 
-        node:12.13 sh -c "npm ci && npm start"
-    # Run Cypress
-    # Note: the curl's here as a poor man's Docker wait-for-xxx.sh. We call
-    # cypress once visu-front has finished its startup. Cypress already does
-    # that but with too short timeout, which make it randomly fails.
-    - docker run 
-        --name cypress-${CI_PIPELINE_ID} 
-        --network visu-back-${CI_PIPELINE_ID}_default 
-        --user node --workdir /home/node/ 
-        --env CYPRESS_BASE_URL=http://visu-front-${CI_PIPELINE_ID}:3000/ 
-        --volume $PWD/package.json:/home/node/package.json 
-        --volume $PWD/package-lock.json:/home/node/package-lock.json 
-        --volume $PWD/cypress/:/home/node/cypress/ 
-        --volume $PWD/cypress.json:/home/node/cypress.json 
-        cypress/browsers sh -c "npm ci && curl --silent --show-error --retry 20 --retry-delay 1 --retry-max-time 4 \$CYPRESS_BASE_URL >/dev/null && npm run cypress:run -- --browser chrome"
-
+      -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
+      pull
+    - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env
+      -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
+      up --detach --no-build
+    - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env
+      -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
+      exec -T django sh -c "dockerize -wait http://setup-postgres -timeout 240s /code/venv/bin/python manage.py migrate"
+    - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env
+      -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
+      exec -T django sh -c "dockerize -wait http://setup-postgres -timeout 120s /code/venv/bin/python manage.py populatedata --test-data"
+    # Build frontend
+    - docker run
+      --user node --workdir /home/node/
+      --env CYPRESS_INSTALL_BINARY=0
+      --volume $PWD/:/home/node/
+      --rm
+      node:12.13 sh -c "npm ci && npm run build"
+    # Serve frontend with nginx
+    - docker run
+      --name visu-front-${CI_PIPELINE_ID}
+      --network visu-back-${CI_PIPELINE_ID}_default
+      --volume $PWD/nginx.conf:/etc/nginx/conf.d/default.conf
+      --volume $PWD/build:/usr/share/nginx/html:ro
+      --detach
+      nginx
+    # Start cypress
+    - docker run
+      --name cypress-${CI_PIPELINE_ID}
+      --network visu-back-${CI_PIPELINE_ID}_default
+      --user node --workdir /home/node/
+      --env CYPRESS_BASE_URL=http://visu-front-${CI_PIPELINE_ID}/
+      --volume $PWD/cypress/:/home/node/cypress/
+      --volume $PWD/cypress.json:/home/node/cypress.json
+      --rm
+      cypress/included:4.9.0
   after_script:
     # Display logs in case of failure
-    - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env 
-        -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml 
-        logs &>visu-back.log || true
+    - chown -R root:root .
+    - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env
+      -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
+      logs &>visu-back.log || true
     - docker logs visu-front-${CI_PIPELINE_ID} &>visu-front.log || true
     # Save images to local cache
     - mkdir -p "${DOCKER_IMAGE_CACHE}"
     - rm -rf "${DOCKER_IMAGE_CACHE}/*.tar"
     - for img in $(docker image ls -q); do
-          echo "${img}";
-          docker image save -o "${DOCKER_IMAGE_CACHE}/${img}.tar" "${img}";
+      echo "${img}";
+      docker image save -o "${DOCKER_IMAGE_CACHE}/${img}.tar" "${img}";
       done
     # Cleanup: stop and purge everything
     - docker rm -f visu-front-${CI_PIPELINE_ID} || true
     - docker rm -f cypress-${CI_PIPELINE_ID} || true
-    - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env 
-        -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml 
-        down --rmi all --volumes --remove-orphans || true
+    - docker-compose -p visu-back-${CI_PIPELINE_ID} --env-file visu-back/.env
+      -f visu-back/docker-compose.yml -f visu-back/docker-compose-prod.yml
+      down --rmi all --volumes --remove-orphans || true
 
   artifacts:
     paths:
@@ -143,11 +240,12 @@ cypress:
 # Deploy story book
 
 Build:
-  before_script:
-    - npm ci
   tags: [visu-cicd-docker]
   stage: build
   script:
+    - ls -al /root/ || true
+    - ls -al /root/.npm || true
+    - npm ci
     - npm run build
   artifacts:
     expire_in: 3 days
