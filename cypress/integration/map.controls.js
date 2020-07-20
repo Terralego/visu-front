@@ -1,8 +1,16 @@
 /* globals cy */
 
+/**
+ * Layer id of the first layer from test data.
+ * The id is created from md5 of the db id and the layer source slug
+ * https://github.com/Terralego/terra-layer/blob/master/terra_layer/models.py#L190
+ */
+const testLayerId = '5b0371ebc5d25ba6f7ce7068a8a959a7';
+
 describe('Map controls', () => {
   beforeEach(() => {
-    cy.visit('/visualiser/rechercher#7.28/44.064/5.974');
+    cy.visit('/view/test_map_scene#map=7.85/44.064/5.974');
+    cy.get('.splash-screen_container').should('be.visible');
 
     cy.get('.mapboxgl-ctrl-zoom-in', { timeout: 15000 });
 
@@ -14,13 +22,17 @@ describe('Map controls', () => {
       // Wait for tiles to be loaded
       expect(mapElt.areTilesLoaded()).to.be.true;
       // Wait for layer to exists in mapbox layers
-      console.log(mapElt.getStyle().layers);
       expect(
         mapElt
           .getStyle()
-          .layers.find(({ id }) => id === '467f57e3ed81809ad58f090426a3893a'),
+          .layers.find(({ id }) => id === testLayerId),
       ).to.exist;
-    });
+      // Wait for tiles to be loaded
+      expect(mapElt.areTilesLoaded()).to.be.true;
+    }, { timeout: 10000 });
+
+    // Wait for slapsh screen to close
+    cy.get('.splash-screen_container', { timeout: 10000 }).should('not.be.visible');
   });
 
   it('Should zoom in and out', () => {
@@ -30,12 +42,11 @@ describe('Map controls', () => {
       .as('prevZoom');
 
     // Click on button
-    cy.get('.mapboxgl-ctrl-zoom-in').click();
-    cy.wait(1000);
+    cy.get('.mapboxgl-ctrl-zoom-in').should('be.visible', { timeout: 5000 }).click();
 
     // Compare to new zoom
     cy.get('@mapinstance').then(mapInstance => {
-      cy.get('@prevZoom').then(prevZoom => {
+      cy.get('@prevZoom').should(prevZoom => {
         expect(mapInstance.getZoom() > prevZoom).to.be.true;
       });
     });
@@ -46,11 +57,10 @@ describe('Map controls', () => {
       .as('prevZoom');
 
     // Click on zoom out
-    cy.get('.mapboxgl-ctrl-zoom-out').click();
-    cy.wait(1000);
+    cy.get('.mapboxgl-ctrl-zoom-out').should('be.visible', { timeout: 5000 }).click();
 
     cy.get('@mapinstance').then(mapboxInstance => {
-      cy.get('@prevZoom').then(prevZoom => {
+      cy.get('@prevZoom').should(prevZoom => {
         expect(mapboxInstance.getZoom() < prevZoom).to.be.true;
       });
     });
