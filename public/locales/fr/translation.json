@@ -34,7 +34,10 @@
     },
     "legend": {
       "nolabel": "-",
-      "label": "De {{lower}} à {{upper}}"
+      "label": "De {{lower}} à {{upper}}",
+      "labelNoValue": "Valeur non disponible",
+      "labelFirst": "Supérieur à {{lower}}",
+      "labelLast": "Inférieur à {{upper}}"
     },
     "widget": {
       "component": {
