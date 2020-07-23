@@ -18,6 +18,7 @@ const DEFAULT_SETTINGS = {
     styles: [],
   },
   extraMenuItems: [],
+  allowUserRegistration: false,
 };
 
 

@@ -20,7 +20,11 @@ export const Header = ({
   isMobileSized,
   toggleHeader,
   authenticated,
-  settings: { theme: { logo = '', logoUrl = '/' } = {}, extraMenuItems = [] },
+  settings: {
+    theme: { logo = '', logoUrl = '/' } = {},
+    extraMenuItems = [],
+    allowUserRegistration,
+  },
 }) => {
   const [menu, setMenu] = useState([]);
   const { t } = useTranslation();
@@ -51,11 +55,12 @@ export const Header = ({
             label={authenticated ? t('menu.logout') : t('menu.login')}
             className={authenticated ? 'log-out' : 'log-in'}
             translate={t}
+            allowUserRegistration={allowUserRegistration}
           />
         ),
       }],
     ],
-  }), [authenticated, extraMenuItems, logo, logoUrl, t]);
+  }), [authenticated, extraMenuItems, logo, logoUrl, t, allowUserRegistration]);
 
 
   useEffect(() => {
