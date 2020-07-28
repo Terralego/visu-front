@@ -44,8 +44,6 @@ cypress:
     VISUBACK_COMMIT_ID: "master"
     VISUBACK_IMAGE_NAME: "registry.makina-corpus.net/terralego/visu-back"
     REGISTRY_URL: "registry.makina-corpus.net"
-    REGISTRY_USER: ""
-    REGISTRY_PASSWD: ""
     DOCKER_IMAGE_CACHE: "/cache/${CI_PROJECT_PATH_SLUG}/docker-images"
 
   before_script:
