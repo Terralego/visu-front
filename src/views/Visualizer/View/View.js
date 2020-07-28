@@ -142,8 +142,6 @@ export class Visualizer extends React.Component {
 
   debouncedSearchQuery = debounce(query => this.search(query), 500);
 
-  storyRef = React.createRef();
-
   componentDidMount () {
     const { view: { state: { query } = {} }, initialState: { tree } } = this.props;
     if (query) {
@@ -659,9 +657,6 @@ export class Visualizer extends React.Component {
     if (query || this.hasFilters) {
       filterFeatures(map, features, layersTreeState);
     }
-
-    const { current } = this.storyRef;
-    if (current) current.displayStep();
   }
 
   render () {
@@ -717,7 +712,6 @@ export class Visualizer extends React.Component {
       resetMap, hideDetails, toggleLayersTree,
       legends,
       setLegends,
-      storyRef,
       onClusterUpdate,
       activeAndSearchableLayers,
     } = this;
@@ -788,9 +782,9 @@ export class Visualizer extends React.Component {
                   ? (
                     <Story
                       map={map}
-                      ref={storyRef}
                       story={layersTreeToStory(layersTree)}
                       setLegends={setLegends}
+                      translate={t}
                     />
                   )
                   : (
