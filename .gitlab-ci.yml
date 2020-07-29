@@ -72,7 +72,7 @@ cypress:
     - |
       cat <<EOT >public/settings.json
       {
-        "favicon": "/images/favicon.png",
+        "favicon": "/favicon.png",
         "title": "TerraVisu",
         "version": "0.1",
         "credits": "no credits",
