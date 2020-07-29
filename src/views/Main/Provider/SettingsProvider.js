@@ -7,7 +7,7 @@ const { Provider } = contextSettings;
 const SETTINGS_PATH = '/settings.json';
 
 const DEFAULT_SETTINGS = {
-  favicon: '/favicon.png',
+  favicon: '/terravisu/favicon.png',
   title: 'TerraVisu',
   version: 'v0.1',
   credits: 'Source: Terravisu',
