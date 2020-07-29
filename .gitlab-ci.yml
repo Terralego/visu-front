@@ -242,8 +242,6 @@ Build:
   tags: [visu-cicd-docker]
   stage: build
   script:
-    - ls -al /root/ || true
-    - ls -al /root/.npm || true
     - npm ci
     - npm run build
   artifacts:
