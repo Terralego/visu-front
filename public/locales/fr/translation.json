@@ -115,7 +115,8 @@
         "toaster": "Cliquer sur la carte pour indiquer la localisation du signalement",
         "content": "signaler une information manquante ou incorrecte",
         "form": {
-          "cancel": "Annuler",
+          "title": "Signaler une erreur ou proposer une amélioration",
+          "cancel": "ANNULER",
           "comment": {
             "label": "Commentaire",
             "optional": "optionnel"
@@ -128,7 +129,7 @@
               "label": "Information manquante"
             },
             "wrong_info": {
-              "label": "Information érronée"
+              "label": "Information erronée"
             },
             "wrong_location": {
               "label": "Emplacement incorrect"
@@ -137,8 +138,7 @@
           "radiogroup": {
             "label": "Que voulez-vous signaler?"
           },
-          "submit": "Signaler",
-          "title": "Signaler une erreur ou proposer une amélioration",
+          "submit": "SIGNALER",
           "url": {
             "label": "URL de la localisation du signalement"
           }
@@ -147,9 +147,12 @@
           "done": "Ok",
           "message": "votre signalement a été soumis avec succès",
           "other_report": "Faire un autre signalement",
-          "title": "Merci !"
+          "title": "Merci!"
         }
       },
+      "NavigationControl.ResetBearing": "Orienter vers le nord",
+      "NavigationControl.ZoomIn": "Zoomer",
+      "NavigationControl.ZoomOut": "Dézoomer",
       "search_control": {
         "button_label": "Rechercher"
       },
