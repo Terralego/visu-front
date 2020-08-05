@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import search from '@terralego/core/modules/Visualizer/services/search';
 import { connectAuthProvider } from '@terralego/core/modules/Auth';
+import { connectState } from '@terralego/core/modules/State/context';
 
 import { fetchViewConfig } from '../../services/visualizer';
 import Loading from './Loading';
@@ -13,6 +14,7 @@ export const Visualizer = ({
   match: { params: { viewName } },
   env: { API_HOST },
   authenticated,
+  setCurrentState,
   ...props
 }) => {
   const [loading, setLoading] = useState(true);
@@ -69,6 +71,42 @@ export const Visualizer = ({
     fetchViewConfig.clear();
   }, [authenticated]);
 
+  const prevAuthenticatedRef = React.useRef();
+  useEffect(() => {
+    /** dirty-fix of some spaghetti code a bit hard to debug
+   *
+    * hashstate and layers tree seems to be linked
+    * and relying on each other to be updated.
+    * The problem was that the ref value for active layers
+    * was changed to false when the data from the backend were true.
+    * The change could possibly happened in several part of the app
+    * & depenceny(i.e @terralego/core).
+    *
+    * The idea here is to update the hash state with active layers,
+    * as soon as the data are received from the back.
+    * we are by-passing the entire update flow to prevent the issue.
+    * */
+    if (viewConfig && authenticated) {
+      // map is needed to create a copy of the ref before it is changed somewhere in the app
+      const activeLayers = viewConfig.layersTree.map(({ layers }) => (
+        layers.reduce((layerIds, { initialState, layers: l }) => (
+          initialState.active ? [...layerIds, ...l] : layerIds
+        ), [])
+      ), []).reduce((activeIds, ids) => [...activeIds, ...ids], []);
+
+      if (authenticated && !prevAuthenticatedRef.current) {
+        console.log('just login', activeLayers);
+      } else if (authenticated) {
+        console.log('auth', activeLayers);
+      } else {
+        console.log('not auth', activeLayers);
+      }
+      setCurrentState({ layers: activeLayers });
+      prevAuthenticatedRef.current = authenticated;
+    }
+  }, [setCurrentState, viewConfig, authenticated, prevAuthenticatedRef]);
+
+
   useEffect(() => {
     loadViewConfig(viewName);
   }, [viewName, authenticated]);
@@ -90,4 +128,4 @@ export const Visualizer = ({
   );
 };
 
-export default connectAuthProvider('authenticated')(Visualizer);
+export default connectState('setCurrentState')(connectAuthProvider('authenticated')(Visualizer));
