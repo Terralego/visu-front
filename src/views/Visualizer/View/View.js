@@ -342,19 +342,26 @@ export class Visualizer extends React.Component {
 
     if (!map) return;
 
+    const getFilteredProperties = (properties, form) => (
+      Object.fromEntries(
+        Object.keys(properties)
+          .filter(prop => form.some(({ property }) => property ===  prop))
+          .flatMap(prop => Object.entries(getSearchParamFromProperty(properties, form, prop))),
+      )
+    );
+
     const filters = filterLayersStatesFromLayersState(layersTreeState)
       .filter(([{ filters: { layer } = {} }, { filters: layerFilters }]) =>
         layer && (query || layerFilters))
-      .map(([layer, { filters: properties = {} }]) => ({
-        layer,
-        properties: {
-          ...Object.keys(properties).reduce((all, key) => ({
-            ...all,
-            ...getSearchParamFromProperty(properties, layer.filters.form, key),
-          }), {}),
-        },
-        index: layer.filters.layer,
-      }));
+      .map(([layer, { filters: properties = {} }]) => {
+        const { filters: { form, layer: index } } = layer;
+        return {
+          layer,
+          properties: getFilteredProperties(properties, form),
+          index,
+        };
+      });
+
 
     if (!this.isSearching) {
       this.resetSearch(filters);
