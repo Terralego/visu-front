@@ -343,10 +343,11 @@ export class Visualizer extends React.Component {
     if (!map) return;
 
     const getFilteredProperties = (properties, form) => (
-      Object.fromEntries(
-        Object.keys(properties)
-          .filter(prop => form.some(({ property }) => property ===  prop))
-          .flatMap(prop => Object.entries(getSearchParamFromProperty(properties, form, prop))),
+      Object.assign(
+        {},
+        ...Object.keys(properties)
+          .filter(propertyName => form.some(({ property }) => property === propertyName))
+          .map(propertyName => getSearchParamFromProperty(properties, form, propertyName)),
       )
     );
 
