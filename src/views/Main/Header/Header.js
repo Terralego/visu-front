@@ -73,7 +73,7 @@ export const Header = ({
       setMenu(generateMenu(views));
     };
 
-    loadViewList();
+    VIEW_ROOT_PATH && loadViewList();
 
     return () => {
       isMounted = false;
