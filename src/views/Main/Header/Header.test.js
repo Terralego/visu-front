@@ -3,15 +3,6 @@ import { act, create } from 'react-test-renderer';
 
 import { Header } from './Header';
 
-jest.mock('react-router-dom', () => (
-  {
-    Route: () => null,
-    Switch: () => null,
-    Link: () => null,
-    withRouter: ({ children }) => children,
-  }
-));
-
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: text => text,
@@ -19,6 +10,7 @@ jest.mock('react-i18next', () => ({
 }));
 
 jest.mock('@terralego/core/components/MainMenu', () => props => <div {...props} />);
+jest.mock('@terralego/core/components/LoginButton', () => props => <div {...props} />);
 
 jest.mock('./PartnerButton', () => () => 'PartnerButton');
 
