@@ -96,12 +96,12 @@ export const Visualizer = ({
 
       if (authenticated && !prevAuthenticatedRef.current) {
         console.log('just login', activeLayers);
+        setCurrentState({ layers: activeLayers });
       } else if (authenticated) {
         console.log('auth', activeLayers);
       } else {
         console.log('not auth', activeLayers);
       }
-      setCurrentState({ layers: activeLayers });
       prevAuthenticatedRef.current = authenticated;
     }
   }, [setCurrentState, viewConfig, authenticated, prevAuthenticatedRef]);
