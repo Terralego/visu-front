@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 
 import classnames from 'classnames';
 import withDeviceSize from '@terralego/core/hoc/withDeviceSize';
 import { connectAuthProvider } from '@terralego/core/modules/Auth';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
+import { NavLink } from 'react-router-dom';
 
 import MainMenu from '@terralego/core/components/MainMenu';
 import LoginButton from '@terralego/core/components/LoginButton';
@@ -13,6 +14,17 @@ import { fetchAllViews } from '../../../services/visualizer';
 import PartnerButton from './PartnerButton';
 
 import './styles.scss';
+
+const getLinkProps = link => (
+  !link.startsWith('http') && {
+    link: {
+      component: NavLink,
+      linkProps: {
+        hrefAttribute: 'to',
+      },
+    },
+  }
+);
 
 export const Header = ({
   env: { VIEW_ROOT_PATH },
@@ -29,16 +41,21 @@ export const Header = ({
   const [menu, setMenu] = useState([]);
   const { t } = useTranslation();
 
+  const extraMenuItemsToMenu = useMemo(() => extraMenuItems.map(item => (
+    { ...item, ...getLinkProps(item.href) }
+  )), [extraMenuItems]);
+
   const generateMenu = useCallback(views => ({
     navHeader: {
       id: 'welcome',
       label: t('menu.home'),
       href: logoUrl,
       icon: logo,
+      ...getLinkProps(logoUrl),
     },
     navItems: [
       views,
-      extraMenuItems,
+      extraMenuItemsToMenu,
       [{
         id: 'nav-partenaires',
         component: () => (
@@ -60,7 +77,7 @@ export const Header = ({
         ),
       }],
     ],
-  }), [authenticated, extraMenuItems, logo, logoUrl, t, allowUserRegistration]);
+  }), [t, logoUrl, logo, extraMenuItemsToMenu, authenticated, allowUserRegistration]);
 
 
   useEffect(() => {
@@ -70,7 +87,8 @@ export const Header = ({
       /** Load the view list and add it to base menu only if component mounted */
       const views = await fetchAllViews(VIEW_ROOT_PATH);
       if (!isMounted) return;
-      setMenu(generateMenu(views));
+      const viewsToMenu = views.map(view => ({ ...view, ...getLinkProps(view.href) }));
+      setMenu(generateMenu(viewsToMenu));
     };
 
     VIEW_ROOT_PATH && loadViewList();
