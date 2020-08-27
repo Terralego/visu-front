@@ -180,6 +180,14 @@
         "title": "Dézoomer"
       }
     },
+    "widget": {
+      "synthesis":{
+        "title": "Synthèse : {{layer}}"
+      },
+      "default":{
+        "title": "Widget"
+      }
+    },
     "visualizer": {
       "fold": "Replier",
       "story": {
@@ -230,9 +238,7 @@
             "action-close": "Fermer le widget",
             "action-close_synthesis": "Fermer la synthèse",
             "action-open": "Ouvrir le widget",
-            "action-open_synthesis": "Ouvrir la synthèse",
-            "title": "Widget",
-            "title_synthesis": "Widget de synthèse"
+            "action-open_synthesis": "Ouvrir la synthèse"
           }
         },
         "warningzoom": {

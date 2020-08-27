@@ -10,9 +10,9 @@ import './styles.scss';
 const getTitle = (translate, component, layerLabel) => {
   switch (component) {
     case COMPONENT_SYNTHESIS:
-      return translate('terralego.widget.component.synthesis.title', { layer: layerLabel });
+      return translate('terralego.widget.synthesis.title', { layer: layerLabel });
     default:
-      return translate(`terralego.widget.${component}.name`);
+      return translate('terralego.widget.default.title');
   }
 };
 
