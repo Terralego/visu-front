@@ -566,6 +566,66 @@ export class Visualizer extends React.Component {
     setLayersTreeState(layersTreeState);
   };
 
+  onDetailsChange = index => {
+    if (index === undefined) {
+      return;
+    }
+
+    this.setState((state, props) => {
+      const { map } = props;
+
+      if (!map) {
+        return null;
+      }
+
+      const {
+        features: [{ features }],
+        interactiveMapInstance: { addHighlight, removeHighlight },
+        details,
+      } = state;
+
+      const { feature: { sourceLayer: detailsSourceLayer } } = details;
+
+      const [feature] = map.queryRenderedFeatures().filter(
+        ({ sourceLayer, properties: { _id: id } }) =>
+          id === features[index] && sourceLayer === detailsSourceLayer,
+      );
+
+      // When the geometry is too small, the feature doesn't appear in the map
+      if (!feature) {
+        const {
+          feature: {
+            layer: { id: prevLayerId },
+            properties: { _id: prevFeatureId },
+          },
+        } = details;
+        removeHighlight({ layerId: prevLayerId, featureId: prevFeatureId });
+        return null;
+      }
+
+      const {
+        layer: { id: layerId } = {},
+        properties: { _id: featureId },
+        source,
+      } = feature;
+
+      addHighlight({
+        layerId,
+        featureId,
+        unique: true,
+        source,
+      });
+
+      return {
+        details: {
+          ...details,
+          feature,
+          hide: () => layerId && removeHighlight({ layerId, featureId }),
+        },
+      };
+    });
+  }
+
   displayDetails (feature, interaction, { addHighlight, removeHighlight }) {
     const { layer: { id: layerId } = {}, properties: { _id: featureId }, source } = feature;
     const { details: { hide = () => {} } = {} } = this.state;
@@ -821,7 +881,7 @@ export class Visualizer extends React.Component {
                       features={featuresForDetail.map(_id => ({ _id }))}
                       {...details}
                       onClose={hideDetails}
-                      onChange={this.onHighlightChange}
+                      onChange={this.onDetailsChange}
                       enableCarousel={false}
                     />
                   </BoundingBoxObserver>
