@@ -684,16 +684,9 @@ export class Visualizer extends React.Component {
       isMobileSized,
       viewState,
       i18n: {
+        getResourceBundle,
         language,
-        store: {
-          data: {
-            [language]: {
-              translation: {
-                terralego: { map: mapLocale } = {},
-              } = {},
-            } = {},
-          } = {},
-        } = {},
+        store: { options: { fallbackLng } },
       } = {},
       exportCallback,
       settings: {
@@ -752,6 +745,8 @@ export class Visualizer extends React.Component {
 
     const isTableVisible = hasTable(layersTreeState);
     const isWidgetsVisible = hasWidget(layersTreeState);
+
+    const { terralego: { map: mapLocale } } = getResourceBundle(language.split('-')[0]) || getResourceBundle(fallbackLng[0]);
 
     const isStory = type === 'story';
     return (
