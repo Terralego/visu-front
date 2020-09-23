@@ -417,13 +417,14 @@ export class Visualizer extends React.Component {
         .map(({ id }) => id),
     }));
 
-    const totalFeatures = idsResponses.reduce((fullTotal, { hits: { total = 0 } = {} }) =>
+    const totalFeatures = idsResponses.reduce((fullTotal,
+      { hits: { total: { value: total = 0 } = {} } = {} }) =>
       fullTotal + total,
     0);
 
     this.setLayersResult(filters.map(({ layer }, index) => {
       const total = countResponses[index].hits
-        ? countResponses[index].hits.total
+        ? countResponses[index].hits.total.value
         : null;
       return { layer, state: { total } };
     }));
@@ -502,7 +503,7 @@ export class Visualizer extends React.Component {
       label, layers: resultsLayers, filters: { mainField },
     }], index) => ({
       group: label,
-      total: responses[index].hits.total,
+      total: responses[index].hits.total.value,
       results: responses[index].hits.hits.map(({ _id: id, _source: source }) => ({
         label: source[mainField] || id,
         id,
