@@ -133,8 +133,8 @@ export class DataTable extends React.Component {
     const { features } = this.state;
 
     if (!features) return;
-
-    const selectedFeatures = selection.map(id => features[id]);
+    const { results } = this.state;
+    const selectedFeatures = selection.map(id => ({ _id: results[id][0] }));
     this.setState({ selectedFeatures });
   }
 
