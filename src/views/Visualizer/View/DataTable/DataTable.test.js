@@ -16,7 +16,7 @@ jest.mock('@terralego/core/modules/Visualizer/services/search', () => ({
           bar_prop: 'bar1',
         },
       }],
-      total: { value: 2 },
+      total: 2,
     },
   })),
 }));

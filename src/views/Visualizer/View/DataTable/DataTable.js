@@ -222,9 +222,8 @@ export class DataTable extends React.Component {
       }, []),
     });
 
-    const { hits: { hits, total: { value: resultsTotal } } } = resp;
+    const { hits: { hits, total: resultsTotal } } = resp;
     const newColumns = columns || extractColumns(fields, hits);
-
     const results = sort(prepareData(newColumns, hits, {
       decimals: 1,
     }));
