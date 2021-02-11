@@ -84,7 +84,7 @@
       }
     },
     "legend": {
-      "nolabel": "-",
+      "nolabel": "Sans valeur",
       "label": "De {{lower}} à {{upper}}",
       "labelNoValue": "Valeur non disponible",
       "labelFirst": "Supérieur à {{lower}}",
