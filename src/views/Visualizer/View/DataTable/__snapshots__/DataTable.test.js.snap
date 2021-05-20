@@ -28,10 +28,10 @@ exports[`should render a loader 1`] = `
 
 exports[`should render correctly 1`] = `
 <div
-  className="data-table"
+  className="data-table data-table--visible"
 >
   <div
-    className="table-container"
+    className="table-container table-container--visible"
   >
     <p
       Header={[Function]}
