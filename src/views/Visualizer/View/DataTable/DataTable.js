@@ -260,13 +260,13 @@ export class DataTable extends React.Component {
     return (
       <div className={classnames({
         'data-table': true,
-        'data-table--visible': !!displayedLayer,
+        'data-table--visible': isTableVisible,
       })}
       >
         <div
           className={classnames({
             'table-container': true,
-            'table-container--visible': !!displayedLayer,
+            'table-container--visible': isTableVisible,
             'table-container--is-resizing': isResizing,
             'table-container--full': full,
           })}
