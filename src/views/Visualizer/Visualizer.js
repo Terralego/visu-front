@@ -4,6 +4,10 @@ import { connectAuthProvider } from '@terralego/core/modules/Auth';
 
 import { connectState } from '@terralego/core/modules/State/context';
 
+import parser from 'pivotql-parser-expression';
+import compilerMb from 'pivotql-compiler-mapboxgl';
+import compilerEs from 'pivotql-compiler-elasticsearch';
+
 import { fetchViewConfig } from '../../services/visualizer';
 import Loading from './Loading';
 import View from './View';
@@ -26,7 +30,29 @@ export const Visualizer = ({
   const isUnmount = React.useRef(false);
   isUnmount.current = false;
 
-  const loadViewConfig = async viewLabel => {
+  const addSourceFilter = React.useCallback((layerTreeNode, customStyle) => {
+    if (layerTreeNode.group) {
+      layerTreeNode.layers.forEach(node => addSourceFilter(node, customStyle));
+    } else if (layerTreeNode.source_filter) {
+      const layerId = layerTreeNode.layers[0];
+      const parsed = parser(layerTreeNode.source_filter);
+
+      // Add elasticsearch parsed base query
+      // eslint-disable-next-line no-param-reassign
+      layerTreeNode.baseEsQuery = compilerEs(parsed);
+      // eslint-disable-next-line no-param-reassign
+      layerTreeNode.baseMbQuery = compilerMb(parsed);
+      // eslint-disable-next-line no-param-reassign
+      customStyle.layers = customStyle.layers.map(layer => {
+        if (layer.id === layerId) {
+          return { ...layer, ...layerTreeNode.baseMbQuery };
+        }
+        return layer;
+      });
+    }
+  }, []);
+
+  const loadViewConfig = React.useCallback(async viewLabel => {
     setLoading(true);
     setNotFound(false);
 
@@ -44,6 +70,8 @@ export const Visualizer = ({
     // Deep copy to avoid modification
     const newViewSettings = JSON.parse(JSON.stringify(viewSettings));
 
+    addSourceFilter({ layers: newViewSettings.layersTree, group: 'root' }, newViewSettings.map.customStyle);
+
     setViewConfig({
       ...newViewSettings,
       state: {
@@ -54,9 +82,9 @@ export const Visualizer = ({
     });
 
     setLoading(false);
-  };
+  }, [addSourceFilter]);
 
-  const onViewStateUpdate = viewState => {
+  const onViewStateUpdate = React.useCallback(viewState => {
     setViewConfig(view => ({
       ...view,
       state: {
@@ -64,7 +92,7 @@ export const Visualizer = ({
         ...viewState,
       },
     }));
-  };
+  }, []);
 
   // Cleanup function to cancel effects
   useEffect(() => () => { isUnmount.current = true; }, []);
@@ -83,7 +111,7 @@ export const Visualizer = ({
 
   useEffect(() => {
     loadViewConfig(viewName);
-  }, [viewName, authenticated]);
+  }, [viewName, authenticated, loadViewConfig]);
 
 
   search.host = API_HOST.replace(/api$/, 'elasticsearch');
