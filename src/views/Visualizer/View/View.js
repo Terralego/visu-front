@@ -372,20 +372,22 @@ export class Visualizer extends React.Component {
     const boundingBox = getExtent(map, visibleBoundingBox);
 
     // Query for bbox result ids
-    const queryIds = filters.map(({ properties, index }) => ({
+    const queryIds = filters.map(({ properties, index, layer: { baseEsQuery = {} } }) => ({
       index,
       query,
       properties,
       boundingBox,
       include: ['_feature_id'],
+      baseQuery: baseEsQuery,
     }));
 
     // Query for all result counts
-    const queryCounts = filters.map(({ properties, index }) => ({
+    const queryCounts = filters.map(({ properties, index, layer: { baseEsQuery = {} } }) => ({
       index,
       query,
       properties,
       include: [],
+      baseQuery: baseEsQuery,
       size: 0,
     }));
 
@@ -494,11 +496,15 @@ export class Visualizer extends React.Component {
 
     if (!layers.length) return undefined;
 
-    const { responses } = await searchService.msearch(layers.map(([{ filters: { layer } }]) => ({
-      query,
-      index: layer,
-      size: 6,
-    })));
+    const { responses } = await searchService.msearch(
+      layers.map(([{ filters: { layer }, baseEsQuery }]) => ({
+        query,
+        index: layer,
+        baseQuery: baseEsQuery,
+        size: 6,
+      })),
+    );
+
     const results = layers.map(([{
       label, layers: resultsLayers, filters: { mainField },
     }], index) => ({
@@ -810,6 +816,7 @@ export class Visualizer extends React.Component {
     const { terralego: { map: mapLocale } } = getResourceBundle(language.split('-')[0]) || getResourceBundle(fallbackLng[0]);
 
     const isStory = type === 'story';
+
     return (
       <LayersTreeProvider
         map={map}

@@ -79,7 +79,16 @@ export class WidgetSynthesis extends React.Component {
   }
 
   async load () {
-    const { items, filters, form, layer, query, map, visibleBoundingBox } = this.props;
+    const {
+      items,
+      filters,
+      form,
+      layer,
+      query,
+      map,
+      visibleBoundingBox,
+      displayedLayer: { baseEsQuery },
+    } = this.props;
 
     if (!map) return;
     const boundingBox = getExtent(map, visibleBoundingBox);
@@ -101,6 +110,7 @@ export class WidgetSynthesis extends React.Component {
       properties,
       boundingBox,
       aggregations,
+      baseQuery: baseEsQuery,
       size: 0,
     });
 

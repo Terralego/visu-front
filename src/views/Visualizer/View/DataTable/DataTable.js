@@ -187,7 +187,7 @@ export class DataTable extends React.Component {
 
   async loadResults () {
     const {
-      displayedLayer: { filters: { layer, fields, form } = {}, state: { filters = {} } = {} } = {},
+      displayedLayer: { filters: { layer, fields, form } = {}, state: { filters = {} } = {}, baseEsQuery } = {},
       query,
       map,
       visibleBoundingBox,
@@ -211,6 +211,7 @@ export class DataTable extends React.Component {
       query,
       properties,
       boundingBox,
+      baseQuery: baseEsQuery,
       include: fields && fields.reduce((all, { value }) => {
         const interpolation = value.match(/\{[^}]+\}/g);
         return [
