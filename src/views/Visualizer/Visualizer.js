@@ -37,7 +37,7 @@ export const Visualizer = ({
       const layerId = layerTreeNode.layers[0];
       const parsed = parser(layerTreeNode.source_filter);
 
-      // Add elasticsearch parsed base query
+      // Add elasticsearch and mapbox parsed base queries
       // eslint-disable-next-line no-param-reassign
       layerTreeNode.baseEsQuery = compilerEs(parsed);
       // eslint-disable-next-line no-param-reassign

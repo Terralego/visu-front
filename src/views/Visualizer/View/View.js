@@ -118,6 +118,7 @@ export class Visualizer extends React.Component {
       tree: PropTypes.bool,
     }),
     isMobileSized: PropTypes.bool,
+    enableDetailCarrousel: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -130,12 +131,14 @@ export class Visualizer extends React.Component {
     initLayersState () { },
     initialState: {},
     isMobileSized: false,
+    enableDetailCarrousel: false,
   };
 
   state = {
     isLayersTreeVisible: true,
     legends: [],
-    features: [],
+    /* store feature ids filtered by a layer */
+    features: {}, /* { layerId: { features: [id1, id2, ...], layers: [id1, id2, ...] } } */
     totalFeatures: 0,
     interactions: [],
   };
@@ -268,7 +271,7 @@ export class Visualizer extends React.Component {
                 element: generateClusterList({
                   features: clusteredFeatures,
                   onClick: selectedFeature =>
-                    this.displayDetails(selectedFeature, interaction, instance),
+                    this.displayDetails(selectedFeature, interaction, instance, interaction.id),
                   clusterLabel,
                 }),
                 className: 'clustered-features-list-container',
@@ -277,7 +280,7 @@ export class Visualizer extends React.Component {
               return;
             }
 
-            this.displayDetails(feature, interaction, instance);
+            this.displayDetails(feature, interaction, instance, interaction.id);
           },
         };
       }
@@ -398,26 +401,19 @@ export class Visualizer extends React.Component {
     // Counts for overall results
     const countResponses = responses.slice(filters.length);
 
-    const allFeatures = idsResponses
+    const features = idsResponses
       .reduce((all, { hits: { hits = [] } = {} }, k) => {
         // Skip results that are only counts (index (k) higher than filters)
         if (!filters[k]) { return all; }
 
-        return [
-          ...all,
-          ...hits.map(({ _index, _source: { _feature_id: id } }) => ({
-            layer: _index,
-            id,
-          })),
-        ];
-      }, []);
+        const featureIds = hits.map(({ _source: { _feature_id: id } }) => id);
+        // extract layers and id from matching filter
+        const { layers, id } = filters[k].layer;
+        // eslint-disable-next-line no-param-reassign
+        all[id] = { features: featureIds, layers };
 
-    const features = filters.map(({ index: layer }) => ({
-      layer,
-      features: allFeatures
-        .filter(({ layer: fLayer }) => layer === fLayer)
-        .map(({ id }) => id),
-    }));
+        return all;
+      }, {});
 
     const totalFeatures = idsResponses.reduce((fullTotal,
       { hits: { total: { value: total = 0 } = {} } = {} }) =>
@@ -436,7 +432,7 @@ export class Visualizer extends React.Component {
 
   resetSearch = () => {
     const { layersTreeState } = this.props;
-    this.setState({ features: [], totalFeatures: 0 });
+    this.setState({ features: {}, totalFeatures: 0 });
     this.setLayersResult(Array.from(layersTreeState.keys()).map(layer => ({
       layer,
       state: {
@@ -462,20 +458,12 @@ export class Visualizer extends React.Component {
     setLayersTreeState(newLayersTreeState);
   }
 
-  onClusterUpdate = ({ features, sourceLayer }) => {
+  onClusterUpdate = ({ features, layerId }) => {
     const { features: filtered } = this.state;
-    const { features: ids } = filtered.find(({ layer }) => layer === sourceLayer) || {};
+    const { features: ids } = filtered[layerId] || {};
 
-    const cleanedFeatures = new Map();
-    for (let i = 0, len = features.length; i < len; i += 1) {
-      const feature = features[i];
-      const { properties: { _id: id } } = feature;
-      if (!ids || ids.includes(id)) {
-        cleanedFeatures.set(id, feature);
-      }
-    }
-
-    return Array.from(cleanedFeatures.values());
+    return features.filter(({ properties: { _id: id } }) =>
+      (!ids || ids.includes(id)));
   }
 
   onHighlightChangeFactory = (layerId, featureId, addHighlight, removeHighlight, color) => {
@@ -586,16 +574,19 @@ export class Visualizer extends React.Component {
       }
 
       const {
-        features: [{ features }],
+        features,
         interactiveMapInstance: { addHighlight, removeHighlight },
         details,
       } = state;
 
-      const { feature: { sourceLayer: detailsSourceLayer } } = details;
+      const { feature: { sourceLayer: detailsSourceLayer }, layer: detailLayer } = details;
 
-      const [feature] = map.queryRenderedFeatures().filter(
+      const currentFeatureList = Object.values(features).find(({ layers }) =>
+        layers.includes(detailLayer));
+
+      const feature = map.queryRenderedFeatures().find(
         ({ sourceLayer, properties: { _id: id } }) =>
-          id === features[index] && sourceLayer === detailsSourceLayer,
+          (sourceLayer === detailsSourceLayer && id === currentFeatureList[index]),
       );
 
       // When the geometry is too small, the feature doesn't appear in the map
@@ -633,10 +624,17 @@ export class Visualizer extends React.Component {
     });
   }
 
-  displayDetails (feature, interaction, { addHighlight, removeHighlight }) {
+  displayDetails (
+    feature, /* Clicked feature */
+    interaction,
+    { addHighlight, removeHighlight },
+    interactionLayerId, /* mapbox layer id matching current interaction */
+  ) {
     const { layer: { id: layerId } = {}, properties: { _id: featureId }, source } = feature;
     const { details: { hide = () => {} } = {} } = this.state;
     const { highlight_color: highlightColor } = interaction;
+
+    // Hide previous details
     hide();
 
     this.onHighlightChange = () => null;
@@ -662,6 +660,7 @@ export class Visualizer extends React.Component {
 
     this.setState({
       details: {
+        layer: interactionLayerId, /* Save base mapbox layer id for later use */
         feature,
         interaction,
         hide: () => layerId && removeHighlight({ layerId, featureId }),
@@ -763,11 +762,12 @@ export class Visualizer extends React.Component {
           brandLogo,
         } = {},
       },
+      enableDetailCarrousel,
     } = this.props;
 
     const {
       details,
-      details: { feature: { sourceLayer } = {} } = {},
+      details: { layer: detailLayer } = {},
       isLayersTreeVisible,
       interactions,
       totalFeatures,
@@ -787,8 +787,11 @@ export class Visualizer extends React.Component {
     const displayLayersTree = isLayersTreeVisible && !printIsOpened;
     const isDetailsVisible = !!details && !printIsOpened;
 
-    const [{ features: featuresForDetail = [] } = {}] = isDetailsVisible
-      ? features.filter(({ layer }) => layer === sourceLayer)
+    const currentFeatureList = Object.values(features).find(
+      ({ layers }) => layers.includes(detailLayer),
+    );
+    const { features: featuresForDetail = [] } = isDetailsVisible
+      ? currentFeatureList || {}
       : [];
 
     const displaySearchInMap = Array
@@ -885,7 +888,7 @@ export class Visualizer extends React.Component {
                       {...details}
                       onClose={hideDetails}
                       onChange={this.onDetailsChange}
-                      enableCarousel={false}
+                      enableCarousel={enableDetailCarrousel}
                       translate={t}
                     />
                   </BoundingBoxObserver>

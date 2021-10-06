@@ -87,7 +87,7 @@ export class WidgetSynthesis extends React.Component {
       query,
       map,
       visibleBoundingBox,
-      displayedLayer: { baseEsQuery },
+      displayedLayer: { baseEsQuery = {} } = {},
     } = this.props;
 
     if (!map) return;
