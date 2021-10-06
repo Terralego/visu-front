@@ -15,6 +15,28 @@ import NotFound from './NotFound';
 
 import './styles.scss';
 
+const addSourceFilter = (layerTreeNode, customStyle) => {
+  if (layerTreeNode.group) {
+    layerTreeNode.layers.forEach(node => addSourceFilter(node, customStyle));
+  } else if (layerTreeNode.source_filter) {
+    const layerId = layerTreeNode.layers[0];
+    const parsed = parser(layerTreeNode.source_filter);
+
+    /* eslint-disable no-param-reassign */
+    // Add elasticsearch and mapbox parsed base queries
+    layerTreeNode.baseEsQuery = compilerEs(parsed);
+    layerTreeNode.baseMbQuery = compilerMb(parsed);
+    customStyle.layers = customStyle.layers.map(layer => {
+      if (layer.id === layerId) {
+        return { ...layer, ...layerTreeNode.baseMbQuery };
+      }
+      return layer;
+    });
+    /* eslint-enable no-param-reassign */
+  }
+};
+
+
 export const Visualizer = ({
   match: { params: { viewName } },
   env: { API_HOST },
@@ -29,28 +51,6 @@ export const Visualizer = ({
 
   const isUnmount = React.useRef(false);
   isUnmount.current = false;
-
-  const addSourceFilter = React.useCallback((layerTreeNode, customStyle) => {
-    if (layerTreeNode.group) {
-      layerTreeNode.layers.forEach(node => addSourceFilter(node, customStyle));
-    } else if (layerTreeNode.source_filter) {
-      const layerId = layerTreeNode.layers[0];
-      const parsed = parser(layerTreeNode.source_filter);
-
-      // Add elasticsearch and mapbox parsed base queries
-      // eslint-disable-next-line no-param-reassign
-      layerTreeNode.baseEsQuery = compilerEs(parsed);
-      // eslint-disable-next-line no-param-reassign
-      layerTreeNode.baseMbQuery = compilerMb(parsed);
-      // eslint-disable-next-line no-param-reassign
-      customStyle.layers = customStyle.layers.map(layer => {
-        if (layer.id === layerId) {
-          return { ...layer, ...layerTreeNode.baseMbQuery };
-        }
-        return layer;
-      });
-    }
-  }, []);
 
   const loadViewConfig = React.useCallback(async viewLabel => {
     setLoading(true);
@@ -67,7 +67,7 @@ export const Visualizer = ({
       return;
     }
 
-    // Deep copy to avoid modification
+    // Deep copy to avoid modification of cached values
     const newViewSettings = JSON.parse(JSON.stringify(viewSettings));
 
     addSourceFilter({ layers: newViewSettings.layersTree, group: 'root' }, newViewSettings.map.customStyle);
@@ -82,7 +82,7 @@ export const Visualizer = ({
     });
 
     setLoading(false);
-  }, [addSourceFilter]);
+  }, []);
 
   const onViewStateUpdate = React.useCallback(viewState => {
     setViewConfig(view => ({
