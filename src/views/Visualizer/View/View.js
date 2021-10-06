@@ -194,6 +194,11 @@ export class Visualizer extends React.Component {
       resetFilters(map, layersTreeState);
     }
 
+    if (features !== prevFeatures) {
+      // Refresh clusters each time filtered features changes
+      map.fire('refreshCluster');
+    }
+
     if (features !== prevFeatures
       && this.isSearching) {
       filterFeatures(map, features, layersTreeState);
