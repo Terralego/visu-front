@@ -20,7 +20,7 @@ const addSourceFilter = (layerTreeNode, customStyle) => {
     layerTreeNode.layers.forEach(node => addSourceFilter(node, customStyle));
   } else if (layerTreeNode.source_filter) {
     const layerId = layerTreeNode.layers[0];
-    const parsed = parser(layerTreeNode.source_filter);
+    const parsed = parser(layerTreeNode.source_filter || '');
 
     /* eslint-disable no-param-reassign */
     // Add elasticsearch and mapbox parsed base queries
