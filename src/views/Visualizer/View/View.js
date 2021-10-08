@@ -528,10 +528,13 @@ export class Visualizer extends React.Component {
     focusOnSearchResult,
     setQuery,
   }) => {
+    // Trigger the flyTo the feature
     focusOnSearchResult(result);
     setQuery(label);
+    // Hide previous details
     this.hideDetails();
 
+    // Should display details panel a the end of the flyTo
     map.once('moveend', () => {
       const { interactions } = this.state;
       const interaction = interactions.find(({ id: iId, trigger = 'click' }) => layers.includes(iId) && trigger === 'click');
@@ -540,19 +543,24 @@ export class Visualizer extends React.Component {
 
       let layerName = interaction.id;
       if (!map.getLayer(layerName)) {
+        // If the layer is clustered, use cluster data source instead
         layerName = `${interaction.id}-cluster-data`;
       }
+
       if (!map.getLayer(layerName)) {
+        // No layer found
         return;
       }
 
       const features = map.queryRenderedFeatures({
         layers: [layerName],
-        filter: ['==', ['get', '_id'], id],
+        filter: ['==', ['to-string', ['get', '_id']], `${id}`],
       });
 
+      // No feature with this id
       if (!features.length) return;
 
+      // We trigger the click interaction
       map.triggerInteraction({
         interaction,
         feature: features[0],
