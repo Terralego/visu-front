@@ -1,4 +1,9 @@
 
+1.2.3 / 2021-10-12
+==================
+
+  * Fix flyto should display feature details panel
+
 1.2.2 / 2021-10-07
 ==================
 
