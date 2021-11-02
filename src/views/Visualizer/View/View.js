@@ -131,7 +131,7 @@ export class Visualizer extends React.Component {
     initLayersState () { },
     initialState: {},
     isMobileSized: false,
-    enableDetailCarrousel: false,
+    enableDetailCarrousel: true,
   };
 
   state = {
