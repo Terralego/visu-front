@@ -43,6 +43,10 @@ export class Widgets extends React.Component {
     const { visible, translate, ...props } = this.props;
     const { widgets } = this.state;
 
+    const { layersTreeState } = props;
+    const displayedLayers = Array.from(layersTreeState, ([k1, k2]) => ({ ...k1, ...k2 }))
+      .filter(({ active }) => active) || [];
+
     return (
       <div
         className={classnames({
@@ -53,6 +57,7 @@ export class Widgets extends React.Component {
         <div className="widgets-panel__container">
           {(widgets).map(({ widget, filters, layer, form, layerLabel }, index) => {
             const { component } = widget;
+            const displayedLayer = displayedLayers.find(({ label }) => label === layerLabel);
             const Component = getComponent(component);
             const title = getTitle(translate, component, layerLabel);
             return Component && (
@@ -62,7 +67,13 @@ export class Widgets extends React.Component {
                 title={title}
                 {...props}
               >
-                <Component {...widget} filters={filters} layer={layer} form={form} />
+                <Component
+                  {...widget}
+                  filters={filters}
+                  layer={layer}
+                  form={form}
+                  displayedLayer={displayedLayer}
+                />
               </WidgetLayout>
             );
           })}
