@@ -25,62 +25,55 @@ const getComponent = component => {
   }
 };
 
-export class Widgets extends React.Component {
-  state = {
-    widgets: [],
-  };
+const Widgets = ({
+  widgets,
+  visible,
+  translate,
+  layersTreeState,
+  ...rest
+}) => {
+  const displayedLayers = React.useMemo(() =>
+    (Array.from(layersTreeState, ([k1, k2]) => ({ ...k1, ...k2 }))
+      .filter(({ active }) => active) || []),
+  [layersTreeState]);
 
-  static getDerivedStateFromProps ({ widgets }) {
-    /**
-     * Keep a backup of widgets to have a beautiful animation with content
-     */
-    if (!widgets.length) return null;
-
-    return { widgets };
+  if (!widgets.length) {
+    return null;
   }
 
-  render () {
-    const { visible, translate, ...props } = this.props;
-    const { widgets } = this.state;
-
-    const { layersTreeState } = props;
-    const displayedLayers = Array.from(layersTreeState, ([k1, k2]) => ({ ...k1, ...k2 }))
-      .filter(({ active }) => active) || [];
-
-    return (
-      <div
-        className={classnames({
-          'widgets-panel': true,
-          'widgets-panel--visible': visible,
+  return (
+    <div
+      className={classnames({
+        'widgets-panel': true,
+        'widgets-panel--visible': visible,
+      })}
+    >
+      <div className="widgets-panel__container">
+        {(widgets).map(({ widget, filters, layer, form, layerLabel }, index) => {
+          const { component } = widget;
+          const displayedLayer = displayedLayers.find(({ label }) => label === layerLabel);
+          const Component = getComponent(component);
+          const title = getTitle(translate, component, layerLabel);
+          return Component && (
+          <WidgetLayout
+            key={`${component}${index}`} // eslint-disable-line react/no-array-index-key
+            widget={widget}
+            title={title}
+            {...rest}
+          >
+            <Component
+              {...widget}
+              filters={filters}
+              layer={layer}
+              form={form}
+              displayedLayer={displayedLayer}
+            />
+          </WidgetLayout>
+          );
         })}
-      >
-        <div className="widgets-panel__container">
-          {(widgets).map(({ widget, filters, layer, form, layerLabel }, index) => {
-            const { component } = widget;
-            const displayedLayer = displayedLayers.find(({ label }) => label === layerLabel);
-            const Component = getComponent(component);
-            const title = getTitle(translate, component, layerLabel);
-            return Component && (
-              <WidgetLayout
-                key={`${component}${index}`} // eslint-disable-line react/no-array-index-key
-                widget={widget}
-                title={title}
-                {...props}
-              >
-                <Component
-                  {...widget}
-                  filters={filters}
-                  layer={layer}
-                  form={form}
-                  displayedLayer={displayedLayer}
-                />
-              </WidgetLayout>
-            );
-          })}
-        </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default Widgets;
