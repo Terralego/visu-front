@@ -1,29 +1,8 @@
 import React from 'react';
 import classnames from 'classnames';
-
-import WidgetSynthesis from './WidgetSynthesis';
-import { COMPONENT_SYNTHESIS } from './WidgetsTypes';
-import WidgetLayout from './WidgetLayout';
+import WidgetItem  from './WigetItem';
 import './styles.scss';
 
-
-const getTitle = (translate, component, layerLabel) => {
-  switch (component) {
-    case COMPONENT_SYNTHESIS:
-      return translate('terralego.widget.synthesis.title', { layer: layerLabel });
-    default:
-      return translate('terralego.widget.default.title');
-  }
-};
-
-const getComponent = component => {
-  switch (component) {
-    case COMPONENT_SYNTHESIS:
-      return WidgetSynthesis;
-    default:
-      return null;
-  }
-};
 
 const Widgets = ({
   widgets,
@@ -49,28 +28,21 @@ const Widgets = ({
       })}
     >
       <div className="widgets-panel__container">
-        {(widgets).map(({ widget, filters, layer, form, layerLabel }, index) => {
-          const { component } = widget;
-          const displayedLayer = displayedLayers.find(({ label }) => label === layerLabel);
-          const Component = getComponent(component);
-          const title = getTitle(translate, component, layerLabel);
-          return Component && (
-          <WidgetLayout
-            key={`${component}${index}`} // eslint-disable-line react/no-array-index-key
-            widget={widget}
-            title={title}
-            {...rest}
-          >
-            <Component
-              {...widget}
+        {
+          (widgets).map(({ widget, filters, layer, form, layerLabel }, index) => (
+            <WidgetItem
+              widget={widget}
               filters={filters}
               layer={layer}
               form={form}
-              displayedLayer={displayedLayer}
+              layerLabel={layerLabel}
+              index={index}
+              displayedLayers={displayedLayers}
+              translate={translate}
+              {...rest}
             />
-          </WidgetLayout>
-          );
-        })}
+          ))
+        }
       </div>
     </div>
   );
