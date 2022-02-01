@@ -42,8 +42,8 @@ cypress:
     DOCKER_HOST: "tcp://docker:2375/"
     DOCKER_DRIVER: overlay2
     VISUBACK_COMMIT_ID: "master"
-    VISUBACK_IMAGE_NAME: "registry.makina-corpus.net/terralego/visu-back"
-    REGISTRY_URL: "registry.makina-corpus.net"
+    VISUBACK_IMAGE_NAME: "registry2.makina-corpus.net/terralego/visu-back"
+    REGISTRY_URL: "registry2.makina-corpus.net"
     DOCKER_IMAGE_CACHE: "/cache/${CI_PROJECT_PATH_SLUG}/docker-images"
 
   before_script:
