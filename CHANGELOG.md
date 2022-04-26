@@ -1,4 +1,24 @@
 
+1.2.9 / 2022-04-26
+==================
+
+  * Update terra-front from 1.28.3 to 1.28.5
+
+1.2.8 / 2022-04-16
+==================
+
+  * Update terra-front from 1.28.2 to 1.28.3
+  * Add sentry as a project dependency
+  * Switch to registry2.makina-corpus.net (#69)
+  * Refacto: Move part of Widgets component into its own component
+  * Refacto: change Widgets & WidgetLayer from class to function
+  * Fix wrong data count in widget
+
+1.2.7 / 2021-11-02
+==================
+
+  * Set enableDetailCarrousel to true by default
+
 1.2.6 / 2021-10-25
 ==================
 
