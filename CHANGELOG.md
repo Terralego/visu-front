@@ -1,4 +1,11 @@
 
+1.2.16 / 2022-07-12
+===================
+
+  * Get layer extent from ES & pass it to LayersTreeProvider (#82)
+  
+  * Update terra-front from 1.28.13 to 1.28.14
+
 1.2.15 / 2022-06-17
 ===================
 
