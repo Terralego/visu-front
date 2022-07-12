@@ -146,10 +146,11 @@ export class Visualizer extends React.Component {
   debouncedSearchQuery = debounce(query => this.search(query), 500);
 
   componentDidMount () {
-    const { view: { state: { query } = {} }, initialState: { tree } } = this.props;
-    // if (query) {
+    const { initialStte: { tree } } = this.props;
+
+    // to load extent from ES at mount
     this.debouncedSearchQuery();
-    // }
+
     if (tree === false) {
       this.setState({ isLayersTreeVisible: false });
     }
