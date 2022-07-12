@@ -146,10 +146,11 @@ export class Visualizer extends React.Component {
   debouncedSearchQuery = debounce(query => this.search(query), 500);
 
   componentDidMount () {
-    const { view: { state: { query } = {} }, initialState: { tree } } = this.props;
-    if (query) {
-      this.debouncedSearchQuery();
-    }
+    const { initialStte: { tree } } = this.props;
+
+    // to load extent from ES at mount
+    this.debouncedSearchQuery();
+
     if (tree === false) {
       this.setState({ isLayersTreeVisible: false });
     }
@@ -294,6 +295,10 @@ export class Visualizer extends React.Component {
     this.setState({ interactions: newInteractions });
   }
 
+  setLayerExtent = bounds => {
+    this.setState({ bounds });
+  }
+
   interactiveMapInit = interactiveMapInstance => {
     this.setState({
       // eslint-disable-next-line react/no-unused-state
@@ -371,6 +376,30 @@ export class Visualizer extends React.Component {
         };
       });
 
+    if (this.activeAndSearchableLayers.length > 0) {
+      const availableFeatures = await searchService.msearch(
+        this.activeAndSearchableLayers.map(([{ filters: { layer }, baseEsQuery }]) => ({
+          query,
+          properties: (filters.find(({ index }) => index === layer) || {}).properties || {},
+          index: layer,
+          baseQuery: baseEsQuery,
+          size: 1,
+          aggregations: [{ type: 'geo_bounds', field: 'geom', name: 'viewport', options: { wrap_longitude: true } }],
+        })),
+      );
+
+      const { responses } = availableFeatures;
+      const results = responses.map(({
+        hits: { hits },
+        aggregations: { viewport: { bounds: { top_left: topLeft, bottom_right: bottomRight } } },
+      }) => {
+        const { _index: layerIndex } = hits.find(({ _index: index }) => index);
+        const [{ label }] = this.activeAndSearchableLayers.find(([{ filters: { layer } }]) =>
+          layer === layerIndex);
+        return { [label]: [topLeft.lon, topLeft.lat, bottomRight.lon, bottomRight.lat] };
+      }).reduce((acc, curr) => ({ ...acc, ...curr }), {});
+      this.setLayerExtent(results);
+    }
 
     if (!this.isSearching) {
       this.resetSearch(filters);
@@ -786,6 +815,7 @@ export class Visualizer extends React.Component {
       totalFeatures,
       features,
       printIsOpened,
+      bounds,
     } = this.state;
 
     const {
@@ -794,7 +824,6 @@ export class Visualizer extends React.Component {
       legends,
       setLegends,
       onClusterUpdate,
-      activeAndSearchableLayers,
     } = this;
 
     const displayLayersTree = isLayersTreeVisible && !printIsOpened;
@@ -842,6 +871,7 @@ export class Visualizer extends React.Component {
         fetchPropertyValues={fetchPropertyValues}
         fetchPropertyRange={fetchPropertyRange}
         translate={t}
+        layersExtent={bounds}
       >
         <PrivateLayers layersTree={layersTree} />
         <div className={classnames({
