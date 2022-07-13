@@ -824,6 +824,7 @@ export class Visualizer extends React.Component {
       legends,
       setLegends,
       onClusterUpdate,
+      activeAndSearchableLayers,
     } = this;
 
     const displayLayersTree = isLayersTreeVisible && !printIsOpened;
