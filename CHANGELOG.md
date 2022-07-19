@@ -1,4 +1,11 @@
 
+1.2.17 / 2022-07-19
+===================
+
+  * Upgrading @terralego/core from 1.28.14 to 1.28.15
+  * Freeze html-to-react to 1.4
+  * Fix app crashing from missing variable
+
 1.2.16 / 2022-07-12
 ===================
 
