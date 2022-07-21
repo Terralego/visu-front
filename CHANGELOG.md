@@ -1,4 +1,10 @@
 
+1.2.18 / 2022-07-21
+===================
+
+  * Add isDetailVisible props to LayersTreeProvider (#86)
+  * Upgrade terra-front from 1.28.15 to 1.28.16
+
 1.2.17 / 2022-07-19
 ===================
 
