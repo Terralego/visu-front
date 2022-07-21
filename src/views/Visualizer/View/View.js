@@ -873,6 +873,7 @@ export class Visualizer extends React.Component {
         fetchPropertyRange={fetchPropertyRange}
         translate={t}
         layersExtent={bounds}
+        isDetailsVisible={isDetailsVisible}
       >
         <PrivateLayers layersTree={layersTree} />
         <div className={classnames({
