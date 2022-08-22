@@ -391,8 +391,15 @@ export class Visualizer extends React.Component {
       const { responses } = availableFeatures;
       const results = responses.map(({
         hits: { hits },
-        aggregations: { viewport: { bounds: { top_left: topLeft, bottom_right: bottomRight } } },
+        aggregations: {
+          viewport: {
+            bounds: { top_left: topLeft, bottom_right: bottomRight } = {},
+          } = {},
+        },
       }) => {
+        if (hits.length === 0) {
+          return {};
+        }
         const { _index: layerIndex } = hits.find(({ _index: index }) => index);
         const [{ label }] = this.activeAndSearchableLayers.find(([{ filters: { layer } }]) =>
           layer === layerIndex);
