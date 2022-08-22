@@ -1,4 +1,9 @@
 
+1.2.20 / 2022-08-22
+===================
+
+  * Fix map not updating when no hits after a layer filter
+
 1.2.19 / 2022-08-17
 ===================
 
