@@ -39,6 +39,7 @@ const Widgets = ({
               index={index}
               displayedLayers={displayedLayers}
               translate={translate}
+              layersTreeState={layersTreeState}
               {...rest}
             />
           ))
