@@ -22,7 +22,7 @@
     "i18next-xhr-backend": "^3.1.2",
     "memoize-one": "^5.0.4",
     "memoizee": "^0.4.14",
-    "node-sass": "^4.10.0",
+    "node-sass": "^8.0.0",
     "normalize.css": "^8.0.1",
     "nunjucks": "^3.2.0",
     "pivotql-compiler-elasticsearch": "^0.2.0",
