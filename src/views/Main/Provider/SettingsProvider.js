@@ -29,7 +29,7 @@ const getSettings =  async () => {
   } catch (e) {
     try {
       const customSettings = await fetch('/api/settings/frontend');
-      if (customSettings.ok !== true) {
+      if (!customSettings.ok) {
         throw new Error('Unable to get response from API.');
       }
       return await customSettings.json();
