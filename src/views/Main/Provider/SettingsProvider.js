@@ -27,9 +27,17 @@ const getSettings =  async () => {
     const customSettings = await fetch(SETTINGS_PATH);
     return await customSettings.json();
   } catch (e) {
-    // eslint-disable-next-line no-console
-    console.error('settings.json is missing. Please create a public/settings.json from public/settings.dist.json');
-    return DEFAULT_SETTINGS;
+    try {
+      const customSettings = await fetch('/api/settings/frontend');
+      if (!customSettings.ok) {
+        throw new Error('Unable to get response from API.');
+      }
+      return await customSettings.json();
+    }
+    catch (exc) {
+      console.log('settings.json is missing. Please create a public/settings.json from public/settings.dist.json');
+      return DEFAULT_SETTINGS;
+    }
   }
 };
 
