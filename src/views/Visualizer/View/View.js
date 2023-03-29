@@ -151,6 +151,8 @@ export class Visualizer extends React.Component {
     // to load extent from ES at mount
     this.debouncedSearchQuery();
 
+    this.loadMapboxImages();
+
     if (tree === false) {
       this.setState({ isLayersTreeVisible: false });
     }
@@ -160,13 +162,14 @@ export class Visualizer extends React.Component {
   componentDidUpdate ({
     view: {
       interactions: prevInteractions,
+      layersTree: prevLayersTree,
     },
     layersTreeState: prevLayersTreeState,
     query: prevQuery,
     map: prevMap,
   }, { features: prevFeatures }) {
     const {
-      view: { interactions },
+      view: { interactions, layersTree },
       map,
       layersTreeState,
       query,
@@ -207,6 +210,10 @@ export class Visualizer extends React.Component {
 
     if (interactions !== prevInteractions) {
       this.setInteractions();
+    }
+
+    if (layersTree !== prevLayersTree) {
+      this.loadMapboxImages();
     }
   }
 
@@ -289,6 +296,50 @@ export class Visualizer extends React.Component {
     this.setState({ interactions: newInteractions });
   }
 
+  loadMapboxImages = directMap => {
+    const { view: { map: mapProps, layersTree } } = this.props;
+    const { map = directMap } = this.state;
+
+    // Find icon-images
+    const ready = mapProps
+      && mapProps.customStyle
+      && mapProps.customStyle.layers
+      && map
+      && map.hasImage
+      && map.loadImage;
+    if (ready) {
+      // Get all 'icon-image' used in style of displayed layers
+      // May be simplified by only "parsing all strings"
+      const foundIconImages = mapProps.customStyle.layers.map(({ layout: { 'icon-image': image } = {} } = {}) => image);
+
+      // Get all array of slug/filepath and keep only those matching found icon-image
+      const useImages = layersTree
+        .map(group => group.layers).flat()
+        .map(layer => layer.styleImages).flat()
+        .filter(({ slug, file } = {}) => (
+          slug
+          && file
+          && foundIconImages.includes(slug)
+          && !map.hasImage(slug)
+        ));
+
+      // Load images into Mapbox
+      useImages.forEach(({ slug, file }) => {
+        map.loadImage(
+          file,
+          (error, imageData) => {
+            if (error) {
+              console.error('Unable to loadImage'); // eslint-disable-line no-console
+            } else {
+              console.log('addImage', slug, imageData);
+              map.addImage(slug, imageData);
+            }
+          },
+        );
+      });
+    }
+  }
+
   setLayerExtent = bounds => {
     this.setState({ bounds });
   }
@@ -332,6 +383,7 @@ export class Visualizer extends React.Component {
     map.on('updateMap', onMapUpdate);
     map.on('load', () => this.updateLayersTree());
     initLayersState();
+    this.loadMapboxImages(map);
     map.resize();
   }
 
