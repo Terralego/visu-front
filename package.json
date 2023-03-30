@@ -8,7 +8,7 @@
     "@blueprintjs/icons": "^3.3.0",
     "@sentry/browser": "^6.17.5",
     "@sentry/tracing": "^6.17.5",
-    "@terralego/core": "^1.28.19",
+    "@terralego/core": "^1.29.0",
     "@turf/bbox": "^6.0.1",
     "@turf/center": "^6.0.1",
     "bodybuilder": "^2.2.16",
