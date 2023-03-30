@@ -218,8 +218,9 @@ export class Visualizer extends React.Component {
   }
 
   get legends () {
-    const { layersTreeState } = this.props;
+    const { layersTreeState, view } = this.props;
     const { legends } = this.state;
+
     const legendsFromLayersTree = Array.from(layersTreeState.entries())
       .map(([layer, state]) => {
         if (!state.active) return undefined;
@@ -242,7 +243,31 @@ export class Visualizer extends React.Component {
         ...legendsCluster.reduce((acc, legend) => [...acc, { title, ...legend }], []),
       ], []);
 
-    return [...(legends || []), ...(legendsFromLayersTree || [])];
+    const allLegends = [...(legends || []), ...(legendsFromLayersTree || [])];
+
+    try {
+      const iconsList = Object.fromEntries(view.layersTree
+        .map(group => group.layers).flat()
+        .map(layer => layer.styleImages).flat()
+        .map(({ slug, file }) => [slug, file]));
+
+      // Add style-image-file for each legend item having a style-image
+      allLegends.forEach(({ items = [] }) => {
+        items
+          .filter(legendItem => (legendItem['style-image'] && !legendItem['style-image-file']))
+          .forEach(legendItem => {
+            const iconFile = iconsList[legendItem['style-image']];
+
+            if (iconFile) {
+              legendItem['style-image-file'] = iconFile; // eslint-disable-line no-param-reassign
+            }
+          });
+      });
+    } catch (error) {
+      console.error(error); // eslint-disable-line no-console
+    }
+
+    return allLegends;
   }
 
   get isSearching () {
