@@ -240,11 +240,9 @@ export class Visualizer extends React.Component {
     const allLegends = [...(legends || []), ...(legendsFromLayersTree || [])];
 
     try {
-      const iconsList = Object.fromEntries(view.layersTree
-        .map(group => group.layers).flat()
-        .map(layer => layer.styleImages).flat()
-        .filter(Boolean)
-        .map(({ slug, file } = {}) => [slug, file]));
+      const iconsList = Object.fromEntries(
+        view.styleImages.map(({ slug, file } = {}) => [slug, file]),
+      );
 
       // Add style-image-file for each legend item having a style-image
       allLegends.forEach(({ items = [] }) => {
@@ -323,7 +321,7 @@ export class Visualizer extends React.Component {
   }
 
   loadMapboxImages = directMap => {
-    const { view: { map: mapProps, layersTree } } = this.props;
+    const { view: { map: mapProps, styleImages = [] } } = this.props;
     const { map = directMap } = this.state;
 
     // Find icon-images
@@ -339,9 +337,7 @@ export class Visualizer extends React.Component {
       const foundIconImages = mapProps.customStyle.layers.map(({ layout: { 'icon-image': image } = {} } = {}) => image);
 
       // Get all array of slug/filepath and keep only those matching found icon-image
-      const useImages = layersTree
-        .map(group => group.layers).flat()
-        .map(layer => layer.styleImages).flat()
+      const useImages = styleImages
         .filter(({ slug, file } = {}) => (
           slug
           && file
@@ -357,7 +353,6 @@ export class Visualizer extends React.Component {
             if (error) {
               console.error('Unable to loadImage'); // eslint-disable-line no-console
             } else {
-              console.log('addImage', slug, imageData);
               map.addImage(slug, imageData);
             }
           },
