@@ -249,7 +249,8 @@ export class Visualizer extends React.Component {
       const iconsList = Object.fromEntries(view.layersTree
         .map(group => group.layers).flat()
         .map(layer => layer.styleImages).flat()
-        .map(({ slug, file }) => [slug, file]));
+        .filter(Boolean)
+        .map(({ slug, file } = {}) => [slug, file]));
 
       // Add style-image-file for each legend item having a style-image
       allLegends.forEach(({ items = [] }) => {
