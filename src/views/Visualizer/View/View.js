@@ -151,8 +151,6 @@ export class Visualizer extends React.Component {
     // to load extent from ES at mount
     this.debouncedSearchQuery();
 
-    // this.loadMapboxImages();
-
     if (tree === false) {
       this.setState({ isLayersTreeVisible: false });
     }
@@ -213,7 +211,7 @@ export class Visualizer extends React.Component {
     }
 
     if (layersTree !== prevLayersTree) {
-      // this.loadMapboxImages();
+      // noop
     }
   }
 
@@ -326,47 +324,6 @@ export class Visualizer extends React.Component {
     this.setState({ interactions: newInteractions });
   }
 
-  loadMapboxImages = directMap => {
-    const { view: { map: mapProps, styleImages = [] } } = this.props;
-    const { map = directMap } = this.state;
-
-    // Find icon-images
-    const ready = mapProps
-      && mapProps.customStyle
-      && mapProps.customStyle.layers
-      && map
-      && map.hasImage
-      && map.loadImage;
-    if (ready) {
-      // Get all 'icon-image' used in style of displayed layers
-      // May be simplified by only "parsing all strings"
-      const foundIconImages = mapProps.customStyle.layers.map(({ layout: { 'icon-image': image } = {} } = {}) => image);
-
-      // Get all array of slug/filepath and keep only those matching found icon-image
-      const useImages = styleImages
-        .filter(({ slug, file } = {}) => (
-          slug
-          && file
-          && foundIconImages.includes(slug)
-          && !map.hasImage(slug)
-        ));
-
-      // Load images into Mapbox
-      useImages.forEach(({ slug, file }) => {
-        map.loadImage(
-          file,
-          (error, imageData) => {
-            if (error) {
-              console.error('Unable to loadImage'); // eslint-disable-line no-console
-            } else {
-              map.addImage(slug, imageData);
-            }
-          },
-        );
-      });
-    }
-  }
-
   setLayerExtent = bounds => {
     this.setState({ bounds });
   }
@@ -397,8 +354,22 @@ export class Visualizer extends React.Component {
     map.on('zoom', onMapUpdate);
     map.on('updateMap', onMapUpdate);
     map.on('load', () => this.updateLayersTree());
-    map.on('styleimagemissing', () => {
-      this.loadMapboxImages(map);
+    map.on('styleimagemissing', ({ id }) => {
+      const { view: { styleImages = [] } = {} } = this.props;
+      const foundImage = styleImages.find(({ slug }) => (slug === id));
+
+      if (foundImage) {
+        map.loadImage(
+          foundImage.file,
+          (error, imageData) => {
+            if (error) {
+              console.error('Unable to loadImage'); // eslint-disable-line no-console
+            } else {
+              map.addImage(id, imageData);
+            }
+          },
+        );
+      }
     });
     initLayersState();
     map.resize();
