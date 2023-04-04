@@ -151,7 +151,7 @@ export class Visualizer extends React.Component {
     // to load extent from ES at mount
     this.debouncedSearchQuery();
 
-    this.loadMapboxImages();
+    // this.loadMapboxImages();
 
     if (tree === false) {
       this.setState({ isLayersTreeVisible: false });
@@ -213,7 +213,7 @@ export class Visualizer extends React.Component {
     }
 
     if (layersTree !== prevLayersTree) {
-      this.loadMapboxImages();
+      // this.loadMapboxImages();
     }
   }
 
@@ -397,8 +397,10 @@ export class Visualizer extends React.Component {
     map.on('zoom', onMapUpdate);
     map.on('updateMap', onMapUpdate);
     map.on('load', () => this.updateLayersTree());
+    map.on('styleimagemissing', () => {
+      this.loadMapboxImages(map);
+    });
     initLayersState();
-    this.loadMapboxImages(map);
     map.resize();
   }
 
