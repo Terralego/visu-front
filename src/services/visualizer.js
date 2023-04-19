@@ -25,7 +25,7 @@ export const fetchViewConfig = memoizee(async viewName => {
 
 export const fetchAllViews = async (rootPath = '') => {
   try {
-    const config = await Api.request('geolayer/scene/');
+    const config = await Api.request('geolayer/scene/?viewer=true');
     const allViews = JSON.parse(JSON.stringify(config.results).replace(/"\/api(\/[^"]+)"/g, `"${Api.host}$1"`));
     return allViews.map(({
       name,
