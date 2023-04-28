@@ -313,6 +313,19 @@ export class Visualizer extends React.Component {
     this.updateLayersTree();
   }
 
+  onMapUpdate = () => {
+    // Add a class to the body for easier automatic tools detection
+    document.body.classList.add('cy-isloaded');
+    this.refreshLayers();
+  }
+
+  onStyleChange = () => {
+    // Update class to the body for easier automatic tools detection
+    document.body.classList.remove('cy-isloaded');
+    document.body.classList.add('cy-styleupdated');
+    this.refreshLayers();
+  }
+
   resetMap = map => {
     const { initLayersState, setMap } = this.props;
     setMap(map);
@@ -826,7 +839,8 @@ export class Visualizer extends React.Component {
     } = this.state;
 
     const {
-      refreshLayers,
+      onMapUpdate,
+      onStyleChange,
       resetMap, hideDetails, toggleLayersTree,
       legends,
       setLegends,
@@ -961,8 +975,8 @@ export class Visualizer extends React.Component {
             interactions={interactions}
             legends={legends}
             onMapLoaded={resetMap}
-            onMapUpdate={refreshLayers}
-            onStyleChange={refreshLayers}
+            onMapUpdate={onMapUpdate}
+            onStyleChange={onStyleChange}
             onClusterUpdate={onClusterUpdate}
             translate={t}
             locale={mapLocale}
