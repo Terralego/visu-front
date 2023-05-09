@@ -321,8 +321,7 @@ export class Visualizer extends React.Component {
 
   onStyleChange = () => {
     // Update class to the body for easier automatic tools detection
-    document.body.classList.remove('tiles-isloaded');
-    document.body.classList.add('tiles-styleupdated');
+    document.body.classList.replace('tiles-isloaded', 'tiles-styleupdated');
     this.refreshLayers();
   }
 
