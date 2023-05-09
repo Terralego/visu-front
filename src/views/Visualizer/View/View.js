@@ -315,14 +315,14 @@ export class Visualizer extends React.Component {
 
   onMapUpdate = () => {
     // Add a class to the body for easier automatic tools detection
-    document.body.classList.add('cy-isloaded');
+    document.body.classList.add('tiles-isloaded');
     this.refreshLayers();
   }
 
   onStyleChange = () => {
     // Update class to the body for easier automatic tools detection
-    document.body.classList.remove('cy-isloaded');
-    document.body.classList.add('cy-styleupdated');
+    document.body.classList.remove('tiles-isloaded');
+    document.body.classList.add('tiles-styleupdated');
     this.refreshLayers();
   }
 
