@@ -221,7 +221,7 @@ export class Visualizer extends React.Component {
           const selectedSublayer = layer.sublayers[selected];
           return selectedSublayer && selectedSublayer.legends;
         }
-        return layer.legends && layer.legends;
+        return layer.legends;
       })
       .filter(defined => defined)
       .reduce((accum, legendsCluster) => [
