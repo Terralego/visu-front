@@ -219,18 +219,12 @@ export class Visualizer extends React.Component {
         if (layer.sublayers) {
           const selected = state.sublayers.findIndex(active => active);
           const selectedSublayer = layer.sublayers[selected];
-          return selectedSublayer && selectedSublayer.legends && ({
-            title: selectedSublayer.label,
-            legendsCluster: selectedSublayer.legends,
-          });
+          return selectedSublayer && selectedSublayer.legends && selectedSublayer.legends;
         }
-        return layer.legends && ({
-          title: layer.label,
-          legendsCluster: layer.legends,
-        });
+        return layer.legends && layer.legends;
       })
       .filter(defined => defined)
-      .reduce((accum, { legendsCluster }) => [
+      .reduce((accum, legendsCluster) => [
         ...accum,
         ...legendsCluster.reduce((acc, legend) => [...acc, { ...legend }], []),
       ], []);
