@@ -230,9 +230,9 @@ export class Visualizer extends React.Component {
         });
       })
       .filter(defined => defined)
-      .reduce((accum, { legendsCluster, title }) => [
+      .reduce((accum, { legendsCluster }) => [
         ...accum,
-        ...legendsCluster.reduce((acc, legend) => [...acc, { title, ...legend }], []),
+        ...legendsCluster.reduce((acc, legend) => [...acc, { ...legend }], []),
       ], []);
 
     return [...(legends || []), ...(legendsFromLayersTree || [])];
