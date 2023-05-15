@@ -219,7 +219,7 @@ export class Visualizer extends React.Component {
         if (layer.sublayers) {
           const selected = state.sublayers.findIndex(active => active);
           const selectedSublayer = layer.sublayers[selected];
-          return selectedSublayer && selectedSublayer.legends && selectedSublayer.legends;
+          return selectedSublayer && selectedSublayer.legends;
         }
         return layer.legends && layer.legends;
       })
