@@ -6,3 +6,59 @@
 .bp3-control.bp3-checkbox input:checked ~ .bp3-control-indicator::before {
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill-rule='evenodd' clip-rule='evenodd' d='M12 5c-.28 0-.53.11-.71.29L7 9.59l-2.29-2.3a1.003 1.003 0 0 0-1.42 1.42l3 3c.18.18.43.29.71.29s.53-.11.71-.29l5-5A1.003 1.003 0 0 0 12 5z' fill='white'/%3e%3c/svg%3e");
 }
+
+body {
+  background-color: #ffffff; /* $white */
+  font-family: "Montserrat", sans-serif !important;
+}
+
+.splash-screen_container {
+  opacity: 0;
+  transition: opacity 1s ease-in;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 120;
+}
+
+.placeholder__navbar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 3.3rem;
+  background-color: #ffffff; /* $white */
+  z-index: 100;
+}
+.with-splash .splash-screen_container {
+  opacity: 1;
+}
+
+.splash-screen {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@media(min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+  .placeholder__navbar {
+    width: 2.65rem;
+  }
+  .splash-screen {
+    top: 25%;
+    left: 25%;
+    transform: scale(.85);
+  }
+}
+
+@media(min-width: 320px) and (max-width: 768px) and (orientation: portrait) {
+  .placeholder__navbar {
+    width: 2.75rem;
+  }
+  .splash-screen {
+    transform: scale(.65);
+  }
+}
