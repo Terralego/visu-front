@@ -160,14 +160,13 @@ export class Visualizer extends React.Component {
   componentDidUpdate ({
     view: {
       interactions: prevInteractions,
-      layersTree: prevLayersTree,
     },
     layersTreeState: prevLayersTreeState,
     query: prevQuery,
     map: prevMap,
   }, { features: prevFeatures }) {
     const {
-      view: { interactions, layersTree },
+      view: { interactions },
       map,
       layersTreeState,
       query,
