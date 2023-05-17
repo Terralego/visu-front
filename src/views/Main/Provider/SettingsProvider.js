@@ -33,8 +33,8 @@ const getSettings =  async () => {
         throw new Error('Unable to get response from API.');
       }
       return await customSettings.json();
-    }
-    catch (exc) {
+    } catch (exc) {
+      // eslint-disable-next-line no-console
       console.log('settings.json is missing. Please create a public/settings.json from public/settings.dist.json');
       return DEFAULT_SETTINGS;
     }
