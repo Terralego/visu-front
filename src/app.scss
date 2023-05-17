@@ -8,9 +8,8 @@
 }
 
 body {
-  background-color: #ffffff; /* $white */
+  background-color: #394B59;
 }
-
 .splash-screen_container {
   opacity: 0;
   transition: opacity 1s ease-in;
@@ -28,7 +27,7 @@ body {
   bottom: 0;
   left: 0;
   width: 3.3rem;
-  background-color: #ffffff; /* $white */
+  background-color: #394b59;
   z-index: 100;
 }
 .with-splash .splash-screen_container {
