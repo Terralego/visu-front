@@ -160,13 +160,14 @@ export class Visualizer extends React.Component {
   componentDidUpdate ({
     view: {
       interactions: prevInteractions,
+      layersTree: prevLayersTree,
     },
     layersTreeState: prevLayersTreeState,
     query: prevQuery,
     map: prevMap,
   }, { features: prevFeatures }) {
     const {
-      view: { interactions },
+      view: { interactions, layersTree },
       map,
       layersTreeState,
       query,
@@ -211,8 +212,9 @@ export class Visualizer extends React.Component {
   }
 
   get legends () {
-    const { layersTreeState } = this.props;
+    const { layersTreeState, view } = this.props;
     const { legends } = this.state;
+
     const legendsFromLayersTree = Array.from(layersTreeState.entries())
       .map(([layer, state]) => {
         if (!state.active) return undefined;
@@ -229,7 +231,30 @@ export class Visualizer extends React.Component {
         ...legendsCluster.reduce((acc, legend) => [...acc, { ...legend }], []),
       ], []);
 
-    return [...(legends || []), ...(legendsFromLayersTree || [])];
+    const allLegends = [...(legends || []), ...(legendsFromLayersTree || [])];
+
+    try {
+      const iconsList = Object.fromEntries(
+        view.styleImages.map(({ slug, file } = {}) => [slug, file]),
+      );
+
+      // Add style-image-file for each legend item having a style-image
+      allLegends.forEach(({ items = [] }) => {
+        items
+          .filter(legendItem => (legendItem['style-image'] && !legendItem['style-image-file']))
+          .forEach(legendItem => {
+            const iconFile = iconsList[legendItem['style-image']];
+
+            if (iconFile) {
+              legendItem['style-image-file'] = iconFile; // eslint-disable-line no-param-reassign
+            }
+          });
+      });
+    } catch (error) {
+      console.error(error); // eslint-disable-line no-console
+    }
+
+    return allLegends;
   }
 
   get isSearching () {
@@ -331,6 +356,23 @@ export class Visualizer extends React.Component {
     map.on('zoom', onMapUpdate);
     map.on('updateMap', onMapUpdate);
     map.on('load', () => this.updateLayersTree());
+    map.on('styleimagemissing', ({ id }) => {
+      const { view: { styleImages = [] } = {} } = this.props;
+      const foundImage = styleImages.find(({ slug }) => (slug === id));
+
+      if (foundImage) {
+        map.loadImage(
+          foundImage.file,
+          (error, imageData) => {
+            if (error) {
+              console.error('Unable to loadImage'); // eslint-disable-line no-console
+            } else {
+              map.addImage(id, imageData);
+            }
+          },
+        );
+      }
+    });
     initLayersState();
     map.resize();
   }
