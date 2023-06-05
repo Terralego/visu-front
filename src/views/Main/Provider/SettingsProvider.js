@@ -21,6 +21,8 @@ const DEFAULT_SETTINGS = {
   allowUserRegistration: false,
 };
 
+const TERRA_TOKEN_KEY = 'tf:auth:token';
+
 
 const getSettings =  async () => {
   try {
@@ -28,11 +30,7 @@ const getSettings =  async () => {
     return await customSettings.json();
   } catch (e) {
     try {
-      const customSettings = await fetch('/api/settings/frontend');
-      if (!customSettings.ok) {
-        throw new Error('Unable to get response from API.');
-      }
-      return await customSettings.json();
+      return await Api.request('settings/frontend');
     } catch (exc) {
       // eslint-disable-next-line no-console
       console.log('settings.json is missing. Please create a public/settings.json from public/settings.dist.json');
@@ -51,6 +49,9 @@ export const SettingsProvider = ({ children }) => {
     const loadSettings = async () => {
       const nextSettings = await getSettings();
       if (!isMounted) return;
+      if (nextSettings.token && !global.localStorage.getItem(TERRA_TOKEN_KEY)) {
+        global.localStorage.setItem(TERRA_TOKEN_KEY, nextSettings.token);
+      }
       setSettings(nextSettings);
     };
 
