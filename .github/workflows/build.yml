@@ -16,7 +16,7 @@ env:
 
 jobs:
   tests:
-    name: Unit tests
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
