@@ -39,4 +39,4 @@ jobs:
 
       - name: Test
         run: |
-          react-scripts build
+          npx react-scripts build
