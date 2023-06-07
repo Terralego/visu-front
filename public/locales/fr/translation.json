@@ -17,7 +17,8 @@
         "placeholder": "Mot de passe"
       },
       "submit": "Se connecter",
-      "title": "Connexion"
+      "title": "Connexion",
+      "sso": "Connexion SSO"
     },
     "logout": {
       "cancel": {
