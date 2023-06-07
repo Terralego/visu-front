@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
+import Api from '@terralego/core/modules/Api';
 import { contextSettings } from './context';
 
 const { Provider } = contextSettings;
