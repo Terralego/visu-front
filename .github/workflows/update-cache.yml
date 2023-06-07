@@ -1,38 +1,30 @@
-name: Linting frontend
-
 on:
   push:
     branches:
-      - master
-
-  pull_request:
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+      - main
 
 jobs:
-  eslint:
-    name: JS code styling
+  update-cache:
+    name: Update Cache
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version-file: .nvmrc
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Cache node_modules
+        id: cache-node-modules
         uses: actions/cache@v3
         with:
           path: ./node_modules
           key: node-modules-${{ hashFiles('**/package-lock.json') }}
 
+      - name: Setup node
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+
       - name: Install dependencies
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: |
           npm ci
-
-      - name: ESlint
-        run: |
-          npm run lint
