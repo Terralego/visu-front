@@ -1,7 +1,9 @@
+name: Update cache
+
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   update-cache:
