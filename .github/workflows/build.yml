@@ -37,6 +37,6 @@ jobs:
         run: |
           npm ci
 
-      - name: Test
+      - name: Build
         run: |
           npx react-scripts build
