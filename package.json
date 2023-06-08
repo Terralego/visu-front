@@ -42,7 +42,7 @@
     "react-scripts": "^2.1.8",
     "resize-observer-polyfill": "^1.5.1",
     "rewire": "^6.0.0",
-    "xlsx": "^0.14.5"
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "cypress": "^4.7.0",
