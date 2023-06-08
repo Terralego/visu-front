@@ -79,7 +79,16 @@ export const Header = ({
         ),
       }],
     ],
-  }), [t, logoUrl, logo, extraMenuItemsToMenu, authenticated, allowUserRegistration]);
+  }), [
+    t,
+    logoUrl,
+    logo,
+    extraMenuItemsToMenu,
+    authenticated,
+    allowUserRegistration,
+    loginUrl,
+    logoutUrl,
+  ]);
 
 
   useEffect(() => {
