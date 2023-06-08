@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 import Api from '@terralego/core/modules/Api';
+import { connectAuthProvider } from '@terralego/core/modules/Auth';
+
 import { contextSettings } from './context';
 
 const { Provider } = contextSettings;
@@ -40,7 +42,7 @@ const getSettings =  async () => {
   }
 };
 
-export const SettingsProvider = ({ children }) => {
+export const SettingsProvider = ({ children, setAuthenticated }) => {
   const [settings, setSettings] = useState({});
 
 
@@ -52,6 +54,7 @@ export const SettingsProvider = ({ children }) => {
       if (!isMounted) return;
       if (nextSettings.token && !global.localStorage.getItem(TERRA_TOKEN_KEY)) {
         global.localStorage.setItem(TERRA_TOKEN_KEY, nextSettings.token);
+        setAuthenticated(true);
       }
       setSettings(nextSettings);
     };
@@ -59,7 +62,7 @@ export const SettingsProvider = ({ children }) => {
     loadSettings();
 
     return () => { isMounted = false; };
-  }, [setSettings]);
+  }, [setSettings, setAuthenticated]);
 
   const value = { settings };
 
@@ -70,4 +73,4 @@ export const SettingsProvider = ({ children }) => {
   );
 };
 
-export default SettingsProvider;
+export default connectAuthProvider('setAuthenticated')(SettingsProvider);
