@@ -62,7 +62,7 @@ export const SettingsProvider = ({ children, setAuthenticated }) => {
     loadSettings();
 
     return () => { isMounted = false; };
-  }, [setSettings]);
+  }, [setSettings, setAuthenticated]);
 
   const value = { settings };
 

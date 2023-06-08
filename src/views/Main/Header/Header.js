@@ -34,9 +34,9 @@ export const Header = ({
   authenticated,
   settings: {
     theme: { logo = '', logoUrl = '/' } = {},
+    ssoAuth: { loginUrl, logoutUrl } = {},
     extraMenuItems = [],
     allowUserRegistration,
-    ssoAuth = {},
   },
 }) => {
   const [menu, setMenu] = useState([]);
@@ -74,7 +74,7 @@ export const Header = ({
             className={authenticated ? 'log-out' : 'log-in'}
             translate={t}
             allowUserRegistration={allowUserRegistration}
-            ssoLink={authenticated ? ssoAuth.logoutUrl : ssoAuth.loginUrl}
+            ssoLink={authenticated ? logoutUrl : loginUrl}
           />
         ),
       }],
