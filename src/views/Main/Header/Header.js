@@ -36,7 +36,7 @@ export const Header = ({
     theme: { logo = '', logoUrl = '/' } = {},
     extraMenuItems = [],
     allowUserRegistration,
-    ssoAuth,
+    ssoAuth = {},
   },
 }) => {
   const [menu, setMenu] = useState([]);
