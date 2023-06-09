@@ -29,7 +29,6 @@ it('should render correctly when internal authentication chose', () => {
   renderer.act(() => {
     button.props.onClick();
   });
-  testRenderer.update();
   const tree = testRenderer.toJSON();
   expect(tree).toMatchSnapshot();
 });
