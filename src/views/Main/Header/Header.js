@@ -83,7 +83,7 @@ export const Header = ({
             ssoLink={authenticated ? logoutUrl : loginUrl}
             ssoButtonText={ssoButtonText}
             defaultButtonText={defaultButtonText}
-            render={SSOLoginFormRenderer}
+            render={loginUrl ? SSOLoginFormRenderer : undefined}
           />
         ),
       }],
