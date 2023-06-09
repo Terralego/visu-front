@@ -11,7 +11,7 @@ it('should render correctly', () => {
   expect(tree).toMatchSnapshot();
 });
 
-it('should render correctly with authentication urls', () => {
+it('should render correctly with authentication url and labels', () => {
   const tree = renderer.create(
     <SSOLoginFormRenderer
       translate={translate}

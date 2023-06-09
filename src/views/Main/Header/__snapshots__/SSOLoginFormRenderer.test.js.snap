@@ -41,7 +41,7 @@ exports[`should render correctly 1`] = `
 
 exports[`should render correctly when internal authentication chose 1`] = `null`;
 
-exports[`should render correctly with authentication urls 1`] = `
+exports[`should render correctly with authentication url and labels 1`] = `
 <div
   className="login-form"
 >
