@@ -1,0 +1,81 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render correctly 1`] = `
+<div
+  className="login-form"
+>
+  <a
+    className="bp3-button bp3-large bp3-intent-success"
+    href="http://localhost/sso/url/test"
+    onKeyDown={[Function]}
+    onKeyUp={[Function]}
+    role="button"
+    tabIndex={0}
+  >
+    <span
+      className="bp3-button-text"
+    >
+      auth.loginform.renderer.sso
+    </span>
+  </a>
+  <span
+    className="login-form__separator bp3-text-large bp3-text-muted"
+  >
+    auth.loginform.renderer.separator
+  </span>
+  <button
+    className="bp3-button"
+    onClick={[Function]}
+    onKeyDown={[Function]}
+    onKeyUp={[Function]}
+    type="button"
+  >
+    <span
+      className="bp3-button-text"
+    >
+      auth.loginform.renderer.internal
+    </span>
+  </button>
+</div>
+`;
+
+exports[`should render correctly when internal authentication chose 1`] = `null`;
+
+exports[`should render correctly with authentication urls 1`] = `
+<div
+  className="login-form"
+>
+  <a
+    className="bp3-button bp3-large bp3-intent-success"
+    href="http://localhost/login/url/test"
+    onKeyDown={[Function]}
+    onKeyUp={[Function]}
+    role="button"
+    tabIndex={0}
+  >
+    <span
+      className="bp3-button-text"
+    >
+      sso button
+    </span>
+  </a>
+  <span
+    className="login-form__separator bp3-text-large bp3-text-muted"
+  >
+    auth.loginform.renderer.separator
+  </span>
+  <button
+    className="bp3-button"
+    onClick={[Function]}
+    onKeyDown={[Function]}
+    onKeyUp={[Function]}
+    type="button"
+  >
+    <span
+      className="bp3-button-text"
+    >
+      default button
+    </span>
+  </button>
+</div>
+`;
