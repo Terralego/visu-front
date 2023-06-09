@@ -12,6 +12,7 @@ import LoginButton from '@terralego/core/components/LoginButton';
 import { fetchAllViews } from '../../../services/visualizer';
 
 import PartnerButton from './PartnerButton';
+import SSOLoginFormRenderer from './SSOLoginFormRenderer';
 
 import './styles.scss';
 
@@ -34,7 +35,12 @@ export const Header = ({
   authenticated,
   settings: {
     theme: { logo = '', logoUrl = '/' } = {},
-    ssoAuth: { loginUrl, logoutUrl } = {},
+    ssoAuth: {
+      loginUrl,
+      logoutUrl,
+      ssoButtonText,
+      defaultButtonText,
+    } = {},
     extraMenuItems = [],
     allowUserRegistration,
   },
@@ -75,6 +81,9 @@ export const Header = ({
             translate={t}
             allowUserRegistration={allowUserRegistration}
             ssoLink={authenticated ? logoutUrl : loginUrl}
+            ssoButtonText={ssoButtonText}
+            defaultButtonText={defaultButtonText}
+            render={loginUrl ? SSOLoginFormRenderer : undefined}
           />
         ),
       }],
@@ -88,6 +97,8 @@ export const Header = ({
     allowUserRegistration,
     loginUrl,
     logoutUrl,
+    ssoButtonText,
+    defaultButtonText,
   ]);
 
 
@@ -143,6 +154,12 @@ Header.propTypes = {
       logo: PropTypes.string,
       logoUrl: PropTypes.string,
     }),
+    ssoAuth: PropTypes.shape({
+      loginUrl: PropTypes.string,
+      logoutUrl: PropTypes.string,
+      ssoButtonText: PropTypes.string,
+      defaultButtonText: PropTypes.string,
+    }),
     extraMenuItems: PropTypes.array,
   }),
 };
@@ -156,6 +173,12 @@ Header.defaultProps = {
     theme: {
       logo: '',
       logoUrl: '/',
+    },
+    ssoAuth: {
+      loginUrl: undefined,
+      logoutUrl: undefined,
+      ssoButtonText: undefined,
+      defaultButtonText: undefined,
     },
     extraMenuItems: [],
   },

@@ -178,6 +178,16 @@
         margin: .25rem;
       }
     }
+    
+    & .login-form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    & .login-form__separator {
+      margin: 6px;
+      text-align: center;
+    }
   }
 }
 
@@ -233,6 +243,7 @@
     }
   }
 }
+
 
 @media(min-width: $breakpoints-tablet) and (max-width: $breakpoints-desktop) and (orientation: landscape) {
   .modal-partner {
