@@ -9,10 +9,10 @@ import { NavLink } from 'react-router-dom';
 
 import MainMenu from '@terralego/core/components/MainMenu';
 import LoginButton from '@terralego/core/components/LoginButton';
+import SSOLoginFormRenderer from '@terralego/core/modules/Auth/components/LoginForm/SSOLoginFormRenderer';
 import { fetchAllViews } from '../../../services/visualizer';
 
 import PartnerButton from './PartnerButton';
-import SSOLoginFormRenderer from './SSOLoginFormRenderer';
 
 import './styles.scss';
 
