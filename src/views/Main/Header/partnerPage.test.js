@@ -8,3 +8,10 @@ it('should render correctly', () => {
   ).toJSON();
   expect(tree).toMatchSnapshot();
 });
+
+it('should render correctly with info content', () => {
+  const tree = renderer.create(
+    <PartnerPage content="<div>Custom content</div>" />,
+  ).toJSON();
+  expect(tree).toMatchSnapshot();
+});
