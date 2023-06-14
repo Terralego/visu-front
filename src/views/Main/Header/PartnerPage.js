@@ -2,10 +2,13 @@ import React from 'react';
 import { Card } from '@blueprintjs/core';
 
 
-const PartnerPage = () => (
+const PartnerPage = ({ content }) => (
   <Card>
     <div className="mentions-legales">
-      <h1>Put your partner data here</h1>
+      {content
+        ? <div dangerouslySetInnerHTML={{ __html: content }} />
+        : <h1>Put your partner data here</h1>
+      }
     </div>
   </Card>
 );
