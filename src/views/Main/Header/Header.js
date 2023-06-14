@@ -43,6 +43,7 @@ export const Header = ({
     } = {},
     extraMenuItems = [],
     allowUserRegistration,
+    infoContent,
   },
 }) => {
   const [menu, setMenu] = useState([]);
@@ -69,6 +70,7 @@ export const Header = ({
           <PartnerButton
             label={t('menu.informations')}
             icon="info-sign"
+            content={infoContent}
           />
         ),
       }, {
@@ -99,6 +101,7 @@ export const Header = ({
     logoutUrl,
     ssoButtonText,
     defaultButtonText,
+    infoContent,
   ]);
 
 

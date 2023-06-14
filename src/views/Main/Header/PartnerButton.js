@@ -14,7 +14,7 @@ import NavBarItemTablet from '@terralego/core/components/NavBarItemTablet';
 
 import PartnerPage from './PartnerPage';
 
-export const PartnerButton = ({ isMobileSized, isPhoneSized, ...props }) => {
+export const PartnerButton = ({ isMobileSized, isPhoneSized, content, ...props }) => {
   const [isOpen, setOpen] = useState(false);
   const NavBarItem = isMobileSized ? NavBarItemTablet : NavBarItemDesktop;
 
@@ -36,7 +36,7 @@ export const PartnerButton = ({ isMobileSized, isPhoneSized, ...props }) => {
             Classes.ELEVATION_4,
           )}
         >
-          <PartnerPage />
+          <PartnerPage content={content} />
         </div>
       </Overlay>
     </>
