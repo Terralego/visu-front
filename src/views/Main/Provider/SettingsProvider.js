@@ -42,7 +42,7 @@ const getSettings =  async () => {
   }
 };
 
-export const SettingsProvider = ({ children, setAuthenticated }) => {
+export const SettingsProvider = ({ children, authenticated, setAuthenticated }) => {
   const [settings, setSettings] = useState({});
 
 
@@ -54,7 +54,7 @@ export const SettingsProvider = ({ children, setAuthenticated }) => {
       if (!isMounted) return;
       if (nextSettings.token && !global.localStorage.getItem(TERRA_TOKEN_KEY)) {
         global.localStorage.setItem(TERRA_TOKEN_KEY, nextSettings.token);
-        setAuthenticated(true);
+        !authenticated && setAuthenticated(true);
       }
       setSettings(nextSettings);
     };
@@ -62,7 +62,7 @@ export const SettingsProvider = ({ children, setAuthenticated }) => {
     loadSettings();
 
     return () => { isMounted = false; };
-  }, [setSettings, setAuthenticated]);
+  }, [setSettings, authenticated, setAuthenticated]);
 
   const value = { settings };
 
@@ -73,4 +73,4 @@ export const SettingsProvider = ({ children, setAuthenticated }) => {
   );
 };
 
-export default connectAuthProvider('setAuthenticated')(SettingsProvider);
+export default connectAuthProvider('authenticated', 'setAuthenticated')(SettingsProvider);
