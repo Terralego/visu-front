@@ -214,7 +214,10 @@ export class Visualizer extends React.Component {
     const { layersTreeState, view } = this.props;
     const { legends } = this.state;
 
-    const { map: { customStyle: { layers: customStyleLayers } } } = view;
+    const customStyleLayers = (view
+      && view.map
+      && view.map.customStyle
+      && view.map.customStyle.layers) || [];
 
     const legendsFromLayersTree = Array.from(layersTreeState.entries())
       .map(([layer, state]) => {
