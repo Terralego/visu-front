@@ -214,6 +214,11 @@ export class Visualizer extends React.Component {
     const { layersTreeState, view } = this.props;
     const { legends } = this.state;
 
+    const customStyleLayers = (view
+      && view.map
+      && view.map.customStyle
+      && view.map.customStyle.layers) || [];
+
     const legendsFromLayersTree = Array.from(layersTreeState.entries())
       .map(([layer, state]) => {
         if (!state.active) return undefined;
@@ -222,7 +227,10 @@ export class Visualizer extends React.Component {
           const selectedSublayer = layer.sublayers[selected];
           return selectedSublayer && selectedSublayer.legends;
         }
-        return layer.legends;
+        const styleLayer = customStyleLayers.find(e => layer.layers.includes(e.id));
+        const styleLegends = styleLayer ? styleLayer.advanced_style.legends : [];
+
+        return [...layer.legends, ...(styleLegends || [])];
       })
       .filter(defined => defined)
       .reduce((accum, legendsCluster) => [
