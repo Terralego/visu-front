@@ -207,6 +207,8 @@
   .mentions-legales {
     color: #394b59;
     padding: 1.5rem;
+    max-height: 95vh;
+    overflow: auto;
 
     .mentions-legales-container {
       font-family: "SFProText-Regular", Arial, Helvetica, sans-serif;
