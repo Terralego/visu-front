@@ -34,7 +34,7 @@
         outline: none;
         text-decoration: none;
         width: 9.5rem;
-        height: 3rem;
+        height: 2rem;
 
         .header-button-label {
           color: #f5f8fa;
@@ -138,6 +138,27 @@
       svg {
         width: 16px;
         transition: .3s ease-in filter;
+      }
+    }
+
+    @media(max-height: $breakpoints-height) {
+      .header-button {
+        img,
+        svg {
+          transform: scale(0.75);
+        }
+      }
+      .navBar__group {
+        li {
+          margin: 0;
+        }
+        ul {
+          margin: 0;
+        }
+        &.navBar__group__empty {
+          height: 0;
+          padding: 0.5em 0;
+        }
       }
     }
 
