@@ -228,7 +228,11 @@ export class Visualizer extends React.Component {
           return selectedSublayer && selectedSublayer.legends;
         }
         const styleLayer = customStyleLayers.find(e => layer.layers.includes(e.id));
-        const styleLegends = styleLayer ? styleLayer.advanced_style.legends : [];
+        const styleLegends = (
+          styleLayer
+          && styleLayer.advanced_style
+          && styleLayer.advanced_style.legends
+        ) || [];
 
         return [...layer.legends, ...(styleLegends || [])];
       })
