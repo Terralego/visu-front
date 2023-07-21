@@ -31,6 +31,8 @@ export const PartnerButton = ({ isMobileSized, isPhoneSized, content, ...props }
         onClose={() => setOpen(false)}
       >
         <div
+          role="dialog"
+          aria-modal="true"
           className={classNames(
             Classes.CARD,
             Classes.ELEVATION_4,
