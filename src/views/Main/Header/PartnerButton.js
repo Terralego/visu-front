@@ -14,6 +14,19 @@ import NavBarItemTablet from '@terralego/core/components/NavBarItemTablet';
 
 import PartnerPage from './PartnerPage';
 
+export const PartnerOverlayContent = ({ content }) => (
+  <div
+    role="dialog"
+    aria-modal="true"
+    className={classNames(
+      Classes.CARD,
+      Classes.ELEVATION_4,
+    )}
+  >
+    <PartnerPage content={content} />
+  </div>
+);
+
 export const PartnerButton = ({ isMobileSized, isPhoneSized, content, ...props }) => {
   const [isOpen, setOpen] = useState(false);
   const NavBarItem = isMobileSized ? NavBarItemTablet : NavBarItemDesktop;
@@ -30,16 +43,7 @@ export const PartnerButton = ({ isMobileSized, isPhoneSized, content, ...props }
         isOpen={isOpen}
         onClose={() => setOpen(false)}
       >
-        <div
-          role="dialog"
-          aria-modal="true"
-          className={classNames(
-            Classes.CARD,
-            Classes.ELEVATION_4,
-          )}
-        >
-          <PartnerPage content={content} />
-        </div>
+        <PartnerOverlayContent content={content} />
       </Overlay>
     </>
   );

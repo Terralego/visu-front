@@ -15,3 +15,27 @@ exports[`should render correctly in mode mobile 1`] = `
   NavBarItemTablet
 </div>
 `;
+
+exports[`should render correctly overlay content 1`] = `
+<div
+  aria-modal="true"
+  className="bp3-card bp3-elevation-4"
+  role="dialog"
+>
+  <div
+    className="bp3-card bp3-elevation-0"
+  >
+    <div
+      className="mentions-legales"
+    >
+      <div
+        dangerouslySetInnerHTML={
+          Object {
+            "__html": "<b>Hello</b> world!",
+          }
+        }
+      />
+    </div>
+  </div>
+</div>
+`;
