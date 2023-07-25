@@ -974,7 +974,7 @@ export class Visualizer extends React.Component {
                     />
                   )
                   : (
-                    <LayersTree />
+                    <LayersTree translate={t} filterable />
                   )}
               </MapNavigation>
             )}

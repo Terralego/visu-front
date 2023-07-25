@@ -206,6 +206,9 @@
         "group": {
           "selector": "Aucune couche disponible"
         },
+        "list": {
+          "filter": "Filter les couches"
+        },
         "itemFilters": {
           "date": "le {{value}}",
           "label": "{{label}} : ",
