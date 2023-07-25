@@ -20,7 +20,7 @@ export const PartnerButton = ({ isMobileSized, isPhoneSized, content, ...props }
 
   return (
     <>
-      <NavBarItem {...props} onClick={() => setOpen(true)} />
+      <NavBarItem {...props} onClick={() => setOpen(true)} buttonProps={{ 'aria-expanded': isOpen }} />
       <Overlay
         className={classNames(
           Classes.OVERLAY_SCROLL_CONTAINER,
