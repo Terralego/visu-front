@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import classNames from 'classnames';
@@ -14,13 +14,26 @@ import NavBarItemTablet from '@terralego/core/components/NavBarItemTablet';
 
 import PartnerPage from './PartnerPage';
 
+export const PartnerOverlayContent = ({ content }) => (
+  <div
+    role="dialog"
+    aria-modal="true"
+    className={classNames(
+      Classes.CARD,
+      Classes.ELEVATION_4,
+    )}
+  >
+    <PartnerPage content={content} />
+  </div>
+);
+
 export const PartnerButton = ({ isMobileSized, isPhoneSized, content, ...props }) => {
-  const [isOpen, setOpen] = useState(false);
+  const [isOpen, setOpen] = React.useState(false);
   const NavBarItem = isMobileSized ? NavBarItemTablet : NavBarItemDesktop;
 
   return (
     <>
-      <NavBarItem {...props} onClick={() => setOpen(true)} />
+      <NavBarItem {...props} onClick={() => setOpen(true)} buttonProps={{ 'aria-expanded': isOpen }} />
       <Overlay
         className={classNames(
           Classes.OVERLAY_SCROLL_CONTAINER,
@@ -30,14 +43,7 @@ export const PartnerButton = ({ isMobileSized, isPhoneSized, content, ...props }
         isOpen={isOpen}
         onClose={() => setOpen(false)}
       >
-        <div
-          className={classNames(
-            Classes.CARD,
-            Classes.ELEVATION_4,
-          )}
-        >
-          <PartnerPage content={content} />
-        </div>
+        <PartnerOverlayContent content={content} />
       </Overlay>
     </>
   );

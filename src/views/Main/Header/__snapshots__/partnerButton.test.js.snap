@@ -1,17 +1,78 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`should render correctly in mode desktop 1`] = `
-<div
-  className="container"
+<span
+  className="bp3-popover-wrapper"
 >
-  NavBarItemDesktop
-</div>
+  <span
+    className="bp3-popover-target"
+    onBlur={[Function]}
+    onFocus={[Function]}
+    onMouseEnter={[Function]}
+    onMouseLeave={[Function]}
+  >
+    <span
+      className="header-link"
+      data-link-id={null}
+      onClick={[Function]}
+      tabIndex={0}
+    >
+      <button
+        aria-expanded={false}
+        className="bp3-button bp3-minimal header-button"
+        id={null}
+        onClick={[Function]}
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        type="button"
+      />
+    </span>
+  </span>
+</span>
 `;
 
 exports[`should render correctly in mode mobile 1`] = `
-<div
-  className="container"
+<span
+  className="header-link"
+  data-link-id={null}
+  onClick={[Function]}
 >
-  NavBarItemTablet
+  <p
+    className="header-button-label"
+  >
+    
+  </p>
+  <button
+    aria-expanded={false}
+    className="bp3-button bp3-minimal header-button"
+    id={null}
+    onKeyDown={[Function]}
+    onKeyUp={[Function]}
+    type="button"
+  />
+</span>
+`;
+
+exports[`should render correctly overlay content 1`] = `
+<div
+  aria-modal="true"
+  className="bp3-card bp3-elevation-4"
+  role="dialog"
+>
+  <div
+    className="bp3-card bp3-elevation-0"
+  >
+    <div
+      className="mentions-legales"
+    >
+      <div
+        dangerouslySetInnerHTML={
+          Object {
+            "__html": "<b>Hello</b> world!",
+          }
+        }
+      />
+    </div>
+  </div>
 </div>
 `;
