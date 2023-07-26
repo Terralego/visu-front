@@ -1,0 +1,183 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render correctly 1`] = `
+<div
+  className="visualizer visualizer--with-layers-tree"
+>
+  <div
+    className="visualizer-view is-layers-tree-visible"
+  >
+    <div
+      className="bp3-card bp3-elevation-0 map-navigation bp3-dark"
+    >
+      <div
+        className="map-navigation__content"
+        id="map-navigation__content-mocked-uniq-id"
+      >
+        <div
+          className="layerstree-panel-list"
+        >
+          <div
+            className="bp3-card bp3-elevation-0 search-input"
+          >
+            <div
+              className="bp3-input-group"
+            >
+              <input
+                className="bp3-input"
+                onChange={[Function]}
+                placeholder="Filter layers"
+                style={
+                  Object {
+                    "paddingLeft": undefined,
+                    "paddingRight": undefined,
+                  }
+                }
+                type="text"
+                value=""
+              />
+              <span
+                className="bp3-input-action"
+              >
+                <button
+                  className="bp3-button bp3-minimal"
+                  onClick={[Function]}
+                  onKeyDown={[Function]}
+                  onKeyUp={[Function]}
+                  type="button"
+                >
+                  <span
+                    className="bp3-icon bp3-icon-small-cross"
+                    icon="small-cross"
+                  >
+                    <svg
+                      data-icon="small-cross"
+                      height={16}
+                      viewBox="0 0 16 16"
+                      width={16}
+                    >
+                      <desc>
+                        small-cross
+                      </desc>
+                      <path
+                        d="M9.41 8l2.29-2.29c.19-.18.3-.43.3-.71a1.003 1.003 0 00-1.71-.71L8 6.59l-2.29-2.3a1.003 1.003 0 00-1.42 1.42L6.59 8 4.3 10.29c-.19.18-.3.43-.3.71a1.003 1.003 0 001.71.71L8 9.41l2.29 2.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71L9.41 8z"
+                        fillRule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <span
+        className="bp3-popover-wrapper bp3-dark map-navigation__button-container"
+      >
+        <span
+          className="bp3-popover-target"
+          onBlur={[Function]}
+          onFocus={[Function]}
+          onMouseEnter={[Function]}
+          onMouseLeave={[Function]}
+        >
+          <button
+            aria-controls="map-navigations__content-mocked-uniq-id"
+            aria-expanded={true}
+            className="bp3-button map-navigation__button"
+            onClick={[Function]}
+            onKeyDown={[Function]}
+            onKeyUp={[Function]}
+            tabIndex={0}
+            type="button"
+          >
+            <span
+              className="bp3-icon bp3-icon-arrow-right"
+              icon="arrow-right"
+            >
+              <svg
+                data-icon="arrow-right"
+                height={16}
+                viewBox="0 0 16 16"
+                width={16}
+              >
+                <desc>
+                  arrow-right
+                </desc>
+                <path
+                  d="M14.7 7.29l-5-5a.965.965 0 00-.71-.3 1.003 1.003 0 00-.71 1.71l3.29 3.29H1.99c-.55 0-1 .45-1 1s.45 1 1 1h9.59l-3.29 3.29a1.003 1.003 0 001.42 1.42l5-5c.18-.18.29-.43.29-.71s-.12-.52-.3-.7z"
+                  fillRule="evenodd"
+                />
+              </svg>
+            </span>
+          </button>
+        </span>
+      </span>
+    </div>
+    <div
+      className="visualizer-view__center col"
+    >
+      <div
+        className="row"
+      >
+        <div
+          className="col-data"
+        >
+          <div
+            className="visualizer-view__map"
+          >
+            <div
+              className="view-details bp3-light view-details--hidden"
+            >
+              <div
+                className="view-details__close"
+              >
+                <button
+                  className="bp3-button bp3-minimal view-details__close-button"
+                  onClick={[Function]}
+                  onKeyDown={[Function]}
+                  onKeyUp={[Function]}
+                  type="button"
+                >
+                  <span
+                    className="bp3-icon bp3-icon-cross"
+                    icon="cross"
+                  >
+                    <svg
+                      data-icon="cross"
+                      height={16}
+                      viewBox="0 0 16 16"
+                      width={16}
+                    >
+                      <desc>
+                        cross
+                      </desc>
+                      <path
+                        d="M9.41 8l3.29-3.29c.19-.18.3-.43.3-.71a1.003 1.003 0 00-1.71-.71L8 6.59l-3.29-3.3a1.003 1.003 0 00-1.42 1.42L6.59 8 3.3 11.29c-.19.18-.3.43-.3.71a1.003 1.003 0 001.71.71L8 9.41l3.29 3.29c.18.19.43.3.71.3a1.003 1.003 0 00.71-1.71L9.41 8z"
+                        fillRule="evenodd"
+                      />
+                    </svg>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div
+            data-mock="./DataTable"
+          />
+        </div>
+        <div
+          className="col-widgets"
+        >
+          <div
+            data-mock="./Widgets"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    data-mock="@terralego/core/modules/Map/InteractiveMap"
+  />
+</div>
+`;

@@ -91,6 +91,8 @@ const getControls = memoize((
   },
 ].filter(Boolean));
 
+const nullObj = {};
+
 export class Visualizer extends React.Component {
   static propTypes = {
     view: PropTypes.shape({
@@ -119,6 +121,9 @@ export class Visualizer extends React.Component {
     }),
     isMobileSized: PropTypes.bool,
     enableDetailCarrousel: PropTypes.bool,
+    layersTreeState: PropTypes.instanceOf(Map),
+    setLayersTreeState: PropTypes.func,
+    settings: PropTypes.objectOf(PropTypes.any),
   };
 
   static defaultProps = {
@@ -132,6 +137,9 @@ export class Visualizer extends React.Component {
     initialState: {},
     isMobileSized: false,
     enableDetailCarrousel: true,
+    layersTreeState: new Map(),
+    setLayersTreeState () {},
+    settings: {},
   };
 
   state = {
@@ -858,9 +866,9 @@ export class Visualizer extends React.Component {
       isMobileSized,
       viewState,
       i18n: {
-        getResourceBundle,
-        language,
-        store: { options: { fallbackLng } },
+        getResourceBundle = () => null,
+        language = '',
+        store: { options: { fallbackLng = [] } = nullObj } = nullObj,
       } = {},
       exportCallback,
       settings: {
@@ -926,7 +934,7 @@ export class Visualizer extends React.Component {
     const isTableVisible = hasTable(layersTreeState);
     const isWidgetsVisible = hasWidget(layersTreeState);
 
-    const { terralego: { map: mapLocale } } = getResourceBundle(language.split('-')[0]) || getResourceBundle(fallbackLng[0]);
+    const { terralego: { map: mapLocale } = nullObj } = getResourceBundle(language.split('-')[0]) || getResourceBundle(fallbackLng[0]) || nullObj;
 
     const isStory = type === 'story';
 
@@ -951,10 +959,11 @@ export class Visualizer extends React.Component {
           'visualizer--with-details': isDetailsVisible,
         })}
         >
-          <div className={`
-            visualizer-view
-            ${displayLayersTree ? 'is-layers-tree-visible' : ''}
-          `}
+          <div className={
+            classnames({
+              'visualizer-view': true,
+              'is-layers-tree-visible': displayLayersTree,
+            })}
           >
             {layersTree && (
               <MapNavigation
