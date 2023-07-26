@@ -157,19 +157,3 @@ $tableHeight: 33vh;
   }
 
 }
-
-@media(min-width: $breakpoints-tablet) and (max-width: $breakpoints-desktop) and (orientation: landscape) {
-  .visualizer {
-    .interactive-map__legends {
-      right: 3.25rem;
-    }
-  }
-}
-
-@media(min-width: $breakpoints-phone) and (max-width: $breakpoints-tablet) and (orientation: portrait) {
-  .visualizer {
-    .interactive-map__legends {
-      right: 3.75rem;
-    }
-  }
-}
