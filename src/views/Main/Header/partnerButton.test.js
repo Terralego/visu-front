@@ -1,9 +1,8 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
-import { PartnerButton, PartnerOverlayContent } from './PartnerButton';
+import { mount } from 'enzyme';
 
-jest.mock('@terralego/core/components/NavBarItemTablet', () => () => <div className="container">NavBarItemTablet</div>);
-jest.mock('@terralego/core/components/NavBarItemDesktop', () => () => <div className="container">NavBarItemDesktop</div>);
+import { PartnerButton, PartnerOverlayContent } from './PartnerButton';
 
 it('should render correctly in mode desktop', () => {
   const tree = renderer.create(
@@ -20,8 +19,21 @@ it('should render correctly in mode mobile', () => {
 });
 
 it('should render correctly overlay content', () => {
-  const tree = renderer.create(
+  const wrapper = renderer.create(
     <PartnerOverlayContent content="<b>Hello</b> world!" />,
-  ).toJSON();
-  expect(tree).toMatchSnapshot();
+  );
+  expect(wrapper.toJSON()).toMatchSnapshot();
+});
+
+it('should have "aria-expanded" matching modal state', () => {
+  const wrapper = mount(<PartnerButton />);
+  const button = wrapper.find('button').first();
+
+  button.simulate('click');
+  expect(button.instance().getAttribute('aria-expanded')).toBe('true');
+
+  const backdrop = wrapper.find('.bp3-overlay-backdrop').first();
+  backdrop.simulate('mousedown');
+
+  expect(button.instance().getAttribute('aria-expanded')).toBe('false');
 });

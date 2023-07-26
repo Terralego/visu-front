@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import classNames from 'classnames';
@@ -28,7 +28,7 @@ export const PartnerOverlayContent = ({ content }) => (
 );
 
 export const PartnerButton = ({ isMobileSized, isPhoneSized, content, ...props }) => {
-  const [isOpen, setOpen] = useState(false);
+  const [isOpen, setOpen] = React.useState(false);
   const NavBarItem = isMobileSized ? NavBarItemTablet : NavBarItemDesktop;
 
   return (
