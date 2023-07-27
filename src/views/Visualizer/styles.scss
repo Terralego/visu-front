@@ -280,6 +280,10 @@ $bg-visualizer: rgb(49, 64, 77);
   flex-flow: wrap;
   align-items: baseline;
 
+  font-weight: inherit;
+  font-size: inherit;
+  margin: inherit;
+
   &-title {
     font-size: 1.4rem;
     font-family: "SFProText-Regular", Arial, Helvetica, sans-serif;
