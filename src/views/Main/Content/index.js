@@ -47,7 +47,7 @@ const Content = ({
         <Route path={`/${VIEW_ROOT_PATH}/:viewName`}>
           <Suspense fallback={<VisualizerLoading />}>
             <Visualizer
-              renderHeader={<AppName title={title} version={version} />}
+              renderHeader={<AppName title={title} version={version} component="h1" />}
               exportCallback={exportCallback}
             />
           </Suspense>
