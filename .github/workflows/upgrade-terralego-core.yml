@@ -42,3 +42,9 @@ jobs:
           add: 'package-lock.json package.json'
           message: 'Bump @terralego/core'
           new_branch: 'upgrade-terralego-core'
+
+      - name: Create pull request
+        uses: devops-infra/action-pull-request@v0.5.5
+        with:
+          title: "Bump @terralego/core"
+          source_branch: 'upgrade-terralego-core'
