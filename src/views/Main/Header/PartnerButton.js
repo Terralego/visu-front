@@ -14,13 +14,14 @@ import NavBarItemTablet from '@terralego/core/components/NavBarItemTablet';
 
 import PartnerPage from './PartnerPage';
 
-export const PartnerOverlayContent = ({ content }) => (
+export const PartnerOverlayContent = ({ content, className = '' }) => (
   <div
     role="dialog"
     aria-modal="true"
     className={classNames(
       Classes.CARD,
       Classes.ELEVATION_4,
+      className,
     )}
   >
     <PartnerPage content={content} />
