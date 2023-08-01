@@ -54,7 +54,7 @@ exports[`should render correctly in mode mobile 1`] = `
 `;
 
 exports[`should render correctly overlay content 1`] = `
-<div
+<aside
   aria-modal="true"
   className="bp3-card bp3-elevation-4"
   role="dialog"
@@ -74,5 +74,5 @@ exports[`should render correctly overlay content 1`] = `
       />
     </div>
   </div>
-</div>
+</aside>
 `;
