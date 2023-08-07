@@ -37,3 +37,14 @@ it('should have "aria-expanded" matching modal state', () => {
 
   expect(button.instance().getAttribute('aria-expanded')).toBe('false');
 });
+
+it('should be properly closed by close button', () => {
+  const wrapper = mount(<PartnerButton />);
+  const button = wrapper.find('button').first();
+
+  button.simulate('click');
+  const closeButton = wrapper.find('.close-overlay').first();
+  closeButton.simulate('click');
+
+  expect(button.instance().getAttribute('aria-expanded')).toBe('false');
+});

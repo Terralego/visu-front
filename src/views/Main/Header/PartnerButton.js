@@ -5,6 +5,7 @@ import classNames from 'classnames';
 import {
   Overlay,
   Classes,
+  Button,
 } from '@blueprintjs/core';
 
 import withDeviceSize from '@terralego/core/hoc/withDeviceSize';
@@ -18,6 +19,7 @@ export const PartnerOverlayContent = ({
   content,
   className = '',
   component: Component = 'aside',
+  onClose: handleCloseButtonClick = () => {},
   ...props
 }) => (
   <Component
@@ -31,6 +33,15 @@ export const PartnerOverlayContent = ({
     {...props}
   >
     <PartnerPage content={content} />
+
+    <Button
+      aria-label="Fermer"
+      className="close-overlay"
+      style={{ position: 'absolute', right: 0, top: 0 }}
+      icon="cross"
+      onClick={handleCloseButtonClick}
+      minimal
+    />
   </Component>
 );
 
@@ -50,7 +61,10 @@ export const PartnerButton = ({ isMobileSized, isPhoneSized, content, ...props }
         isOpen={isOpen}
         onClose={() => setOpen(false)}
       >
-        <PartnerOverlayContent content={content} />
+        <PartnerOverlayContent
+          content={content}
+          onClose={() => setOpen(false)}
+        />
       </Overlay>
     </>
   );
