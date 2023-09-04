@@ -1,12 +1,3 @@
-/**
- * Round value with decimals
- *
- * @param {number} value
- * @param {number} decimals
- * @returns {number}
- */
-const round = (value, decimals) => (Math.round(value * (10 ** decimals)) / (10 ** decimals));
-
 export const extractColumns = (fields = [], results) => {
   if (fields.length) {
     return fields.map(({ value, label, display = true, sortable = true, ...props }) => ({
@@ -30,26 +21,6 @@ export const extractColumns = (fields = [], results) => {
 };
 
 /**
- * Format value according to settings
- *
- * @param {string|number} value
- * @param {{}} settings Object of form {decimals: 1}
- * @returns {number|string}
- */
-export const formatFromSettings = (value, settings) => {
-  const { decimals } = settings;
-  const isNumber = typeof value === 'number';
-  let formattedData = value;
-
-  if (isNumber) {
-    if (decimals) {
-      formattedData = round(formattedData, decimals);
-    }
-  }
-  return formattedData;
-};
-
-/**
  * Get datum from ElasticSearch values and format it according to settings
  *
  * @param {{}} dataSource Values object fetch from ElasticSearch
@@ -57,13 +28,15 @@ export const formatFromSettings = (value, settings) => {
  * @param {{}} settings Object of form {decimals: 1}
  * @returns {string|string|*}
  */
-export const getData = (dataSource, key, settings) => {
-  let value = dataSource[key];
+export const getData = (dataSource, key, settings = {}) => {
   const { objectIndent = 2 } = settings;
+
+  let value = dataSource[key];
   if (Array.isArray(value)) return value.join(',');
   if (value && typeof value === 'object') return JSON.stringify(value, null, objectIndent);
   value = [null, undefined].includes(value) ? '' : value;
-  return settings ? formatFromSettings(value, settings) : value;
+
+  return value;
 };
 
 /**
