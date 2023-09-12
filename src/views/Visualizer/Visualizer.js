@@ -4,7 +4,7 @@ import { connectAuthProvider } from '@terralego/core/modules/Auth';
 
 import { connectState } from '@terralego/core/modules/State/context';
 
-import parser from 'pivotql-parser-expression';
+import parser from 'pivotql/packages/pivotql-parser-expression/src';
 import compilerMb from 'pivotql-compiler-mapboxgl';
 import compilerEs from 'pivotql-compiler-elasticsearch';
 
