@@ -882,8 +882,12 @@ export class Visualizer extends React.Component {
       exportCallback,
       settings: {
         credits,
-        measureControl,
-        measureDrawStyles,
+        frontendTools: {
+          measureControl: {
+            enable: measureControl,
+            styles: measureDrawStyles,
+          },
+        },
         theme: {
           logo,
           brandLogo,
