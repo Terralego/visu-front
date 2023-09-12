@@ -17,7 +17,9 @@ import {
   CONTROL_PRINT,
   CONTROL_HOME,
   CONTROL_SHARE,
+  CONTROL_MEASURE,
   CONTROLS_TOP_RIGHT,
+  CONTROLS_TOP_LEFT,
 } from '@terralego/core/modules/Map';
 import { toggleLayerVisibility, setLayerOpacity } from '@terralego/core/modules/Map/services/mapUtils';
 import { LayersTreeProvider, LayersTree } from '@terralego/core/modules/Visualizer/LayersTree';
@@ -66,6 +68,8 @@ const getControls = memoize((
   isMobileSized,
   onToggle,
   viewState,
+  measureControl,
+  measureDrawStyles,
 ) => [
   displaySearch && {
     control: CONTROL_SEARCH,
@@ -88,6 +92,11 @@ const getControls = memoize((
     control: CONTROL_SHARE,
     position: CONTROLS_TOP_RIGHT,
     initialState: viewState,
+  },
+  measureControl && {
+    control: CONTROL_MEASURE,
+    position: CONTROLS_TOP_LEFT,
+    drawStyles: measureDrawStyles,
   },
 ].filter(Boolean));
 
@@ -873,6 +882,8 @@ export class Visualizer extends React.Component {
       exportCallback,
       settings: {
         credits,
+        measureControl,
+        measureDrawStyles,
         theme: {
           logo,
           brandLogo,
@@ -923,6 +934,8 @@ export class Visualizer extends React.Component {
       isMobileSized,
       this.onPrintToggle,
       viewState,
+      measureControl,
+      measureDrawStyles,
     );
 
     if (displaySearchInMap) {
