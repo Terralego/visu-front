@@ -235,6 +235,10 @@
             "tooltip": "Afficher les options",
             "tooltip_close": "Fermer les options"
           },
+          "opacity": {
+            "label": "Opacité",
+            "tooltip": "Changer l'opacité de la couche"
+          },
           "table": {
             "alt": "Ouvrir la vue tabulaire",
             "alt_close": "Fermer la vue tabulaire",
