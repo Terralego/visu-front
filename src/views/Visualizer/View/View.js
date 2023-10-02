@@ -52,6 +52,7 @@ import DataTable from './DataTable';
 import Widgets from './Widgets';
 import { generateClusterList } from './interactions';
 import BoundingBoxObserver from '../../../components/BoundingBoxObserver';
+import fetchNominatim from './search';
 
 export const INTERACTION_DISPLAY_DETAILS = 'displayDetails';
 
@@ -602,8 +603,16 @@ export class Visualizer extends React.Component {
 
   searchInMap = async query => {
     const { activeAndSearchableLayers: layers } = this;
+    const {
+      i18n: { language } = {},
+      settings: { frontendTools: { searchInLocations: { enable, searchProvider, viewbox } = {} } },
+      t,
+    } = this.props;
 
-    if (!layers.length) return undefined;
+    const locations = enable
+      ? await fetchNominatim(query, language, t, searchProvider, viewbox)
+      : [];
+    if (!layers.length && !locations.length) return undefined;
 
     const { responses } = await searchService.msearch(
       layers.map(([{ filters: { layer }, baseEsQuery }]) => ({
@@ -629,7 +638,7 @@ export class Visualizer extends React.Component {
       })),
     }));
 
-    return results;
+    return [...results, ...locations];
   }
 
   onPrintToggle = printIsOpened => {
