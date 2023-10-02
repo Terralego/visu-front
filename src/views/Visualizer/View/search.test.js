@@ -79,6 +79,24 @@ describe('fetchNominatim', () => {
       headers: { map: { 'content-type': 'application/json' } },
     });
   });
+
+  it('Should work with default language', async () => {
+    const query = 'fake query';
+    const translate = () => 'text';
+    const searchProvider = 'https://going.nowhere';
+    const result = await fetchNominatim({
+      query,
+      translate,
+      searchProvider,
+    });
+    expect(result).toEqual([
+      {
+        total: 1,
+        group: 'text',
+        results: [{ bounds: [0, 1, 2, 3], id: 1, label: 'label' }],
+      },
+    ]);
+  });
 });
 
 describe('searchInMap', () => {
@@ -169,6 +187,70 @@ describe('searchInMap', () => {
           },
         ],
         total: 1,
+      },
+    ]);
+  });
+
+  it('Should return results merged with location results', async () => {
+    searchService.msearch = jest.fn(() => Promise.resolve(mockEsReponse));
+    const query = 'fake query';
+    const translate = () => 'text';
+    const language = 'en';
+    const searchProvider = 'https://going.nowhere';
+    const locationsEnable = true;
+    const viewbox = [1, 40, 2, 50];
+    const layers = [
+      [
+        {
+          filters: { layer: 'layer-id', mainField: 'mainfield' },
+          baseEsQuery: 'some base query',
+          label: 'label',
+          layers: ['layer1', 'layer2'],
+        },
+      ],
+    ];
+    const searchFunction = searchInMap({
+      layers,
+      searchProvider,
+      locationsEnable,
+      language,
+      translate,
+      viewbox,
+    });
+    const result = await searchFunction(query);
+    expect(result).toEqual([
+      {
+        group: 'label',
+        results: [
+          {
+            bounds: [
+              -5.551753747838916, 50.111374837193324, -5.521121570443739,
+              50.1324346099444,
+            ],
+            center: [-5.536437659141328, 50.12190472356886],
+            geom: {
+              coordinates: [
+                [
+                  [-5.551753747838916, 50.1324346099444],
+                  [-5.551753747838916, 50.111374837193324],
+                  [-5.521121570443739, 50.111374837193324],
+                  [-5.521121570443739, 50.1324346099444],
+                  [-5.551753747838916, 50.1324346099444],
+                ],
+              ],
+              type: 'Polygon',
+            },
+            id: 1,
+            label: 1,
+            layers: ['layer1', 'layer2'],
+          },
+        ],
+        total: 1,
+      },
+      {
+        total: 1,
+        group: 'text',
+        results: [{ bounds: [0, 1, 2, 3], id: 1, label: 'label' }],
       },
     ]);
   });
