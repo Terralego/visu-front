@@ -1,4 +1,10 @@
-const fetchNominatim = async (query, language = 'en', t, searchProvider, viewbox = []) => {
+const fetchNominatim = async ({
+  query,
+  t,
+  searchProvider,
+  language = 'en',
+  viewbox = [],
+}) => {
   const url = new URL(searchProvider);
   url.searchParams.set('q', query);
   url.searchParams.set('q', query);
