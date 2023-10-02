@@ -12,7 +12,7 @@ const fetchNominatim = async (query, language = 'en', t, searchProvider, viewbox
   const headers = new Headers([['Content-Type', 'application/json']]);
   let results;
   try {
-    results = await fetch(`${searchProvider}${params}`, {
+    results = await fetch(`${searchProvider}?${params}`, {
       headers,
     }).then(response => response.json());
   } catch (e) {
