@@ -22,3 +22,14 @@ it('Should format nominatim results correctly', async () => {
     },
   ]);
 });
+
+it('Should return an empty array when fetch error occured', async () => {
+  fetch.mockImplementationOnce(() => Promise.reject(new Error('API is down')));
+  const query = 'fake query';
+  const translate = () => 'text';
+  const language = 'en';
+  const searchProvider = 'https//going.nowhere';
+
+  const result = await fetchNominatim(query, language, translate, searchProvider);
+  expect(result).toEqual([]);
+});
