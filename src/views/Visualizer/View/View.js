@@ -43,8 +43,6 @@ import {
 } from '@terralego/core/modules/Visualizer/services/layersTreeUtils';
 import classnames from 'classnames';
 import debounce from 'debounce';
-import turfCenter from '@turf/center';
-import turfBbox from '@turf/bbox';
 import memoize from 'memoize-one';
 import { connectSettings } from '../../Main/Provider/context';
 
@@ -52,7 +50,7 @@ import DataTable from './DataTable';
 import Widgets from './Widgets';
 import { generateClusterList } from './interactions';
 import BoundingBoxObserver from '../../../components/BoundingBoxObserver';
-import fetchNominatim from './search';
+import searchInMap from './search';
 
 export const INTERACTION_DISPLAY_DETAILS = 'displayDetails';
 
@@ -601,46 +599,6 @@ export class Visualizer extends React.Component {
     details.hide = () => removeHighlight({ layerId, featureId });
   };
 
-  searchInMap = async query => {
-    const { activeAndSearchableLayers: layers } = this;
-    const {
-      i18n: { language } = {},
-      settings: { frontendTools: { searchInLocations: { enable, searchProvider, viewbox } = {} } },
-      t,
-    } = this.props;
-
-    const locations = enable
-      ? await fetchNominatim(query, language, t, searchProvider, viewbox)
-      : [];
-    if (!layers.length && !locations.length) return undefined;
-
-    const { responses } = await searchService.msearch(
-      layers.map(([{ filters: { layer }, baseEsQuery }]) => ({
-        query,
-        index: layer,
-        baseQuery: baseEsQuery,
-        size: 6,
-      })),
-    );
-
-    const results = layers.map(([{
-      label, layers: resultsLayers, filters: { mainField },
-    }], index) => ({
-      group: label,
-      total: responses[index].hits.total.value,
-      results: responses[index].hits.hits.map(({ _id: id, _source: source }) => ({
-        label: source[mainField] || id,
-        id,
-        ...source,
-        center: turfCenter(source.geom).geometry.coordinates,
-        bounds: turfBbox(source.geom),
-        layers: resultsLayers,
-      })),
-    }));
-
-    return [...results, ...locations];
-  }
-
   onPrintToggle = printIsOpened => {
     this.hideDetails();
     this.setState({ printIsOpened });
@@ -900,6 +858,11 @@ export class Visualizer extends React.Component {
             enable: measureControl,
             styles: measureDrawStyles,
           } = {},
+          searchInLocations: {
+            enable: locationsEnable,
+            searchProvider,
+            viewbox,
+          } = {},
         } = {},
         theme: {
           logo,
@@ -957,7 +920,14 @@ export class Visualizer extends React.Component {
 
     if (displaySearchInMap) {
       const search = controls.find(({ control }) => control === CONTROL_SEARCH);
-      search.onSearch = this.searchInMap;
+      search.onSearch = searchInMap({
+        t,
+        language,
+        viewbox,
+        searchProvider,
+        locationsEnable,
+        layers: activeAndSearchableLayers,
+      });
       search.onSearchResultClick = this.searchResultClick;
     }
 

@@ -1,4 +1,9 @@
-const fetchNominatim = async ({
+import turfCenter from '@turf/center';
+import turfBbox from '@turf/bbox';
+
+import searchService from '@terralego/core/modules/Visualizer/services/search';
+
+export const fetchNominatim = async ({
   query,
   t,
   searchProvider,
@@ -16,6 +21,7 @@ const fetchNominatim = async ({
     url.searchParams.set('bounded', 1);
   }
 
+  console.log(url.href);
   const headers = new Headers([['Content-Type', 'application/json']]);
   let results;
   try {
@@ -48,4 +54,47 @@ const fetchNominatim = async ({
   return data;
 };
 
-export default fetchNominatim;
+
+const searchInMap = ({
+  layers,
+  t,
+  locationsEnable,
+  searchProvider,
+  language = 'en',
+  viewbox = [],
+}) => async query => {
+  console.log('searching...');
+  const locations = locationsEnable
+    ? await fetchNominatim({ query, language, t, searchProvider, viewbox })
+    : [];
+
+  if (!layers.length && !locations.length) return undefined;
+
+  const { responses } = await searchService.msearch(
+    layers.map(([{ filters: { layer }, baseEsQuery }]) => ({
+      query,
+      index: layer,
+      baseQuery: baseEsQuery,
+      size: 6,
+    })),
+  );
+
+  const results = layers.map(([{
+    label, layers: resultsLayers, filters: { mainField },
+  }], index) => ({
+    group: label,
+    total: responses[index].hits.total.value,
+    results: responses[index].hits.hits.map(({ _id: id, _source: source }) => ({
+      label: source[mainField] || id,
+      id,
+      ...source,
+      center: turfCenter(source.geom).geometry.coordinates,
+      bounds: turfBbox(source.geom),
+      layers: resultsLayers,
+    })),
+  }));
+
+  return [...results, ...locations];
+};
+
+export default searchInMap;

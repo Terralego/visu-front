@@ -1,4 +1,4 @@
-import fetchNominatim from './search';
+import { fetchNominatim } from './search';
 
 global.fetch = jest.fn(() => Promise.resolve({
   json: () =>
@@ -19,7 +19,7 @@ it('Should format nominatim results correctly', async () => {
   const translate = () => 'text';
   const language = 'en';
   const searchProvider = 'https://going.nowhere';
-  const result = await fetchNominatim(query, language, translate, searchProvider);
+  const result = await fetchNominatim({ query, language, t: translate, searchProvider });
   expect(result).toEqual([
     {
       total: 1,
@@ -36,7 +36,7 @@ it('Should return an empty array when fetch error occured', async () => {
   const language = 'en';
   const searchProvider = 'https://going.nowhere';
 
-  const result = await fetchNominatim(query, language, translate, searchProvider);
+  const result = await fetchNominatim({ query, language, t: translate, searchProvider });
   expect(result).toEqual([]);
 });
 
@@ -46,7 +46,7 @@ it('Should be called with viewbow param when viewbox is passed', async () => {
   const language = 'en';
   const searchProvider = 'https://going.nowhere';
   const viewbox = [1, 40, 2, 50];
-  await fetchNominatim(query, language, translate, searchProvider, viewbox);
+  await fetchNominatim({ query, language, t: translate, searchProvider, viewbox });
 
   const url = new URL(searchProvider);
   url.searchParams.set('q', query);
