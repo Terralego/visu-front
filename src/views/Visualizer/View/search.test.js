@@ -56,7 +56,7 @@ it('Should be called with viewbow param when viewbox is passed', async () => {
     bounded: 1,
   });
   expect(fetch).toHaveBeenCalledWith(
-    `${searchProvider}${params}`,
+    `${searchProvider}?${params}`,
     { headers: { map: { 'content-type': 'application/json' } } },
   );
 });
