@@ -18,7 +18,8 @@ it('Should format nominatim results correctly', async () => {
   const query = 'fake query';
   const translate = () => 'text';
   const language = 'en';
-  const result = await fetchNominatim(query, language, translate);
+  const searchProvider = 'https://going.nowhere';
+  const result = await fetchNominatim(query, language, translate, searchProvider);
   expect(result).toEqual([
     {
       total: 1,
@@ -33,7 +34,7 @@ it('Should return an empty array when fetch error occured', async () => {
   const query = 'fake query';
   const translate = () => 'text';
   const language = 'en';
-  const searchProvider = 'https//going.nowhere';
+  const searchProvider = 'https://going.nowhere';
 
   const result = await fetchNominatim(query, language, translate, searchProvider);
   expect(result).toEqual([]);
@@ -43,20 +44,19 @@ it('Should be called with viewbow param when viewbox is passed', async () => {
   const query = 'fake query';
   const translate = () => 'text';
   const language = 'en';
-  const searchProvider = 'https//going.nowhere';
+  const searchProvider = 'https://going.nowhere';
   const viewbox = [1, 40, 2, 50];
   await fetchNominatim(query, language, translate, searchProvider, viewbox);
 
-  const params = new URLSearchParams({
-    q: query,
-    format: 'geojson',
-    'accept-language': language,
-    viewbox,
-    polygon_geojson: 1,
-    bounded: 1,
-  });
+  const url = new URL(searchProvider);
+  url.searchParams.set('q', query);
+  url.searchParams.set('format', 'geojson');
+  url.searchParams.set('accept-language', language);
+  url.searchParams.set('viewbox', viewbox);
+  url.searchParams.set('polygon_geojson', 1);
+  url.searchParams.set('bounded', 1);
   expect(fetch).toHaveBeenCalledWith(
-    `${searchProvider}?${params}`,
+    url,
     { headers: { map: { 'content-type': 'application/json' } } },
   );
 });

@@ -1,18 +1,19 @@
 const fetchNominatim = async (query, language = 'en', t, searchProvider, viewbox = []) => {
-  const params = new URLSearchParams();
-  params.append('q', query);
-  params.append('format', 'geojson');
-  params.append('accept-language', language);
+  const url = new URL(searchProvider);
+  url.searchParams.set('q', query);
+  url.searchParams.set('q', query);
+  url.searchParams.set('format', 'geojson');
+  url.searchParams.set('accept-language', language);
   if (viewbox && viewbox.length) {
-    params.append('viewbox', viewbox);
-    params.append('polygon_geojson', 1);
-    params.append('bounded', 1);
+    url.searchParams.set('viewbox', viewbox);
+    url.searchParams.set('polygon_geojson', 1);
+    url.searchParams.set('bounded', 1);
   }
 
   const headers = new Headers([['Content-Type', 'application/json']]);
   let results;
   try {
-    results = await fetch(`${searchProvider}?${params}`, {
+    results = await fetch(url, {
       headers,
     }).then(response => response.json());
   } catch (e) {
