@@ -395,7 +395,11 @@ export class Visualizer extends React.Component {
             if (error) {
               console.error('Unable to loadImage'); // eslint-disable-line no-console
             } else {
-              map.addImage(id, imageData);
+              try {
+                map.addImage(id, imageData);
+              } catch (e) {
+                console.error(e); // eslint-disable-line no-console
+              }
             }
           },
         );
