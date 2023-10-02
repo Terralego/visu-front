@@ -9,6 +9,11 @@ global.fetch = jest.fn(() => Promise.resolve({
     }),
 }));
 
+beforeEach(() => {
+  fetch.mockClear();
+});
+
+
 it('Should format nominatim results correctly', async () => {
   const query = 'fake query';
   const translate = () => 'text';
@@ -32,4 +37,26 @@ it('Should return an empty array when fetch error occured', async () => {
 
   const result = await fetchNominatim(query, language, translate, searchProvider);
   expect(result).toEqual([]);
+});
+
+it('Should be called with viewbow param when viewbox is passed', async () => {
+  const query = 'fake query';
+  const translate = () => 'text';
+  const language = 'en';
+  const searchProvider = 'https//going.nowhere';
+  const viewbox = [1, 40, 2, 50];
+  await fetchNominatim(query, language, translate, searchProvider, viewbox);
+
+  const params = new URLSearchParams({
+    q: query,
+    format: 'geojson',
+    'accept-language': language,
+    viewbox,
+    polygon_geojson: 1,
+    bounded: 1,
+  });
+  expect(fetch).toHaveBeenCalledWith(
+    `${searchProvider}${params}`,
+    { headers: { map: { 'content-type': 'application/json' } } },
+  );
 });
