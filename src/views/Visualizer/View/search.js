@@ -5,7 +5,7 @@ import searchService from '@terralego/core/modules/Visualizer/services/search';
 
 export const fetchNominatim = async ({
   query,
-  t,
+  translate,
   searchProvider,
   language = 'en',
   viewbox = [],
@@ -21,7 +21,6 @@ export const fetchNominatim = async ({
     url.searchParams.set('bounded', 1);
   }
 
-  console.log(url.href);
   const headers = new Headers([['Content-Type', 'application/json']]);
   let results;
   try {
@@ -41,7 +40,7 @@ export const fetchNominatim = async ({
   const data = [
     {
       total: filteredFeatures.length,
-      group: t('terralego.map.search_results.locations'),
+      group: translate('terralego.map.search_results.locations'),
       results: filteredFeatures.map(
         ({ bbox, properties: { osm_id: id, display_name: label } }) => ({
           label,
@@ -57,15 +56,14 @@ export const fetchNominatim = async ({
 
 const searchInMap = ({
   layers,
-  t,
+  translate,
   locationsEnable,
   searchProvider,
   language = 'en',
   viewbox = [],
 }) => async query => {
-  console.log('searching...');
   const locations = locationsEnable
-    ? await fetchNominatim({ query, language, t, searchProvider, viewbox })
+    ? await fetchNominatim({ query, language, translate, searchProvider, viewbox })
     : [];
 
   if (!layers.length && !locations.length) return undefined;

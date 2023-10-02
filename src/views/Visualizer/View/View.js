@@ -921,11 +921,11 @@ export class Visualizer extends React.Component {
     if (displaySearchInMap) {
       const search = controls.find(({ control }) => control === CONTROL_SEARCH);
       search.onSearch = searchInMap({
-        t,
         language,
         viewbox,
         searchProvider,
         locationsEnable,
+        translate: t,
         layers: activeAndSearchableLayers,
       });
       search.onSearchResultClick = this.searchResultClick;
