@@ -861,7 +861,6 @@ export class Visualizer extends React.Component {
           searchInLocations: {
             enable: locationsEnable,
             searchProvider,
-            viewbox,
           } = {},
         } = {},
         theme: {
@@ -922,7 +921,6 @@ export class Visualizer extends React.Component {
       const search = controls.find(({ control }) => control === CONTROL_SEARCH);
       search.onSearch = searchInMap({
         language,
-        viewbox,
         searchProvider,
         locationsEnable,
         translate: t,

@@ -22,12 +22,12 @@ describe('fetchNominatim', () => {
     const query = 'fake query';
     const translate = () => 'text';
     const language = 'en';
-    const searchProvider = 'https://going.nowhere';
+    const baseUrl = 'https://going.nowhere';
     const result = await fetchNominatim({
       query,
       language,
       translate,
-      searchProvider,
+      baseUrl,
     });
     expect(result).toEqual([
       {
@@ -43,13 +43,13 @@ describe('fetchNominatim', () => {
     const query = 'fake query';
     const translate = () => 'text';
     const language = 'en';
-    const searchProvider = 'https://going.nowhere';
+    const baseUrl = 'https://going.nowhere';
 
     const result = await fetchNominatim({
       query,
       language,
       translate,
-      searchProvider,
+      baseUrl,
     });
     expect(result).toEqual([]);
   });
@@ -58,17 +58,17 @@ describe('fetchNominatim', () => {
     const query = 'fake query';
     const translate = () => 'text';
     const language = 'en';
-    const searchProvider = 'https://going.nowhere';
+    const baseUrl = 'https://going.nowhere';
     const viewbox = [1, 40, 2, 50];
     await fetchNominatim({
       query,
       language,
       translate,
-      searchProvider,
-      viewbox,
+      baseUrl,
+      options: { viewbox },
     });
 
-    const url = new URL(searchProvider);
+    const url = new URL(baseUrl);
     url.searchParams.set('q', query);
     url.searchParams.set('format', 'geojson');
     url.searchParams.set('accept-language', language);
@@ -83,11 +83,11 @@ describe('fetchNominatim', () => {
   it('Should work with default language', async () => {
     const query = 'fake query';
     const translate = () => 'text';
-    const searchProvider = 'https://going.nowhere';
+    const baseUrl = 'https://going.nowhere';
     const result = await fetchNominatim({
       query,
       translate,
-      searchProvider,
+      baseUrl,
     });
     expect(result).toEqual([
       {
@@ -130,7 +130,7 @@ describe('searchInMap', () => {
   };
 
   it('Should return a function', async () => {
-    const searchFunction = searchInMap({});
+    const searchFunction = searchInMap({ searchProvider: {} });
     expect(typeof searchFunction).toBe('function');
   });
 
@@ -139,7 +139,7 @@ describe('searchInMap', () => {
     const query = 'fake query';
     const translate = () => 'text';
     const language = 'en';
-    const searchProvider = 'https://going.nowhere';
+    const baseUrl = 'https://going.nowhere';
     const viewbox = [1, 40, 2, 50];
     const layers = [
       [
@@ -152,11 +152,10 @@ describe('searchInMap', () => {
       ],
     ];
     const searchFunction = searchInMap({
+      searchProvider: { baseUrl, provider: 'Nominatim', options: { viewbox } },
       layers,
-      searchProvider,
       language,
       translate,
-      viewbox,
     });
     const result = await searchFunction(query);
     expect(result).toEqual([
@@ -196,7 +195,7 @@ describe('searchInMap', () => {
     const query = 'fake query';
     const translate = () => 'text';
     const language = 'en';
-    const searchProvider = 'https://going.nowhere';
+    const baseUrl = 'https://going.nowhere';
     const locationsEnable = true;
     const viewbox = [1, 40, 2, 50];
     const layers = [
@@ -210,8 +209,12 @@ describe('searchInMap', () => {
       ],
     ];
     const searchFunction = searchInMap({
+      searchProvider: {
+        baseUrl,
+        provider: 'Nominatim',
+        options: { viewbox },
+      },
       layers,
-      searchProvider,
       locationsEnable,
       language,
       translate,

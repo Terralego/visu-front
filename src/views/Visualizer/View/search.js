@@ -6,16 +6,16 @@ import searchService from '@terralego/core/modules/Visualizer/services/search';
 export const fetchNominatim = async ({
   query,
   translate,
-  searchProvider,
+  baseUrl,
   language = 'en',
-  viewbox = [],
+  options: { viewbox = [] } = {},
 }) => {
-  const url = new URL(searchProvider);
+  const url = new URL(baseUrl);
   url.searchParams.set('q', query);
   url.searchParams.set('q', query);
   url.searchParams.set('format', 'geojson');
   url.searchParams.set('accept-language', language);
-  if (viewbox && viewbox.length) {
+  if (viewbox.length) {
     url.searchParams.set('viewbox', viewbox);
     url.searchParams.set('polygon_geojson', 1);
     url.searchParams.set('bounded', 1);
@@ -55,16 +55,16 @@ export const fetchNominatim = async ({
 
 
 const searchInMap = ({
+  searchProvider: { provider, baseUrl, options = {} },
   layers,
   translate,
   locationsEnable,
-  searchProvider,
   language = 'en',
-  viewbox = [],
 }) => async query => {
-  const locations = locationsEnable
-    ? await fetchNominatim({ query, language, translate, searchProvider, viewbox })
-    : [];
+  let locations = [];
+  if (locationsEnable && provider === 'Nominatim') {
+    locations = await fetchNominatim({ query, language, translate, baseUrl, options });
+  }
 
   if (!layers.length && !locations.length) return undefined;
 
