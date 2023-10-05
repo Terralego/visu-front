@@ -19,15 +19,11 @@ beforeEach(() => {
 
 describe('fetchNominatim', () => {
   it('Should format nominatim results correctly', async () => {
-    const query = 'fake query';
-    const translate = () => 'text';
-    const language = 'en';
-    const baseUrl = 'https://going.nowhere';
     const result = await fetchNominatim({
-      query,
-      language,
-      translate,
-      baseUrl,
+      query: 'fake query',
+      language: 'en',
+      baseUrl: 'https://going.nowhere',
+      translate: () => 'text',
     });
     expect(result).toEqual([
       {
@@ -40,30 +36,24 @@ describe('fetchNominatim', () => {
 
   it('Should return an empty array when fetch error occured', async () => {
     fetch.mockImplementationOnce(() => Promise.reject(new Error('API is down')));
-    const query = 'fake query';
-    const translate = () => 'text';
-    const language = 'en';
-    const baseUrl = 'https://going.nowhere';
-
     const result = await fetchNominatim({
-      query,
-      language,
-      translate,
-      baseUrl,
+      query: 'fake query',
+      translate: () => 'text',
+      language: 'en',
+      baseUrl: 'https://going.nowhere',
     });
     expect(result).toEqual([]);
   });
 
   it('Should be called with viewbow param when viewbox is passed', async () => {
     const query = 'fake query';
-    const translate = () => 'text';
     const language = 'en';
     const baseUrl = 'https://going.nowhere';
     const viewbox = [1, 40, 2, 50];
     await fetchNominatim({
       query,
       language,
-      translate,
+      translate: () => 'text',
       baseUrl,
       options: { viewbox },
     });
@@ -81,13 +71,10 @@ describe('fetchNominatim', () => {
   });
 
   it('Should work with default language', async () => {
-    const query = 'fake query';
-    const translate = () => 'text';
-    const baseUrl = 'https://going.nowhere';
     const result = await fetchNominatim({
-      query,
-      translate,
-      baseUrl,
+      query: 'fake query',
+      translate: () => 'text',
+      baseUrl: 'https://going.nowhere',
     });
     expect(result).toEqual([
       {
@@ -136,11 +123,6 @@ describe('searchInMap', () => {
 
   it('Should return an array of results', async () => {
     searchService.msearch = jest.fn(() => Promise.resolve(mockEsReponse));
-    const query = 'fake query';
-    const translate = () => 'text';
-    const language = 'en';
-    const baseUrl = 'https://going.nowhere';
-    const viewbox = [1, 40, 2, 50];
     const layers = [
       [
         {
@@ -152,12 +134,16 @@ describe('searchInMap', () => {
       ],
     ];
     const searchFunction = searchInMap({
-      searchProvider: { baseUrl, provider: 'Nominatim', options: { viewbox } },
+      searchProvider: {
+        baseUrl: 'https://going.nowhere',
+        provider: 'Nominatim',
+        options: { viewbox: [1, 40, 2, 50] },
+      },
       layers,
-      language,
-      translate,
+      language: 'en',
+      translate: () => 'text',
     });
-    const result = await searchFunction(query);
+    const result = await searchFunction('fake query');
     expect(result).toEqual([
       {
         group: 'label',
@@ -192,12 +178,6 @@ describe('searchInMap', () => {
 
   it('Should return results merged with location results', async () => {
     searchService.msearch = jest.fn(() => Promise.resolve(mockEsReponse));
-    const query = 'fake query';
-    const translate = () => 'text';
-    const language = 'en';
-    const baseUrl = 'https://going.nowhere';
-    const locationsEnable = true;
-    const viewbox = [1, 40, 2, 50];
     const layers = [
       [
         {
@@ -210,17 +190,16 @@ describe('searchInMap', () => {
     ];
     const searchFunction = searchInMap({
       searchProvider: {
-        baseUrl,
+        baseUrl: 'https://going.nowhere',
         provider: 'Nominatim',
-        options: { viewbox },
+        options: { viewbox: [1, 40, 2, 50] },
       },
       layers,
-      locationsEnable,
-      language,
-      translate,
-      viewbox,
+      locationsEnable: true,
+      language: 'en',
+      translate: () => 'text',
     });
-    const result = await searchFunction(query);
+    const result = await searchFunction('fake query');
     expect(result).toEqual([
       {
         group: 'label',
