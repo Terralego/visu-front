@@ -136,7 +136,7 @@ describe('searchInMap', () => {
     const searchFunction = searchInMap({
       searchProvider: {
         baseUrl: 'https://going.nowhere',
-        provider: 'Nominatim',
+        provider: 'nominatim',
         options: { viewbox: [1, 40, 2, 50] },
       },
       layers,
@@ -191,7 +191,7 @@ describe('searchInMap', () => {
     const searchFunction = searchInMap({
       searchProvider: {
         baseUrl: 'https://going.nowhere',
-        provider: 'Nominatim',
+        provider: 'nominatim',
         options: { viewbox: [1, 40, 2, 50] },
       },
       layers,
