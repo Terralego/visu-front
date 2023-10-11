@@ -62,7 +62,7 @@ const searchInMap = ({
   language = 'en',
 }) => async query => {
   let locations = [];
-  if (locationsEnable && provider === 'Nominatim') {
+  if (locationsEnable && provider === 'nominatim') {
     locations = await fetchNominatim({ query, language, translate, baseUrl, options });
   }
 
