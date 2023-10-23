@@ -63,6 +63,9 @@ $bg-visualizer: rgb(49, 64, 77);
     }
   }
 
+  .mapboxgl-ctrl-search {
+      z-index: 1;
+  }
   .mapboxgl-ctrl-search .search-results__item button {
     height: auto;
   }
@@ -322,6 +325,7 @@ $bg-visualizer: rgb(49, 64, 77);
   }
 
   .interactive-map__legends {
+    z-index: 0;
     margin-right: 2rem;
   }
 
