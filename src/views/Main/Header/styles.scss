@@ -1,5 +1,6 @@
 @import '../../variables.scss';
 
+
 .main {
 
   &__header {
@@ -162,10 +163,21 @@
       }
     }
 
-    .log-out .header-button {
+    .log-in .header-button {
       background: radial-gradient(#5a91b3 0, transparent 70%);
+      svg: {
+        filter: invert(13%) sepia(100%) saturate(7194%) hue-rotate(9deg) brightness(104%) contrast(117%);
+      }
+    }
+
+    .log-out .header-button {
       svg {
-        filter: invert(.5) sepia(1) saturate(5) hue-rotate(175deg);
+        filter: invert(29%) sepia(97%) saturate(1175%) hue-rotate(91deg) brightness(92%) contrast(106%);
+      }
+      &:hover {
+        svg {
+          filter: brightness(0) saturate(100%) invert(55%) sepia(18%) saturate(6201%) hue-rotate(329deg) brightness(100%) contrast(111%);
+        }
       }
     }
 
@@ -200,6 +212,7 @@
       button {
         margin: .25rem;
       }
+
     }
     
     & .login-form {
