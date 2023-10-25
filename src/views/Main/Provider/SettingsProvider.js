@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import * as Sentry from "@sentry/react";
+import * as Sentry from '@sentry/react';
 import Api from '@terralego/core/modules/Api';
 import { connectAuthProvider } from '@terralego/core/modules/Auth';
+import { useLocation } from 'react-router';
 import { contextSettings } from './context';
-import {useLocation} from "react-router";
 const { Provider } = contextSettings;
 
 const SETTINGS_PATH = '/settings.json';
@@ -24,12 +24,12 @@ const DEFAULT_SETTINGS = {
   frontendTools: {
     measureControl: {
       enable: false,
-      styles: []
+      styles: [],
     },
     searchInLocations: {
       enable: false,
       searchProvider: {
-        provider: "nominatim"
+        provider: "nominatim",
       }
     }
   },
