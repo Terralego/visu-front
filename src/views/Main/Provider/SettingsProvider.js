@@ -21,9 +21,6 @@ const DEFAULT_SETTINGS = {
   },
   extraMenuItems: [],
   allowUserRegistration: false,
-  sentryDsn: '',
-  sentryEnvironment: '',
-  sentryRelease: '',
   frontendTools: {
     measureControl: {
       enable: false,
