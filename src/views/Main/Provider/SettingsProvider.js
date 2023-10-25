@@ -4,6 +4,7 @@ import Api from '@terralego/core/modules/Api';
 import { connectAuthProvider } from '@terralego/core/modules/Auth';
 import { useLocation } from 'react-router';
 import { contextSettings } from './context';
+
 const { Provider } = contextSettings;
 
 const SETTINGS_PATH = '/settings.json';
@@ -29,9 +30,9 @@ const DEFAULT_SETTINGS = {
     searchInLocations: {
       enable: false,
       searchProvider: {
-        provider: "nominatim",
-      }
-    }
+        provider: 'nominatim',
+      },
+    },
   },
   sentry: {
     dsn: '',
@@ -41,7 +42,7 @@ const DEFAULT_SETTINGS = {
     replaysSessionSampleRate: 0,
     replaysOnErrorSampleRate: 0,
     sendDefaultPii: false,
-  }
+  },
 };
 
 const TERRA_TOKEN_KEY = 'tf:auth:token';
@@ -89,11 +90,11 @@ export const SettingsProvider = ({ children, authenticated, setAuthenticated }) 
               // See docs for support of different versions of variation of react router
               // https://docs.sentry.io/platforms/javascript/guides/react/configuration/integrations/react-router/
               routingInstrumentation: Sentry.reactRouterV5Instrumentation(
-                  React.useEffect,
-                  useLocation,
+                React.useEffect,
+                useLocation,
               ),
             }),
-            new Sentry.Replay()
+            new Sentry.Replay(),
           ],
           tracesSampleRate: nextSettings.sentry.tracesSampleRate,
           replaysSessionSampleRate: nextSettings.sentry.replaysSessionSampleRate,
