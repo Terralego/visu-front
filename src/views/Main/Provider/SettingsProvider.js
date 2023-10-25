@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react';
 import * as Sentry from "@sentry/react";
 import Api from '@terralego/core/modules/Api';
 import { connectAuthProvider } from '@terralego/core/modules/Auth';
-
 import { contextSettings } from './context';
 import {useLocation} from "react-router";
-
 const { Provider } = contextSettings;
 
 const SETTINGS_PATH = '/settings.json';
@@ -82,7 +80,7 @@ export const SettingsProvider = ({ children, authenticated, setAuthenticated }) 
         !authenticated && setAuthenticated(true);
       }
       setSettings(nextSettings);
-      console.log(nextSettings);
+
       if (nextSettings.sentry.dsn !== '') {
         Sentry.init({
           sendDefaultPii: nextSettings.sentry.sendDefaultPii,
@@ -96,7 +94,6 @@ export const SettingsProvider = ({ children, authenticated, setAuthenticated }) 
               routingInstrumentation: Sentry.reactRouterV5Instrumentation(
                   React.useEffect,
                   useLocation,
-
               ),
             }),
             new Sentry.Replay()
