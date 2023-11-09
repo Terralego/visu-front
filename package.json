@@ -39,7 +39,7 @@
     "react-i18next": "^11.7.2",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "^2.1.8",
+    "react-scripts": "^3.4.4",
     "resize-observer-polyfill": "^1.5.1",
     "rewire": "^6.0.0",
     "xlsx": "^0.14.5"
