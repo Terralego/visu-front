@@ -9,7 +9,6 @@
     "@blueprintjs/select": "^3.10.0",
     "@blueprintjs/table": "^3.7.0",
     "@craco/craco": "^5.9.0",
-    "@makina-corpus/mapbox-gl-path": "^1.9.0",
     "@mapbox/mapbox-gl-draw": "^1.1.2",
     "@mapbox/mapbox-gl-sync-move": "^0.2.0",
     "@sentry/react": "^7.75.0",
