@@ -131,7 +131,7 @@ it('should switch visibility off', () => {
   expect(instance.setState).toHaveBeenCalledWith({
     visible: false,
   });
-  expect(setTimeout).toHaveBeenCalledTimes(1);
+  expect(setTimeout).toHaveBeenCalledTimes(2);
   instance.setState.mockClear();
   jest.runAllTimers();
   expect(instance.setState).toHaveBeenCalledWith({ hidden: true });

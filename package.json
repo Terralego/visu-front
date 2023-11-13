@@ -65,6 +65,7 @@
     "xlsx": "^0.14.5"
   },
   "devDependencies": {
+    "@testing-library/react": "^11.2.3",
     "cypress": "^4.12.1",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.2",
@@ -93,15 +94,27 @@
       "src/**/*.js",
       "!src/App.js",
       "!src/config/i18n.js",
-      "!src/**/index.js"
+      "!src/**/index.js",
+
+      "!src/terra-front/**/stories/**/*.js",
+      "!src/terra-front/**/*.stories.js"
     ],
     "coverageThreshold": {
       "global": {
-        "branches": 0,
-        "functions": 0,
-        "lines": 0,
-        "statements": 0
+        "statements": 25,
+        "branches": 25,
+        "lines": 25,
+        "functions": 25
+      },
+      "./src/terra-front": {
+        "statements": 83,
+        "branches": 85,
+        "lines": 83,
+        "functions": 78
       }
+    },
+    "moduleNameMapper": {
+      "^@terralego/core/(.*)": "<rootDir>/src/terra-front/$1"
     }
   },
   "browserslist": [
