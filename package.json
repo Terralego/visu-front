@@ -76,7 +76,7 @@
     "start": "craco start",
     "build": "craco build && cp _headers.dist ./build/_headers",
     "build:non-split": "node ./scripts/build-non-split.js",
-    "postbuild": "echo $npm_package_version > build/build.txt && git describe >> build/build.txt && date -R >> build/build.txt",
+    "_postbuild": "echo $npm_package_version > build/build.txt && git describe >> build/build.txt && date -R >> build/build.txt",
     "version": "git changelog -n -t $npm_package_version && git add CHANGELOG.md",
     "test": "craco test",
     "lint": "eslint src",
