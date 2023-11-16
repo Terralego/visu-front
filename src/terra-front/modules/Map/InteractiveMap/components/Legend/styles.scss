@@ -1,0 +1,107 @@
+@import "node_modules/@blueprintjs/core/lib/scss/variables";
+
+.tf-legend {
+  box-shadow: 0 1px 3px 0 rgba(16, 22, 26, 0.40);
+  border-radius: 2px;
+  background: $pt-app-background-color;
+  padding: .5rem 0;
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+
+  .bp3-dark & {
+    background: $pt-dark-app-background-color;
+  }
+
+  > .tf-legend {
+    border: 0;
+  }
+
+  &__title {
+    margin: 0.2rem 0.3rem;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  &__list:not(.tf-legend__stacked-circles) {
+    margin: 0.5rem;
+
+    position: relative;
+
+    .tf-legend__item {
+      padding-top: 0.5rem;
+      padding-bottom: 0.25rem;
+    }
+  }
+
+  &__stacked-circles {
+    display: table;
+    margin: 1rem .5rem .5rem;
+    position: relative;
+
+    .tf-legend__item--stackedCircle {
+      position: absolute;
+      bottom: 0;
+
+      .tf-legend__symbol-container {
+        line-height: 0;
+
+        &:after {
+          content: "";
+          width: 70%;
+          border-bottom: 1px solid #aaaaaa;
+          height: 1px;
+          display: block;
+          position: absolute;
+          top: 0;
+          left: 50%;
+        }
+
+        &.color--black:after{
+          border-bottom: 1px solid #222222;
+        }
+
+        :last-child {
+          &:after {
+            top: 6px;
+          }
+        }
+
+        .tf-legend__symbol {
+          position: relative;
+        }
+      }
+
+      .tf-legend__label {
+        position: absolute;
+        top: -8px;
+        left: 120%;
+        white-space: nowrap;
+      }
+    }
+  }
+
+  &__symbol-container {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  &__symbol {
+    border-radius: 0;
+    display: inline-block;
+  }
+
+  &__label {
+    font-size: 0.8rem;
+    padding: 0 0 0 .5rem;
+    display: table-cell;
+    vertical-align: middle;
+  }
+
+  &__source {
+    padding: .5em .5em 0 .5em;
+    opacity: .5;
+  }
+}

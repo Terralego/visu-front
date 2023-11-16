@@ -1,0 +1,130 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render correctly 1`] = `
+<div
+  className="control-container"
+  onKeyPress={[Function]}
+  role="presentation"
+>
+  <p
+    className="control-label"
+  >
+    Bouh
+  </p>
+  <select
+    multiple={true}
+  >
+    <option
+      value="foo"
+    >
+      foo
+    </option>
+    <option
+      value="bar"
+    >
+      bar
+    </option>
+  </select>
+</div>
+`;
+
+exports[`should render loading correctly 1`] = `
+<div
+  className="control-container"
+  onKeyPress={[Function]}
+  role="presentation"
+>
+  <p
+    className="control-label"
+  >
+    Pwout
+  </p>
+  <p>
+    Spinner
+  </p>
+</div>
+`;
+
+exports[`should render multiple value 1`] = `
+<div
+  className="control-container"
+  onKeyPress={[Function]}
+  role="presentation"
+>
+  <p
+    className="control-label"
+  >
+    Bouh
+  </p>
+  <select
+    multiple={true}
+  >
+    <option
+      value="foo"
+    >
+      foo
+    </option>
+    <option
+      value="bar"
+    >
+      bar
+    </option>
+  </select>
+</div>
+`;
+
+exports[`should render multiple value 2`] = `
+<div
+  className="control-container"
+  onKeyPress={[Function]}
+  role="presentation"
+>
+  <p
+    className="control-label"
+  >
+    Boom
+  </p>
+  <select
+    multiple={true}
+  >
+    <option
+      value="foo"
+    >
+      Foo
+    </option>
+    <option
+      value="bar"
+    >
+      Bar
+    </option>
+  </select>
+</div>
+`;
+
+exports[`should render with values 1`] = `
+<div
+  className="control-container"
+  onKeyPress={[Function]}
+  role="presentation"
+>
+  <p
+    className="control-label"
+  >
+    Bouh
+  </p>
+  <select
+    multiple={true}
+  >
+    <option
+      value="foo"
+    >
+      foo
+    </option>
+    <option
+      value="bar"
+    >
+      bar
+    </option>
+  </select>
+</div>
+`;

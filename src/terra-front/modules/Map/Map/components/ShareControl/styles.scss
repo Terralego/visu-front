@@ -1,0 +1,18 @@
+@import '../../../../../utils/variables.scss'; 
+
+.share__btn--twitter {
+    margin-left: .25rem;
+  }
+
+@media(min-width: $breakpoints-phone) and (max-width: $breakpoints-tablet) and (orientation: portrait) {
+  .mapboxgl-ctrl-share {
+    max-width: 15rem;
+    
+    .bp3-input {
+      max-width: 6rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}

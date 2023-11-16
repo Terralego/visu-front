@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render 1`] = `
+<span
+  className="bp3-popover-wrapper"
+>
+  <span
+    className="bp3-popover-target"
+    onBlur={[Function]}
+    onFocus={[Function]}
+    onMouseEnter={[Function]}
+    onMouseLeave={[Function]}
+  >
+    <button
+      aria-label="Capture map"
+      className="mapboxgl-ctrl-icon"
+      onClick={[Function]}
+      tabIndex={0}
+      type="button"
+    >
+      <span
+        className="bp3-icon bp3-icon-camera"
+        icon="camera"
+      >
+        <svg
+          data-icon="camera"
+          height={16}
+          viewBox="0 0 16 16"
+          width={16}
+        >
+          <desc>
+            camera
+          </desc>
+          <path
+            d="M15 3h-2.59L10.7 1.29A.956.956 0 0010 1H6c-.28 0-.53.11-.71.29L3.59 3H1c-.55 0-1 .45-1 1v7c0 .55.45 1 1 1h2.56c1.1 1.22 2.67 2 4.44 2s3.34-.78 4.44-2H15c.55 0 1-.45 1-1V4c0-.55-.45-1-1-1zM3 6H1V5h2v1zm5 6c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+            fillRule="evenodd"
+          />
+        </svg>
+      </span>
+    </button>
+  </span>
+</span>
+`;

@@ -1,0 +1,227 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render correctly 1`] = `
+<div
+  className="bp3-card bp3-elevation-0 login-form"
+>
+  <form
+    onSubmit={[Function]}
+  >
+    <div
+      className="bp3-form-group"
+    >
+      <label
+        className="bp3-label"
+        htmlFor="login"
+      >
+        Email
+         
+        <span
+          className="bp3-text-muted"
+        >
+          required
+        </span>
+      </label>
+      <div
+        className="bp3-form-content"
+      >
+        <div
+          className="bp3-input-group"
+        >
+          <input
+            autoComplete="username"
+            className="bp3-input"
+            id="login"
+            onChange={[Function]}
+            placeholder="Email"
+            style={
+              Object {
+                "paddingLeft": undefined,
+                "paddingRight": undefined,
+              }
+            }
+            type="email"
+          />
+        </div>
+        <div
+          className="bp3-form-helper-text"
+        >
+          Type your email
+        </div>
+      </div>
+    </div>
+    <div
+      className="bp3-form-group"
+    >
+      <label
+        className="bp3-label"
+        htmlFor="password"
+      >
+        Password
+         
+        <span
+          className="bp3-text-muted"
+        >
+          required
+        </span>
+      </label>
+      <div
+        className="bp3-form-content"
+      >
+        <div
+          className="bp3-input-group"
+        >
+          <input
+            autoComplete="current-password"
+            className="bp3-input"
+            id="password"
+            onChange={[Function]}
+            placeholder="Password"
+            style={
+              Object {
+                "paddingLeft": undefined,
+                "paddingRight": undefined,
+              }
+            }
+            type="password"
+          />
+        </div>
+        <div
+          className="bp3-form-helper-text"
+        >
+          Type your password
+        </div>
+      </div>
+    </div>
+    <div
+      className="login-form__actions"
+    >
+      <button
+        className="bp3-button"
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        type="submit"
+      >
+        <span
+          className="bp3-button-text"
+        >
+          Signin
+        </span>
+      </button>
+    </div>
+  </form>
+</div>
+`;
+
+exports[`should render with errors 1`] = `
+<div
+  className="bp3-card bp3-elevation-0 login-form"
+>
+  <form
+    onSubmit={[Function]}
+  >
+    <div
+      className="bp3-form-group bp3-intent-warning"
+    >
+      <label
+        className="bp3-label"
+        htmlFor="login"
+      >
+        Email
+         
+        <span
+          className="bp3-text-muted"
+        >
+          required
+        </span>
+      </label>
+      <div
+        className="bp3-form-content"
+      >
+        <div
+          className="bp3-input-group bp3-intent-warning"
+        >
+          <input
+            autoComplete="username"
+            className="bp3-input"
+            id="login"
+            onChange={[Function]}
+            placeholder="Email"
+            style={
+              Object {
+                "paddingLeft": undefined,
+                "paddingRight": undefined,
+              }
+            }
+            type="email"
+          />
+        </div>
+        <div
+          className="bp3-form-helper-text"
+        >
+          Invalid email
+        </div>
+      </div>
+    </div>
+    <div
+      className="bp3-form-group bp3-intent-warning"
+    >
+      <label
+        className="bp3-label"
+        htmlFor="password"
+      >
+        Password
+         
+        <span
+          className="bp3-text-muted"
+        >
+          required
+        </span>
+      </label>
+      <div
+        className="bp3-form-content"
+      >
+        <div
+          className="bp3-input-group bp3-intent-warning"
+        >
+          <input
+            autoComplete="current-password"
+            className="bp3-input"
+            id="password"
+            onChange={[Function]}
+            placeholder="Password"
+            style={
+              Object {
+                "paddingLeft": undefined,
+                "paddingRight": undefined,
+              }
+            }
+            type="password"
+          />
+        </div>
+        <div
+          className="bp3-form-helper-text"
+        >
+          Invalid password
+        </div>
+      </div>
+    </div>
+    <div
+      className="login-form__actions"
+    >
+      <button
+        className="bp3-button"
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        type="submit"
+      >
+        <span
+          className="bp3-button-text"
+        >
+          Signin
+        </span>
+      </button>
+    </div>
+  </form>
+</div>
+`;
