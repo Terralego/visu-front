@@ -1,8 +1,8 @@
 import React from 'react';
 import { RangeSlider as BPRangeSlider } from '@blueprintjs/core';
 import PropTypes from 'prop-types';
-import { DEFAULT_MIN, DEFAULT_MAX } from './Range';
 import RangeComponent from './RangeComponent';
+import { DEFAULT_MAX, DEFAULT_MIN } from './rangeConstants';
 
 /**
  * Slider for editing a range.

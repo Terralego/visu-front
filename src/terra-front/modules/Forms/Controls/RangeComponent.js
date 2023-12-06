@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { DEFAULT_MIN, DEFAULT_MAX } from './Range';
+
+import { DEFAULT_MAX, DEFAULT_MIN } from './rangeConstants';
 
 const rangeIsEqual = (a, b) => {
   if (a === b) {

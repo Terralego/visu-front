@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import { NumericInput, FormGroup, Intent } from '@blueprintjs/core';
 import debounce from 'lodash.debounce';
 import translateMock from '../../../utils/translate';
-import { DEFAULT_MIN, DEFAULT_MAX } from './Range';
 import RangeComponent from './RangeComponent';
+
+import { DEFAULT_MIN, DEFAULT_MAX } from './rangeConstants';
 
 const sanitizeProps = ({
   fetchValues,
