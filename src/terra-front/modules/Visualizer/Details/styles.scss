@@ -1,0 +1,436 @@
+@import '../../../utils/variables.scss';
+
+.view-details {
+  position: absolute;
+  top: 0.5rem;
+  bottom: .5rem;
+  right: 0;
+  width: 25rem;
+  display: flex;
+  flex-direction: column;
+  transform: translate3d(100%, 0, 0);
+  transition: transform .2s ease-in, opacity .2s ease-in;
+  z-index: 2;
+  background: #fff;
+  margin: 0;
+  opacity: 0;
+
+  &--hidden {
+    display: none;
+  }
+
+  &--visible {
+    transform: translate3d(-.5rem, 0, 0);
+    opacity: .9;
+    box-shadow: 0 0 10px rgba(0,0,0,.2);
+  }
+
+  &__close {
+    position: relative;
+    z-index: 1;
+  }
+
+  &__close-button {
+    position: absolute;
+    top: .5rem;
+    right: .5rem;
+  }
+
+  &__wrapper {
+    display: flex;
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 100%;
+    scrollbar-color: #30404d2b #ffffff;
+    &::-webkit-scrollbar {
+      width: .5rem;
+    }
+    &::-webkit-scrollbar-track {
+      background-color: #ffffff ;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: #30404d2b;
+    }
+  }
+
+  &__content {
+    padding: .5rem 2rem;
+    flex: auto;
+    min-width: 0;
+  }
+
+  &--withCarousel &__content {
+    padding-right: 0;
+    padding-left: 0;
+  }
+
+  &__button {
+    position: relative;
+    transition: transform 0.2s ease-in;
+    height: 100%;
+    width: 1.75rem;
+    flex-shrink: 0;
+    button {
+      position: absolute;
+      top: 12.5%;
+      right: 0;
+      left: 0;
+      transform: translateY(-50%) scale(1.5);
+    } 
+  }
+
+  .details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    &__loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%);
+    }
+    
+    &__title {
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: 300;
+    }
+
+    &__group {
+      margin-top: .5rem;
+    }
+
+    &__list {
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      
+      &__amenity {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 0;
+
+        &__img {
+          width: 2.25rem;
+          height:2.25rem;
+        }
+      }
+    }
+
+    &__times {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      padding: 0;
+    }
+
+    &__subtitle {
+      color: #106ba3;
+      opacity: .65;
+      font-weight: normal;
+    }
+
+    &__column {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+
+      
+      &-label {
+        padding-bottom: .5rem;
+        padding-right: .5rem;
+        white-space: nowrap;
+        opacity: .65;
+      }
+
+      &-value {
+        min-width: 40%;
+        padding-bottom: .65rem;
+        overflow-wrap: anywhere; // Firefox
+        word-break: break-word; // Chrome
+        // If no support, it will fallback with a scrollbar
+
+        &-time {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          list-style: none;
+        }
+      }
+    }
+
+    &__link {
+      margin-top: 3.5rem;
+      text-align: center;
+
+      a {
+        background: #fff;
+        padding: .8rem;
+        border: 1px solid rgba(10, 6, 77, .35);
+      }
+    }
+  }
+
+  & .tab-bar {
+    & .bp3-tab-list {
+      padding: 0.5em 1.5em 0 0.5em;
+      flex-wrap: wrap;
+      border-bottom: 1px solid #00000033;
+      background-color: #f0f0f0;
+    }
+
+    & .bp3-tab {
+      padding: 0.3em 1em;
+      margin-right: 0;
+      border: 1px solid #0002;
+      border-bottom: none;
+      border-top-left-radius: 5px;
+      border-top-right-radius: 5px;
+    }
+
+    & .bp3-tab[aria-selected="true"] {
+      background-color: white !important;
+    }
+
+    & .bp3-tab-indicator-wrapper {
+      z-index: 2;
+      margin-left: 1px;
+    }
+  }
+  & .bp3-tab-panel {
+    margin-top: 0;
+  }
+}
+
+@media(min-width: $breakpoints-tablet) and (max-width: $breakpoints-desktop) and (orientation: landscape) {
+  .view-details {
+    width: 16.5rem;
+  
+    &__close-button {
+      top: .25rem;
+      right: .25rem;
+    }
+  
+    &__wrapper {
+      display: flex;
+      overflow-x: hidden;
+      overflow-y: auto;
+      height: 100%;
+    }
+  
+    &__content {
+      flex: auto;
+      min-width: 0;
+    }
+  
+    .details {
+      padding: .5rem / $scaleRatio;
+
+      &__picto {
+        width: 4.25rem;
+        margin: auto;
+      }
+  
+      &__title {
+        font-size: 1.6rem/$scaleRatio;
+        margin: .75rem 0;
+      }
+  
+      &__group {
+        margin-top: .5rem/$scaleRatio;
+      }
+      &__group:first-child {
+        margin-top: 0;
+      }
+  
+      &__list {
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        
+        &__amenity {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          padding: 0;
+  
+          &__img {
+            width: 2.25rem/$scaleRatio;
+            height: 2.25rem/$scaleRatio;
+          }
+        }
+      }
+  
+      &__times {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 0;
+      }
+  
+      &__column {
+        display: flex;
+        flex-direction: column;
+  
+        &-label {
+          display: flex;
+          padding-bottom: .5rem/$scaleRatio;
+        }
+  
+        &-value {
+          display: flex;
+          padding-bottom: 1.2rem;
+          
+          &-time {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            list-style: none;
+          }
+        }
+      }
+    }
+    &__button {
+      height: 100%;
+      width: .75rem;
+      flex-shrink: 0;
+      &--prev {
+        transform: translateX(-100%);
+      }
+      &--next {
+        transform:translateX(100%);
+      }
+      &--active {
+        transform: translateX(0)
+      }
+
+      button {
+        top: 15%;
+        margin: 0;
+        min-width: .75rem;
+        min-height: .75rem;
+        padding: 0;
+        outline: none;
+      } 
+    }
+  }
+}
+
+@media(min-width: $breakpoints-phone) and (max-width: $breakpoints-tablet) and (orientation: portrait) {
+  .view-details {
+    width: 16.5rem;
+  
+    &__close-button {
+      top: .25rem;
+      right: .25rem;
+    }
+  
+    &__wrapper {
+      display: flex;
+      overflow-x: hidden;
+      overflow-y: auto;
+      height: 100%;
+    }
+  
+    &__content {
+      flex: auto;
+      min-width: 0;
+    }
+  
+    .details {
+      padding: .5rem / $scaleRatio;
+
+      &__picto {
+        width: 4.25rem;
+        margin: auto;
+      }
+  
+      &__title {
+        font-size: 1.6rem/$scaleRatio;
+        margin: .75rem 0;
+      }
+  
+      &__group {
+        margin-top: .5rem/$scaleRatio;
+      }
+      &__group:first-child {
+        margin-top: 0;
+      }
+  
+      &__list {
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        
+        &__amenity {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          padding: 0;
+  
+          &__img {
+            width: 2.25rem/$scaleRatio;
+            height: 2.25rem/$scaleRatio;
+          }
+        }
+      }
+  
+      &__times {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        padding: 0;
+      }
+  
+      &__column {
+        display: flex;
+        flex-direction: column;
+  
+        &-label {
+          display: flex;
+          padding-bottom: .5rem/$scaleRatio;
+        }
+  
+        &-value {
+          display: flex;
+          padding-bottom: 1.2rem;
+          
+          &-time {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            list-style: none;
+          }
+        }
+      }
+    }
+    &__button {
+      height: 100%;
+      width: .75rem;
+      flex-shrink: 0;
+      &--prev {
+        transform: translateX(-100%);
+      }
+      &--next {
+        transform:translateX(100%);
+      }
+      &--active {
+        transform: translateX(0)
+      }
+
+      button {
+        top: 15%;
+        margin: 0;
+        min-width: .75rem;
+        min-height: .75rem;
+        padding: 0;
+        outline: none;
+      } 
+    }
+  }
+}

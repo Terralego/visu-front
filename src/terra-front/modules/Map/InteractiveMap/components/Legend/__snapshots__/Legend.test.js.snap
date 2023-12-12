@@ -1,0 +1,1668 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render correctly circle 1`] = `
+<div
+  className="tf-legend tf-legend--level-1"
+>
+  <h4
+    className="tf-legend__title"
+  >
+    Hello World
+  </h4>
+  <div
+    className="tf-legend__list"
+  >
+    <div
+      className="tf-legend__item tf-legend__item--circle tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container color--black"
+        style={
+          Object {
+            "width": 16,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={16}
+            viewBox="0 0 18 18"
+            width={16}
+          >
+            <circle
+              cx={9}
+              cy={9}
+              fill="red"
+              r={8}
+              stroke="hsla(0, 100%, 30%, 1)"
+              strokeWidth={1}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Rouge
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--circle tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container"
+        style={
+          Object {
+            "width": 16,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={16}
+            viewBox="0 0 18 18"
+            width={16}
+          >
+            <circle
+              cx={9}
+              cy={9}
+              fill="green"
+              r={8}
+              stroke="hsla(120, 100%, 5%, 1)"
+              strokeWidth={1}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Vert
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--circle tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container"
+        style={
+          Object {
+            "width": 16,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={16}
+            viewBox="0 0 18 18"
+            width={16}
+          >
+            <circle
+              cx={9}
+              cy={9}
+              fill="blue"
+              r={8}
+              stroke="lightblue"
+              strokeWidth={1}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Bleu
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`should render correctly line 1`] = `
+<div
+  className="tf-legend tf-legend--level-1"
+>
+  <h4
+    className="tf-legend__title"
+  >
+    Hello World
+  </h4>
+  <div
+    className="tf-legend__list"
+  >
+    <div
+      className="tf-legend__item tf-legend__item--line tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container color--black"
+        style={
+          Object {
+            "width": 32,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={16}
+            viewBox="0 0 16 16"
+            width={16}
+          >
+            <line
+              style={
+                Object {
+                  "stroke": "red",
+                  "stroke-width": 2,
+                }
+              }
+              x1="0"
+              x2={16}
+              y1="0"
+              y2={16}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Rouge
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--line tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container"
+        style={
+          Object {
+            "width": 32,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={16}
+            viewBox="0 0 16 16"
+            width={16}
+          >
+            <line
+              style={
+                Object {
+                  "stroke": "green",
+                  "stroke-width": 2,
+                }
+              }
+              x1="0"
+              x2={16}
+              y1="0"
+              y2={16}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Vert
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--line tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container"
+        style={
+          Object {
+            "width": 32,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={16}
+            viewBox="0 0 16 16"
+            width={16}
+          >
+            <line
+              style={
+                Object {
+                  "stroke": "lightblue",
+                  "stroke-width": 2,
+                }
+              }
+              x1="0"
+              x2={16}
+              y1="0"
+              y2={16}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Bleu
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`should render correctly square 1`] = `
+<div
+  className="tf-legend tf-legend--level-1"
+>
+  <h4
+    className="tf-legend__title"
+  >
+    Hello World
+  </h4>
+  <div
+    className="tf-legend__list"
+  >
+    <div
+      className="tf-legend__item tf-legend__item--square tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container color--black"
+        style={
+          Object {
+            "width": 32,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={16}
+            viewBox="0 0 16 16"
+            width={16}
+          >
+            <rect
+              fill="red"
+              height={16}
+              stroke="hsla(0, 100%, 40%, 1)"
+              strokeWidth={1}
+              width={16}
+              x="0"
+              y="0"
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Rouge
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--square tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container"
+        style={
+          Object {
+            "width": 32,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={16}
+            viewBox="0 0 16 16"
+            width={16}
+          >
+            <rect
+              fill="green"
+              height={16}
+              stroke="hsla(120, 100%, 15%, 1)"
+              strokeWidth={1}
+              width={16}
+              x="0"
+              y="0"
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Vert
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--square tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container"
+        style={
+          Object {
+            "width": 32,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={16}
+            viewBox="0 0 16 16"
+            width={16}
+          >
+            <rect
+              fill="blue"
+              height={16}
+              stroke="lightblue"
+              strokeWidth={1}
+              width={16}
+              x="0"
+              y="0"
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Bleu
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`should render correctly stacked circles 1`] = `
+<div
+  className="tf-legend tf-legend--level-1"
+>
+  <h4
+    className="tf-legend__title"
+  >
+    Hello World
+  </h4>
+  <div
+    className="tf-legend__list tf-legend__stacked-circles"
+    style={
+      Object {
+        "height": 16,
+        "width": 30.4,
+      }
+    }
+  >
+    <div
+      className="tf-legend__item tf-legend__item--stackedCircle tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container color--black"
+        style={
+          Object {
+            "width": 16,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={16}
+            viewBox="0 0 18 18"
+            width={16}
+          >
+            <circle
+              cx={9}
+              cy={9}
+              fill="red"
+              r={8}
+              stroke="#000"
+              strokeWidth={1}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Rouge
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--stackedCircle tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container"
+        style={
+          Object {
+            "width": 16,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={16}
+            viewBox="0 0 18 18"
+            width={16}
+          >
+            <circle
+              cx={9}
+              cy={9}
+              fill="green"
+              r={8}
+              stroke="#fff"
+              strokeWidth={1}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Vert
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--stackedCircle tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container"
+        style={
+          Object {
+            "width": 16,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={16}
+            viewBox="0 0 18 18"
+            width={16}
+          >
+            <circle
+              cx={9}
+              cy={9}
+              fill="blue"
+              r={8}
+              stroke="lightblue"
+              strokeWidth={1}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Bleu
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`should render correctly with comment 1`] = `
+<div
+  className="tf-legend tf-legend--level-1"
+>
+  <h4
+    className="tf-legend__title"
+  >
+    les bains
+  </h4>
+  <div
+    className="tf-legend__list"
+  />
+  <div
+    className="tf-legend__source"
+  >
+    Evian
+  </div>
+</div>
+`;
+
+exports[`should render correctly with different config circle 1`] = `
+<div
+  className="tf-legend tf-legend--level-1"
+>
+  <h4
+    className="tf-legend__title"
+  >
+    Hello World
+  </h4>
+  <div
+    className="tf-legend__list"
+  >
+    <div
+      className="tf-legend__item tf-legend__item--circle tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container color--black"
+        style={
+          Object {
+            "width": 40,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={20}
+            viewBox="0 0 22 22"
+            width={20}
+          >
+            <circle
+              cx={11}
+              cy={11}
+              fill="red"
+              r={10}
+              stroke="hsla(0, 100%, 30%, 1)"
+              strokeWidth={1}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Rouge
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--circle tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container"
+        style={
+          Object {
+            "width": 40,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={30}
+            viewBox="0 0 32 32"
+            width={30}
+          >
+            <circle
+              cx={16}
+              cy={16}
+              fill="green"
+              r={15}
+              stroke="black"
+              strokeWidth={1}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Vert
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--circle tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container"
+        style={
+          Object {
+            "width": 40,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={40}
+            viewBox="0 0 42 42"
+            width={40}
+          >
+            <circle
+              cx={21}
+              cy={21}
+              fill="blue"
+              r={20}
+              stroke="lightblue"
+              strokeWidth={1}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Bleu
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`should render correctly with different config icon 1`] = `
+<div
+  className="tf-legend tf-legend--level-1"
+>
+  <h4
+    className="tf-legend__title"
+  >
+    Hello World
+  </h4>
+  <div
+    className="tf-legend__list"
+  >
+    <div
+      className="tf-legend__item tf-legend__item--icon tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container color--black"
+        style={
+          Object {
+            "position": "relative",
+            "width": 32,
+          }
+        }
+      >
+        <img
+          alt=""
+          className="tf-legend__symbol"
+          src="/pushpin.png"
+          style={
+            Object {
+              "left": "50%",
+              "maxWidth": 16,
+              "position": "absolute",
+              "top": "50%",
+              "transform": "translate(-50%, -50%)",
+            }
+          }
+        />
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        icon 1
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--icon tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container color--black"
+        style={
+          Object {
+            "position": "relative",
+            "width": 32,
+          }
+        }
+      >
+        <img
+          alt=""
+          className="tf-legend__symbol"
+          src="/loudspeaker.png"
+          style={
+            Object {
+              "left": "50%",
+              "maxWidth": 16,
+              "position": "absolute",
+              "top": "50%",
+              "transform": "translate(-50%, -50%)",
+            }
+          }
+        />
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        icon 2
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`should render correctly with different config line 1`] = `
+<div
+  className="tf-legend tf-legend--level-1"
+>
+  <h4
+    className="tf-legend__title"
+  >
+    Hello World
+  </h4>
+  <div
+    className="tf-legend__list"
+  >
+    <div
+      className="tf-legend__item tf-legend__item--line tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container color--black"
+        style={
+          Object {
+            "width": 32,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={20}
+            viewBox="0 0 20 20"
+            width={20}
+          >
+            <line
+              style={
+                Object {
+                  "stroke": "red",
+                  "stroke-width": 2,
+                }
+              }
+              x1="0"
+              x2={20}
+              y1="0"
+              y2={20}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Rouge
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--line tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container"
+        style={
+          Object {
+            "width": 32,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={30}
+            viewBox="0 0 30 30"
+            width={30}
+          >
+            <line
+              style={
+                Object {
+                  "stroke": "black",
+                  "stroke-width": 2,
+                }
+              }
+              x1="0"
+              x2={30}
+              y1="0"
+              y2={30}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Vert
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--line tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container"
+        style={
+          Object {
+            "width": 32,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={40}
+            viewBox="0 0 40 40"
+            width={40}
+          >
+            <line
+              style={
+                Object {
+                  "stroke": "lightblue",
+                  "stroke-width": 2,
+                }
+              }
+              x1="0"
+              x2={40}
+              y1="0"
+              y2={40}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Bleu
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`should render correctly with different config square 1`] = `
+<div
+  className="tf-legend tf-legend--level-1"
+>
+  <h4
+    className="tf-legend__title"
+  >
+    Hello World
+  </h4>
+  <div
+    className="tf-legend__list"
+  >
+    <div
+      className="tf-legend__item tf-legend__item--square tf-legend__item--right"
+    >
+      <div
+        className="tf-legend__symbol-container color--black"
+        style={
+          Object {
+            "width": 32,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={20}
+            viewBox="0 0 20 20"
+            width={20}
+          >
+            <rect
+              fill="red"
+              height={20}
+              stroke="hsla(0, 100%, 40%, 1)"
+              strokeWidth={1}
+              width={20}
+              x="0"
+              y="0"
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Rouge
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--square tf-legend__item--right"
+    >
+      <div
+        className="tf-legend__symbol-container"
+        style={
+          Object {
+            "width": 32,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={30}
+            viewBox="0 0 30 30"
+            width={30}
+          >
+            <rect
+              fill="green"
+              height={30}
+              stroke="black"
+              strokeWidth={1}
+              width={30}
+              x="0"
+              y="0"
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Vert
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--square tf-legend__item--right"
+    >
+      <div
+        className="tf-legend__symbol-container"
+        style={
+          Object {
+            "width": 32,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={40}
+            viewBox="0 0 40 40"
+            width={40}
+          >
+            <rect
+              fill="blue"
+              height={40}
+              stroke="lightblue"
+              strokeWidth={1}
+              width={40}
+              x="0"
+              y="0"
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Bleu
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`should render correctly with different config stacked circles 1`] = `
+<div
+  className="tf-legend tf-legend--level-1"
+>
+  <h4
+    className="tf-legend__title"
+  >
+    Hello World
+  </h4>
+  <div
+    className="tf-legend__list tf-legend__stacked-circles"
+    style={
+      Object {
+        "height": 40,
+        "width": 76,
+      }
+    }
+  >
+    <div
+      className="tf-legend__item tf-legend__item--stackedCircle tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container color--black"
+        style={
+          Object {
+            "width": 40,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={20}
+            viewBox="0 0 22 22"
+            width={20}
+          >
+            <circle
+              cx={11}
+              cy={11}
+              fill="red"
+              r={10}
+              stroke="#000"
+              strokeWidth={1}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Rouge
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--stackedCircle tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container"
+        style={
+          Object {
+            "width": 40,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={30}
+            viewBox="0 0 32 32"
+            width={30}
+          >
+            <circle
+              cx={16}
+              cy={16}
+              fill="green"
+              r={15}
+              stroke="black"
+              strokeWidth={1}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Vert
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--stackedCircle tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container"
+        style={
+          Object {
+            "width": 40,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={40}
+            viewBox="0 0 42 42"
+            width={40}
+          >
+            <circle
+              cx={21}
+              cy={21}
+              fill="blue"
+              r={20}
+              stroke="lightblue"
+              strokeWidth={1}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Bleu
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`should render correctly with old config circle 1`] = `
+<div
+  className="tf-legend tf-legend--level-1"
+>
+  <h4
+    className="tf-legend__title"
+  >
+    Hello World
+  </h4>
+  <div
+    className="tf-legend__list"
+  >
+    <div
+      className="tf-legend__item tf-legend__item--circle tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container color--black"
+        style={
+          Object {
+            "width": 40,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={16}
+            viewBox="0 0 18 18"
+            width={16}
+          >
+            <circle
+              cx={9}
+              cy={9}
+              fill="red"
+              r={8}
+              stroke="hsla(0, 100%, 30%, 1)"
+              strokeWidth={1}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Rouge
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--circle tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container"
+        style={
+          Object {
+            "width": 40,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={20}
+            viewBox="0 0 22 22"
+            width={20}
+          >
+            <circle
+              cx={11}
+              cy={11}
+              fill="green"
+              r={10}
+              stroke="hsla(120, 100%, 5%, 1)"
+              strokeWidth={1}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Vert
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--circle tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container"
+        style={
+          Object {
+            "width": 40,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={40}
+            viewBox="0 0 42 42"
+            width={40}
+          >
+            <circle
+              cx={21}
+              cy={21}
+              fill="blue"
+              r={20}
+              stroke="lightblue"
+              strokeWidth={1}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Bleu
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`should render correctly with old config line 1`] = `
+<div
+  className="tf-legend tf-legend--level-1"
+>
+  <h4
+    className="tf-legend__title"
+  >
+    Hello World
+  </h4>
+  <div
+    className="tf-legend__list"
+  >
+    <div
+      className="tf-legend__item tf-legend__item--line tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container color--black"
+        style={
+          Object {
+            "width": 32,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={16}
+            viewBox="0 0 16 16"
+            width={16}
+          >
+            <line
+              style={
+                Object {
+                  "stroke": "red",
+                  "stroke-width": 2,
+                }
+              }
+              x1="0"
+              x2={16}
+              y1="0"
+              y2={16}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Rouge
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--line tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container"
+        style={
+          Object {
+            "width": 32,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={20}
+            viewBox="0 0 20 20"
+            width={20}
+          >
+            <line
+              style={
+                Object {
+                  "stroke": "green",
+                  "stroke-width": 2,
+                }
+              }
+              x1="0"
+              x2={20}
+              y1="0"
+              y2={20}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Vert
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--line tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container"
+        style={
+          Object {
+            "width": 32,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={40}
+            viewBox="0 0 40 40"
+            width={40}
+          >
+            <line
+              style={
+                Object {
+                  "stroke": "lightblue",
+                  "stroke-width": 2,
+                }
+              }
+              x1="0"
+              x2={40}
+              y1="0"
+              y2={40}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Bleu
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`should render correctly with old config square 1`] = `
+<div
+  className="tf-legend tf-legend--level-1"
+>
+  <h4
+    className="tf-legend__title"
+  >
+    Hello World
+  </h4>
+  <div
+    className="tf-legend__list"
+  >
+    <div
+      className="tf-legend__item tf-legend__item--square tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container color--black"
+        style={
+          Object {
+            "width": 32,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={16}
+            viewBox="0 0 16 16"
+            width={16}
+          >
+            <rect
+              fill="red"
+              height={16}
+              stroke="hsla(0, 100%, 40%, 1)"
+              strokeWidth={1}
+              width={16}
+              x="0"
+              y="0"
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Rouge
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--square tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container"
+        style={
+          Object {
+            "width": 32,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={20}
+            viewBox="0 0 20 20"
+            width={20}
+          >
+            <rect
+              fill="green"
+              height={20}
+              stroke="hsla(120, 100%, 15%, 1)"
+              strokeWidth={1}
+              width={20}
+              x="0"
+              y="0"
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Vert
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--square tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container"
+        style={
+          Object {
+            "width": 32,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={40}
+            viewBox="0 0 40 40"
+            width={40}
+          >
+            <rect
+              fill="blue"
+              height={40}
+              stroke="lightblue"
+              strokeWidth={1}
+              width={40}
+              x="0"
+              y="0"
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Bleu
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`should render correctly with old config stacked circles 1`] = `
+<div
+  className="tf-legend tf-legend--level-1"
+>
+  <h4
+    className="tf-legend__title"
+  >
+    Hello World
+  </h4>
+  <div
+    className="tf-legend__list"
+  >
+    <div
+      className="tf-legend__item tf-legend__item--circle tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container color--black"
+        style={
+          Object {
+            "width": 40,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={16}
+            viewBox="0 0 18 18"
+            width={16}
+          >
+            <circle
+              cx={9}
+              cy={9}
+              fill="red"
+              r={8}
+              stroke="hsla(0, 100%, 30%, 1)"
+              strokeWidth={1}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Rouge
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--circle tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container"
+        style={
+          Object {
+            "width": 40,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={20}
+            viewBox="0 0 22 22"
+            width={20}
+          >
+            <circle
+              cx={11}
+              cy={11}
+              fill="green"
+              r={10}
+              stroke="hsla(120, 100%, 5%, 1)"
+              strokeWidth={1}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Vert
+      </div>
+    </div>
+    <div
+      className="tf-legend__item tf-legend__item--circle tf-legend__item--left"
+    >
+      <div
+        className="tf-legend__symbol-container"
+        style={
+          Object {
+            "width": 40,
+          }
+        }
+      >
+        <div
+          className="tf-legend__symbol"
+        >
+          <svg
+            height={40}
+            viewBox="0 0 42 42"
+            width={40}
+          >
+            <circle
+              cx={21}
+              cy={21}
+              fill="blue"
+              r={20}
+              stroke="lightblue"
+              strokeWidth={1}
+            />
+          </svg>
+        </div>
+      </div>
+      <div
+        className="tf-legend__label"
+      >
+        Bleu
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`should render correctly with old config with source 1`] = `
+<div
+  className="tf-legend tf-legend--level-1"
+>
+  <h4
+    className="tf-legend__title"
+  >
+    les bains
+  </h4>
+  <div
+    className="tf-legend__list"
+  />
+  <div
+    className="tf-legend__source"
+  >
+    Evian
+  </div>
+</div>
+`;

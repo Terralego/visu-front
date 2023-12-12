@@ -1,0 +1,101 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render correctly 1`] = `
+<div
+  className="control-container control-container--select"
+  onKeyPress={[Function]}
+  role="presentation"
+>
+  <label
+    className="control-label"
+    htmlFor="select-uuid"
+  >
+    Pwout
+  </label>
+  <select>
+    <option
+      value="foo"
+    >
+      foo
+    </option>
+  </select>
+</div>
+`;
+
+exports[`should render correctly with a lot of values 1`] = `
+<div
+  className="control-container control-container--select"
+  onKeyPress={[Function]}
+  role="presentation"
+>
+  <label
+    className="control-label"
+    htmlFor="select-uuid"
+  >
+    It's over the max
+  </label>
+  <span>
+    InitialContent
+  </span>
+</div>
+`;
+
+exports[`should render correctly with values 1`] = `
+<div
+  className="control-container control-container--select"
+  onKeyPress={[Function]}
+  role="presentation"
+>
+  <label
+    className="control-label"
+    htmlFor="select-uuid"
+  >
+    Pwout
+  </label>
+  <select>
+    <option
+      value="foo"
+    >
+      foo
+    </option>
+    <option
+      value="bar"
+    >
+      bar
+    </option>
+    <option
+      value="foofoo"
+    >
+      foofoo
+    </option>
+    <option
+      value="fou"
+    >
+      fou
+    </option>
+    <option
+      value="fooooo"
+    >
+      fooooo
+    </option>
+  </select>
+</div>
+`;
+
+exports[`should render loading correctly 1`] = `
+<div
+  className="control-container control-container--select"
+  onKeyPress={[Function]}
+  role="presentation"
+>
+  <label
+    className="control-label"
+    htmlFor="select-uuid"
+  >
+    Pwout
+  </label>
+  <p>
+    Spinner
+  </p>
+</div>
+`;

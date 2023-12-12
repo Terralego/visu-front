@@ -1,0 +1,294 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render correctly 1`] = `
+Array [
+  <div
+    className="bp3-card bp3-elevation-0 signup-form"
+  >
+    <form>
+      <div
+        className="bp3-form-group"
+      >
+        <label
+          className="bp3-label"
+          htmlFor="email"
+        >
+          Email
+           
+          <span
+            className="bp3-text-muted"
+          >
+            required
+          </span>
+        </label>
+        <div
+          className="bp3-form-content"
+        >
+          <div
+            className="bp3-input-group"
+          >
+            <input
+              autoComplete="username"
+              className="bp3-input"
+              id="email"
+              placeholder="Email"
+              style={
+                Object {
+                  "paddingLeft": undefined,
+                  "paddingRight": undefined,
+                }
+              }
+              type="email"
+            />
+          </div>
+          <div
+            className="bp3-form-helper-text"
+          >
+            Type your email
+          </div>
+        </div>
+      </div>
+      <div
+        className="bp3-form-group"
+      >
+        <label
+          className="bp3-label"
+          htmlFor="password"
+        >
+          Password
+           
+          <span
+            className="bp3-text-muted"
+          >
+            required
+          </span>
+        </label>
+        <div
+          className="bp3-form-content"
+        >
+          <div
+            className="bp3-input-group"
+          >
+            <input
+              autoComplete="current-password"
+              className="bp3-input"
+              id="password"
+              placeholder="Password"
+              style={
+                Object {
+                  "paddingLeft": undefined,
+                  "paddingRight": undefined,
+                }
+              }
+              type="password"
+            />
+          </div>
+          <div
+            className="bp3-form-helper-text"
+          >
+            Type your password
+          </div>
+        </div>
+      </div>
+      <button
+        className="bp3-button"
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        type="submit"
+      >
+        <span
+          className="bp3-button-text"
+        >
+          Create account
+        </span>
+      </button>
+    </form>
+  </div>,
+  <div
+    className="bp3-card bp3-elevation-0 signup-form"
+  >
+    <div
+      className="bp3-callout bp3-intent-success bp3-callout-icon signup-form__callout"
+    >
+      <span
+        className="bp3-icon bp3-icon-tick"
+        icon="tick"
+      >
+        <svg
+          data-icon="tick"
+          height={20}
+          viewBox="0 0 20 20"
+          width={20}
+        >
+          <desc>
+            tick
+          </desc>
+          <path
+            d="M17 4c-.28 0-.53.11-.71.29L7 13.59 3.71 10.3A.965.965 0 003 10a1.003 1.003 0 00-.71 1.71l4 4c.18.18.43.29.71.29s.53-.11.71-.29l10-10A1.003 1.003 0 0017 4z"
+            fillRule="evenodd"
+          />
+        </svg>
+      </span>
+      Email sent to undefined
+    </div>
+    <form>
+      <div
+        className="bp3-form-group"
+      >
+        <label
+          className="bp3-label"
+          htmlFor="email"
+        >
+          Email
+           
+          <span
+            className="bp3-text-muted"
+          >
+            required
+          </span>
+        </label>
+        <div
+          className="bp3-form-content"
+        >
+          <div
+            className="bp3-input-group"
+          >
+            <input
+              autoComplete="username"
+              className="bp3-input"
+              id="email"
+              placeholder="Email"
+              style={
+                Object {
+                  "paddingLeft": undefined,
+                  "paddingRight": undefined,
+                }
+              }
+              type="email"
+            />
+          </div>
+          <div
+            className="bp3-form-helper-text"
+          >
+            Type your email
+          </div>
+        </div>
+      </div>
+      <button
+        className="bp3-button"
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        type="submit"
+      >
+        <span
+          className="bp3-button-text"
+        >
+          Create account
+        </span>
+      </button>
+    </form>
+  </div>,
+  <div
+    className="bp3-card bp3-elevation-0 signup-form"
+  >
+    <form>
+      <div
+        className="bp3-form-group bp3-intent-warning"
+      >
+        <label
+          className="bp3-label"
+          htmlFor="email"
+        >
+          Email
+           
+          <span
+            className="bp3-text-muted"
+          >
+            required
+          </span>
+        </label>
+        <div
+          className="bp3-form-content"
+        >
+          <div
+            className="bp3-input-group bp3-intent-warning"
+          >
+            <input
+              autoComplete="username"
+              className="bp3-input"
+              id="email"
+              placeholder="Email"
+              style={
+                Object {
+                  "paddingLeft": undefined,
+                  "paddingRight": undefined,
+                }
+              }
+              type="email"
+            />
+          </div>
+          <div
+            className="bp3-form-helper-text"
+          >
+            Type your email
+          </div>
+        </div>
+      </div>
+      <div
+        className="bp3-form-group bp3-intent-warning"
+      >
+        <label
+          className="bp3-label"
+          htmlFor="password"
+        >
+          Password
+           
+          <span
+            className="bp3-text-muted"
+          >
+            required
+          </span>
+        </label>
+        <div
+          className="bp3-form-content"
+        >
+          <div
+            className="bp3-input-group bp3-intent-warning"
+          >
+            <input
+              autoComplete="current-password"
+              className="bp3-input"
+              id="password"
+              placeholder="Password"
+              style={
+                Object {
+                  "paddingLeft": undefined,
+                  "paddingRight": undefined,
+                }
+              }
+              type="password"
+            />
+          </div>
+          <div
+            className="bp3-form-helper-text"
+          >
+            Type your password
+          </div>
+        </div>
+      </div>
+      <button
+        className="bp3-button"
+        onKeyDown={[Function]}
+        onKeyUp={[Function]}
+        type="submit"
+      >
+        <span
+          className="bp3-button-text"
+        >
+          Create account
+        </span>
+      </button>
+    </form>
+  </div>,
+]
+`;

@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render correctly 1`] = `
+<div>
+  <p>
+    terralego.map.report_control.success.message
+  </p>
+  <button
+    className="bp3-button"
+    onKeyDown={[Function]}
+    onKeyUp={[Function]}
+    type="button"
+  >
+    <span
+      className="bp3-button-text"
+    >
+      terralego.map.report_control.success.other_report
+    </span>
+  </button>
+  <button
+    className="bp3-button"
+    onKeyDown={[Function]}
+    onKeyUp={[Function]}
+    type="button"
+  >
+    <span
+      className="bp3-button-text"
+    >
+      terralego.map.report_control.success.done
+    </span>
+  </button>
+</div>
+`;
