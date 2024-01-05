@@ -79,7 +79,7 @@ export const SettingsProvider = ({ children, authenticated, setAuthenticated }) 
       }
       setSettings(nextSettings);
 
-      if (nextSettings.sentry.dsn !== '') {
+      if (nextSettings?.sentry?.dsn) {
         Sentry.init({
           sendDefaultPii: nextSettings.sentry.sendDefaultPii,
           dsn: nextSettings.sentry.dsn,

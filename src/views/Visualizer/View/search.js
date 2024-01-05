@@ -55,7 +55,7 @@ export const fetchNominatim = async ({
 
 
 const searchInMap = ({
-  searchProvider: { provider, baseUrl, options = {} },
+  searchProvider: { provider, baseUrl, options = {} } = {},
   layers,
   translate,
   locationsEnable,

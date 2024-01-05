@@ -6,8 +6,7 @@ import './index.scss';
 import RangeNumeric from './RangeNumeric';
 import RangeSlider from './RangeSlider';
 
-export const DEFAULT_MIN = 0;
-export const DEFAULT_MAX = 100;
+import { DEFAULT_MAX, DEFAULT_MIN } from './rangeConstants';
 
 /**
  * Range component that allows editing either by a slider or 2 numeric inputs

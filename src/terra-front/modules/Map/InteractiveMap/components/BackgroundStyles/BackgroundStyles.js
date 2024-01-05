@@ -13,6 +13,11 @@ export class BackgroundStyles extends AbstractMapControl {
     styles: PropTypes.oneOfType([
       PropTypes.arrayOf(PropTypes.objectOf(PropTypes.string)),
       PropTypes.string,
+      PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.number,
+        url: PropTypes.string,
+        label: PropTypes.string,
+      })),
     ]).isRequired,
     selected: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,

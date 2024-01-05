@@ -94,6 +94,11 @@ export class InteractiveMap extends React.Component {
     backgroundStyle: PropTypes.oneOfType([
       PropTypes.arrayOf(PropTypes.objectOf(PropTypes.string)),
       PropTypes.string,
+      PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.number,
+        url: PropTypes.string,
+        label: PropTypes.string,
+      })),
     ]),
     interactions: PropTypes.arrayOf(PropTypes.shape({
       id: PropTypes.string.isRequired,
@@ -301,8 +306,10 @@ export class InteractiveMap extends React.Component {
       this.setState({ interactionList: [] });
       // Since the handleMove event listener has also been removed
       // the cursor often gets stuck on the `pointer`
-      const canvas = map.getCanvas();
-      canvas.style.cursor = '';
+      const canvas = map.getCanvas?.();
+      if (canvas?.style) {
+        canvas.style.cursor = '';
+      }
     }
     if (interactions?.length) {
       const nextInteractionList = setInteractions({

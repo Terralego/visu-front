@@ -43,10 +43,13 @@ export const LayerProps = PropTypes.shape({
     })),
   }),
   /** Widgets list */
-  widgets: PropTypes.arrayOf(PropTypes.shape({
-    /** Widget name */
-    component: PropTypes.string,
-  })),
+  widgets: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.shape({
+      /** Widget name */
+      component: PropTypes.string,
+    })),
+    PropTypes.shape({}), // Django JSON field is {} when not filled
+  ]),
   /** Layer can be hidden by setting false here */
   displayed: PropTypes.bool,
   /** Only used for exclusive groups layers. Tells which layer will be active by default */

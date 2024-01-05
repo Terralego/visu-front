@@ -254,8 +254,8 @@ export class Search {
     SEARCHES_QUEUE.clear();
 
     // Perform the request and run all responses through the corresponding resolver
-    const { responses } = await this.client.msearch({ body: batchBody });
-    resolves.forEach((resolve, index) => resolve(responses[index]));
+    const { responses } = await this.client.msearch({ body: batchBody }) || {};
+    resolves.forEach((resolve, index) => resolve(responses?.[index]));
   }, 500)
 }
 
