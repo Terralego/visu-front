@@ -225,7 +225,7 @@ const LayersTreeItemOptionsDesktop = ({
               className={classnames('layerstree-node-content__options__button', {
                 'layerstree-node-content__options__button--active': isPanelOpen,
               })}
-              icon="comment"
+              icon="info-sign"
               minimal
               title="Informations"
               text="Informations"
