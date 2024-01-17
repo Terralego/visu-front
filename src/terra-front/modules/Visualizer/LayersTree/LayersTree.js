@@ -61,7 +61,11 @@ export const LayersTree = ({ layersTree, translate, filterable }) => {
         }
 
         return layer.exclusive && layer.byVariable ? (
-          <LayersTreeVariableItem layers={layer.layers} group={layer} />
+          <LayersTreeVariableItem
+            layers={layer.layers}
+            group={layer}
+            activeLayer={layer.layers.find(l => l.initialState.active)}
+          />
         ) : (
           <LayersTreeItem key={layer.label || layer.group} layer={layer} />
         );
