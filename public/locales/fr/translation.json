@@ -257,6 +257,9 @@
         },
         "warningzoom": {
           "message": "Visible depuis le zoom {{minzoom}}"
+        },
+        "variableLayers": {
+          "error": "Aucune couche ne correspond aux variables séléctionnées"
         }
       },
       "too_many_results": "Votre recherche contient trop de résultats ({{number}}), veuillez affiner votre requête ou zoomer sur une zone plus restreinte.",
