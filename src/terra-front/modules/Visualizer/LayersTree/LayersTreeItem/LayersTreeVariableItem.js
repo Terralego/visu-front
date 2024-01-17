@@ -61,7 +61,7 @@ const LayersTreeVariableItem = ({ group, layers, activeLayer }) => {
     setLayer(newLayer);
   };
 
-  const layerActive = getLayerState({ layer }).active;
+  const layerActive = getLayerState({ layer })?.active;
 
   return (
     <>

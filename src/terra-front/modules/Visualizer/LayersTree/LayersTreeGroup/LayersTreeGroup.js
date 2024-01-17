@@ -4,6 +4,7 @@ import { Button, Collapse } from '@blueprintjs/core';
 import classnames from 'classnames';
 
 import LayersTreeItem from '../LayersTreeItem';
+import LayersTreeVariableItem from '../LayersTreeItem/LayersTreeVariableItem';
 
 export class LayersTreeGroup extends React.Component {
   static propTypes = {
@@ -64,18 +65,30 @@ export class LayersTreeGroup extends React.Component {
           <Collapse
             isOpen={open}
           >
-            {layers.map(layer => ((layer.group && !layer.exclusive)
-              ? (
-                <LayersTreeGroup
-                  key={`${layer.group}${level}`}
-                  title={layer.group}
-                  layer={layer}
-                  initialOpen={false}
-                  level={level + 1}
-                  layersExtent={layersExtent}
-                />
-              )
-              : (
+            {layers.map(layer => {
+              if (layer.group && !layer.exclusive) {
+                return (
+                  <LayersTreeGroup
+                    key={`${layer.group}${level}`}
+                    title={layer.group}
+                    layer={layer}
+                    initialOpen={false}
+                    level={level + 1}
+                    layersExtent={layersExtent}
+                  />
+                );
+              }
+              if (layer.group && layer.exclusive && layer.byVariable) {
+                return (
+                  <LayersTreeVariableItem
+                    key={`${layer.group}${level}`}
+                    layers={layer.layers}
+                    group={layer}
+                    activeLayer={layer.layers.find(l => l.initialState.active)}
+                  />
+                );
+              }
+              return (
                 <LayersTreeItem
                   key={layer.label || layer.group}
                   layer={layer}
@@ -83,7 +96,8 @@ export class LayersTreeGroup extends React.Component {
                   extent={layersExtent[layer.label]}
                   isDetailsVisible={isDetailsVisible}
                 />
-              )))}
+              );
+            })}
           </Collapse>
         </div>
       )
