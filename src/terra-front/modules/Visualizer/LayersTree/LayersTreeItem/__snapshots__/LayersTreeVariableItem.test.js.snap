@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LayersTreeVariableItem should render 1`] = `
+<div
+  className="layerstree-group layerstree-group--active"
+>
+  <p>
+    LayersTreeItem
+  </p>
+  <div
+    className="bp3-collapse"
+    style={
+      Object {
+        "height": undefined,
+        "overflowY": undefined,
+        "transition": undefined,
+      }
+    }
+  >
+    <div
+      aria-hidden={false}
+      className="bp3-collapse-body"
+      style={
+        Object {
+          "transform": "translateY(-undefinedpx)",
+          "transition": undefined,
+        }
+      }
+    />
+  </div>
+</div>
+`;

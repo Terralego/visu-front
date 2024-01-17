@@ -1,10 +1,10 @@
-import PropTypes from 'prop-types';
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
-import SearchInput from '../../Map/Map/components/SearchControl/SearchInput';
-import LayerProps from '../types/Layer';
 import LayersTreeGroup from './LayersTreeGroup';
 import LayersTreeItem from './LayersTreeItem';
+import LayerProps from '../types/Layer';
+import SearchInput from '../../Map/Map/components/SearchControl/SearchInput';
 
 import translateMock from '../../../utils/translate';
 
@@ -60,13 +60,16 @@ export const LayersTree = ({ layersTree, translate, filterable }) => {
           );
         }
 
-        return layer.exclusive && layer.byVariable ? (
-          <LayersTreeVariableItem
-            layers={layer.layers}
-            group={layer}
-            activeLayer={layer.layers.find(l => l.initialState.active)}
-          />
-        ) : (
+        if (layer.group && layer.exclusive && layer.byVariable) {
+          return (
+            <LayersTreeVariableItem
+              layers={layer.layers}
+              group={layer}
+              activeLayer={layer.layers.find(l => l.initialState.active)}
+            />
+          );
+        }
+        return (
           <LayersTreeItem key={layer.label || layer.group} layer={layer} />
         );
       })}

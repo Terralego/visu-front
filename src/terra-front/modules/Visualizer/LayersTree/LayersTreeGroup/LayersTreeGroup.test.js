@@ -14,6 +14,9 @@ jest.mock('@blueprintjs/core', () => ({
   Collapse ({ children }) {
     return children;
   },
+  Classes: {
+    getClassNamespace: () => '',
+  },
 }));
 
 jest.mock('../LayersTreeItem', () => function LayersTreeItem () {

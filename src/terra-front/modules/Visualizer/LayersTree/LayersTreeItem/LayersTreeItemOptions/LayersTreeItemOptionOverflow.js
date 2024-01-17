@@ -19,8 +19,8 @@ const LayersTreeItemOptionOverflow = ({ hasSomeOptionActive, children, translate
         { 'layerstree-node-content__options--active': hasSomeOptionActive || isPopoverOpen },
       )}
     >
-      {shownButtons.map((e, index) => (
-        <span key={e.id ?? index} className="layerstree-node-content__options__overflow--shown">{e}</span>
+      {shownButtons.map((button, index) => (
+        <span key={button.id ?? index} className="layerstree-node-content__options__overflow--shown">{button}</span>
       ))}
 
       {overFlowedButtons.length > 0 && (
