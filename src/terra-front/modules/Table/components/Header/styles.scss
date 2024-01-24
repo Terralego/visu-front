@@ -6,12 +6,12 @@
   }
   &__options {
     padding: 10px 20px 10px 0;
-    .bp3-control {
+    .bp4-control {
       white-space: nowrap;
       padding-bottom: 5px;
     }
   }
-  &__options-popover .bp3-popover-content {
+  &__options-popover .bp4-popover-content {
     max-height: calc(100vh - 2rem);
     overflow: auto;
   }

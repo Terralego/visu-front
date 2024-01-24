@@ -14,8 +14,8 @@
   z-index: 30;
 }
 
-// Avoid .mapboxgl-ctrl-group to override .bp3-button
-.mapboxgl-ctrl-group .bp3-button {
+// Avoid .mapboxgl-ctrl-group to override .bp4-button
+.mapboxgl-ctrl-group .bp4-button {
   display: inline-flex;
   width: auto;
   height: auto;
@@ -41,12 +41,12 @@
   }
 }
 
-.mapboxgl-ctrl .bp3-icon {
+.mapboxgl-ctrl .bp4-icon {
   opacity: 0.7;
   cursor: pointer;
 }
 
-.bp3-dark .mapboxgl-ctrl-group {
+.bp4-dark .mapboxgl-ctrl-group {
   box-shadow: 0 0 0 1px rgba(16, 22, 26, .4);
   background-color: #394b59;
   color: $pt-dark-text-color;
@@ -67,7 +67,7 @@
     }
   }
 
-  .bp3-popover-target button {
+  .bp4-popover-target button {
     filter: invert(0%);
     color: $pt-dark-text-color;
   }

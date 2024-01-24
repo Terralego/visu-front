@@ -250,7 +250,7 @@ $bg-visualizer: rgb(49, 64, 77);
   }
 }
 
-.bp3-transition-container {
+.bp4-transition-container {
   z-index: 999;
 }
 
@@ -271,7 +271,7 @@ $bg-visualizer: rgb(49, 64, 77);
       }
 
       .mapboxgl-ctrl-logo,
-      .bp3-popover-wrapper,
+      .bp4-popover-wrapper,
       .mapboxgl-ctrl-top-right {
         display: none;
       }
@@ -352,7 +352,7 @@ $bg-visualizer: rgb(49, 64, 77);
   }
   .navBar__group {
     padding-top: .2rem / $scaleRatioTablet;
-    .bp3-popover-wrapper {
+    .bp4-popover-wrapper {
       margin: 0 0 (1rem / $scaleRatioTablet) 0;
     }
   }

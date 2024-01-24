@@ -8,7 +8,7 @@ import './styles.scss';
 
 export const MapNavigationButton = ({ isVisible, onToggle, uid, translate, isMobileSized }) => (
   <Tooltip
-    className="bp3-dark map-navigation__button-container"
+    className="bp4-dark map-navigation__button-container"
     portalClassName="map-navigation__button-tooltip"
     content={
       isVisible ? translate('terralego.visualizer.fold') : translate('terralego.visualizer.unfold')

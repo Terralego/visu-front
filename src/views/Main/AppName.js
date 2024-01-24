@@ -10,7 +10,7 @@ export const AppName = ({
 }) => (
   <Component
     className={classnames(
-      'bp3-dark',
+      'bp4-dark',
       'appName',
       className,
     )}

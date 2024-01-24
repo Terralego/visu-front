@@ -81,7 +81,7 @@ export class FiltersPanelContent extends React.Component {
         className={classnames('filters-panel', {
           'filters-panel--visible': visible,
           'filters-panel--animate': animate,
-          'bp3-dark': true,
+          'bp4-dark': true,
         })}
         style={{
           left: typeof left === 'number' && typeof width === 'number' && left + width,

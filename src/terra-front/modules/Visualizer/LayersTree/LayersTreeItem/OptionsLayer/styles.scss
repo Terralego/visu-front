@@ -4,7 +4,7 @@
   width: 100%;
   padding: .5rem 0;
   
-  .bp3-slider {
+  .bp4-slider {
     width: calc(100% - .5rem);
     span {
       width: 1rem;
@@ -17,7 +17,7 @@
   font-size: .75rem;
   line-height: .9rem;
   margin-bottom: .25rem;
-  .bp3-dark & {
+  .bp4-dark & {
     color: #f5f8fA;
   }
 }
@@ -30,7 +30,7 @@
   .layerNode-Option-Container {
     padding: 1rem 0;
     
-    .bp3-slider {
+    .bp4-slider {
       width: calc(100% - .5rem / #{$scaleRatio});
       span {
         width: 1rem / $scaleRatio;
