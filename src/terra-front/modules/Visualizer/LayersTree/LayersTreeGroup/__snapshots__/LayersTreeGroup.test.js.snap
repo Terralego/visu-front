@@ -1,0 +1,52 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should render correctly 1`] = `
+Array [
+  <div
+    className="layerstree-group layerstree-group--0 layerstree-group--active"
+  >
+    <p>
+      Button
+    </p>
+    <p>
+      LayersTreeItem
+    </p>
+    <p>
+      LayersTreeItem
+    </p>
+  </div>,
+  <div
+    className="layerstree-group layerstree-group--0"
+  >
+    <p>
+      Button
+    </p>
+    <p>
+      LayersTreeItem
+    </p>
+    <p>
+      LayersTreeItem
+    </p>
+  </div>,
+  <div
+    className="layerstree-group layerstree-group--0 layerstree-group--active"
+  >
+    <p>
+      Button
+    </p>
+    <p>
+      LayersTreeItem
+    </p>
+    <div
+      className="layerstree-group layerstree-group--1"
+    >
+      <p>
+        Button
+      </p>
+    </div>
+    <p>
+      LayersTreeItem
+    </p>
+  </div>,
+]
+`;

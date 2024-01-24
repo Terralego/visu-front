@@ -1,0 +1,108 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Button, Collapse } from '@blueprintjs/core';
+import classnames from 'classnames';
+
+import LayersTreeItem from '../LayersTreeItem';
+import LayersTreeVariableItem from '../LayersTreeItem/LayersTreeVariableItem';
+
+export class LayersTreeGroup extends React.Component {
+  static propTypes = {
+    title: PropTypes.string.isRequired,
+    layer: PropTypes.shape({
+      label: PropTypes.string,
+      group: PropTypes.string,
+    }).isRequired,
+  };
+
+  constructor (props) {
+    super(props);
+    const { layer: { initialState }, initialOpen: open = true } = props;
+    this.state = initialState || {
+      open,
+    };
+  }
+
+  handleClick = () => {
+    const { open } = this.state;
+    this.setState({ open: !open });
+  };
+
+  render () {
+    const { open } = this.state;
+    const {
+      title,
+      layer: { layers, exclusive },
+      isHidden,
+      level = 0,
+      layersExtent = {},
+      isDetailsVisible,
+    } = this.props;
+
+    const { handleClick } = this;
+
+    return (
+      isHidden ? null : (
+        <div
+          className={classnames(
+            'layerstree-group',
+            `layerstree-group--${level}`,
+            {
+              'layerstree-group--active': open,
+            },
+          )}
+        >
+          <Button
+            className="layerstree-group__label-button"
+            onClick={handleClick}
+            icon={open ? 'chevron-down' : 'chevron-right'}
+            minimal
+            aria-expanded={Boolean(open)}
+          >
+            {title}
+
+          </Button>
+          <Collapse
+            isOpen={open}
+          >
+            {layers.map(layer => {
+              if (layer.group && !layer.exclusive) {
+                return (
+                  <LayersTreeGroup
+                    key={`${layer.group}${level}`}
+                    title={layer.group}
+                    layer={layer}
+                    initialOpen={false}
+                    level={level + 1}
+                    layersExtent={layersExtent}
+                  />
+                );
+              }
+              if (layer.group && layer.exclusive && layer.byVariable) {
+                return (
+                  <LayersTreeVariableItem
+                    key={`${layer.group}${level}`}
+                    layers={layer.layers}
+                    group={layer}
+                    activeLayer={layer.layers.find(l => l.initialState.active)}
+                  />
+                );
+              }
+              return (
+                <LayersTreeItem
+                  key={layer.label || layer.group}
+                  layer={layer}
+                  exclusive={exclusive}
+                  extent={layersExtent[layer.label]}
+                  isDetailsVisible={isDetailsVisible}
+                />
+              );
+            })}
+          </Collapse>
+        </div>
+      )
+    );
+  }
+}
+
+export default LayersTreeGroup;

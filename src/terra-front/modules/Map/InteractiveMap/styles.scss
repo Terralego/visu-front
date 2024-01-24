@@ -1,0 +1,28 @@
+$transitionSpeed: .2s;
+
+.interactive-map {
+  position: relative;
+  overflow: hidden;
+  width: auto;
+  height: 100vh;
+  display: flex;
+
+  .tf-map {
+    flex: 1;
+    width: 100%;
+  }
+
+  &__legends {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    max-height: calc(100% - 1rem);
+    max-width: 17%;
+    min-width: 200px;
+    overflow: auto;
+  }
+}
+
+.interactive-map__legends {
+  z-index: 10;
+}

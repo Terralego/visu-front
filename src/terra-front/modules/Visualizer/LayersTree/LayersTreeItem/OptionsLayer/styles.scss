@@ -1,0 +1,50 @@
+@import '../../../../../utils/variables.scss'; 
+
+.layerNode-Option-Container {
+  width: 100%;
+  padding: .5rem 0;
+  
+  .bp3-slider {
+    width: calc(100% - .5rem);
+    span {
+      width: 1rem;
+    }
+  }
+}
+
+.layerNode-Option-slider-label {
+  font-family: "SFProText-Light", Arial, Helvetica, sans-serif;
+  font-size: .75rem;
+  line-height: .9rem;
+  margin-bottom: .25rem;
+  .bp3-dark & {
+    color: #f5f8fA;
+  }
+}
+
+.layerNode-Option-button:not(:last-of-type) {
+  margin-right: .75rem;
+}
+
+@media(min-width: $breakpoints-phone) and (max-width: $breakpoints-desktop) {
+  .layerNode-Option-Container {
+    padding: 1rem 0;
+    
+    .bp3-slider {
+      width: calc(100% - .5rem / #{$scaleRatio});
+      span {
+        width: 1rem / $scaleRatio;
+      }
+    }
+  }
+  
+  .layerNode-Option-slider-label {
+    font-size: .75rem / $scaleRatio;
+    line-height: .9rem / $scaleRatio;
+    margin-bottom: .25rem / $scaleRatio;
+  }
+  
+  .layerNode-Option-button:not(:last-of-type) {
+    margin-right: .75rem / $scaleRatio;
+  }
+}

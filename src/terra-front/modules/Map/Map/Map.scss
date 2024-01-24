@@ -1,0 +1,88 @@
+@import "node_modules/@blueprintjs/core/lib/scss/variables";
+
+.tf-map {
+  height: 100%;
+  width: auto;
+
+  .mapboxgl-map {
+    height: 100%;
+    width: auto;
+  }
+}
+
+.mapboxgl-ctrl-top-right {
+  z-index: 30;
+}
+
+// Avoid .mapboxgl-ctrl-group to override .bp3-button
+.mapboxgl-ctrl-group .bp3-button {
+  display: inline-flex;
+  width: auto;
+  height: auto;
+}
+
+// Taken from .mapboxgl-ctrl-group > button
+.mapboxgl-ctrl-icon {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.mapbox-gl-draw_ctrl-draw-btn {
+  &:hover,
+  &:focus {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  &.active {
+    opacity: 0.5;
+  }
+}
+
+.mapboxgl-ctrl .bp3-icon {
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.bp3-dark .mapboxgl-ctrl-group {
+  box-shadow: 0 0 0 1px rgba(16, 22, 26, .4);
+  background-color: #394b59;
+  color: $pt-dark-text-color;
+
+  .mapboxgl-ctrl-icon {
+    border-color: rgba(16, 22, 26, .4);
+    filter: invert(100%);
+  }
+
+  &.mapboxgl-ctrl-home,
+  &.mapboxgl-ctrl-print,
+  &.mapboxgl-ctrl-share,
+  &.mapboxgl-ctrl-report,
+  .mapboxgl-ctrl-background-styles {
+    button:hover,
+    button:focus {
+      background-color: #435461;
+    }
+  }
+
+  .bp3-popover-target button {
+    filter: invert(0%);
+    color: $pt-dark-text-color;
+  }
+
+  .mapboxgl-ctrl-icon.mapboxgl-ctrl-compass > .mapboxgl-ctrl-compass-arrow {
+    filter: brightness(0.5);
+  }
+
+  .mapbox-gl-draw_ctrl-draw-btn {
+    filter: invert(80%);
+  }
+}
+
+.mapboxgl-ctrl--disabled {
+  pointer-events: none;
+  opacity: .4;
+  cursor: not-allowed;
+}

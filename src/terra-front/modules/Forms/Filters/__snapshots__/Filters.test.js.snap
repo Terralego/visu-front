@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should build a form 1`] = `
+<div>
+  <p>
+    ControlText
+  </p>
+  <p>
+    ControlSelect
+  </p>
+  <p>
+    ControlSelect
+  </p>
+  <p>
+    ControlCheckboxes
+  </p>
+  <p>
+    ControlMultiSelect
+  </p>
+  <p>
+    ControlRange
+  </p>
+  <div
+    className="control-container"
+  >
+    <p>
+      Switch
+    </p>
+  </div>
+</div>
+`;
+
+exports[`should render loading correctly 1`] = `
+<div>
+  <p>
+    ControlSelect
+  </p>
+</div>
+`;

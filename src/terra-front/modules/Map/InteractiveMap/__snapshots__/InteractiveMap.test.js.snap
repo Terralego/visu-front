@@ -1,0 +1,60 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`snaphsots should render correctly 1`] = `
+<div
+  className="interactive-map"
+/>
+`;
+
+exports[`snaphsots should render correctly with a map navigation 1`] = `
+<div
+  className="interactive-map"
+/>
+`;
+
+exports[`snaphsots should render correctly with details 1`] = `
+<div
+  className="interactive-map"
+/>
+`;
+
+exports[`snaphsots should render correctly with hidden map navigation 1`] = `
+<div
+  className="interactive-map"
+/>
+`;
+
+exports[`snaphsots should render legends 1`] = `
+<div
+  className="interactive-map"
+>
+  <div
+    className="interactive-map__legends"
+  >
+    <div
+      className="tf-legend tf-legend--level-1"
+    >
+      <h4
+        className="tf-legend__title"
+      >
+        foo
+      </h4>
+      <div
+        className="tf-legend__list"
+      />
+    </div>
+    <div
+      className="tf-legend tf-legend--level-1"
+    >
+      <h4
+        className="tf-legend__title"
+      >
+        pwet
+      </h4>
+      <div
+        className="tf-legend__list"
+      />
+    </div>
+  </div>
+</div>
+`;

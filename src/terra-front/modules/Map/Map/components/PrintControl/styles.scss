@@ -1,0 +1,31 @@
+.visualizer {
+  .visualizer__print {
+    margin: 0 auto;
+
+    + .visualizer-view {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+  }
+
+  .visualizer__print .mapboxgl-ctrl-top-left,
+  .visualizer__print .mapboxgl-ctrl-bottom-left {
+    transform: none;
+  }
+
+  .visualizer__print .tf-legend {
+    // See https://github.com/niklasvh/html2canvas/issues/1856
+    box-shadow: none;
+  }
+
+  .visualizer__print--portrait {
+    width: 21cm;
+    height: 29.7cm;
+  }
+
+  .visualizer__print--landscape {
+    height: 21cm;
+    width: 29.7cm;
+  }
+}

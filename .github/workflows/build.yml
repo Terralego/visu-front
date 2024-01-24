@@ -44,4 +44,4 @@ jobs:
 
       - name: Build
         run: |
-          npx react-scripts build
+          npm run build
