@@ -24,8 +24,13 @@ const WidgetLayout = ({
   return (
     <div className="widget">
       <div className="widget__header">
+        {widget.icon && (
+          <div className="widget__icon">
+            <Icon icon={widget.icon} />
+          </div>
+        )}
         <div className="widget__title">
-          {title}
+          {widget.title ?? title}
         </div>
         <div className="widget__buttons">
           <button

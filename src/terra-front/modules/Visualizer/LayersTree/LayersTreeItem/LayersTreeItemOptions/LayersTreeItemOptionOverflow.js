@@ -5,7 +5,7 @@ import { Button, Classes, Menu, Popover, Tooltip } from '@blueprintjs/core';
 const LayersTreeItemOptionOverflow = ({ hasSomeOptionActive, children, translate }) => {
   const [isPopoverOpen, setPopoverOpen] = React.useState(false);
 
-  const buttons = children.filter(Boolean);
+  const buttons = children.filter(Boolean).flat();
   const overFlowedButtons =
     buttons.length <= 3
       ? []

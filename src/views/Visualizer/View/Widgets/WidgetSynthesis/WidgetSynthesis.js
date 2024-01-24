@@ -87,11 +87,12 @@ export class WidgetSynthesis extends React.Component {
       query,
       map,
       visibleBoundingBox,
+      customBoundingBox = [[-4.855957, 51.013755], [7.778320, 42.293564]],
       displayedLayer: { baseEsQuery = {} } = {},
     } = this.props;
 
     if (!map) return;
-    const boundingBox = getExtent(map, visibleBoundingBox);
+    const boundingBox = customBoundingBox ?? getExtent(map, visibleBoundingBox);
 
     const aggregations = items.map(({ name, type, field }) => ({
       name, type, field,

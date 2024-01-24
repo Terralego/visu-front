@@ -249,11 +249,11 @@
             "tooltip_synthesis": ""
           },
           "widget": {
-            "action-close": "Fermer le widget",
+            "action-close": "Fermer {{ context }}",
             "action-close_synthesis": "Fermer la synthèse",
-            "action-open": "Ouvrir le widget",
+            "action-open": "Ouvrir {{ context }}",
             "action-open_synthesis": "Ouvrir la synthèse",
-            "title": "Widget",
+            "title": "Widget {{ context }}",
             "title_synthesis": "Widget de synthèse"
           }
         },
