@@ -1,39 +1,39 @@
 @import '../../../utils/variables.scss';
 
 
-.tf-select .bp4-popover {
+.tf-select .bp5-popover {
   max-width: 16.5rem;
   border: .1px solid #202B33;
   box-shadow: 2px 4px 6px 2px rgba(16, 22, 26, 0.4);
 
-  .bp4-popover-content {
+  .bp5-popover-content {
     padding: 0;
   }
 }
 
-.bp4-dark .bp4-menu {
+.bp5-dark .bp5-menu {
   background-color: #293742;
 }
 
 @media(min-width: $breakpoints-phone) and (max-width: $breakpoints-desktop) {
   .control-label {
-    .bp4-popover-wrapper .tf-multiselect {
+    .bp5-popover-wrapper .tf-multiselect {
       font-size: .875rem / $scaleRatio;
     }
   }
-  .bp4-checkbox {
+  .bp5-checkbox {
     margin: 1.5rem 0;
   }
-  .bp4-checkbox:first-of-type {
+  .bp5-checkbox:first-of-type {
     margin: 1rem 0 1.5rem 0;
   }
-  .bp4-checkbox:last-of-type {
+  .bp5-checkbox:last-of-type {
     margin: 1rem 0 0 0;
   }
-  .bp4-button-text, .bp4-input-ghost, .bp4-input {
+  .bp5-button-text, .bp5-input-ghost, .bp5-input {
     font-size: .875rem / $scaleRatio;
   }
-  .bp4-datepicker-month-select > select, .bp4-datepicker-year-select > select {
+  .bp5-datepicker-month-select > select, .bp5-datepicker-year-select > select {
     font-size: .875rem / $scaleRatio;
   }
 }
@@ -43,9 +43,9 @@
   align-items: center;
 }
 
-.control--range__numeric .bp4-form-group:first-child {
+.control--range__numeric .bp5-form-group:first-child {
   margin-right: 10px;
 }
-.control--range__numeric .bp4-input {
+.control--range__numeric .bp5-input {
   width: 5em;
 }

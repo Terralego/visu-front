@@ -82,7 +82,7 @@ $transitionSpeed: 0.15s;
     overflow: auto;
   }
 
-  &__form::-webkit-scrollbar, .bp4-select-popover .bp4-menu::-webkit-scrollbar {
+  &__form::-webkit-scrollbar, .bp5-select-popover .bp5-menu::-webkit-scrollbar {
     width: .5rem;
   }
 
@@ -101,8 +101,8 @@ $transitionSpeed: 0.15s;
     }
   }
 
-  .bp4-select-popover, .bp4-multi-select-popover {
-    .bp4-menu {
+  .bp5-select-popover, .bp5-multi-select-popover {
+    .bp5-menu {
       max-width: 25rem;
       max-height: 18rem;
       overflow: auto;
@@ -112,18 +112,18 @@ $transitionSpeed: 0.15s;
         text-decoration: underline;
         font-weight: normal;
       }
-      .bp4-disabled {
+      .bp5-disabled {
         font-style: italic;
         color: #f5f8fa !important;
       }
     }
   }
 
-  .bp4-control.bp4-checkbox {
+  .bp5-control.bp5-checkbox {
     padding: 0 1rem;
   }
 
-  .bp4-slider {
+  .bp5-slider {
     margin: 0 1rem;
     width: calc(100% - 2rem);
     min-width: auto;
@@ -134,33 +134,33 @@ $transitionSpeed: 0.15s;
   }
 
   .tf-control-date-range {
-    .bp4-control-group {
+    .bp5-control-group {
       width: calc(100% - .5rem);
     }
-    .bp4-control-group > * {
+    .bp5-control-group > * {
       flex: inherit;
     }
-    .bp4-input-group:nth-child(1) .bp4-input {
+    .bp5-input-group:nth-child(1) .bp5-input {
       margin-right: .5rem;
     }
-    .bp4-input-group:nth-child(2) .bp4-input {
+    .bp5-input-group:nth-child(2) .bp5-input {
       margin-left: .5rem;
     }
   }
 }
 
 // Styles relative to DarkTheme
-.bp4-dark {
+.bp5-dark {
   .generic-panel {
-    &__form, .bp4-select-popover .bp4-menu {
+    &__form, .bp5-select-popover .bp5-menu {
       scrollbar-color: #202B33 #30404D;
     }
 
-    &__form::-webkit-scrollbar-track , .bp4-select-popover .bp4-menu::-webkit-scrollbar-track {
+    &__form::-webkit-scrollbar-track , .bp5-select-popover .bp5-menu::-webkit-scrollbar-track {
       background-color: #30404D;
     }
     
-    &__form::-webkit-scrollbar-thumb, .bp4-select-popover .bp4-menu::-webkit-scrollbar-thumb {
+    &__form::-webkit-scrollbar-thumb, .bp5-select-popover .bp5-menu::-webkit-scrollbar-thumb {
       background-color: #202B33;
     }
   }
@@ -191,7 +191,7 @@ $transitionSpeed: 0.15s;
       padding: 0 0.7rem / $scaleRatio;
     }
 
-    &__form::-webkit-scrollbar, .bp4-select-popover .bp4-menu::-webkit-scrollbar  {
+    &__form::-webkit-scrollbar, .bp5-select-popover .bp5-menu::-webkit-scrollbar  {
       width: .5rem / $scaleRatio;
     }
 
@@ -210,7 +210,7 @@ $transitionSpeed: 0.15s;
       }
     }
 
-    .bp4-select-popover .bp4-menu {
+    .bp5-select-popover .bp5-menu {
       max-width: 40rem / $scaleRatio;
       max-height: 30rem / $scaleRatio;
       font-size: .875rem / $scaleRatio;
@@ -220,25 +220,25 @@ $transitionSpeed: 0.15s;
       }
     }
 
-    .bp4-control.bp4-checkbox {
+    .bp5-control.bp5-checkbox {
       padding: 0 1rem / $scaleRatio;
       font-size: .875rem / $scaleRatio;
     }
 
-    .bp4-slider {
+    .bp5-slider {
       margin: 0 1rem / $scaleRatio;
       width: calc(100% - 2rem / #{$scaleRatio});
     }
 
     .tf-control-date-range {
-      .bp4-control-group {
+      .bp5-control-group {
         width: calc(100% - .5rem / #{$scaleRatio});
       }
-      .bp4-input-group:nth-child(1) .bp4-input {
+      .bp5-input-group:nth-child(1) .bp5-input {
         margin-right: .5rem / $scaleRatio;
         font-size: .875rem / $scaleRatio;
       }
-      .bp4-input-group:nth-child(2) .bp4-input {
+      .bp5-input-group:nth-child(2) .bp5-input {
         margin-left: .5rem / $scaleRatio;
         font-size: .875rem / $scaleRatio;
       }

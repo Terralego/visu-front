@@ -22,7 +22,7 @@ export default function SSOLoginFormRenderer ({
         intent="success"
         large
       />
-      <span className="login-form__separator bp4-text-large bp4-text-muted">
+      <span className="login-form__separator bp5-text-large bp5-text-muted">
         {translate('auth.loginform.renderer.separator')}
       </span>
 

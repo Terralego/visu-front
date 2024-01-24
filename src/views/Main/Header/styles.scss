@@ -189,7 +189,7 @@
     }
 
     // Below override blueprint
-    .bp4-overlay {
+    .bp5-overlay {
       white-space: nowrap;
     }
   }
@@ -234,7 +234,7 @@
   border: none;
   z-index: 130;
 
-  .bp4-card {
+  .bp5-card {
     padding: 0;
   }
 
@@ -285,7 +285,7 @@
 
 @media(min-width: $breakpoints-tablet) and (max-width: $breakpoints-desktop) and (orientation: landscape) {
   .modal-partner {
-    >.bp4-card {
+    >.bp5-card {
       max-width: 50%;
       min-height: 45%;
     }
@@ -294,7 +294,7 @@
 
 @media(min-width: $breakpoints-phone) and (max-width: $breakpoints-tablet) and (orientation: portrait) {
   .modal-partner {
-    .bp4-overlay-content {
+    .bp5-overlay-content {
       max-width: 90%;
       max-height: 90%;
       overflow: scroll;

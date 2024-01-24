@@ -113,7 +113,7 @@ class Details extends React.Component {
         className={classnames(
           {
             'view-details': true,
-            'bp4-light': true,
+            'bp5-light': true,
             'view-details--hidden': hidden,
             'view-details--visible': visible,
             'view-details--withTable': isTableActive,
