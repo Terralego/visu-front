@@ -1,14 +1,14 @@
 import { Button, Dialog } from '@blueprintjs/core';
 import classnames from 'classnames';
 import React from 'react';
-import LocateButton from '../LocateButton';
+import { useTranslation } from 'react-i18next';
 
+import LocateButton from '../LocateButton';
 import Tooltip from '../../../../../components/Tooltip';
 import FiltersPanel from '../FiltersPanel';
 import GenericPanel from '../GenericPanel';
 import LayerFetchValues from '../LayerFetchValues';
 import LayersTreeItemOptionOverflow from './LayersTreeItemOptionOverflow';
-import { useTranslation } from 'react-i18next';
 
 const LayersTreeItemOptionsDesktop = ({
   hasSomeOptionActive,

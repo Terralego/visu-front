@@ -27,12 +27,12 @@ exports[`should render default options 1`] = `
         onMouseLeave={[Function]}
       >
         <button
-          alt="Opacité"
+          alt="terralego.visualizer.layerstree.itemOptions.opacity.label"
           className="bp3-button bp3-minimal layerstree-node-content__options__button"
           onKeyDown={[Function]}
           onKeyUp={[Function]}
           tabIndex={0}
-          title="Opacité"
+          title="terralego.visualizer.layerstree.itemOptions.opacity.label"
           type="button"
         >
           <span
@@ -57,7 +57,7 @@ exports[`should render default options 1`] = `
           <span
             className="bp3-button-text"
           >
-            Opacité
+            terralego.visualizer.layerstree.itemOptions.opacity.label
           </span>
         </button>
       </span>
@@ -93,12 +93,12 @@ exports[`should render no tooltip if empty widget empty 1`] = `
         onMouseLeave={[Function]}
       >
         <button
-          alt="Opacité"
+          alt="terralego.visualizer.layerstree.itemOptions.opacity.label"
           className="bp3-button bp3-minimal layerstree-node-content__options__button"
           onKeyDown={[Function]}
           onKeyUp={[Function]}
           tabIndex={0}
-          title="Opacité"
+          title="terralego.visualizer.layerstree.itemOptions.opacity.label"
           type="button"
         >
           <span
@@ -123,7 +123,7 @@ exports[`should render no tooltip if empty widget empty 1`] = `
           <span
             className="bp3-button-text"
           >
-            Opacité
+            terralego.visualizer.layerstree.itemOptions.opacity.label
           </span>
         </button>
       </span>
@@ -160,13 +160,13 @@ Array [
           onMouseLeave={[Function]}
         >
           <button
-            alt="close widget"
+            alt="terralego.visualizer.layerstree.itemOptions.widget.action-close"
             className="bp3-button bp3-minimal layerstree-node-content__options__button layerstree-node-content__options__button--active"
             onClick={true}
             onKeyDown={[Function]}
             onKeyUp={[Function]}
             tabIndex={0}
-            title="widget"
+            title="terralego.visualizer.layerstree.itemOptions.widget.title"
             type="button"
           >
             <span
@@ -191,7 +191,7 @@ Array [
             <span
               className="bp3-button-text"
             >
-              widget
+              terralego.visualizer.layerstree.itemOptions.widget.title
             </span>
           </button>
         </span>
@@ -215,11 +215,11 @@ Array [
             onMouseLeave={[Function]}
           >
             <button
-              alt="close options"
+              alt="terralego.visualizer.layerstree.itemOptions.options.alt"
               className="bp3-button bp3-minimal layerstree-node-content__options__button layerstree-node-content__options__button--more"
               onKeyDown={[Function]}
               onKeyUp={[Function]}
-              title="options"
+              title="terralego.visualizer.layerstree.itemOptions.options.label"
               type="button"
             >
               <span
