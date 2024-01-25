@@ -45,22 +45,26 @@ export class WidgetSynthesis extends React.Component {
   debouncedLoad = debounce(() => this.load(), 1000);
 
   componentDidMount () {
-    const { map } = this.props;
+    const { map, boundingbox_mode: boundingBoxMode } = this.props;
     if (!map) return;
     this.debouncedLoad();
-    map.on('moveend', this.debouncedLoad);
-    map.on('zoomend', this.debouncedLoad);
+    if (boundingBoxMode === 'visible') {
+      map.on('moveend', this.debouncedLoad);
+      map.on('zoomend', this.debouncedLoad);
+    }
   }
 
   componentDidUpdate ({
     filters: prevFilters,
     query: prevQuery,
     visibleBoundingBox: prevVisibleBoundingBox,
+    boundingbox_mode: prevBoundingBoxMode,
   }) {
-    const { filters, query, visibleBoundingBox } = this.props;
+    const { filters, query, visibleBoundingBox, boundingbox_mode: boundingBoxMode } = this.props;
     if (!isEqual(filters, prevFilters)
       || query !== prevQuery
-      || visibleBoundingBox !== prevVisibleBoundingBox) {
+      || boundingBoxMode !== prevBoundingBoxMode
+      || (boundingBoxMode !== 'defined' && visibleBoundingBox !== prevVisibleBoundingBox)) {
       this.resetValues();
       this.debouncedLoad();
     }
@@ -87,12 +91,14 @@ export class WidgetSynthesis extends React.Component {
       query,
       map,
       visibleBoundingBox,
-      customBoundingBox = [[-4.855957, 51.013755], [7.778320, 42.293564]],
+      boundingbox_mode: boundingBoxMode,
+      boundingbox_value: boundingBoxValue,
+
       displayedLayer: { baseEsQuery = {} } = {},
     } = this.props;
 
     if (!map) return;
-    const boundingBox = customBoundingBox ?? getExtent(map, visibleBoundingBox);
+    const boundingBox = boundingBoxMode === 'defined' ? boundingBoxValue : getExtent(map, visibleBoundingBox);
 
     const aggregations = items.map(({ name, type, field }) => ({
       name, type, field,
