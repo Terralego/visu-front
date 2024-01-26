@@ -53,7 +53,7 @@ it('should open widget', () => {
       toggleWidgets={jest.fn(() => true)}
     />
   ));
-  expect(wrapper.find('.widgets').props().content).toBe('open widget');
+  expect(wrapper.find('.widgets').props().content).toBe('terralego.visualizer.layerstree.itemOptions.widget.action-open');
 });
 
 it('should close table', () => {
@@ -63,8 +63,8 @@ it('should close table', () => {
       isTableActive
     />
   ));
-  expect(wrapper.find('.table').props().content).toBe('close table');
-  expect(wrapper.find('.table').dive().find('.layerstree-node-content__options__button').props().alt).toBe('close table');
+  expect(wrapper.find('.table').props().content).toBe('terralego.visualizer.layerstree.itemOptions.table.tooltip');
+  expect(wrapper.find('.table').dive().find('.layerstree-node-content__options__button').props().alt).toBe('terralego.visualizer.layerstree.itemOptions.table.alt');
 });
 
 it('should close form', () => {
@@ -74,7 +74,7 @@ it('should close form', () => {
       isFilterVisible
     />
   ));
-  expect(wrapper.find('.filters').props().content).toBe('close filters');
+  expect(wrapper.find('.filters').props().content).toBe('terralego.visualizer.layerstree.itemOptions.filter.tooltip');
 });
 
 it('should close options', () => {
@@ -83,6 +83,6 @@ it('should close options', () => {
       isOptionsOpen
     />
   ));
-  expect(wrapper.find('.options').props().content).toBe('Changer l\'opacité de la couche');
-  expect(wrapper.find('.options').dive().find('.layerstree-node-content__options__button').props().alt).toBe('Opacité');
+  expect(wrapper.find('.options').props().content).toBe('terralego.visualizer.layerstree.itemOptions.opacity.tooltip');
+  expect(wrapper.find('.options').dive().find('.layerstree-node-content__options__button').props().alt).toBe('terralego.visualizer.layerstree.itemOptions.opacity.label');
 });

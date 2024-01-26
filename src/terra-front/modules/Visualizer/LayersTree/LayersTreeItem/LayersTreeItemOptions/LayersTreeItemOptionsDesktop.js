@@ -1,15 +1,15 @@
 import React from 'react';
 import classnames from 'classnames';
 import { Button, Dialog } from '@blueprintjs/core';
+import { useTranslation } from 'react-i18next';
+
 import LocateButton from '../LocateButton';
-
-import translateMock from '../../../../../utils/translate';
-
 import LayerFetchValues from '../LayerFetchValues';
 import FiltersPanel from '../FiltersPanel';
 import Tooltip from '../../../../../components/Tooltip';
 import LayersTreeItemOptionOverflow from './LayersTreeItemOptionOverflow';
 import GenericPanel from '../GenericPanel';
+
 
 const LayersTreeItemOptionsDesktop = ({
   hasSomeOptionActive,
@@ -29,35 +29,12 @@ const LayersTreeItemOptionsDesktop = ({
   map,
   extent,
   isDetailsVisible,
-  translate = translateMock({
-    'terralego.visualizer.layerstree.itemOptions.widget.title': 'widget',
-    'terralego.visualizer.layerstree.itemOptions.widget.action-open': 'open widget',
-    'terralego.visualizer.layerstree.itemOptions.widget.action-close': 'close widget',
-    'terralego.visualizer.layerstree.itemOptions.widget.title_synthesis': 'widget synthesis',
-    'terralego.visualizer.layerstree.itemOptions.widget.action-open_synthesis': 'open synthesis',
-    'terralego.visualizer.layerstree.itemOptions.widget.action-close_synthesis': 'close synthesis',
-    'terralego.visualizer.layerstree.itemOptions.table.label': 'table',
-    'terralego.visualizer.layerstree.itemOptions.table.alt': 'open table',
-    'terralego.visualizer.layerstree.itemOptions.table.alt_close': 'close table',
-    'terralego.visualizer.layerstree.itemOptions.table.tooltip': 'open table',
-    'terralego.visualizer.layerstree.itemOptions.table.tooltip_close': 'close table',
-    'terralego.visualizer.layerstree.itemOptions.filter.label': 'filters',
-    'terralego.visualizer.layerstree.itemOptions.filter.alt': 'open filters',
-    'terralego.visualizer.layerstree.itemOptions.filter.alt_close': 'close filters',
-    'terralego.visualizer.layerstree.itemOptions.filter.tooltip': 'open filters',
-    'terralego.visualizer.layerstree.itemOptions.filter.tooltip_close': 'close filters',
-    'terralego.visualizer.layerstree.itemOptions.options.label': 'options',
-    'terralego.visualizer.layerstree.itemOptions.options.alt': 'open options',
-    'terralego.visualizer.layerstree.itemOptions.options.alt_close': 'close options',
-    'terralego.visualizer.layerstree.itemOptions.options.tooltip': 'open options',
-    'terralego.visualizer.layerstree.itemOptions.options.tooltip_close': 'close options',
-    'terralego.visualizer.layerstree.itemOptions.opacity.label': 'Opacité',
-    'terralego.visualizer.layerstree.itemOptions.opacity.tooltip': "Changer l'opacité de la couche",
-  }),
 }) => {
   const [isPanelOpen, setPanelOpen] = React.useState(false);
   const [isOverlayOpen, setOverlayOpen] = React.useState(false);
   const [activeEmbed, setActiveEmbed] = React.useState(null);
+
+  const { t: translate } = useTranslation();
 
   const handleOverlayClose = React.useCallback(() => {
     setOverlayOpen(false);
@@ -115,7 +92,7 @@ const LayersTreeItemOptionsDesktop = ({
             !!widgets.length &&
             // i18next-extract-mark-context-start ["", "synthesis"]
             widgets.map(widget => {
-              const { component: context } = widget;
+              const context = widget.title ?? widget.component;
               const isActive = isWidgetActive(widget);
 
               const actionText = isActive
@@ -139,7 +116,7 @@ const LayersTreeItemOptionsDesktop = ({
                     })}
                     onClick={toggleWidgets(widget)}
                     minimal
-                    icon="selection"
+                    icon={widget.icon ?? 'selection'}
                     title={translate('terralego.visualizer.layerstree.itemOptions.widget.title', {
                       context,
                     })}

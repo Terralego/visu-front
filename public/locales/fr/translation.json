@@ -247,12 +247,6 @@
             "title": "Vue tabulaire",
             "tooltip": "Ouvrir la vue tabulaire",
             "tooltip_close": "Fermer la vue tabulaire"
-          },
-          "widget": {
-            "action-close": "Fermer le widget",
-            "action-close_synthesis": "Fermer la synthèse",
-            "action-open": "Ouvrir le widget",
-            "action-open_synthesis": "Ouvrir la synthèse"
           }
         },
         "warningzoom": {
