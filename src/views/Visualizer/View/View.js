@@ -858,6 +858,7 @@ export class Visualizer extends React.Component {
             enable: measureControl,
             styles: measureDrawStyles,
           } = {},
+          searchInLayers: layersEnable,
           searchInLocations: {
             enable: locationsEnable,
             searchProvider,
@@ -923,6 +924,7 @@ export class Visualizer extends React.Component {
         language,
         searchProvider,
         locationsEnable,
+        layersEnable,
         translate: t,
         layers: activeAndSearchableLayers,
       });

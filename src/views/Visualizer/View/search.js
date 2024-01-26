@@ -59,6 +59,7 @@ const searchInMap = ({
   layers,
   translate,
   locationsEnable,
+  layersEnable = true,
   language = 'en',
 }) => async query => {
   let locations = [];
@@ -68,29 +69,31 @@ const searchInMap = ({
 
   if (!layers.length && !locations.length) return undefined;
 
-  const { responses } = await searchService.msearch(
-    layers.map(([{ filters: { layer }, baseEsQuery }]) => ({
-      query,
-      index: layer,
-      baseQuery: baseEsQuery,
-      size: 6,
-    })),
-  );
-
-  const results = layers.map(([{
-    label, layers: resultsLayers, filters: { mainField },
-  }], index) => ({
-    group: label,
-    total: responses[index].hits.total.value,
-    results: responses[index].hits.hits.map(({ _id: id, _source: source }) => ({
-      label: source[mainField] || id,
-      id,
-      ...source,
-      center: turfCenter(source.geom).geometry.coordinates,
-      bounds: turfBbox(source.geom),
-      layers: resultsLayers,
-    })),
-  }));
+  let results = [];
+  if (layersEnable) {
+    const { responses } = await searchService.msearch(
+      layers.map(([{ filters: { layer }, baseEsQuery }]) => ({
+        query,
+        index: layer,
+        baseQuery: baseEsQuery,
+        size: 6,
+      })),
+    );
+    results = layers.map(([{
+      label, layers: resultsLayers, filters: { mainField },
+    }], index) => ({
+      group: label,
+      total: responses[index].hits.total.value,
+      results: responses[index].hits.hits.map(({ _id: id, _source: source }) => ({
+        label: source[mainField] || id,
+        id,
+        ...source,
+        center: turfCenter(source.geom).geometry.coordinates,
+        bounds: turfBbox(source.geom),
+        layers: resultsLayers,
+      })),
+    }));
+  }
 
   return [...results, ...locations];
 };
