@@ -27,6 +27,7 @@ const DEFAULT_SETTINGS = {
       enable: false,
       styles: [],
     },
+    searchInLayers: true,
     searchInLocations: {
       enable: false,
       searchProvider: {
