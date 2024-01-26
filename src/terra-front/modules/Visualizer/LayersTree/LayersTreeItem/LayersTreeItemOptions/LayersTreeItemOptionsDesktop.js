@@ -1,14 +1,15 @@
-import { Button, Dialog } from '@blueprintjs/core';
-import classnames from 'classnames';
 import React from 'react';
+import classnames from 'classnames';
+import { Button, Dialog } from '@blueprintjs/core';
 import { useTranslation } from 'react-i18next';
 
 import LocateButton from '../LocateButton';
-import Tooltip from '../../../../../components/Tooltip';
-import FiltersPanel from '../FiltersPanel';
-import GenericPanel from '../GenericPanel';
 import LayerFetchValues from '../LayerFetchValues';
+import FiltersPanel from '../FiltersPanel';
+import Tooltip from '../../../../../components/Tooltip';
 import LayersTreeItemOptionOverflow from './LayersTreeItemOptionOverflow';
+import GenericPanel from '../GenericPanel';
+
 
 const LayersTreeItemOptionsDesktop = ({
   hasSomeOptionActive,
