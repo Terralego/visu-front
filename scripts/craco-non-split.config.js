@@ -4,7 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 module.exports = {
   webpack: {
     alias: {
-      '@terralego/core': path.resolve(__dirname, 'src/terra-front'),
+      '@terralego/core': path.resolve(__dirname, '../src/terra-front'),
     },
     configure: webpackConfig => {
       const newWebpackConfig = webpackConfig;
