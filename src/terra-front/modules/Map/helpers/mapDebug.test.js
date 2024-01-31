@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import mapBoxGl from 'mapbox-gl';
+import mapBoxGl from 'maplibre-gl';
 import MapboxInspect from 'mapbox-gl-inspect';
 import renderInspectPopup from 'mapbox-gl-inspect/lib/renderPopup';
 import { addMapDebug } from './mapDebug';

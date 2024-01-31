@@ -3,7 +3,7 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
 import ReactDOM from 'react-dom';
-import mapboxGl from 'mapbox-gl';
+import mapboxGl from 'maplibre-gl';
 import centroid from '@turf/centroid';
 
 import { setInteractions, fitZoom } from '../services/mapUtils';

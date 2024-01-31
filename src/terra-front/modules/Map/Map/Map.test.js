@@ -3,7 +3,7 @@
 import React from 'react';
 import renderer from 'react-test-renderer';
 import { shallow } from 'enzyme';
-import mapboxgl from 'mapbox-gl';
+import mapboxgl from 'maplibre-gl';
 
 import { MapComponent as Map } from './Map';
 import { updateCluster } from '../services/cluster';
