@@ -45,3 +45,7 @@ jobs:
       - name: Build
         run: |
           npm run build
+
+      - name: Test Build non split
+        run: |
+          npm run build:non-split
