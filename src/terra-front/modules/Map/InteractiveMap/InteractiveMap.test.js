@@ -20,7 +20,7 @@ import {
 import BackgroundStyles from './components/BackgroundStyles';
 
 jest.mock('@turf/bbox', () => jest.fn());
-jest.mock('mapbox-gl', () => {
+jest.mock('maplibre-gl', () => {
   const Popup = jest.fn(function Popup () {
     this.listeners = [];
     // eslint-disable-next-line no-underscore-dangle

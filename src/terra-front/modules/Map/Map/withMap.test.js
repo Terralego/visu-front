@@ -6,7 +6,7 @@ import mapboxgl from 'maplibre-gl';
 import { withMap } from './withMap';
 
 
-jest.mock('mapbox-gl', () => {
+jest.mock('maplibre-gl', () => {
   const addedLayers = [];
   const map = {
     once: jest.fn((e, fn) => fn()),

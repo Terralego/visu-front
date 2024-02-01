@@ -14,7 +14,7 @@ const props = {
   accessToken: 'pk.eyJ1IjoibWFraW5hY29ycHVzIiwiYSI6ImNqY3E4ZTNwcTFta3ozMm80d2xzY29wM2MifQ.Nwl_FHrWAIQ46s_lY0KNiQ',
 };
 
-jest.mock('mapbox-gl', () => {
+jest.mock('maplibre-gl', () => {
   const off = jest.fn();
   const map = {
     addControl: jest.fn(() => {}),
