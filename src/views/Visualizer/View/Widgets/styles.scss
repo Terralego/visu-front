@@ -16,12 +16,14 @@ $containerWidth: 20rem;
   position: relative;
   width: 0;
   height: 100%;
+  max-height: 100vh;
   transition: width .2s ease-in;
   animation: widget-render-in .2s ease;
   z-index: 80;
   background: rgb(48,64,77);
   will-change: width;
   overflow: hidden;
+  overflow-y: auto;
 
   &--visible {
     width: $containerWidth;
