@@ -19,6 +19,7 @@
     "@turf/length": "^6.5.0",
     "@turf/line-to-polygon": "^6.5.0",
     "@vgrid/sass-inline-svg": "^1.0.1",
+    "@vitejs/plugin-react": "^4.2.1",
     "base64url": "^3.0.1",
     "bodybuilder": "^2.2.16",
     "classnames": "^2.2.6",
@@ -49,9 +50,9 @@
     "prop-types": "^15.7.2",
     "qs": "^6.8.0",
     "query-string": "^6.8.2",
-    "react": "^16.9.0",
+    "react": "^18.2.0",
     "react-ctx-connect": "^1.0.2",
-    "react-dom": "^16.9.0",
+    "react-dom": "^18.2.0",
     "react-fast-compare": "^2.0.4",
     "react-final-form": "^6.3.5",
     "react-helmet": "^5.2.1",
@@ -63,6 +64,7 @@
     "rewire": "^6.0.0",
     "sass": "^1.70.0",
     "slugify": "^1.3.4",
+    "vite": "^5.0.12",
     "xlsx": "^0.14.5"
   },
   "devDependencies": {
@@ -83,6 +85,7 @@
   },
   "scripts": {
     "start": "craco start",
+    "vite": "vite",
     "build": "craco build && cp _headers.dist ./build/_headers",
     "build:non-split": "node ./scripts/build-non-split.js",
     "_postbuild": "echo $npm_package_version > build/build.txt && git describe >> build/build.txt && date -R >> build/build.txt",

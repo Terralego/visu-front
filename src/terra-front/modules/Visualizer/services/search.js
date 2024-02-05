@@ -167,7 +167,16 @@ export class Search {
   }
 
   set host (host) {
-    this.client = new elasticsearch.Client({ host });
+    this.client = new elasticsearch.Client({ host, log: class Polygon {
+      constructor() {
+        this.name = 'Polygon';
+      }
+      info() {}
+      error() {}
+      warning() {}
+      debug() {}
+      trace() {}
+    }});
   }
 
   /**
