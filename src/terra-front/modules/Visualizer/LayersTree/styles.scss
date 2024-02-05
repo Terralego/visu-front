@@ -128,7 +128,7 @@
           min-width: 0;
           height: 1.2rem;
 
-          & > .bp5-popover-target {
+          &.bp5-popover-target {
             max-width: 100%;
             overflow: hidden;
             text-overflow: ellipsis;

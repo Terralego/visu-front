@@ -254,6 +254,10 @@ $bg-visualizer: rgb(49, 64, 77);
   z-index: 999;
 }
 
+.bp5-popover-transition-container {
+  z-index: 999;
+}
+
 @media print {
   .visualizer-view {
     display: block;
