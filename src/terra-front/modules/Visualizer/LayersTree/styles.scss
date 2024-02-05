@@ -299,6 +299,14 @@
   & .bp3-popover-target {
     width: 100%;
   }
+
+  & .layerstree-node-content__options__button {
+    &--active {
+      svg {
+        filter: invert(.5) sepia(1) saturate(5) hue-rotate(175deg);
+      }
+    }
+  }
   
   & .bp3-button {
     width: 100%;
