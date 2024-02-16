@@ -1,4 +1,4 @@
-import { Marker } from 'mapbox-gl';
+import { Marker } from 'maplibre-gl';
 import { getLayerOpacity } from '../../services/mapUtils';
 import piechart from './piechartMarker';
 
