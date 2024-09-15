@@ -74,7 +74,7 @@ class RangeNumeric extends RangeComponent {
     return (
       <div className="control--range__numeric">
         <FormGroup
-          className="bp3-inline"
+          className="bp5-inline"
           label={translate('terralego.forms.controls.range_from')}
         >
           <NumericInput
@@ -85,7 +85,7 @@ class RangeNumeric extends RangeComponent {
           />
         </FormGroup>
         <FormGroup
-          className="bp3-inline"
+          className="bp5-inline"
           label={translate('terralego.forms.controls.range_to')}
         >
           <NumericInput

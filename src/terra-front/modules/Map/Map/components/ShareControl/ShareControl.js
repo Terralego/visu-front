@@ -120,7 +120,7 @@ export class ShareControl extends AbstractMapControl {
               {link && (
                 <>
                   <input
-                    className="bp3-input"
+                    className="bp5-input"
                     ref={this.inputRef}
                     onClick={({ target: { value }, target }) =>
                       target.setSelectionRange(0, value.length)}
