@@ -12,11 +12,8 @@ const toggleLayers = map => ({ layers, active }) =>
     toggleLayerVisibility(map, layerId, active ? 'visible' : 'none'));
 
 const resetLayers = map => ({ layers = [] }) => {
-  const { layers: allLayers } = map.getStyle();
   toggleLayers(map)({
-    layers: allLayers
-      .filter(({ id }) => layers.includes(id))
-      .map(({ id }) => id),
+    layers,
     active: false,
   });
 };
