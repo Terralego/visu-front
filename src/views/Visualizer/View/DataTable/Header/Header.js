@@ -62,6 +62,9 @@ export const Header = ({
             icon="export"
             minimal
             intent={Intent.PRIMARY}
+            style={{
+              opacity: !resultsTotal || loading ? 0.5 : 1,
+            }}
             disabled={!resultsTotal || loading}
           />
         </Popover>
@@ -77,6 +80,9 @@ export const Header = ({
         >
           <AnchorButton
             target="_blank"
+            style={{
+              opacity: selectedFeatures.length < 2 || selectedFeatures.length > 3 ? 0.5 : 1,
+            }}
             href={compare.replace(/\{\{ids\}\}/, getIds(selectedFeatures))}
             icon="comparison"
             minimal
