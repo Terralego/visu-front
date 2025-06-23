@@ -178,9 +178,8 @@ export class Table extends React.Component {
         {...this.props}
         className="component-table"
         numRows={data.length}
-        loadingOptions={loading
-          ? LOADING_OPTIONS
-          : undefined}
+        loadingOptions={loading ? LOADING_OPTIONS : undefined}
+        selectedRegionTransform={e => ({ rows: e.rows })}
         onSelection={onSelection}
       >
         {cols}
