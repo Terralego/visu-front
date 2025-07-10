@@ -11,6 +11,8 @@ body {
   background-color: #394B59;
 }
 .splash-screen_container {
+  background-color: #0000004f;
+  backdrop-filter: blur(3px);
   pointer-events: none;
   opacity: 0;
   transition: opacity 1s ease-in;
