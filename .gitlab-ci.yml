@@ -1,4 +1,4 @@
-image: node:12.13 # Should match .nvmrc content
+image: node:14.20 # Should match .nvmrc content
 
 stages:
   #- prepare
@@ -187,7 +187,7 @@ cypress:
       --env CYPRESS_INSTALL_BINARY=0
       --volume $PWD/:/home/node/
       --rm
-      node:12.13 sh -c "npm ci && npm run build"
+      node:14.20 sh -c "npm ci && npm run build"
     # Serve frontend with nginx
     - docker run
       --name visu-front-${CI_PIPELINE_ID}
