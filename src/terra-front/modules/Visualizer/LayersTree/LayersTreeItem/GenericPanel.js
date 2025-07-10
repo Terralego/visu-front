@@ -10,7 +10,7 @@ const GenericPanel = ({ isOpen, handleClose, visible, left, width, top, title, c
       className={classNames('generic-panel filters-panel', {
         'generic-panel--visible': visible,
         'generic-panel--animate': true,
-        'bp3-dark': true,
+        'bp5-dark': true,
       })}
       style={{
         left: typeof left === 'number' && typeof width === 'number' && left + width,

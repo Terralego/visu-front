@@ -5,7 +5,7 @@
   &__tag {
     margin: 0.2rem;
     max-width: calc(100% - 1rem);
-    .bp3-text-overflow-ellipsis {
+    .bp5-text-overflow-ellipsis {
       white-space: inherit;
     }
   }
@@ -18,11 +18,11 @@
       padding: .25rem .25rem .25rem .5rem;
       margin: 1rem 0 0 0;
       max-width: calc(100% - 1rem / #{$scaleRatio});
-      .bp3-text-overflow-ellipsis {
+      .bp5-text-overflow-ellipsis {
         white-space: inherit;
         font-size: .75rem /$scaleRatio;
       }
-      .bp3-tag-remove {
+      .bp5-tag-remove {
         padding: .5rem;
       }
     }

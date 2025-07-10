@@ -33,8 +33,8 @@ export const HeaderButton = ({
       <Component
         className={classnames([
           'header-button',
-          'bp3-button',
-          'bp3-minimal',
+          'bp5-button',
+          'bp5-minimal',
           className,
         ])}
         {...props}

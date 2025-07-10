@@ -150,7 +150,7 @@ it('should set nextStep', () => {
   const { container, getByText } = render(
     <Story story={story} />,
   );
-  const nextButton = container.querySelector('.bp3-intent-primary');
+  const nextButton = container.querySelector('.bp5-intent-primary');
   fireEvent.click(nextButton);
   const title = getByText('Slide 2');
   expect(title).toBeTruthy();
@@ -160,7 +160,7 @@ it('should set nextStep at the last slide and loop to the first step', () => {
   const { container, getByText } = render(
     <Story story={story} />,
   );
-  const nextButton = container.querySelector('.bp3-intent-primary');
+  const nextButton = container.querySelector('.bp5-intent-primary');
   story.slides.forEach(() => {
     fireEvent.click(nextButton);
   });
@@ -172,9 +172,9 @@ it('should not have prevStep button in the first step', () => {
   const { container } = render(
     <Story story={story} />,
   );
-  const nextButton = container.querySelector('.bp3-intent-primary');
+  const nextButton = container.querySelector('.bp5-intent-primary');
   story.slides.forEach((_, index) => {
-    const buttons = container.querySelectorAll('.bp3-button');
+    const buttons = container.querySelectorAll('.bp5-button');
     expect(buttons.length).toBe((index === 0) ? 1 : 2);
     fireEvent.click(nextButton);
   });
@@ -184,11 +184,11 @@ it('should set prevStep', () => {
   const { container } = render(
     <Story story={story} />,
   );
-  const nextButton = container.querySelector('.bp3-intent-primary');
+  const nextButton = container.querySelector('.bp5-intent-primary');
   const title = container.querySelector('h2');
   fireEvent.click(nextButton);
   expect(title.textContent).toBe('Slide 2');
-  const prevButton = container.querySelector('.bp3-button');
+  const prevButton = container.querySelector('.bp5-button');
   fireEvent.click(prevButton);
   expect(title.textContent).toBe('Slide 1');
 });

@@ -32,7 +32,7 @@ it('should have "aria-expanded" matching modal state', () => {
   button.simulate('click');
   expect(button.instance().getAttribute('aria-expanded')).toBe('true');
 
-  const backdrop = wrapper.find('.bp3-overlay-backdrop').first();
+  const backdrop = wrapper.find('.bp5-overlay-backdrop').first();
   backdrop.simulate('mousedown');
 
   expect(button.instance().getAttribute('aria-expanded')).toBe('false');

@@ -19,13 +19,13 @@
   }
 
   &--active {
-    .bp3-collapse-body {
+    .bp5-collapse-body {
       transform: inherit !important;
       padding: .3rem;
       box-shadow: none;
       background-color: #f9f7f7;
       border: 1px solid #fbfbfb1f;
-      .bp3-dark & {
+      .bp5-dark & {
         background-color: #394b59;
         border-color: #0000001f;
       }
@@ -49,16 +49,16 @@
 .layerstree-node-content__options__embed {
   z-index: 999999999;
 
-  & .bp3-icon {
+  & .bp5-icon {
     color: inherit;
   }
 
-  & .bp3-dialog {
+  & .bp5-dialog {
     background-color: white;
     margin: 0;
   }
 
-  & .bp3-button {
+  & .bp5-button {
     background-color: unset;
   }
 }
@@ -75,7 +75,7 @@
   border: 1px solid #fbfbfb1f;
   box-shadow: 0 0 0 1px rgba(206, 209, 210, 0.4), 0 0 0 rgba(16, 22, 26, 0), 0 0 0 rgba(16, 22, 26, 0);
   background: #efefef;
-  .bp3-dark & {
+  .bp5-dark & {
     color: $font-color;
     border-color: #0000001f;
   }
@@ -84,8 +84,8 @@
     display: flex;
     flex-direction: row;
 
-    .layerstree-node-content__item-tooltip-warning .bp3-popover-target .bp3-switch {
-      .bp3-control-indicator {
+    .layerstree-node-content__item-tooltip-warning .bp5-popover-target .bp5-switch {
+      .bp5-control-indicator {
         background: #9eb4c1;
 
         &::after {
@@ -96,13 +96,13 @@
           font-weight: bold;
           color: #000;
 
-          .bp3-dark & {
+          .bp5-dark & {
             color: #fff;
           }
         }
 
         /* Override Blueprintjs */
-        &:hover input:checked ~ .bp3-control-indicator {
+        &:hover input:checked ~ .bp5-control-indicator {
           background: darken(#9eb4c1, 10%);
         }
       }
@@ -128,7 +128,7 @@
           min-width: 0;
           height: 1.2rem;
 
-          & > .bp3-popover-target {
+          &.bp5-popover-target {
             max-width: 100%;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -153,10 +153,10 @@
       height: 1.2rem;
 
       &__overflow {
-        &--shown .bp3-button-text {
+        &--shown .bp5-button-text {
           display: none;
         }
-        &--shown .bp3-icon {
+        &--shown .bp5-icon {
           margin-right: 0;
         }
       }
@@ -177,7 +177,7 @@
         outline: none;
         text-align: center;
       
-        .bp3-icon {
+        .bp5-icon {
           padding: 0.05rem;
         }
       
@@ -189,7 +189,7 @@
           }
         }
         &--active {
-          .bp3-dark & {
+          .bp5-dark & {
             background: radial-gradient($active-button-color 0, transparent 55%) !important;
             svg {
               filter: invert(.5) sepia(1) saturate(5) hue-rotate(175deg);
@@ -232,7 +232,7 @@
               min-width: 0;
               height: 100%;
     
-              & > .bp3-popover-target {
+              & > .bp5-popover-target {
                 max-width: 100%;
                 overflow: auto;
                 text-overflow: inherit;
@@ -257,7 +257,7 @@
           border-radius: 2px;
           margin-top: .5rem;
           border-top: 1px solid #fbfbfb1f;
-          .bp3-dark & {
+          .bp5-dark & {
             border-top-color: #0000001f;
           }
         }
@@ -269,12 +269,12 @@
           padding: .5rem;
           margin: 0 .25rem;
 
-          .bp3-icon {
+          .bp5-icon {
             padding-bottom: .25rem;
             margin: 0;
           }
           &--active {
-            .bp3-dark & {
+            .bp5-dark & {
               background: radial-gradient(circle at 50% 1.05rem, $active-button-color 0, transparent 40%) !important;
               svg {
                 filter: invert(.5) sepia(1) saturate(5) hue-rotate(175deg);
@@ -291,16 +291,16 @@
   }
 }
 
-.bp3-switch {
+.bp5-switch {
   margin: 0;
 }
 
 .layerstree-options-overflow-menu {
-  & .bp3-popover-target {
+  & .bp5-popover-target {
     width: 100%;
   }
   
-  & .bp3-button {
+  & .bp5-button {
     width: 100%;
     justify-content: flex-start;
   }
@@ -311,7 +311,7 @@
   .layerstree-group {
 
     &--active {
-      .bp3-collapse-body {
+      .bp5-collapse-body {
         padding: .5rem / $scaleRatio;
       }
     }
@@ -334,19 +334,19 @@
     .control-container {
       padding: .5rem 0 .5rem 0;
     
-      .bp3-control {
+      .bp5-control {
         margin-bottom: 1.5rem;
       }
 
-      .bp3-control:last-child {
+      .bp5-control:last-child {
         margin-bottom: .25rem;
       }
 
-      .bp3-radio:first-child {
+      .bp5-radio:first-child {
         margin-top: .75rem;
       }
 
-      .bp3-select-popover .bp3-menu {
+      .bp5-select-popover .bp5-menu {
         .control-container__item li {
           padding: .5rem;
         }
