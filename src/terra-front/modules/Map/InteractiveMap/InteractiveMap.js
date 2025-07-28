@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import mapBoxGl from 'mapbox-gl';
 import debounce from 'lodash.debounce';
 import centroid from '@turf/centroid';
-import uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 import { connectState } from '../../State/context';
 import { setInteractions, fitZoom } from '../services/mapUtils';
 import { getClusteredFeatures } from '../services/cluster';
