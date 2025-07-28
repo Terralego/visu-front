@@ -1,219 +1,228 @@
-import React from 'react';
+import { ChevronLeft, ChevronRight, Close as CloseIcon } from '@mui/icons-material';
+import { Box, Drawer, IconButton } from '@mui/material';
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
-import { Button, Tab, Tabs } from '@blueprintjs/core';
+import React, { useEffect, useState } from 'react';
 
+import ErrorBoundary from '../../../components/ErrorBoundary';
 import FeatureProperties from '../../Map/FeatureProperties';
 import Template from '../../Template';
-import ErrorBoundary from '../../../components/ErrorBoundary';
-import './styles.scss';
 
-class Details extends React.Component {
-  state = {
-    index: -1,
-    hidden: true,
-  };
+const Details = ({
+  features = [],
+  feature,
+  interaction,
+  visible,
+  onClose = () => null,
+  onChange = () => {},
+  enableCarousel = true,
+  isTableActive = false,
+  translate = a => a,
+}) => {
+  const [index, setIndex] = useState(-1);
 
-  static getDerivedStateFromProps ({ feature, interaction }) {
-    /**
-     * Keep a copy of props to have a nice animation with previous content
-     */
-    if (feature) {
-      return { feature, interaction };
+  // Update index when feature ID changes
+  useEffect(() => {
+    // eslint-disable-next-line no-underscore-dangle
+    const featureId = feature && feature.properties && feature.properties._id;
+    if (featureId && features.length) {
+      const newIndex = features.findIndex(({ _id }) => _id === featureId);
+      setIndex(newIndex);
     }
-    return null;
-  }
+  }, [feature, features]);
 
-  componentDidMount () {
-    const {
-      feature: { properties: { _id } = {} } = {},
-    } = this.props;
-    this.updateIndex(_id);
-  }
-
-  componentDidUpdate ({
-    visible: prevVisible,
-    feature: { properties: { _id: prevId } = {} } = {},
-  }) {
-    const {
-      visible,
-      feature: { properties: { _id } = {} } = {},
-    } = this.props;
-
-    if (prevId !== _id) {
-      this.updateIndex(_id);
-    }
-
-    if (visible !== prevVisible) {
-      this.switchVisibility(visible);
-    }
-  }
-
-  getIndexFeature = index => {
-    const { features } = this.props;
+  const getIndexFeature = currentIndex => {
     const featuresLength = features.length;
-    if (index <= -1) {
+    if (currentIndex <= -1) {
       return featuresLength - 1;
     }
-    if (index === featuresLength) {
+    if (currentIndex === featuresLength) {
       return 0;
     }
-    return index;
+    return currentIndex;
   };
 
-  handleChange = direction => {
-    const { onChange } = this.props;
-    const { index: prevIndex = 0 } = this.state;
-    const index = this.getIndexFeature(prevIndex + direction);
-    onChange(index);
-    return this.setState({ index });
+  const handleChange = direction => {
+    const newIndex = getIndexFeature(index + direction);
+    const newFeature = features[newIndex];
+    if (newFeature) {
+      // eslint-disable-next-line no-underscore-dangle
+      onChange(newFeature._id);
+      setIndex(newIndex);
+    }
   };
 
-  switchVisibility (visible) {
-    if (visible) {
-      clearTimeout(this.hideTimeout);
-      this.setState({
-        hidden: false,
-      }, () => this.setState({
-        visible: true,
-      }));
-    } else {
-      this.setState({
-        visible: false,
-      });
-      this.hideTimeout = setTimeout(() => this.setState({ hidden: true }), 200);
-    }
-  }
+  const isCarousel = enableCarousel && features.length > 1;
+  const featureToDisplay =
+    features.length > 0 && index !== -1 ? features[index] : feature && feature.properties;
+  const { template, fetchProperties = {}, templates = [] } = interaction || {};
 
-  updateIndex (id) {
-    const { features = [] } = this.props;
-    if (features.length) {
-      this.setState({ index: features.findIndex(({ _id }) => _id === id) });
-    }
-  }
+  const normalizedTemplates =
+    // eslint-disable-next-line no-nested-ternary
+    templates.length > 0 ? templates : template ? [{ template, fetchProperties }] : [];
 
-  render () {
-    const {
-      features,
-      onClose,
-      isTableActive,
-      enableCarousel,
-      translate = a => a,
-    } = this.props;
-    const {
-      feature: { properties } = {},
-      interaction: { template, fetchProperties = {}, templates = [] } = {},
-      index, hidden, visible,
-    } = this.state;
-    const isCarousel = enableCarousel && features.length > 1;
-    const featureToDisplay = features.length > 0 && index !== -1 ? features[index] : properties;
+  return (
+    <Drawer
+      variant="persistent"
+      anchor="right"
+      open={visible}
+      sx={{
+        width: 400,
+        flexShrink: 0,
+        '& .MuiDrawer-paper': {
+          zIndex: 79,
+          width: 400,
+          boxSizing: 'border-box',
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          backdropFilter: 'blur(8px)',
+          margin: 1,
+          height: isTableActive ? '66vh' : 'calc(100vh - 16px)',
+          borderRadius: 2,
+          border: '1px solid rgba(0, 0, 0, 0.1)',
+          boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+        },
+      }}
+    >
+      <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            flexDirection: 'row',
+            borderBottom: '1px solid #e0e0e0',
+            margin: 1,
+            marginBottom: 0,
+            paddingBottom: 1,
+          }}
+        >
+          {isCarousel && (
+            <>
+              <IconButton onClick={() => handleChange(-1)} size="small">
+                <ChevronLeft />
+              </IconButton>
+              <IconButton onClick={() => handleChange(1)} size="small">
+                <ChevronRight />
+              </IconButton>
+            </>
+          )}
+          <Box sx={{ flexGrow: 1 }} />
+          <IconButton onClick={onClose} size="small">
+            <CloseIcon />
+          </IconButton>
+        </Box>
 
-    return (
-      <div
-        className={classnames(
-          {
-            'view-details': true,
-            'bp3-light': true,
-            'view-details--hidden': hidden,
-            'view-details--visible': visible,
-            'view-details--withTable': isTableActive,
-            'view-details--withCarousel': isCarousel,
-          },
-        )}
-      >
-        <div className="view-details__close">
-          <Button
-            type="button"
-            className="view-details__close-button"
-            onClick={onClose}
-            icon="cross"
-            minimal
-          />
-        </div>
         {featureToDisplay && (
-          <div className="view-details__wrapper">
-            {isCarousel && (
-              <div
-                className={classnames(
-                  'view-details__button',
-                  'view-details__button--prev',
-                )}
+          <Box
+            sx={{
+              display: 'flex',
+              overflowX: 'hidden',
+              overflowY: 'auto',
+              height: '100%',
+            }}
+          >
+            <Box
+              sx={{
+                padding: '8px 32px',
+                flex: 'auto',
+                minWidth: 0,
+              }}
+            >
+              <Box
+                sx={{
+                  '& .details': {
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                  },
+                  '& .details__title': {
+                    textAlign: 'center',
+                    fontSize: '1.6rem',
+                    fontWeight: 300,
+                  },
+                  '& .details__group': {
+                    marginTop: '8px',
+                  },
+                  '& .details__list': {
+                    padding: 0,
+                    margin: 0,
+                    display: 'flex',
+                    flexDirection: 'column',
+                  },
+                  '& .details__list__amenity': {
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    padding: 0,
+                  },
+                  '& .details__list__amenity__img': {
+                    width: '36px',
+                    height: '36px',
+                  },
+                  '& .details__times': {
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'space-around',
+                    padding: 0,
+                  },
+                  '& .details__column': {
+                    display: 'flex',
+                    flexDirection: 'row',
+                    justifyContent: 'flex-start',
+                  },
+                  '& .details__column-label': {
+                    paddingBottom: '8px',
+                    paddingRight: '8px',
+                    whiteSpace: 'nowrap',
+                    opacity: 0.65,
+                  },
+                  '& .details__column-value': {
+                    minWidth: '40%',
+                    paddingBottom: '10px',
+                    overflowWrap: 'anywhere',
+                    wordBreak: 'break-word',
+                  },
+                  '& .details__link': {
+                    marginTop: '56px',
+                    textAlign: 'center',
+                    '& a': {
+                      background: '#fff',
+                      padding: '12px',
+                      border: '1px solid rgba(10, 6, 77, 0.35)',
+                    },
+                  },
+                  '& .details__subtitle': {
+                    color: theme => theme.palette.primary.dark,
+                    fontWeight: 700,
+                    opacity: 0.8,
+                  },
+                }}
               >
-                <Button
-                  type="button"
-                  onClick={() => this.handleChange(-1)}
-                  icon="chevron-left"
-                  minimal
-                />
-              </div>
-            )}
-            {templates.length > 0 ? (
-              <Tabs id="tabs" className="tab-bar">
-                {templates.map((templateTab, idx) => (
-                  <Tab
-                    id={`tab-${idx}`}
-                    title={templateTab.tabTitle}
-                    panel={(
-                      <div className="view-details__content">
-                        <FeatureProperties
-                          {...templateTab.fetchProperties}
-                          properties={featureToDisplay}
-                        >
-                          {({ properties: newProperties, ...staticProperties }) => (
-                            <ErrorBoundary errorMsg={translate('terralego.map.template.render.error')}>
-                              <Template
-                                template={templateTab.template}
-                                {...staticProperties}
-                                {...newProperties}
-                              />
-                            </ErrorBoundary>
-                          )}
-                        </FeatureProperties>
-                      </div>
-                    )}
-                  />
+                {normalizedTemplates.map((templateItem, idx) => (
+                  // eslint-disable-next-line react/no-array-index-key
+                  <Box key={idx} sx={{ mb: idx < normalizedTemplates.length - 1 ? 2 : 0 }}>
+                    <FeatureProperties
+                      {...templateItem.fetchProperties}
+                      properties={featureToDisplay}
+                    >
+                      {({ properties: newProperties, ...staticProperties }) => (
+                        <ErrorBoundary errorMsg={translate('terralego.map.template.render.error')}>
+                          <Template
+                            template={templateItem.template}
+                            {...staticProperties}
+                            {...newProperties}
+                          />
+                        </ErrorBoundary>
+                      )}
+                    </FeatureProperties>
+                  </Box>
                 ))}
-              </Tabs>
-            )
-              : (
-                <div className="view-details__content">
-                  <FeatureProperties
-                    {...fetchProperties}
-                    properties={featureToDisplay}
-                  >
-                    {({ properties: newProperties, ...staticProperties }) => (
-                      <ErrorBoundary errorMsg={translate('terralego.map.template.render.error')}>
-                        <Template
-                          template={template}
-                          {...staticProperties}
-                          {...newProperties}
-                        />
-                      </ErrorBoundary>
-                    )}
-                  </FeatureProperties>
-                </div>
-              )}
-            {isCarousel && (
-              <div
-                className={classnames(
-                  'view-details__button',
-                  'view-details__button--next',
-                )}
-              >
-                <Button
-                  type="button"
-                  onClick={() => this.handleChange(1)}
-                  icon="chevron-right"
-                  minimal
-                />
-              </div>
-            )}
-          </div>
+              </Box>
+            </Box>
+          </Box>
         )}
-      </div>
-    );
-  }
-}
+      </Box>
+    </Drawer>
+  );
+};
 
 const propFeature = PropTypes.shape({
   properties: PropTypes.shape({
@@ -231,15 +240,21 @@ Details.propTypes = {
   onChange: PropTypes.func,
   onClose: PropTypes.func,
   enableCarousel: PropTypes.bool,
+  isTableActive: PropTypes.bool,
+  visible: PropTypes.bool,
+  translate: PropTypes.func,
 };
 
 Details.defaultProps = {
-  onChange () {},
+  onChange: () => {},
   onClose: () => null,
   enableCarousel: true,
   features: [],
   feature: undefined,
   interaction: undefined,
+  isTableActive: false,
+  visible: false,
+  translate: a => a,
 };
 
 export default Details;
