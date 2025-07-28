@@ -60,14 +60,6 @@ module.exports = {
         }
       }
 
-      // Define process.env for browser
-      webpackConfig.plugins.push(
-        new webpack.DefinePlugin({
-          'process.env': JSON.stringify(process.env),
-          process: JSON.stringify({ env: process.env }),
-        }),
-      );
-
       return webpackConfig;
     },
   },
