@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { MenuItem, Button, Spinner } from '@blueprintjs/core';
 import { Select as BPSelect } from '@blueprintjs/select';
-import uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 
 import { preventEnterKeyPress } from '../../../../utils/event';
 import translateMock from '../../../../utils/translate';

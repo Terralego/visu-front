@@ -1,6 +1,7 @@
 const path = require('path');
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 const webpack = require('webpack');
+const customSassFunctions = require('./src/sass-functions');
 
 module.exports = {
   webpack: {
@@ -32,6 +33,32 @@ module.exports = {
         net: false,
         tls: false,
       };
+
+      // Configure Sass loader with custom functions
+      const sassRule = webpackConfig.module.rules
+        .find(rule => rule.oneOf)
+        .oneOf.find(rule => rule.test && rule.test.toString().includes('scss|sass'));
+      
+      if (sassRule) {
+        const sassLoader = sassRule.use.find(loader => 
+          loader.loader && loader.loader.includes('sass-loader')
+        );
+        
+        if (sassLoader) {
+          sassLoader.options = {
+            ...sassLoader.options,
+            sassOptions: {
+              ...sassLoader.options?.sassOptions,
+              functions: customSassFunctions,
+              quietDeps: true,
+              includePaths: [
+                path.resolve(__dirname, 'node_modules'),
+                path.resolve(__dirname, 'src')
+              ]
+            }
+          };
+        }
+      }
 
       // Define process.env for browser
       webpackConfig.plugins.push(
