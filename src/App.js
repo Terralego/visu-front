@@ -8,6 +8,7 @@ import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
 import './app.scss';
 import '@blueprintjs/datetime/lib/css/blueprint-datetime.css';
+import { createTheme, ThemeProvider } from '@mui/material';
 
 import SettingsProvider from './views/Main/Provider';
 import withEnv from './config/withEnv';
@@ -17,18 +18,24 @@ import Main from './views/Main';
 // Used while loading translations. Don't want to display anything
 const Loading = () => null;
 
+const theme = createTheme({
+  cssVariables: true,
+});
+
 const App = ({ env: { API_HOST } }) => (
   <ApiProvider host={API_HOST}>
     <AuthProvider>
-      <StateProvider>
-        <BrowserRouter>
-          <Suspense fallback={<Loading />}>
-            <SettingsProvider>
-              <Main />
-            </SettingsProvider>
-          </Suspense>
-        </BrowserRouter>
-      </StateProvider>
+      <ThemeProvider theme={theme}>
+        <StateProvider>
+          <BrowserRouter>
+            <Suspense fallback={<Loading />}>
+              <SettingsProvider>
+                <Main />
+              </SettingsProvider>
+            </Suspense>
+          </BrowserRouter>
+        </StateProvider>
+      </ThemeProvider>
     </AuthProvider>
   </ApiProvider>
 );

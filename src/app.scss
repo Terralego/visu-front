@@ -44,6 +44,10 @@ body {
   transform: translate(-50%, -50%);
 }
 
+.splash-screen img {
+  max-width: calc(100dvw - 100px);
+}
+
 @media(min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
   .placeholder__navbar {
     width: 2.65rem;

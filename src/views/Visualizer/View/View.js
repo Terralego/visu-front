@@ -582,7 +582,7 @@ export class Visualizer extends React.Component {
     const { features: filtered } = this.state;
     const { features: ids } = filtered[layerId] || {};
 
-    return features.filter(({ properties: { _id: id } }) =>
+    return features?.filter(({ properties: { _id: id } }) =>
       (!ids || ids.includes(id)));
   }
 
@@ -657,8 +657,8 @@ export class Visualizer extends React.Component {
     setLayersTreeState(layersTreeState);
   };
 
-  onDetailsChange = index => {
-    if (index === undefined) {
+  onDetailsChange = featureId => {
+    if (featureId === undefined) {
       return;
     }
 
@@ -670,19 +670,15 @@ export class Visualizer extends React.Component {
       }
 
       const {
-        features,
         interactiveMapInstance: { addHighlight, removeHighlight },
         details,
       } = state;
 
       const { feature: { sourceLayer: detailsSourceLayer }, layer: detailLayer } = details;
 
-      const currentFeatureList = Object.values(features).find(({ layers }) =>
-        layers.includes(detailLayer));
-
       const feature = map.queryRenderedFeatures().find(
         ({ sourceLayer, properties: { _id: id } }) =>
-          (sourceLayer === detailsSourceLayer && id === currentFeatureList[index]),
+          (sourceLayer === detailsSourceLayer && id === featureId),
       );
 
       // When the geometry is too small, the feature doesn't appear in the map
@@ -693,19 +689,33 @@ export class Visualizer extends React.Component {
             properties: { _id: prevFeatureId },
           },
         } = details;
-        removeHighlight({ layerId: prevLayerId, featureId: prevFeatureId });
+        if (prevLayerId && prevFeatureId) {
+          removeHighlight({ layerId: prevLayerId, featureId: prevFeatureId });
+        }
         return null;
       }
 
       const {
         layer: { id: layerId } = {},
-        properties: { _id: featureId },
+        properties: { _id: newFeatureId },
         source,
       } = feature;
 
+      // Remove previous highlight
+      const {
+        feature: {
+          layer: { id: prevLayerId },
+          properties: { _id: prevFeatureId },
+        },
+      } = details;
+      if (prevLayerId && prevFeatureId) {
+        removeHighlight({ layerId: prevLayerId, featureId: prevFeatureId });
+      }
+
+      // Add new highlight
       addHighlight({
         layerId,
-        featureId,
+        featureId: newFeatureId,
         unique: true,
         source,
       });
@@ -714,7 +724,7 @@ export class Visualizer extends React.Component {
         details: {
           ...details,
           feature,
-          hide: () => layerId && removeHighlight({ layerId, featureId }),
+          hide: () => layerId && removeHighlight({ layerId, featureId: newFeatureId }),
         },
       };
     });
@@ -1010,6 +1020,7 @@ export class Visualizer extends React.Component {
                       onClose={hideDetails}
                       onChange={this.onDetailsChange}
                       enableCarousel={enableDetailCarrousel}
+                      isTableActive={isTableVisible}
                       translate={t}
                     />
                   </BoundingBoxObserver>
