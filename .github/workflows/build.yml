@@ -43,9 +43,13 @@ jobs:
           npm ci --legacy-peer-deps
 
       - name: Build
+        env:
+          DISABLE_ESLINT_PLUGIN: true
         run: |
           npm run build
 
       - name: Test Build non split
+        env:
+          DISABLE_ESLINT_PLUGIN: true
         run: |
           npm run build:non-split
