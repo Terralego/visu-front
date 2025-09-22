@@ -50,6 +50,7 @@ import DataTable from './DataTable';
 import Widgets from './Widgets';
 import { generateClusterList } from './interactions';
 import BoundingBoxObserver from '../../../components/BoundingBoxObserver';
+import ReportingModule from '../../../components/ReportingModule/ReportingModule';
 import searchInMap from './search';
 
 export const INTERACTION_DISPLAY_DETAILS = 'displayDetails';
@@ -152,6 +153,10 @@ export class Visualizer extends React.Component {
 
   state = {
     isLayersTreeVisible: true,
+    isReportingModuleVisible: false,
+    selectedLayerForReporting: null,
+    selectedFeatureIdForReporting: null, // Feature ID for reporting
+    selectedFeatureGeometryForReporting: null, // Feature geometry for reporting
     legends: [],
     /* store feature ids filtered by a layer */
     features: {}, /* { layerId: { features: [id1, id2, ...], layers: [id1, id2, ...] } } */
@@ -422,6 +427,48 @@ export class Visualizer extends React.Component {
       const { isLayersTreeVisible } = this.state;
       return setCurrentState({ tree: isLayersTreeVisible && undefined });
     });
+  };
+
+  toggleReportingModule = () => {
+    this.setState(({ isReportingModuleVisible }) => ({
+      isReportingModuleVisible: !isReportingModuleVisible,
+    }));
+  };
+
+  onReportFeature = featureData => {
+    const { details: { layer: detailLayer, feature } = {} } = this.state;
+    const { view: { layersTree } } = this.props;
+
+    const featureId = featureData && featureData._id;
+
+    const featureGeometry = feature?.geometry || null;
+
+    // Find the layersTree layer that contains this mapbox layer
+    const findLayersTreeLayerByMapboxLayer = (tree, mapboxLayerId) => {
+      const flattenLayers = tree.reduce((acc, item) => {
+        if (item.layers) {
+          return [...acc, ...item.layers];
+        }
+        return [...acc, item];
+      }, []);
+
+      return (
+        flattenLayers.find(layer => layer.layers && layer.layers.includes(mapboxLayerId)) || null
+      );
+    };
+
+    const layersTreeLayer = findLayersTreeLayerByMapboxLayer(layersTree, detailLayer);
+
+    this.hideDetails();
+
+    if (layersTreeLayer) {
+      this.setState({
+        selectedLayerForReporting: layersTreeLayer.id,
+        selectedFeatureIdForReporting: featureId,
+        selectedFeatureGeometryForReporting: featureGeometry,
+        isReportingModuleVisible: true,
+      });
+    }
   };
 
   searchQuery = ({ target: { value: query } }) => {
@@ -743,6 +790,8 @@ export class Visualizer extends React.Component {
     // Hide previous details
     hide();
 
+    this.setState({ isReportingModuleVisible: false });
+
     this.onHighlightChange = () => null;
 
     if (layerId && highlightColor) {
@@ -886,6 +935,10 @@ export class Visualizer extends React.Component {
       details,
       details: { layer: detailLayer } = {},
       isLayersTreeVisible,
+      isReportingModuleVisible,
+      selectedLayerForReporting,
+      selectedFeatureIdForReporting,
+      selectedFeatureGeometryForReporting,
       interactions,
       totalFeatures,
       features,
@@ -947,6 +1000,22 @@ export class Visualizer extends React.Component {
     const { terralego: { map: mapLocale } = nullObj } = getResourceBundle(language.split('-')[0]) || getResourceBundle(fallbackLng[0]) || nullObj;
 
     const isStory = type === 'story';
+
+    // Find the selected layer for reporting by ID
+    const findLayerById = (layers, targetId) => {
+      const flattenLayers = layers.reduce((acc, item) => {
+        if (item.layers) {
+          return [...acc, ...item.layers];
+        }
+        return [...acc, item];
+      }, []);
+
+      return flattenLayers.find(layer => layer.id === targetId) || null;
+    };
+
+    const selectedLayer = selectedLayerForReporting
+      ? findLayerById(layersTree, selectedLayerForReporting)
+      : null;
 
     return (
       <LayersTreeProvider
@@ -1019,9 +1088,17 @@ export class Visualizer extends React.Component {
                       {...details}
                       onClose={hideDetails}
                       onChange={this.onDetailsChange}
+                      onReport={this.onReportFeature}
                       enableCarousel={enableDetailCarrousel}
                       isTableActive={isTableVisible}
                       translate={t}
+                    />
+                    <ReportingModule
+                      open={isReportingModuleVisible}
+                      onClose={this.toggleReportingModule}
+                      layer={selectedLayer}
+                      featureId={selectedFeatureIdForReporting}
+                      featureGeometry={selectedFeatureGeometryForReporting}
                     />
                   </BoundingBoxObserver>
                   <DataTable

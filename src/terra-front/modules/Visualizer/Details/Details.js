@@ -1,11 +1,12 @@
 import { ChevronLeft, ChevronRight, Close as CloseIcon } from '@mui/icons-material';
-import { Box, Drawer, IconButton } from '@mui/material';
+import { Box, Drawer, IconButton, Button } from '@mui/material';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 
 import ErrorBoundary from '../../../components/ErrorBoundary';
 import FeatureProperties from '../../Map/FeatureProperties';
 import Template from '../../Template';
+import { checkTokenValidity } from '../../../utils/jwt';
 
 const Details = ({
   features = [],
@@ -14,11 +15,18 @@ const Details = ({
   visible,
   onClose = () => null,
   onChange = () => {},
+  onReport = () => {},
   enableCarousel = true,
   isTableActive = false,
   translate = a => a,
 }) => {
   const [index, setIndex] = useState(-1);
+
+  // Check if user is authenticated
+  const isAuthenticated = React.useMemo(() => {
+    const token = global.localStorage.getItem('tf:auth:token');
+    return token && checkTokenValidity(token);
+  }, []);
 
   // Update index when feature ID changes
   useEffect(() => {
@@ -215,6 +223,19 @@ const Details = ({
                     </FeatureProperties>
                   </Box>
                 ))}
+                {isAuthenticated && (
+                  <Box sx={{ mt: 5, pb: 5, pt: 2, borderTop: '1px solid #e0e0e0' }}>
+                    <Button
+                      variant="contained"
+                      color="warning"
+                      fullWidth
+                      onClick={() => onReport(featureToDisplay)}
+                      sx={{ textTransform: 'none' }}
+                    >
+                      Signaler une anomalie
+                    </Button>
+                  </Box>
+                )}
               </Box>
             </Box>
           </Box>
@@ -239,6 +260,7 @@ Details.propTypes = {
   features: PropTypes.arrayOf(propFeature),
   onChange: PropTypes.func,
   onClose: PropTypes.func,
+  onReport: PropTypes.func,
   enableCarousel: PropTypes.bool,
   isTableActive: PropTypes.bool,
   visible: PropTypes.bool,
@@ -248,6 +270,7 @@ Details.propTypes = {
 Details.defaultProps = {
   onChange: () => {},
   onClose: () => null,
+  onReport: () => {},
   enableCarousel: true,
   features: [],
   feature: undefined,
