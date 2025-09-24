@@ -24,7 +24,7 @@ module.exports = {
         webpackPlugin => webpackPlugin instanceof MiniCssExtractPlugin,
       );
       if (miniCssExtractPlugin) {
-        miniCssExtractPlugin.options.filename = 'css/[name].css';
+        miniCssExtractPlugin.options.filename = 'static/css/[name].css';
         miniCssExtractPlugin.options.moduleFilename = () => 'static/css/main.css';
       }
 
