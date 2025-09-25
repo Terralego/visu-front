@@ -1035,7 +1035,7 @@ export class Visualizer extends React.Component {
           'visualizer--with-layers-tree': displayLayersTree,
           'visualizer--with-table': isTableVisible && !printIsOpened,
           'visualizer--with-widgets': isWidgetsVisible,
-          'visualizer--with-details': isDetailsVisible,
+          'visualizer--with-details': isDetailsVisible || isReportingModuleVisible,
         })}
         >
           <div className={
