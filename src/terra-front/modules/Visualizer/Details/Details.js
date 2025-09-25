@@ -7,6 +7,8 @@ import ErrorBoundary from '../../../components/ErrorBoundary';
 import FeatureProperties from '../../Map/FeatureProperties';
 import Template from '../../Template';
 import { checkTokenValidity } from '../../../utils/jwt';
+import ReportsIndicator from './ReportsIndicator';
+import ReportsCount from './ReportsCount';
 
 const Details = ({
   features = [],
@@ -90,6 +92,13 @@ const Details = ({
         },
       }}
     >
+      {featureToDisplay && (
+        <ReportsIndicator
+          feature={featureToDisplay}
+          fetchProperties={fetchProperties}
+          translate={translate}
+        />
+      )}
       <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <Box
           sx={{
@@ -234,6 +243,11 @@ const Details = ({
                     >
                       Signaler une anomalie
                     </Button>
+                    <ReportsCount
+                      feature={featureToDisplay}
+                      fetchProperties={fetchProperties}
+                      translate={translate}
+                    />
                   </Box>
                 )}
               </Box>
