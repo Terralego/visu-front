@@ -157,6 +157,7 @@ export class Visualizer extends React.Component {
     selectedLayerForReporting: null,
     selectedFeatureIdForReporting: null, // Feature ID for reporting
     selectedFeatureGeometryForReporting: null, // Feature geometry for reporting
+    selectedFetchPropertiesForReporting: {}, // FetchProperties for reporting
     legends: [],
     /* store feature ids filtered by a layer */
     features: {}, /* { layerId: { features: [id1, id2, ...], layers: [id1, id2, ...] } } */
@@ -436,12 +437,16 @@ export class Visualizer extends React.Component {
   };
 
   onReportFeature = featureData => {
-    const { details: { layer: detailLayer, feature } = {} } = this.state;
+    const { details: { layer: detailLayer, feature, interaction } = {} } = this.state;
     const { view: { layersTree } } = this.props;
 
     const featureId = featureData && featureData._id;
 
     const featureGeometry = feature?.geometry || null;
+    const fetchProperties = {
+      ...interaction?.fetchProperties || {},
+      properties: featureData, // Add the feature properties for FeatureProperties component
+    };
 
     // Find the layersTree layer that contains this mapbox layer
     const findLayersTreeLayerByMapboxLayer = (tree, mapboxLayerId) => {
@@ -466,6 +471,7 @@ export class Visualizer extends React.Component {
         selectedLayerForReporting: layersTreeLayer.id,
         selectedFeatureIdForReporting: featureId,
         selectedFeatureGeometryForReporting: featureGeometry,
+        selectedFetchPropertiesForReporting: fetchProperties,
         isReportingModuleVisible: true,
       });
     }
@@ -939,6 +945,7 @@ export class Visualizer extends React.Component {
       selectedLayerForReporting,
       selectedFeatureIdForReporting,
       selectedFeatureGeometryForReporting,
+      selectedFetchPropertiesForReporting,
       interactions,
       totalFeatures,
       features,
@@ -1099,6 +1106,7 @@ export class Visualizer extends React.Component {
                       layer={selectedLayer}
                       featureId={selectedFeatureIdForReporting}
                       featureGeometry={selectedFeatureGeometryForReporting}
+                      fetchProperties={selectedFetchPropertiesForReporting}
                     />
                   </BoundingBoxObserver>
                   <DataTable

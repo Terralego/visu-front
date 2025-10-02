@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight, Close as CloseIcon } from '@mui/icons-material';
-import { Box, Drawer, IconButton, Button } from '@mui/material';
+import { Box, Drawer, IconButton, Button, Divider } from '@mui/material';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 
@@ -232,24 +232,27 @@ const Details = ({
                     </FeatureProperties>
                   </Box>
                 ))}
-                {isAuthenticated && (
-                  <Box sx={{ mt: 5, pb: 5, pt: 2, borderTop: '1px solid #e0e0e0' }}>
-                    <Button
-                      variant="contained"
-                      color="warning"
-                      fullWidth
-                      onClick={() => onReport(featureToDisplay)}
-                      sx={{ textTransform: 'none' }}
-                    >
-                      Signaler une anomalie
-                    </Button>
-                    <ReportsCount
-                      feature={featureToDisplay}
-                      fetchProperties={fetchProperties}
-                      translate={translate}
-                    />
-                  </Box>
-                )}
+                <Box sx={{ mt: 5, pb: 5, pt: 2 }}>
+                  {isAuthenticated && (
+                    <>
+                      <Divider sx={{ mb: 2 }} />
+                      <Button
+                        variant="contained"
+                        color="warning"
+                        fullWidth
+                        onClick={() => onReport(featureToDisplay)}
+                        sx={{ textTransform: 'none' }}
+                      >
+                        Signaler une anomalie
+                      </Button>
+                    </>
+                  )}
+                  <ReportsCount
+                    feature={featureToDisplay}
+                    fetchProperties={fetchProperties}
+                    translate={translate}
+                  />
+                </Box>
               </Box>
             </Box>
           </Box>
