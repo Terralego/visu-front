@@ -34,16 +34,44 @@ module.exports = {
         tls: false,
       };
 
+      // Configure CSS loader to ignore certain URLs
+      const oneOfRule = webpackConfig.module.rules.find(rule => rule.oneOf);
+      if (oneOfRule) {
+        oneOfRule.oneOf.forEach(rule => {
+          if (rule.use && Array.isArray(rule.use)) {
+            rule.use.forEach(loader => {
+              if (
+                loader.loader &&
+                loader.loader.includes('css-loader') &&
+                !loader.loader.includes('postcss-loader')
+              ) {
+                loader.options = {
+                  ...loader.options,
+                  url: {
+                    filter: url => {
+                      if (url.includes('/static_dj/')) {
+                        return false;
+                      }
+                      return true;
+                    },
+                  },
+                };
+              }
+            });
+          }
+        });
+      }
+
       // Configure Sass loader with custom functions
       const sassRule = webpackConfig.module.rules
         .find(rule => rule.oneOf)
         .oneOf.find(rule => rule.test && rule.test.toString().includes('scss|sass'));
-      
+
       if (sassRule) {
-        const sassLoader = sassRule.use.find(loader => 
-          loader.loader && loader.loader.includes('sass-loader')
+        const sassLoader = sassRule.use.find(
+          loader => loader.loader && loader.loader.includes('sass-loader'),
         );
-        
+
         if (sassLoader) {
           sassLoader.options = {
             ...sassLoader.options,
@@ -53,14 +81,20 @@ module.exports = {
               quietDeps: true,
               includePaths: [
                 path.resolve(__dirname, 'node_modules'),
-                path.resolve(__dirname, 'src')
-              ]
-            }
+                path.resolve(__dirname, 'src'),
+              ],
+            },
           };
         }
       }
 
       return webpackConfig;
+    },
+  },
+  jest: {
+    configure: jestConfig => {
+      jestConfig.setupFiles = ['<rootDir>/src/polyfill.js'];
+      return jestConfig;
     },
   },
 };
