@@ -259,6 +259,7 @@
       "too_many_results": "Votre recherche contient trop de résultats ({{number}}), veuillez affiner votre requête ou zoomer sur une zone plus restreinte.",
       "unfold": "Déplier",
       "reports": {
+        "login_required": "Vous devez être connecté pour faire un signalement",
         "count_text": "{{count}} signalement en cours",
         "count_text_plural": "{{count}} signalements en cours"
       }

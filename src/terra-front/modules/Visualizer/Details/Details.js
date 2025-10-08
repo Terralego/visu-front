@@ -232,20 +232,25 @@ const Details = ({
                     </FeatureProperties>
                   </Box>
                 ))}
-                <Box sx={{ mt: 5, pb: 5, pt: 2 }}>
-                  {isAuthenticated && (
-                    <>
-                      <Divider sx={{ mb: 2 }} />
-                      <Button
-                        variant="contained"
-                        color="warning"
-                        fullWidth
-                        onClick={() => onReport(featureToDisplay)}
-                        sx={{ textTransform: 'none' }}
-                      >
-                        Signaler une anomalie
-                      </Button>
-                    </>
+                <Box sx={{ pb: 5, pt: 1 }}>
+                  <Divider sx={{ mb: 2 }} />
+                  <Button
+                    variant="contained"
+                    color="warning"
+                    fullWidth
+                    disabled={!isAuthenticated}
+                    onClick={() => onReport(featureToDisplay)}
+                    sx={{ textTransform: 'none' }}
+                  >
+                    Signaler une anomalie
+                  </Button>
+                  {!isAuthenticated && (
+                    <Box
+                      component="span"
+                      sx={{ mt: 1, display: 'block', textAlign: 'center', color: 'warning.main' }}
+                    >
+                      {translate('terralego.visualizer.reports.login_required')}
+                    </Box>
                   )}
                   <ReportsCount
                     feature={featureToDisplay}

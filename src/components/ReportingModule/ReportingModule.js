@@ -35,6 +35,7 @@ const ReportingModule = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [selectedConfigIndex, setSelectedConfigIndex] = useState(0);
+  const [validationErrors, setValidationErrors] = useState({});
   const reportConfigs = layer?.report_configs || [];
 
   // Get the currently selected config
@@ -163,6 +164,12 @@ const ReportingModule = ({
             ...prev,
             [fieldId]: value,
           }));
+          if (validationErrors[fieldId]) {
+            setValidationErrors(prev => ({
+              ...prev,
+              [fieldId]: null,
+            }));
+          }
         };
 
         const handleImageUpload = event => {
@@ -196,6 +203,24 @@ const ReportingModule = ({
         };
 
         const handleSubmit = async () => {
+          const errors = {};
+
+          if (selectedConfig?.fields) {
+            selectedConfig.fields.forEach(field => {
+              if (field.required) {
+                const value = formData[field.sourceFieldId];
+                if (!value || !value.trim()) {
+                  errors[field.sourceFieldId] = 'Ce champ est obligatoire';
+                }
+              }
+            });
+          }
+
+          if (Object.keys(errors).length > 0) {
+            setValidationErrors(errors);
+            return;
+          }
+
           // Format data as array of objects for each field that has a comment
           const submitData = [];
 
@@ -238,7 +263,7 @@ const ReportingModule = ({
         const renderFieldInput = field => {
           if (!field) return null;
 
-          const { format_type: formatType, value, required, sourceFieldId } = field;
+          const { required, sourceFieldId, helptext } = field;
 
           return (
             <TextField
@@ -246,11 +271,12 @@ const ReportingModule = ({
               size="small"
               type="text"
               variant="outlined"
-              helperText={`Champ source : ${value} (${formatType})`}
               sx={{ mb: 2 }}
               multiline
               rows={2}
               required={required}
+              error={!!validationErrors[sourceFieldId]}
+              helperText={validationErrors[sourceFieldId] || helptext}
               value={formData[sourceFieldId] || ''}
               onChange={e => handleFieldChange(sourceFieldId, e.target.value)}
             />

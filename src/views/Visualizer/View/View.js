@@ -51,6 +51,7 @@ import Widgets from './Widgets';
 import { generateClusterList } from './interactions';
 import BoundingBoxObserver from '../../../components/BoundingBoxObserver';
 import ReportingModule from '../../../components/ReportingModule/ReportingModule';
+import DeclarationModule from '../../../components/DeclarationModule/DeclarationModule';
 import searchInMap from './search';
 
 export const INTERACTION_DISPLAY_DETAILS = 'displayDetails';
@@ -154,13 +155,15 @@ export class Visualizer extends React.Component {
   state = {
     isLayersTreeVisible: true,
     isReportingModuleVisible: false,
+    isDeclarationModuleVisible: true,
+    waitingForMapClick: false,
+    declarationLocation: null,
     selectedLayerForReporting: null,
-    selectedFeatureIdForReporting: null, // Feature ID for reporting
-    selectedFeatureGeometryForReporting: null, // Feature geometry for reporting
-    selectedFetchPropertiesForReporting: {}, // FetchProperties for reporting
+    selectedFeatureIdForReporting: null,
+    selectedFeatureGeometryForReporting: null,
+    selectedFetchPropertiesForReporting: {},
     legends: [],
-    /* store feature ids filtered by a layer */
-    features: {}, /* { layerId: { features: [id1, id2, ...], layers: [id1, id2, ...] } } */
+    features: {},
     totalFeatures: 0,
     interactions: [],
   };
@@ -319,6 +322,11 @@ export class Visualizer extends React.Component {
             feature, clusteredFeatures, event, instance,
             instance: { displayTooltip }, layerId,
           }) => {
+            const { waitingForMapClick } = this.state;
+            if (waitingForMapClick) {
+              return;
+            }
+
             if (clusteredFeatures) {
               const { clusterLabel } = interaction;
               displayTooltip({
@@ -385,9 +393,23 @@ export class Visualizer extends React.Component {
       if (!e.originalEvent && e.type !== 'updateMap') return;
       this.debouncedSearchQuery();
     };
+
+    const onMapClick = e => {
+      const { waitingForMapClick } = this.state;
+      if (waitingForMapClick) {
+        const { lng, lat } = e.lngLat;
+        this.setState({
+          waitingForMapClick: false,
+          declarationLocation: { lng, lat },
+        });
+        this.handleDeclarationMapClick(false);
+      }
+    };
+
     map.on('move', onMapUpdate);
     map.on('zoom', onMapUpdate);
     map.on('updateMap', onMapUpdate);
+    map.on('click', onMapClick);
     map.on('load', () => this.updateLayersTree());
     map.on('styleimagemissing', ({ id }) => {
       const { view: { styleImages = [] } = {} } = this.props;
@@ -436,6 +458,31 @@ export class Visualizer extends React.Component {
     }));
   };
 
+  toggleDeclarationModule = () => {
+    this.setState(({ isDeclarationModuleVisible }) => {
+      const newDeclarationState = !isDeclarationModuleVisible;
+
+      const stateUpdate = {
+        isDeclarationModuleVisible: newDeclarationState,
+        waitingForMapClick: false,
+        declarationLocation: null,
+      };
+
+      if (!newDeclarationState) {
+        const { details: { hide = () => {} } = {} } = this.state;
+        hide();
+        stateUpdate.details = undefined;
+        stateUpdate.isReportingModuleVisible = false;
+      }
+
+      return stateUpdate;
+    });
+  };
+
+  handleDeclarationMapClick = shouldWait => {
+    this.setState({ waitingForMapClick: shouldWait });
+  };
+
   onReportFeature = featureData => {
     const { details: { layer: detailLayer, feature, interaction } = {} } = this.state;
     const { view: { layersTree } } = this.props;
@@ -445,10 +492,9 @@ export class Visualizer extends React.Component {
     const featureGeometry = feature?.geometry || null;
     const fetchProperties = {
       ...interaction?.fetchProperties || {},
-      properties: featureData, // Add the feature properties for FeatureProperties component
+      properties: featureData,
     };
 
-    // Find the layersTree layer that contains this mapbox layer
     const findLayersTreeLayerByMapboxLayer = (tree, mapboxLayerId) => {
       const flattenLayers = tree.reduce((acc, item) => {
         if (item.layers) {
@@ -547,7 +593,6 @@ export class Visualizer extends React.Component {
 
     const boundingBox = getExtent(map, visibleBoundingBox);
 
-    // Query for bbox result ids
     const queryIds = filters.map(({ properties, index, layer: { baseEsQuery = {} } }) => ({
       index,
       query,
@@ -557,7 +602,6 @@ export class Visualizer extends React.Component {
       baseQuery: baseEsQuery,
     }));
 
-    // Query for all result counts
     const queryCounts = filters.map(({ properties, index, layer: { baseEsQuery = {} } }) => ({
       index,
       query,
@@ -569,20 +613,15 @@ export class Visualizer extends React.Component {
 
     const { responses } = await searchService.msearch([...queryIds, ...queryCounts]);
 
-    // Ids of results in viewport
     const idsResponses = responses.slice(0, filters.length);
-    // Counts for overall results
     const countResponses = responses.slice(filters.length);
 
     const features = idsResponses
       .reduce((all, { hits: { hits = [] } = {} }, k) => {
-        // Skip results that are only counts (index (k) higher than filters)
         if (!filters[k]) { return all; }
 
         const featureIds = hits.map(({ _source: { _feature_id: id } }) => id);
-        // extract layers and id from matching filter
         const { layers, id } = filters[k].layer;
-        // eslint-disable-next-line no-param-reassign
         all[id] = { features: featureIds, layers };
 
         return all;
@@ -664,13 +703,10 @@ export class Visualizer extends React.Component {
     focusOnSearchResult,
     setQuery,
   }) => {
-    // Trigger the flyTo the feature
     focusOnSearchResult(result);
     setQuery(label);
-    // Hide previous details
     this.hideDetails();
 
-    // Should display details panel a the end of the flyTo
     map.once('moveend', () => {
       const { interactions } = this.state;
       const interaction = interactions.find(({ id: iId, trigger = 'click' }) => layers.includes(iId) && trigger === 'click');
@@ -679,12 +715,10 @@ export class Visualizer extends React.Component {
 
       let layerName = interaction.id;
       if (!map.getLayer(layerName)) {
-        // If the layer is clustered, use cluster data source instead
         layerName = `${interaction.id}-cluster-data`;
       }
 
       if (!map.getLayer(layerName)) {
-        // No layer found
         return;
       }
 
@@ -693,10 +727,8 @@ export class Visualizer extends React.Component {
         filter: ['==', ['to-string', ['get', '_id']], `${id}`],
       });
 
-      // No feature with this id
       if (!features.length) return;
 
-      // We trigger the click interaction
       map.triggerInteraction({
         interaction,
         feature: features[0],
@@ -734,7 +766,6 @@ export class Visualizer extends React.Component {
           (sourceLayer === detailsSourceLayer && id === featureId),
       );
 
-      // When the geometry is too small, the feature doesn't appear in the map
       if (!feature) {
         const {
           feature: {
@@ -754,7 +785,6 @@ export class Visualizer extends React.Component {
         source,
       } = feature;
 
-      // Remove previous highlight
       const {
         feature: {
           layer: { id: prevLayerId },
@@ -765,7 +795,6 @@ export class Visualizer extends React.Component {
         removeHighlight({ layerId: prevLayerId, featureId: prevFeatureId });
       }
 
-      // Add new highlight
       addHighlight({
         layerId,
         featureId: newFeatureId,
@@ -793,7 +822,6 @@ export class Visualizer extends React.Component {
     const { details: { hide = () => {} } = {} } = this.state;
     const { highlight_color: highlightColor } = interaction;
 
-    // Hide previous details
     hide();
 
     this.setState({ isReportingModuleVisible: false });
@@ -809,7 +837,6 @@ export class Visualizer extends React.Component {
         source,
       });
 
-
       this.onHighlightChange = this.onHighlightChangeFactory(
         layerId,
         featureId,
@@ -821,7 +848,7 @@ export class Visualizer extends React.Component {
 
     this.setState({
       details: {
-        layer: interactionLayerId, /* Save base mapbox layer id for later use */
+        layer: interactionLayerId,
         feature,
         interaction,
         hide: () => layerId && removeHighlight({ layerId, featureId }),
@@ -942,6 +969,8 @@ export class Visualizer extends React.Component {
       details: { layer: detailLayer } = {},
       isLayersTreeVisible,
       isReportingModuleVisible,
+      isDeclarationModuleVisible,
+      declarationLocation,
       selectedLayerForReporting,
       selectedFeatureIdForReporting,
       selectedFeatureGeometryForReporting,
@@ -964,7 +993,8 @@ export class Visualizer extends React.Component {
     } = this;
 
     const displayLayersTree = isLayersTreeVisible && !printIsOpened;
-    const isDetailsVisible = !!details && !printIsOpened;
+    const isDetailsVisible = !!details && !printIsOpened && !isDeclarationModuleVisible;
+    const isReportingVisible = isReportingModuleVisible && !isDeclarationModuleVisible;
 
     const currentFeatureList = Object.values(features).find(
       ({ layers }) => layers.includes(detailLayer),
@@ -1042,7 +1072,8 @@ export class Visualizer extends React.Component {
           'visualizer--with-layers-tree': displayLayersTree,
           'visualizer--with-table': isTableVisible && !printIsOpened,
           'visualizer--with-widgets': isWidgetsVisible,
-          'visualizer--with-details': isDetailsVisible || isReportingModuleVisible,
+          'visualizer--with-details': isDetailsVisible || isReportingVisible,
+          'visualizer--with-declaration': isDeclarationModuleVisible,
         })}
         >
           <div className={
@@ -1101,12 +1132,18 @@ export class Visualizer extends React.Component {
                       translate={t}
                     />
                     <ReportingModule
-                      open={isReportingModuleVisible}
+                      open={isReportingVisible}
                       onClose={this.toggleReportingModule}
                       layer={selectedLayer}
                       featureId={selectedFeatureIdForReporting}
                       featureGeometry={selectedFeatureGeometryForReporting}
                       fetchProperties={selectedFetchPropertiesForReporting}
+                    />
+                    <DeclarationModule
+                      open={isDeclarationModuleVisible}
+                      onClose={this.toggleDeclarationModule}
+                      onMapClick={this.handleDeclarationMapClick}
+                      selectedLocation={declarationLocation}
                     />
                   </BoundingBoxObserver>
                   <DataTable
