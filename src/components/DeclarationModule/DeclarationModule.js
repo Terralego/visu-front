@@ -2,7 +2,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Alert, Box, Button, Drawer, IconButton, TextField, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { checkTokenValidity } from '../../terra-front/utils/jwt';
 import api from '../../terra-front/modules/Api/services/api';
 
@@ -11,15 +11,13 @@ const DeclarationModule = ({
   onClose,
   onMapClick = () => {},
   selectedLocation = null,
+  declarationConfig = null,
 }) => {
   const [formData, setFormData] = useState({});
   const [location, setLocation] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
   const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [waitingForMapClick, setWaitingForMapClick] = useState(false);
-  const [declarationConfig, setDeclarationConfig] = useState(null);
-  const [isLoadingConfig, setIsLoadingConfig] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
   const [images, setImages] = useState([]);
 
@@ -28,41 +26,17 @@ const DeclarationModule = ({
     return token && checkTokenValidity(token);
   }, []);
 
-  // Charger la configuration de déclaration
-  useEffect(() => {
-    const loadDeclarationConfig = async () => {
-      if (!open) return;
-
-      try {
-        setIsLoadingConfig(true);
-        const config = await api.request('geolayer/declaration/config');
-        setDeclarationConfig(config);
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error('Erreur lors du chargement de la configuration:', error);
-        setSubmitError('Erreur lors du chargement du formulaire');
-      } finally {
-        setIsLoadingConfig(false);
-      }
-    };
-
-    loadDeclarationConfig();
-  }, [open]);
-
   React.useEffect(() => {
     if (selectedLocation) {
       setLocation(selectedLocation);
-      setWaitingForMapClick(false);
       onMapClick(false);
     }
   }, [selectedLocation, onMapClick]);
 
   React.useEffect(() => {
     if (open && !location) {
-      setWaitingForMapClick(true);
       onMapClick(true);
     } else if (!open) {
-      setWaitingForMapClick(false);
       onMapClick(false);
     }
   }, [open, location, onMapClick]);
@@ -82,7 +56,6 @@ const DeclarationModule = ({
 
   const clearLocation = () => {
     setLocation(null);
-    setWaitingForMapClick(true);
     onMapClick(true);
   };
 
@@ -233,7 +206,6 @@ const DeclarationModule = ({
 
       setFormData({});
       setLocation(null);
-      setWaitingForMapClick(false);
       onMapClick(false);
       images.forEach(img => URL.revokeObjectURL(img.preview));
       setImages([]);
@@ -250,7 +222,6 @@ const DeclarationModule = ({
   };
 
   const handleClose = () => {
-    setWaitingForMapClick(false);
     onMapClick(false);
     if (onClose) {
       onClose();
@@ -328,15 +299,9 @@ const DeclarationModule = ({
             </Box>
 
             <Box sx={{ mb: 3 }}>
-              {isLoadingConfig && (
-                <Typography variant="body2" sx={{ textAlign: 'center', py: 2 }}>
-                  Chargement du formulaire...
-                </Typography>
-              )}
-              {!isLoadingConfig &&
-                declarationConfig?.declaration_fields &&
+              {declarationConfig?.declaration_fields &&
                 declarationConfig.declaration_fields.map(field => renderFieldInput(field))}
-              {!isLoadingConfig && !declarationConfig?.declaration_fields && (
+              {!declarationConfig?.declaration_fields && (
                 <Typography
                   variant="body2"
                   color="text.secondary"
@@ -494,6 +459,12 @@ DeclarationModule.propTypes = {
     lng: PropTypes.number,
     lat: PropTypes.number,
   }),
+  declarationConfig: PropTypes.shape({
+    declaration_fields: PropTypes.arrayOf(PropTypes.shape({
+      title: PropTypes.string,
+      helptext: PropTypes.string,
+    })),
+  }),
 };
 
 DeclarationModule.defaultProps = {
@@ -501,6 +472,7 @@ DeclarationModule.defaultProps = {
   onClose: () => {},
   onMapClick: () => {},
   selectedLocation: null,
+  declarationConfig: null,
 };
 
 export default DeclarationModule;
