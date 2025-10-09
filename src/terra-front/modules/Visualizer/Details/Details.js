@@ -21,10 +21,10 @@ const Details = ({
   enableCarousel = true,
   isTableActive = false,
   translate = a => a,
+  hasReportConfigs = false,
 }) => {
   const [index, setIndex] = useState(-1);
 
-  // Check if user is authenticated
   const isAuthenticated = React.useMemo(() => {
     const token = global.localStorage.getItem('tf:auth:token');
     return token && checkTokenValidity(token);
@@ -234,23 +234,27 @@ const Details = ({
                 ))}
                 <Box sx={{ pb: 5, pt: 1 }}>
                   <Divider sx={{ mb: 2 }} />
-                  <Button
-                    variant="contained"
-                    color="warning"
-                    fullWidth
-                    disabled={!isAuthenticated}
-                    onClick={() => onReport(featureToDisplay)}
-                    sx={{ textTransform: 'none' }}
-                  >
-                    Signaler une anomalie
-                  </Button>
-                  {!isAuthenticated && (
-                    <Box
-                      component="span"
-                      sx={{ mt: 1, display: 'block', textAlign: 'center', color: 'warning.main' }}
-                    >
-                      {translate('terralego.visualizer.reports.login_required')}
-                    </Box>
+                  {hasReportConfigs && (
+                    <>
+                      <Button
+                        variant="contained"
+                        color="warning"
+                        fullWidth
+                        disabled={!isAuthenticated}
+                        onClick={() => onReport(featureToDisplay)}
+                        sx={{ textTransform: 'none' }}
+                      >
+                        Signaler une anomalie
+                      </Button>
+                      {!isAuthenticated && (
+                        <Box
+                          component="span"
+                          sx={{ mt: 1, display: 'block', textAlign: 'center', color: 'warning.main' }}
+                        >
+                          {translate('terralego.visualizer.reports.login_required')}
+                        </Box>
+                      )}
+                    </>
                   )}
                   <ReportsCount
                     feature={featureToDisplay}
@@ -287,6 +291,7 @@ Details.propTypes = {
   isTableActive: PropTypes.bool,
   visible: PropTypes.bool,
   translate: PropTypes.func,
+  hasReportConfigs: PropTypes.bool,
 };
 
 Details.defaultProps = {
@@ -300,6 +305,7 @@ Details.defaultProps = {
   isTableActive: false,
   visible: false,
   translate: a => a,
+  hasReportConfigs: false,
 };
 
 export default Details;
