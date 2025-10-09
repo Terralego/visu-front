@@ -67,6 +67,17 @@
     }
   }
 
+  &.mapboxgl-ctrl-declaration {
+    button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: invert(0%);
+      color: $pt-dark-text-color;
+      opacity: 0.8;
+    }
+  }
+
   .bp3-popover-target button {
     filter: invert(0%);
     color: $pt-dark-text-color;
