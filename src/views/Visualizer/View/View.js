@@ -60,8 +60,7 @@ import Widgets from './Widgets';
 import { generateClusterList } from './interactions';
 import BoundingBoxObserver from '../../../components/BoundingBoxObserver';
 import ReportingModule from '../../../components/ReportingModule/ReportingModule';
-import DeclarationModule from '../../../components/DeclarationModule/DeclarationModule';
-import DeclarationControl from './DeclarationControl';
+import DeclarationWrapper from '../../../components/DeclarationModule/DeclarationWrapper';
 import searchInMap from './search';
 
 export const INTERACTION_DISPLAY_DETAILS = 'displayDetails';
@@ -451,9 +450,6 @@ export class Visualizer extends React.Component {
       }
     });
 
-    this.declarationControl = new DeclarationControl(this.toggleDeclarationModule);
-    map.addControl(this.declarationControl, 'top-right');
-
     initLayersState();
     map.resize();
   };
@@ -498,10 +494,6 @@ export class Visualizer extends React.Component {
         hide();
         stateUpdate.details = undefined;
         stateUpdate.isReportingModuleVisible = false;
-      }
-
-      if (this.declarationControl) {
-        this.declarationControl.updateState(newDeclarationState);
       }
 
       return stateUpdate;
@@ -1180,9 +1172,10 @@ export class Visualizer extends React.Component {
                       featureGeometry={selectedFeatureGeometryForReporting}
                       fetchProperties={selectedFetchPropertiesForReporting}
                     />
-                    <DeclarationModule
-                      open={isDeclarationModuleVisible}
-                      onClose={this.toggleDeclarationModule}
+                    <DeclarationWrapper
+                      map={map}
+                      isDeclarationModuleVisible={isDeclarationModuleVisible}
+                      onToggleDeclarationModule={this.toggleDeclarationModule}
                       onMapClick={this.handleDeclarationMapClick}
                       selectedLocation={declarationLocation}
                     />
