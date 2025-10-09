@@ -38,17 +38,14 @@ const ReportingModule = ({
   const [validationErrors, setValidationErrors] = useState({});
   const reportConfigs = layer?.report_configs || [];
 
-  // Get the currently selected config
   const selectedConfig = reportConfigs[selectedConfigIndex] || reportConfigs[0];
 
-  // Calculate bbox when featureGeometry changes using Turf
   const featureBbox = React.useMemo(() => {
     if (!featureGeometry) {
       return null;
     }
 
     try {
-      // Use Turf's bbox function which returns [minLng, minLat, maxLng, maxLat]
       const bboxArray = bbox(featureGeometry);
       return {
         minLng: bboxArray[0],
@@ -99,11 +96,9 @@ const ReportingModule = ({
 
             const formDataToSend = new FormData();
 
-            // Add config, feature, and layer
             formDataToSend.append('config', selectedConfig?.id || reportConfigs[0]?.id);
             formDataToSend.append('feature', actualFeatureId || '');
 
-            // Add geometry if location is selected
             if (location) {
               const geom = {
                 type: 'Point',
@@ -112,7 +107,6 @@ const ReportingModule = ({
               formDataToSend.append('geom', JSON.stringify(geom));
             }
 
-            // Prepare content array with proper structure
             const content = submitData.map(item => {
               if (item.sourceFieldId === 'freeComment') {
                 return { free_comment: item.userComment };
@@ -127,18 +121,15 @@ const ReportingModule = ({
 
             formDataToSend.append('content', JSON.stringify(content));
 
-            // Add images
             images.forEach(image => {
               formDataToSend.append('files', image.file);
             });
 
-            // Use the existing API service that handles JWT and CSRF automatically
             const result = await api.request('geolayer/report/', {
               method: 'POST',
               body: formDataToSend,
             });
 
-            // Reset form after successful submission
             setFormData({});
             images.forEach(img => URL.revokeObjectURL(img.preview));
             setImages([]);
@@ -176,13 +167,12 @@ const ReportingModule = ({
           const files = Array.from(event.target.files);
           const newImages = [...images];
 
-          // Add new files up to a maximum of 3 total
           files.forEach(file => {
             if (newImages.length < 3) {
               newImages.push({
                 file,
                 preview: URL.createObjectURL(file),
-                id: Date.now() + Math.random(), // Simple unique ID
+                id: Date.now() + Math.random(),
               });
             }
           });
@@ -193,7 +183,6 @@ const ReportingModule = ({
         const removeImage = imageId => {
           setImages(prev => {
             const updated = prev.filter(img => img.id !== imageId);
-            // Clean up object URLs to prevent memory leaks
             const removed = prev.find(img => img.id === imageId);
             if (removed) {
               URL.revokeObjectURL(removed.preview);
@@ -218,16 +207,17 @@ const ReportingModule = ({
 
           if (Object.keys(errors).length > 0) {
             setValidationErrors(errors);
+            setSubmitError('Veuillez corriger les erreurs du formulaire');
             return;
           }
 
-          // Format data as array of objects for each field that has a comment
+          // Reset error only when validation passes
+          setSubmitError(null);
+
           const submitData = [];
 
-          // Process field comments
           Object.entries(formData).forEach(([fieldId, comment]) => {
             if (comment && comment.trim() && fieldId !== 'freeComment') {
-              // Find the field configuration in the selected config
               const field = selectedConfig?.fields.find(
                 f => f.sourceFieldId.toString() === fieldId,
               );
@@ -242,7 +232,6 @@ const ReportingModule = ({
             }
           });
 
-          // Add free comment as a special entry if it exists
           if (formData.freeComment && formData.freeComment.trim()) {
             submitData.push({
               sourceFieldId: 'freeComment',
@@ -251,7 +240,6 @@ const ReportingModule = ({
             });
           }
 
-          // Submit the report
           try {
             await submitReport(submitData);
           } catch (error) {
@@ -259,11 +247,10 @@ const ReportingModule = ({
           }
         };
 
-        // Render text input for comments with helper text showing field type
         const renderFieldInput = field => {
           if (!field) return null;
 
-          const { required, sourceFieldId, helptext } = field;
+          const { required, sourceFieldId, format_type: formatType, label } = field;
 
           return (
             <TextField
@@ -276,7 +263,7 @@ const ReportingModule = ({
               rows={2}
               required={required}
               error={!!validationErrors[sourceFieldId]}
-              helperText={validationErrors[sourceFieldId] || helptext}
+              helperText={`Champ source : ${label} (${formatType})`}
               value={formData[sourceFieldId] || ''}
               onChange={e => handleFieldChange(sourceFieldId, e.target.value)}
             />
@@ -325,7 +312,6 @@ const ReportingModule = ({
                 )}
               </Box>
 
-              {/* Configuration selector when multiple configs available */}
               {reportConfigs.length > 1 && (
                 <Box sx={{ mb: 3 }}>
                   <FormControl fullWidth size="small">
@@ -345,7 +331,6 @@ const ReportingModule = ({
                 </Box>
               )}
 
-              {/* Display fields only if single config or config is selected */}
               {selectedConfig && (
                 <List
                   sx={{
@@ -359,14 +344,14 @@ const ReportingModule = ({
                       <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 1 }}>
                         {selectedConfig.label}
                       </Typography>
-                      <List sx={{ pl: 2 }}>
+                      <List sx={{ pl: 0 }}>
                         {selectedConfig.fields.map((field, fieldIndex) => (
                           <ListItem
                             key={field.sourceFieldId || fieldIndex}
                             disablePadding
                             sx={{ flexDirection: 'column', alignItems: 'stretch' }}
                           >
-                            <ListItemText primary={`${field.label}`} sx={{ my: 0.5 }} />
+                            <ListItemText primary={`${field.helptext}`} sx={{ my: 0.5 }} />
                             <Box sx={{ mt: 1, mb: 2 }}>{renderFieldInput(field)}</Box>
                           </ListItem>
                         ))}
@@ -376,7 +361,6 @@ const ReportingModule = ({
                 </List>
               )}
 
-              {/* Free text comment section */}
               <Box sx={{ mt: 3, mb: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 1 }}>
                   Commentaire libre
@@ -386,7 +370,6 @@ const ReportingModule = ({
                   size="small"
                   type="text"
                   variant="outlined"
-                  placeholder="Commentaire général (optionnel)"
                   helperText="Ajoutez ici tout commentaire supplémentaire"
                   multiline
                   rows={3}
@@ -396,7 +379,6 @@ const ReportingModule = ({
                 />
               </Box>
 
-              {/* Image upload section */}
               <Box sx={{ mt: 3, mb: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 1 }}>
                   Fichiers joints
@@ -428,7 +410,6 @@ const ReportingModule = ({
                   </Typography>
                 </Box>
 
-                {/* Image previews */}
                 {images.length > 0 && (
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                     {images.map(image => (
@@ -474,7 +455,6 @@ const ReportingModule = ({
                 )}
               </Box>
 
-              {/* Location picker section */}
               <Box sx={{ mt: 3, mb: 3 }}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 1 }}>
                   Localisation (optionnel)
@@ -499,7 +479,7 @@ const ReportingModule = ({
                 )}
                 <Button
                   variant="contained"
-                  color="primary"
+                  color={submitError ? 'error' : 'primary'}
                   sx={{ textTransform: 'none' }}
                   onClick={handleSubmit}
                   disabled={isSubmitting}

@@ -100,6 +100,10 @@ export class InteractiveMap extends React.Component {
         label: PropTypes.string,
       })),
     ]),
+    declarationMarker: PropTypes.shape({
+      lng: PropTypes.number.isRequired,
+      lat: PropTypes.number.isRequired,
+    }),
     interactions: PropTypes.arrayOf(PropTypes.shape({
       id: PropTypes.string.isRequired,
       trigger: PropTypes.oneOf(['click', 'mouseover']),
@@ -153,6 +157,8 @@ export class InteractiveMap extends React.Component {
   interactionsEnable = true
 
   popups = new Map();
+
+  declarationMarker = null;
 
   hideTooltip = debounce(({ layerId }) => {
     if (!this.popups.has(layerId)) {
@@ -221,8 +227,9 @@ export class InteractiveMap extends React.Component {
     legends: prevLegends,
     controls: prevControls,
     backgroundStyle: prevBackgroundStyle,
+    declarationMarker: prevDeclarationMarker,
   }) {
-    const { interactions, legends, controls, backgroundStyle } = this.props;
+    const { interactions, legends, controls, backgroundStyle, declarationMarker } = this.props;
 
     if (interactions !== prevInteractions) {
       this.setInteractions(prevInteractions);
@@ -236,10 +243,17 @@ export class InteractiveMap extends React.Component {
         backgroundStyle !== prevBackgroundStyle) {
       this.insertBackgroundStyleControl();
     }
+
+    if (JSON.stringify(declarationMarker) !== JSON.stringify(prevDeclarationMarker)) {
+      this.updateDeclarationMarker();
+    }
   }
 
   componentWillUnmount () {
     document.body.removeEventListener('mousemove', this.mouseMoveListener);
+    if (this.declarationMarker) {
+      this.declarationMarker.remove();
+    }
   }
 
   onMapInit = map => {
@@ -262,6 +276,7 @@ export class InteractiveMap extends React.Component {
     const { onMapLoaded = () => {} } = this.props;
     this.map = map;
     this.setInteractions();
+    this.updateDeclarationMarker();
     onMapLoaded(map);
   };
 
@@ -511,6 +526,8 @@ export class InteractiveMap extends React.Component {
 
   highlight () {
     const { map } = this;
+    const { declarationMarker } = this.props;
+    const shouldHideHighlight = declarationMarker && declarationMarker.lng && declarationMarker.lat;
 
     this.highlightedLayers.forEach((
       { layersState: { ids, highlightColor = '' }, source, propertyId },
@@ -521,6 +538,19 @@ export class InteractiveMap extends React.Component {
 
       const { sourceLayer, type } = layer;
 
+      if (shouldHideHighlight) {
+        const emptyStyles = this.getEmptyHighlightStyles(type);
+        Object.keys(emptyStyles).forEach(highlightType => {
+          const highlightTypeId = getHighlightLayerId(layerId, highlightType);
+          if (map.getLayer(highlightTypeId)) {
+            Object.keys(emptyStyles[highlightType]).forEach(paintProperty => {
+              map.setPaintProperty(highlightTypeId, paintProperty, emptyStyles[highlightType][paintProperty]);
+            });
+          }
+        });
+        return;
+      }
+
       const targetType = () => {
         if (!['line', 'fill', 'circle'].includes(type)) {
           // eslint-disable-next-line no-console
@@ -529,12 +559,12 @@ export class InteractiveMap extends React.Component {
         }
 
         const targetLayerColor = map.getPaintProperty(layerId, `${type}-color`);
-
         const layerColor = highlightColor || targetLayerColor;
 
         const line = {
           'line-color': layerColor,
           'line-width': 2,
+          'line-opacity': 1,
         };
 
         const fill = {
@@ -574,10 +604,60 @@ export class InteractiveMap extends React.Component {
             highlightLayer['source-layer'] = sourceLayer;
           }
           map.addLayer(highlightLayer);
+        } else {
+          Object.keys(targetType()[highlightType]).forEach(paintProperty => {
+            map.setPaintProperty(highlightTypeId, paintProperty, targetType()[highlightType][paintProperty]);
+          });
         }
         map.setFilter(highlightTypeId, ['in', propertyId, ...ids]);
       });
     });
+  }
+
+  getEmptyHighlightStyles = (layerType) => {
+    const emptyLine = {
+      'line-opacity': 0,
+      'line-width': 0,
+    };
+
+    const emptyFill = {
+      'fill-opacity': 0,
+    };
+
+    const emptyCircle = {
+      'circle-opacity': 0,
+      'circle-stroke-width': 0,
+    };
+
+    if (layerType === 'line') {
+      return { line: emptyLine };
+    }
+
+    if (layerType === 'circle') {
+      return { circle: emptyCircle };
+    }
+
+    return { line: emptyLine, fill: emptyFill };
+  }
+
+  updateDeclarationMarker = () => {
+    const { declarationMarker } = this.props;
+    const { map } = this;
+
+    if (!map) return;
+
+    if (this.declarationMarker) {
+      this.declarationMarker.remove();
+      this.declarationMarker = null;
+    }
+
+    if (declarationMarker && declarationMarker.lng && declarationMarker.lat) {
+      this.declarationMarker = new mapBoxGl.Marker()
+        .setLngLat([declarationMarker.lng, declarationMarker.lat])
+        .addTo(map);
+    }
+
+    this.highlight();
   }
 
   async triggerInteraction ({ map, event, feature = {}, layerId, interaction, eventType }) {

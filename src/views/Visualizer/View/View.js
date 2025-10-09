@@ -21,9 +21,18 @@ import {
   CONTROLS_TOP_RIGHT,
   CONTROLS_TOP_LEFT,
 } from '@terralego/core/modules/Map';
-import { toggleLayerVisibility, setLayerOpacity } from '@terralego/core/modules/Map/services/mapUtils';
+import {
+  toggleLayerVisibility,
+  setLayerOpacity,
+} from '@terralego/core/modules/Map/services/mapUtils';
 import { LayersTreeProvider, LayersTree } from '@terralego/core/modules/Visualizer/LayersTree';
-import { Details, MapNavigation, Story, TooManyResults, PrivateLayers } from '@terralego/core/modules/Visualizer';
+import {
+  Details,
+  MapNavigation,
+  Story,
+  TooManyResults,
+  PrivateLayers,
+} from '@terralego/core/modules/Visualizer';
 import LayersTreeProps from '@terralego/core/modules/Visualizer/types/Layer';
 import searchService, {
   getExtent,
@@ -62,63 +71,67 @@ const LayersTreeGroupProps = PropTypes.shape({
   private: PropTypes.bool,
 });
 
-const getControls = memoize((
-  displaySearch,
-  displayBackgroundStyles,
-  disableSearch,
-  isMobileSized,
-  onToggle,
-  viewState,
-  measureControl,
-  measureDrawStyles,
-) => [
-  displaySearch && {
-    control: CONTROL_SEARCH,
-    position: CONTROLS_TOP_RIGHT,
-    disabled: disableSearch,
-  }, {
-    control: CONTROL_HOME,
-    position: CONTROLS_TOP_RIGHT,
-  },
-  ...DEFAULT_CONTROLS,
-  displayBackgroundStyles && {
-    control: CONTROL_BACKGROUND_STYLES,
-    position: CONTROLS_TOP_RIGHT,
-  },
-  !isMobileSized && {
-    control: CONTROL_PRINT,
-    position: CONTROLS_TOP_RIGHT,
+const getControls = memoize(
+  (
+    displaySearch,
+    displayBackgroundStyles,
+    disableSearch,
+    isMobileSized,
     onToggle,
-  }, {
-    control: CONTROL_SHARE,
-    position: CONTROLS_TOP_RIGHT,
-    initialState: viewState,
-  },
-  measureControl && {
-    control: CONTROL_MEASURE,
-    position: CONTROLS_TOP_LEFT,
-    drawStyles: measureDrawStyles,
-  },
-].filter(Boolean));
+    viewState,
+    measureControl,
+    measureDrawStyles,
+  ) =>
+    [
+      displaySearch && {
+        control: CONTROL_SEARCH,
+        position: CONTROLS_TOP_RIGHT,
+        disabled: disableSearch,
+      },
+      {
+        control: CONTROL_HOME,
+        position: CONTROLS_TOP_RIGHT,
+      },
+      ...DEFAULT_CONTROLS,
+      displayBackgroundStyles && {
+        control: CONTROL_BACKGROUND_STYLES,
+        position: CONTROLS_TOP_RIGHT,
+      },
+      !isMobileSized && {
+        control: CONTROL_PRINT,
+        position: CONTROLS_TOP_RIGHT,
+        onToggle,
+      },
+      {
+        control: CONTROL_SHARE,
+        position: CONTROLS_TOP_RIGHT,
+        initialState: viewState,
+      },
+      measureControl && {
+        control: CONTROL_MEASURE,
+        position: CONTROLS_TOP_LEFT,
+        drawStyles: measureDrawStyles,
+      },
+    ].filter(Boolean),
+);
 
 const nullObj = {};
 
 export class Visualizer extends React.Component {
   static propTypes = {
     view: PropTypes.shape({
-      layersTree: PropTypes.arrayOf(PropTypes.oneOfType([
-        LayersTreeProps,
-        LayersTreeGroupProps,
-      ])),
-      interactions: PropTypes.arrayOf(PropTypes.shape({
-        interaction: PropTypes.oneOf([
-          INTERACTION_DISPLAY_DETAILS,
-          INTERACTION_DISPLAY_TOOLTIP,
-          INTERACTION_ZOOM,
-          INTERACTION_HIGHLIGHT,
-          INTERACTION_FN,
-        ]),
-      })),
+      layersTree: PropTypes.arrayOf(PropTypes.oneOfType([LayersTreeProps, LayersTreeGroupProps])),
+      interactions: PropTypes.arrayOf(
+        PropTypes.shape({
+          interaction: PropTypes.oneOf([
+            INTERACTION_DISPLAY_DETAILS,
+            INTERACTION_DISPLAY_TOOLTIP,
+            INTERACTION_ZOOM,
+            INTERACTION_HIGHLIGHT,
+            INTERACTION_FN,
+          ]),
+        }),
+      ),
       map: PropTypes.object,
       state: PropTypes.shape({
         query: PropTypes.string,
@@ -142,20 +155,20 @@ export class Visualizer extends React.Component {
       interactions: [],
       map: {},
     },
-    setMap () { },
-    initLayersState () { },
+    setMap() {},
+    initLayersState() {},
     initialState: {},
     isMobileSized: false,
     enableDetailCarrousel: true,
     layersTreeState: new Map(),
-    setLayersTreeState () {},
+    setLayersTreeState() {},
     settings: {},
   };
 
   state = {
     isLayersTreeVisible: true,
     isReportingModuleVisible: false,
-    isDeclarationModuleVisible: true,
+    isDeclarationModuleVisible: false,
     waitingForMapClick: false,
     declarationLocation: null,
     selectedLayerForReporting: null,
@@ -170,8 +183,10 @@ export class Visualizer extends React.Component {
 
   debouncedSearchQuery = debounce(query => this.search(query), 500);
 
-  componentDidMount () {
-    const { initialState: { tree } } = this.props;
+  componentDidMount() {
+    const {
+      initialState: { tree },
+    } = this.props;
 
     // to load extent from ES at mount
     this.debouncedSearchQuery();
@@ -182,14 +197,15 @@ export class Visualizer extends React.Component {
     this.setInteractions();
   }
 
-  componentDidUpdate ({
-    view: {
-      interactions: prevInteractions,
+  componentDidUpdate(
+    {
+      view: { interactions: prevInteractions },
+      layersTreeState: prevLayersTreeState,
+      query: prevQuery,
+      map: prevMap,
     },
-    layersTreeState: prevLayersTreeState,
-    query: prevQuery,
-    map: prevMap,
-  }, { features: prevFeatures }) {
+    { features: prevFeatures },
+  ) {
     const {
       view: { interactions },
       map,
@@ -197,14 +213,15 @@ export class Visualizer extends React.Component {
       query,
     } = this.props;
     const { features } = this.state;
-    if (prevLayersTreeState !== layersTreeState
-      || map !== prevMap) {
+    if (prevLayersTreeState !== layersTreeState || map !== prevMap) {
       this.updateLayersTree();
     }
 
-    if (query !== prevQuery
-      || layersTreeStatesHaveChanged(prevLayersTreeState, layersTreeState, ['active', 'filters'])
-      || map !== prevMap) {
+    if (
+      query !== prevQuery ||
+      layersTreeStatesHaveChanged(prevLayersTreeState, layersTreeState, ['active', 'filters']) ||
+      map !== prevMap
+    ) {
       if (this.isSearching) {
         this.debouncedSearchQuery();
       } else if (map) {
@@ -225,8 +242,7 @@ export class Visualizer extends React.Component {
       map.fire('refreshCluster');
     }
 
-    if (features !== prevFeatures
-      && this.isSearching) {
+    if (features !== prevFeatures && this.isSearching) {
       filterFeatures(map, features, layersTreeState);
     }
 
@@ -235,14 +251,12 @@ export class Visualizer extends React.Component {
     }
   }
 
-  get legends () {
+  get legends() {
     const { layersTreeState, view } = this.props;
     const { legends } = this.state;
 
-    const customStyleLayers = (view
-      && view.map
-      && view.map.customStyle
-      && view.map.customStyle.layers) || [];
+    const customStyleLayers =
+      (view && view.map && view.map.customStyle && view.map.customStyle.layers) || [];
 
     const legendsFromLayersTree = Array.from(layersTreeState.entries())
       .map(([layer, state]) => {
@@ -253,19 +267,19 @@ export class Visualizer extends React.Component {
           return selectedSublayer && selectedSublayer.legends;
         }
         const styleLayer = customStyleLayers.find(e => layer.layers.includes(e.id));
-        const styleLegends = (
-          styleLayer
-          && styleLayer.advanced_style
-          && styleLayer.advanced_style.legends
-        ) || [];
+        const styleLegends =
+          (styleLayer && styleLayer.advanced_style && styleLayer.advanced_style.legends) || [];
 
         return [...layer.legends, ...(styleLegends || [])];
       })
       .filter(defined => defined)
-      .reduce((accum, legendsCluster) => [
-        ...accum,
-        ...legendsCluster.reduce((acc, legend) => [...acc, { ...legend }], []),
-      ], []);
+      .reduce(
+        (accum, legendsCluster) => [
+          ...accum,
+          ...legendsCluster.reduce((acc, legend) => [...acc, { ...legend }], []),
+        ],
+        [],
+      );
 
     const allLegends = [...(legends || []), ...(legendsFromLayersTree || [])];
 
@@ -277,7 +291,7 @@ export class Visualizer extends React.Component {
       // Add style-image-file for each legend item having a style-image
       allLegends.forEach(({ items = [] }) => {
         items
-          .filter(legendItem => (legendItem['style-image'] && !legendItem['style-image-file']))
+          .filter(legendItem => legendItem['style-image'] && !legendItem['style-image-file'])
           .forEach(legendItem => {
             const iconFile = iconsList[legendItem['style-image']];
 
@@ -293,34 +307,40 @@ export class Visualizer extends React.Component {
     return allLegends;
   }
 
-  get isSearching () {
+  get isSearching() {
     const { query, layersTreeState } = this.props;
-    return query
-      || filterLayersStatesFromLayersState(layersTreeState)
-        .some(([{ filters: { layer } = {} }, { filters }]) =>
-          layer
-          && filters
-          && Object
-            .values(filters)
-            .some(a => a));
+    return (
+      query ||
+      filterLayersStatesFromLayersState(layersTreeState).some(
+        ([{ filters: { layer } = {} }, { filters }]) =>
+          layer && filters && Object.values(filters).some(a => a),
+      )
+    );
   }
 
-  get activeAndSearchableLayers () {
+  get activeAndSearchableLayers() {
     const { layersTreeState } = this.props;
-    return filterLayersStatesFromLayersState(layersTreeState, ({ active }) => !!active)
-      .filter(([{ filters: { layer, mainField } = {} }]) => layer && mainField);
+    return filterLayersStatesFromLayersState(layersTreeState, ({ active }) => !!active).filter(
+      ([{ filters: { layer, mainField } = {} }]) => layer && mainField,
+    );
   }
 
-  setInteractions () {
-    const { view: { interactions = [] } } = this.props;
+  setInteractions() {
+    const {
+      view: { interactions = [] },
+    } = this.props;
     const newInteractions = interactions.map(interaction => {
       if (interaction.interaction === INTERACTION_DISPLAY_DETAILS) {
         return {
           ...interaction,
           interaction: INTERACTION_FN,
           fn: ({
-            feature, clusteredFeatures, event, instance,
-            instance: { displayTooltip }, layerId,
+            feature,
+            clusteredFeatures,
+            event,
+            instance,
+            instance: { displayTooltip },
+            layerId,
           }) => {
             const { waitingForMapClick } = this.state;
             if (waitingForMapClick) {
@@ -357,33 +377,33 @@ export class Visualizer extends React.Component {
 
   setLayerExtent = bounds => {
     this.setState({ bounds });
-  }
+  };
 
   interactiveMapInit = interactiveMapInstance => {
     this.setState({
       // eslint-disable-next-line react/no-unused-state
       interactiveMapInstance,
     });
-  }
+  };
 
   setLegends = legends => this.setState({ legends });
 
   refreshLayers = () => {
     delete this.prevLayersTreeState;
     this.updateLayersTree();
-  }
+  };
 
   onMapUpdate = () => {
     // Add a class to the body for easier automatic tools detection
     document.body.classList.add('tiles-isloaded');
     this.refreshLayers();
-  }
+  };
 
   onStyleChange = () => {
     // Update class to the body for easier automatic tools detection
     document.body.classList.replace('tiles-isloaded', 'tiles-styleupdated');
     this.refreshLayers();
-  }
+  };
 
   resetMap = map => {
     const { initLayersState, setMap } = this.props;
@@ -413,43 +433,43 @@ export class Visualizer extends React.Component {
     map.on('load', () => this.updateLayersTree());
     map.on('styleimagemissing', ({ id }) => {
       const { view: { styleImages = [] } = {} } = this.props;
-      const foundImage = styleImages.find(({ slug }) => (slug === id));
+      const foundImage = styleImages.find(({ slug }) => slug === id);
 
       if (foundImage) {
-        map.loadImage(
-          foundImage.file,
-          (error, imageData) => {
-            if (error) {
-              console.error('Unable to loadImage'); // eslint-disable-line no-console
-            } else {
-              try {
-                map.addImage(id, imageData);
-              } catch (e) {
-                console.error(e); // eslint-disable-line no-console
-              }
+        map.loadImage(foundImage.file, (error, imageData) => {
+          if (error) {
+            console.error('Unable to loadImage'); // eslint-disable-line no-console
+          } else {
+            try {
+              map.addImage(id, imageData);
+            } catch (e) {
+              console.error(e); // eslint-disable-line no-console
             }
-          },
-        );
+          }
+        });
       }
     });
     initLayersState();
     map.resize();
-  }
+  };
 
   hideDetails = () => {
-    const { details: { hide = () => { } } = {} } = this.state;
+    const { details: { hide = () => {} } = {} } = this.state;
     hide();
     this.setState({ details: undefined });
-  }
+  };
 
   toggleLayersTree = () => {
     const { setCurrentState } = this.props;
-    this.setState(({ isLayersTreeVisible }) => ({
-      isLayersTreeVisible: !isLayersTreeVisible,
-    }), () => {
-      const { isLayersTreeVisible } = this.state;
-      return setCurrentState({ tree: isLayersTreeVisible && undefined });
-    });
+    this.setState(
+      ({ isLayersTreeVisible }) => ({
+        isLayersTreeVisible: !isLayersTreeVisible,
+      }),
+      () => {
+        const { isLayersTreeVisible } = this.state;
+        return setCurrentState({ tree: isLayersTreeVisible && undefined });
+      },
+    );
   };
 
   toggleReportingModule = () => {
@@ -485,13 +505,15 @@ export class Visualizer extends React.Component {
 
   onReportFeature = featureData => {
     const { details: { layer: detailLayer, feature, interaction } = {} } = this.state;
-    const { view: { layersTree } } = this.props;
+    const {
+      view: { layersTree },
+    } = this.props;
 
     const featureId = featureData && featureData._id;
 
     const featureGeometry = feature?.geometry || null;
     const fetchProperties = {
-      ...interaction?.fetchProperties || {},
+      ...(interaction?.fetchProperties || {}),
       properties: featureData,
     };
 
@@ -533,20 +555,23 @@ export class Visualizer extends React.Component {
 
     if (!map) return;
 
-    const getFilteredProperties = (properties, form) => (
+    const getFilteredProperties = (properties, form) =>
       Object.assign(
         {},
         ...Object.keys(properties)
           .filter(propertyName => form.some(({ property }) => property === propertyName))
           .map(propertyName => getSearchParamFromProperty(properties, form, propertyName)),
-      )
-    );
+      );
 
     const filters = filterLayersStatesFromLayersState(layersTreeState)
-      .filter(([{ filters: { layer } = {} }, { filters: layerFilters }]) =>
-        layer && (query || layerFilters))
+      .filter(
+        ([{ filters: { layer } = {} }, { filters: layerFilters }]) =>
+          layer && (query || layerFilters),
+      )
       .map(([layer, { filters: properties = {} }]) => {
-        const { filters: { form, layer: index } } = layer;
+        const {
+          filters: { form, layer: index },
+        } = layer;
         return {
           layer,
           properties: getFilteredProperties(properties, form),
@@ -556,33 +581,54 @@ export class Visualizer extends React.Component {
 
     if (this.activeAndSearchableLayers.length > 0) {
       const availableFeatures = await searchService.msearch(
-        this.activeAndSearchableLayers.map(([{ filters: { layer }, baseEsQuery }]) => ({
-          query,
-          properties: (filters.find(({ index }) => index === layer) || {}).properties || {},
-          index: layer,
-          baseQuery: baseEsQuery,
-          size: 1,
-          aggregations: [{ type: 'geo_bounds', field: 'geom', name: 'viewport', options: { wrap_longitude: true } }],
-        })),
+        this.activeAndSearchableLayers.map(
+          ([
+            {
+              filters: { layer },
+              baseEsQuery,
+            },
+          ]) => ({
+            query,
+            properties: (filters.find(({ index }) => index === layer) || {}).properties || {},
+            index: layer,
+            baseQuery: baseEsQuery,
+            size: 1,
+            aggregations: [
+              {
+                type: 'geo_bounds',
+                field: 'geom',
+                name: 'viewport',
+                options: { wrap_longitude: true },
+              },
+            ],
+          }),
+        ),
       );
 
       const { responses } = availableFeatures;
-      const results = responses.map(({
-        hits: { hits },
-        aggregations: {
-          viewport: {
-            bounds: { top_left: topLeft, bottom_right: bottomRight } = {},
-          } = {},
-        },
-      }) => {
-        if (hits.length === 0) {
-          return {};
-        }
-        const { _index: layerIndex } = hits.find(({ _index: index }) => index);
-        const [{ label }] = this.activeAndSearchableLayers.find(([{ filters: { layer } }]) =>
-          layer === layerIndex);
-        return { [label]: [topLeft.lon, topLeft.lat, bottomRight.lon, bottomRight.lat] };
-      }).reduce((acc, curr) => ({ ...acc, ...curr }), {});
+      const results = responses
+        .map(
+          ({
+            hits: { hits },
+            aggregations: {
+              viewport: { bounds: { top_left: topLeft, bottom_right: bottomRight } = {} } = {},
+            },
+          }) => {
+            if (hits.length === 0) {
+              return {};
+            }
+            const { _index: layerIndex } = hits.find(({ _index: index }) => index);
+            const [{ label }] = this.activeAndSearchableLayers.find(
+              ([
+                {
+                  filters: { layer },
+                },
+              ]) => layer === layerIndex,
+            );
+            return { [label]: [topLeft.lon, topLeft.lat, bottomRight.lon, bottomRight.lat] };
+          },
+        )
+        .reduce((acc, curr) => ({ ...acc, ...curr }), {});
       this.setLayerExtent(results);
     }
 
@@ -616,67 +662,68 @@ export class Visualizer extends React.Component {
     const idsResponses = responses.slice(0, filters.length);
     const countResponses = responses.slice(filters.length);
 
-    const features = idsResponses
-      .reduce((all, { hits: { hits = [] } = {} }, k) => {
-        if (!filters[k]) { return all; }
-
-        const featureIds = hits.map(({ _source: { _feature_id: id } }) => id);
-        const { layers, id } = filters[k].layer;
-        all[id] = { features: featureIds, layers };
-
+    const features = idsResponses.reduce((all, { hits: { hits = [] } = {} }, k) => {
+      if (!filters[k]) {
         return all;
-      }, {});
+      }
 
-    const totalFeatures = idsResponses.reduce((fullTotal,
-      { hits: { total: { value: total = 0 } = {} } = {} }) =>
-      fullTotal + total,
-    0);
+      const featureIds = hits.map(({ _source: { _feature_id: id } }) => id);
+      const { layers, id } = filters[k].layer;
+      all[id] = { features: featureIds, layers };
 
-    this.setLayersResult(filters.map(({ layer }, index) => {
-      const total = countResponses[index].hits
-        ? countResponses[index].hits.total.value
-        : null;
-      return { layer, state: { total } };
-    }));
+      return all;
+    }, {});
+
+    const totalFeatures = idsResponses.reduce(
+      (fullTotal, { hits: { total: { value: total = 0 } = {} } = {} }) => fullTotal + total,
+      0,
+    );
+
+    this.setLayersResult(
+      filters.map(({ layer }, index) => {
+        const total = countResponses[index].hits ? countResponses[index].hits.total.value : null;
+        return { layer, state: { total } };
+      }),
+    );
 
     this.setState({ features, totalFeatures });
-  }
+  };
 
   resetSearch = () => {
     const { layersTreeState } = this.props;
     this.setState({ features: {}, totalFeatures: 0 });
-    this.setLayersResult(Array.from(layersTreeState.keys()).map(layer => ({
-      layer,
-      state: {
-        total: null,
-      },
-    })));
-  }
+    this.setLayersResult(
+      Array.from(layersTreeState.keys()).map(layer => ({
+        layer,
+        state: {
+          total: null,
+        },
+      })),
+    );
+  };
 
   setLayersResult = layers => {
     const { layersTreeState } = this.props;
 
-    const newLayersTreeState = layers.reduce((prevLayersTreeState, { layer, state }) =>
-      setLayerStateAction(
-        layer,
-        state,
-        prevLayersTreeState,
-      ), layersTreeState);
+    const newLayersTreeState = layers.reduce(
+      (prevLayersTreeState, { layer, state }) =>
+        setLayerStateAction(layer, state, prevLayersTreeState),
+      layersTreeState,
+    );
 
     const { onViewStateUpdate, setLayersTreeState } = this.props;
-    onViewStateUpdate(({
+    onViewStateUpdate({
       layersTreeState: newLayersTreeState,
-    }));
+    });
     setLayersTreeState(newLayersTreeState);
-  }
+  };
 
   onClusterUpdate = ({ features, layerId }) => {
     const { features: filtered } = this.state;
     const { features: ids } = filtered[layerId] || {};
 
-    return features?.filter(({ properties: { _id: id } }) =>
-      (!ids || ids.includes(id)));
-  }
+    return features?.filter(({ properties: { _id: id } }) => !ids || ids.includes(id));
+  };
 
   onHighlightChangeFactory = (layerId, featureId, addHighlight, removeHighlight, color) => {
     const { details = {} } = this.state;
@@ -694,7 +741,7 @@ export class Visualizer extends React.Component {
   onPrintToggle = printIsOpened => {
     this.hideDetails();
     this.setState({ printIsOpened });
-  }
+  };
 
   searchResultClick = ({
     result,
@@ -709,7 +756,9 @@ export class Visualizer extends React.Component {
 
     map.once('moveend', () => {
       const { interactions } = this.state;
-      const interaction = interactions.find(({ id: iId, trigger = 'click' }) => layers.includes(iId) && trigger === 'click');
+      const interaction = interactions.find(
+        ({ id: iId, trigger = 'click' }) => layers.includes(iId) && trigger === 'click',
+      );
 
       if (!interaction) return;
 
@@ -759,12 +808,17 @@ export class Visualizer extends React.Component {
         details,
       } = state;
 
-      const { feature: { sourceLayer: detailsSourceLayer }, layer: detailLayer } = details;
+      const {
+        feature: { sourceLayer: detailsSourceLayer },
+        layer: detailLayer,
+      } = details;
 
-      const feature = map.queryRenderedFeatures().find(
-        ({ sourceLayer, properties: { _id: id } }) =>
-          (sourceLayer === detailsSourceLayer && id === featureId),
-      );
+      const feature = map
+        .queryRenderedFeatures()
+        .find(
+          ({ sourceLayer, properties: { _id: id } }) =>
+            sourceLayer === detailsSourceLayer && id === featureId,
+        );
 
       if (!feature) {
         const {
@@ -810,15 +864,19 @@ export class Visualizer extends React.Component {
         },
       };
     });
-  }
+  };
 
-  displayDetails (
-    feature, /* Clicked feature */
+  displayDetails(
+    feature /* Clicked feature */,
     interaction,
     { addHighlight, removeHighlight },
-    interactionLayerId, /* mapbox layer id matching current interaction */
+    interactionLayerId /* mapbox layer id matching current interaction */,
   ) {
-    const { layer: { id: layerId } = {}, properties: { _id: featureId }, source } = feature;
+    const {
+      layer: { id: layerId } = {},
+      properties: { _id: featureId },
+      source,
+    } = feature;
     const { details: { hide = () => {} } = {} } = this.state;
     const { highlight_color: highlightColor } = interaction;
 
@@ -856,7 +914,7 @@ export class Visualizer extends React.Component {
     });
   }
 
-  updateLayersTree () {
+  updateLayersTree() {
     const { map } = this.props;
     const { features } = this.state;
 
@@ -866,21 +924,10 @@ export class Visualizer extends React.Component {
     const { prevLayersTreeState = new Map() } = this;
     this.prevLayersTreeState = layersTreeState;
 
-    layersTreeState.forEach(({
-      active,
-      opacity,
-      sublayers: sublayersState,
-    }, layer) => {
-      const {
-        sublayers = [],
-        layers = [],
-        ignore = {},
-      } = layer;
+    layersTreeState.forEach(({ active, opacity, sublayers: sublayersState }, layer) => {
+      const { sublayers = [], layers = [], ignore = {} } = layer;
 
-      const {
-        active: prevActive,
-        opacity: prevOpacity,
-      } = prevLayersTreeState.get(layer) || {};
+      const { active: prevActive, opacity: prevOpacity } = prevLayersTreeState.get(layer) || {};
 
       if (sublayersState) {
         sublayers.forEach((sublayer, index) => {
@@ -907,10 +954,12 @@ export class Visualizer extends React.Component {
         if (active !== undefined && active !== prevActive) {
           toggleLayerVisibility(map, layerId, active ? 'visible' : 'none');
         }
-        if (opacity !== undefined
-          && opacity !== prevOpacity
+        if (
+          opacity !== undefined &&
+          opacity !== prevOpacity &&
           // Don't change cluster border
-          && !ignoreOpacity.includes(layerId)) {
+          !ignoreOpacity.includes(layerId)
+        ) {
           setLayerOpacity(map, layerId, opacity);
         }
       });
@@ -921,16 +970,11 @@ export class Visualizer extends React.Component {
     }
   }
 
-  render () {
+  render() {
     const {
       t,
       layersTreeState,
-      view: {
-        title,
-        map: mapProps,
-        layersTree,
-        type,
-      },
+      view: { title, map: mapProps, layersTree, type },
       map,
       mapIsResizing,
       setVisibleBoundingBox,
@@ -946,20 +990,11 @@ export class Visualizer extends React.Component {
       settings: {
         credits,
         frontendTools: {
-          measureControl: {
-            enable: measureControl,
-            styles: measureDrawStyles,
-          } = {},
+          measureControl: { enable: measureControl, styles: measureDrawStyles } = {},
           searchInLayers: layersEnable,
-          searchInLocations: {
-            enable: locationsEnable,
-            searchProvider,
-          } = {},
+          searchInLocations: { enable: locationsEnable, searchProvider } = {},
         } = {},
-        theme: {
-          logo,
-          brandLogo,
-        } = {},
+        theme: { logo, brandLogo } = {},
       },
       enableDetailCarrousel,
     } = this.props;
@@ -985,7 +1020,9 @@ export class Visualizer extends React.Component {
     const {
       onMapUpdate,
       onStyleChange,
-      resetMap, hideDetails, toggleLayersTree,
+      resetMap,
+      hideDetails,
+      toggleLayersTree,
       legends,
       setLegends,
       onClusterUpdate,
@@ -996,16 +1033,14 @@ export class Visualizer extends React.Component {
     const isDetailsVisible = !!details && !printIsOpened && !isDeclarationModuleVisible;
     const isReportingVisible = isReportingModuleVisible && !isDeclarationModuleVisible;
 
-    const currentFeatureList = Object.values(features).find(
-      ({ layers }) => layers.includes(detailLayer),
+    const currentFeatureList = Object.values(features).find(({ layers }) =>
+      layers.includes(detailLayer),
     );
-    const { features: featuresForDetail = [] } = isDetailsVisible
-      ? currentFeatureList || {}
-      : [];
+    const { features: featuresForDetail = [] } = isDetailsVisible ? currentFeatureList || {} : [];
 
-    const displaySearchInMap = Array
-      .from(layersTreeState.keys())
-      .some(({ filters: { mainField } = {} }) => mainField);
+    const displaySearchInMap = Array.from(layersTreeState.keys()).some(
+      ({ filters: { mainField } = {} }) => mainField,
+    );
 
     const controls = getControls(
       displaySearchInMap,
@@ -1034,7 +1069,8 @@ export class Visualizer extends React.Component {
     const isTableVisible = hasTable(layersTreeState);
     const isWidgetsVisible = hasWidget(layersTreeState);
 
-    const { terralego: { map: mapLocale } = nullObj } = getResourceBundle(language.split('-')[0]) || getResourceBundle(fallbackLng[0]) || nullObj;
+    const { terralego: { map: mapLocale } = nullObj } =
+      getResourceBundle(language.split('-')[0]) || getResourceBundle(fallbackLng[0]) || nullObj;
 
     const isStory = type === 'story';
 
@@ -1067,17 +1103,18 @@ export class Visualizer extends React.Component {
         isDetailsVisible={isDetailsVisible}
       >
         <PrivateLayers layersTree={layersTree} />
-        <div className={classnames({
-          visualizer: true,
-          'visualizer--with-layers-tree': displayLayersTree,
-          'visualizer--with-table': isTableVisible && !printIsOpened,
-          'visualizer--with-widgets': isWidgetsVisible,
-          'visualizer--with-details': isDetailsVisible || isReportingVisible,
-          'visualizer--with-declaration': isDeclarationModuleVisible,
-        })}
+        <div
+          className={classnames({
+            visualizer: true,
+            'visualizer--with-layers-tree': displayLayersTree,
+            'visualizer--with-table': isTableVisible && !printIsOpened,
+            'visualizer--with-widgets': isWidgetsVisible,
+            'visualizer--with-details': isDetailsVisible || isReportingVisible,
+            'visualizer--with-declaration': isDeclarationModuleVisible,
+          })}
         >
-          <div className={
-            classnames({
+          <div
+            className={classnames({
               'visualizer-view': true,
               'is-layers-tree-visible': displayLayersTree,
             })}
@@ -1090,18 +1127,16 @@ export class Visualizer extends React.Component {
                 renderHeader={renderHeader}
                 translate={t}
               >
-                {isStory
-                  ? (
-                    <Story
-                      map={map}
-                      story={layersTreeToStory(layersTree)}
-                      setLegends={setLegends}
-                      translate={t}
-                    />
-                  )
-                  : (
-                    <LayersTree translate={t} filterable />
-                  )}
+                {isStory ? (
+                  <Story
+                    map={map}
+                    story={layersTreeToStory(layersTree)}
+                    setLegends={setLegends}
+                    translate={t}
+                  />
+                ) : (
+                  <LayersTree translate={t} filterable />
+                )}
               </MapNavigation>
             )}
 
@@ -1115,10 +1150,7 @@ export class Visualizer extends React.Component {
                       'visualizer-view__map--is-resizing': mapIsResizing,
                     })}
                   >
-                    <TooManyResults
-                      count={totalFeatures}
-                      translate={t}
-                    />
+                    <TooManyResults count={totalFeatures} translate={t} />
 
                     <Details
                       visible={isDetailsVisible}
@@ -1170,15 +1202,14 @@ export class Visualizer extends React.Component {
             locale={mapLocale}
             controls={controls}
             hash="map"
+            declarationMarker={declarationLocation}
             onInit={this.interactiveMapInit}
           >
             <div className="interactive-map__header">
               <img src={logo} alt="TerraVisu" className="app-logo" />
               {brandLogo && <img src={brandLogo} alt="TerraVisu" className="brand-logo" />}
             </div>
-            <div className="interactive-map__footer">
-              {credits}
-            </div>
+            <div className="interactive-map__footer">{credits}</div>
           </InteractiveMap>
         </div>
       </LayersTreeProvider>
@@ -1186,4 +1217,7 @@ export class Visualizer extends React.Component {
   }
 }
 
-export default connectState('initialState', 'setCurrentState')(connectSettings('settings')(withDeviceSize()(withRouter(Visualizer))));
+export default connectState(
+  'initialState',
+  'setCurrentState',
+)(connectSettings('settings')(withDeviceSize()(withRouter(Visualizer))));
