@@ -38,7 +38,10 @@ const ReportingModule = ({
   const [validationErrors, setValidationErrors] = useState({});
   const reportConfigs = layer?.report_configs || [];
 
-  const selectedConfig = reportConfigs[selectedConfigIndex] || reportConfigs[0];
+  const isAuthenticated = React.useMemo(() => {
+    const token = global.localStorage.getItem('tf:auth:token');
+    return token && checkTokenValidity(token);
+  }, []);
 
   const featureBbox = React.useMemo(() => {
     if (!featureGeometry) {
@@ -60,15 +63,12 @@ const ReportingModule = ({
     }
   }, [featureGeometry]);
 
-  const isAuthenticated = React.useMemo(() => {
-    const token = global.localStorage.getItem('tf:auth:token');
-    return token && checkTokenValidity(token);
-  }, []);
-
-  if (!isAuthenticated) {
+  // Don't render if no report configs or not authenticated
+  if (!isAuthenticated || reportConfigs.length === 0) {
     return null;
   }
 
+  const selectedConfig = reportConfigs[selectedConfigIndex] || reportConfigs[0];
   const hasValidFetchProperties = fetchProperties?.id && fetchProperties?.url;
 
   if (!hasValidFetchProperties) {

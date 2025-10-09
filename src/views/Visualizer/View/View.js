@@ -1,66 +1,66 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withRouter } from 'react-router-dom';
 import { Classes } from '@blueprintjs/core';
-import { connectState } from '@terralego/core/modules/State/context';
 import withDeviceSize from '@terralego/core/hoc/withDeviceSize';
+import {
+  CONTROL_BACKGROUND_STYLES,
+  CONTROL_HOME,
+  CONTROL_MEASURE,
+  CONTROL_PRINT,
+  CONTROL_SEARCH,
+  CONTROL_SHARE,
+  CONTROLS_TOP_LEFT,
+  CONTROLS_TOP_RIGHT,
+  DEFAULT_CONTROLS,
+} from '@terralego/core/modules/Map';
 import InteractiveMap, {
   INTERACTION_DISPLAY_TOOLTIP,
-  INTERACTION_ZOOM,
-  INTERACTION_HIGHLIGHT,
   INTERACTION_FN,
+  INTERACTION_HIGHLIGHT,
+  INTERACTION_ZOOM,
 } from '@terralego/core/modules/Map/InteractiveMap';
 import {
-  DEFAULT_CONTROLS,
-  CONTROL_SEARCH,
-  CONTROL_BACKGROUND_STYLES,
-  CONTROL_PRINT,
-  CONTROL_HOME,
-  CONTROL_SHARE,
-  CONTROL_MEASURE,
-  CONTROLS_TOP_RIGHT,
-  CONTROLS_TOP_LEFT,
-} from '@terralego/core/modules/Map';
-import {
-  toggleLayerVisibility,
   setLayerOpacity,
+  toggleLayerVisibility,
 } from '@terralego/core/modules/Map/services/mapUtils';
-import { LayersTreeProvider, LayersTree } from '@terralego/core/modules/Visualizer/LayersTree';
+import { connectState } from '@terralego/core/modules/State/context';
 import {
   Details,
   MapNavigation,
+  PrivateLayers,
   Story,
   TooManyResults,
-  PrivateLayers,
 } from '@terralego/core/modules/Visualizer';
-import LayersTreeProps from '@terralego/core/modules/Visualizer/types/Layer';
+import { LayersTree, LayersTreeProvider } from '@terralego/core/modules/Visualizer/LayersTree';
+import {
+  fetchPropertyRange,
+  fetchPropertyValues,
+  filterFeatures,
+  filterLayersStatesFromLayersState,
+  hasTable,
+  hasWidget,
+  layersTreeStatesHaveChanged,
+  layersTreeToStory,
+  resetFilters,
+  setLayerStateAction,
+} from '@terralego/core/modules/Visualizer/services/layersTreeUtils';
 import searchService, {
   getExtent,
   getSearchParamFromProperty,
 } from '@terralego/core/modules/Visualizer/services/search';
-import {
-  filterFeatures,
-  resetFilters,
-  filterLayersStatesFromLayersState,
-  hasTable,
-  hasWidget,
-  setLayerStateAction,
-  layersTreeStatesHaveChanged,
-  fetchPropertyValues,
-  fetchPropertyRange,
-  layersTreeToStory,
-} from '@terralego/core/modules/Visualizer/services/layersTreeUtils';
+import LayersTreeProps from '@terralego/core/modules/Visualizer/types/Layer';
 import classnames from 'classnames';
 import debounce from 'debounce';
 import memoize from 'memoize-one';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { withRouter } from 'react-router-dom';
 import { connectSettings } from '../../Main/Provider/context';
 
+import BoundingBoxObserver from '../../../components/BoundingBoxObserver';
+import DeclarationWrapper from '../../../components/DeclarationModule/DeclarationWrapper';
+import ReportingModule from '../../../components/ReportingModule/ReportingModule';
 import DataTable from './DataTable';
 import Widgets from './Widgets';
 import { generateClusterList } from './interactions';
-import BoundingBoxObserver from '../../../components/BoundingBoxObserver';
-import ReportingModule from '../../../components/ReportingModule/ReportingModule';
-import DeclarationWrapper from '../../../components/DeclarationModule/DeclarationWrapper';
 import searchInMap from './search';
 
 export const INTERACTION_DISPLAY_DETAILS = 'displayDetails';
@@ -1030,13 +1030,53 @@ export class Visualizer extends React.Component {
       activeAndSearchableLayers,
     } = this;
 
+    const isStory = type === 'story';
+
+    const findLayerByMapboxId = (layers, mapboxLayerId) => {
+      const flattenLayers = layers.reduce((acc, item) => {
+        if (item.layers) {
+          return [...acc, ...item.layers];
+        }
+        return [...acc, item];
+      }, []);
+
+      return (
+        flattenLayers.find(layer => layer.layers && layer.layers.includes(mapboxLayerId)) || null
+      );
+    };
+
+    const findLayerById = (layers, targetId) => {
+      const flattenLayers = layers.reduce((acc, item) => {
+        if (item.layers) {
+          return [...acc, ...item.layers];
+        }
+        return [...acc, item];
+      }, []);
+
+      return flattenLayers.find(layer => layer.id === targetId) || null;
+    };
+
+    const selectedLayer = selectedLayerForReporting
+      ? findLayerById(layersTree, selectedLayerForReporting)
+      : null;
+
+    const currentDetailLayer = details?.layer;
+    const layerForReportConfig = currentDetailLayer
+      ? findLayerByMapboxId(layersTree, currentDetailLayer)
+      : selectedLayer;
+
+    const hasReportConfigs =
+      layerForReportConfig &&
+      layerForReportConfig.report_configs &&
+      layerForReportConfig.report_configs.length > 0;
+
     const displayLayersTree = isLayersTreeVisible && !printIsOpened;
     const isDetailsVisible = !!details && !printIsOpened && !isDeclarationModuleVisible;
-    const isReportingVisible = isReportingModuleVisible && !isDeclarationModuleVisible;
+    const isReportingVisible =
+      isReportingModuleVisible && !isDeclarationModuleVisible && hasReportConfigs;
 
     const currentFeatureList = Object.values(features).find(({ layers }) =>
-      layers.includes(detailLayer),
-    );
+      layers.includes(detailLayer));
     const { features: featuresForDetail = [] } = isDetailsVisible ? currentFeatureList || {} : [];
 
     const displaySearchInMap = Array.from(layersTreeState.keys()).some(
@@ -1072,24 +1112,6 @@ export class Visualizer extends React.Component {
 
     const { terralego: { map: mapLocale } = nullObj } =
       getResourceBundle(language.split('-')[0]) || getResourceBundle(fallbackLng[0]) || nullObj;
-
-    const isStory = type === 'story';
-
-    // Find the selected layer for reporting by ID
-    const findLayerById = (layers, targetId) => {
-      const flattenLayers = layers.reduce((acc, item) => {
-        if (item.layers) {
-          return [...acc, ...item.layers];
-        }
-        return [...acc, item];
-      }, []);
-
-      return flattenLayers.find(layer => layer.id === targetId) || null;
-    };
-
-    const selectedLayer = selectedLayerForReporting
-      ? findLayerById(layersTree, selectedLayerForReporting)
-      : null;
 
     return (
       <LayersTreeProvider
@@ -1163,6 +1185,7 @@ export class Visualizer extends React.Component {
                       enableCarousel={enableDetailCarrousel}
                       isTableActive={isTableVisible}
                       translate={t}
+                      hasReportConfigs={hasReportConfigs}
                     />
                     <ReportingModule
                       open={isReportingVisible}
