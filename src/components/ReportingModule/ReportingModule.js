@@ -460,10 +460,12 @@ const ReportingModule = ({
                   Localisation (optionnel)
                 </Typography>
                 <LocationPicker
+                  key={actualFeatureId || 'no-feature'}
                   value={location}
                   onChange={setLocation}
                   helperText="Sélectionnez la position géographique du signalement"
                   featureBbox={featureBbox}
+                  featureGeometry={featureGeometry}
                 />
               </Box>
 

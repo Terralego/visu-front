@@ -1,27 +1,32 @@
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, Button, Collapse, IconButton, Typography } from '@mui/material';
-import maplibregl from 'maplibre-gl';
-import 'maplibre-gl/dist/maplibre-gl.css';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import { Box, Button, Collapse, Dialog, IconButton, Typography } from '@mui/material';
 import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
-import { Map, Marker } from 'react-map-gl/maplibre';
+import LocationPickerMap from './LocationPickerMap';
 
-const LocationPicker = ({ value, onChange, helperText, featureBbox }) => {
+const LocationPicker = ({ value, onChange, helperText, featureBbox, featureGeometry }) => {
   const [mapOpen, setMapOpen] = useState(false);
+  const [fullscreenOpen, setFullscreenOpen] = useState(false);
 
-  // Calculate initial view state based on featureBbox or default values
   const getInitialViewState = React.useCallback(() => {
+    if (value) {
+      return {
+        longitude: value.lng,
+        latitude: value.lat,
+        zoom: 15,
+      };
+    }
+
     if (featureBbox) {
       const { minLng, minLat, maxLng, maxLat } = featureBbox;
       const centerLng = (minLng + maxLng) / 2;
       const centerLat = (minLat + maxLat) / 2;
 
-      // Calculate zoom level based on bbox size
       const lngDiff = maxLng - minLng;
       const latDiff = maxLat - minLat;
       const maxDiff = Math.max(lngDiff, latDiff);
 
-      // Simple zoom calculation (adjust as needed)
       let zoom = 10;
       if (maxDiff < 0.01) zoom = 15;
       else if (maxDiff < 0.1) zoom = 12;
@@ -36,20 +41,21 @@ const LocationPicker = ({ value, onChange, helperText, featureBbox }) => {
     }
 
     return {
-      longitude: value?.lng || 2.3488,
-      latitude: value?.lat || 48.8534,
+      longitude: 2.3488,
+      latitude: 48.8534,
       zoom: 10,
     };
   }, [featureBbox, value]);
 
   const [viewState, setViewState] = useState(getInitialViewState());
+  const [hasInitialized, setHasInitialized] = React.useState(false);
 
-  // Update view state when featureBbox changes
   React.useEffect(() => {
-    if (featureBbox && mapOpen) {
+    if (mapOpen && !hasInitialized) {
       setViewState(getInitialViewState());
+      setHasInitialized(true);
     }
-  }, [featureBbox, mapOpen, getInitialViewState]);
+  }, [mapOpen, hasInitialized, getInitialViewState]);
 
   const handleMapClick = useCallback(
     event => {
@@ -111,21 +117,107 @@ const LocationPicker = ({ value, onChange, helperText, featureBbox }) => {
               borderRadius: 1,
               overflow: 'hidden',
               mt: 1,
+              position: 'relative',
             }}
           >
-            <Map
-              {...viewState}
+            <LocationPickerMap
+              viewState={viewState}
               onMove={evt => setViewState(evt.viewState)}
               onClick={handleMapClick}
-              mapLib={maplibregl}
-              mapStyle="https://tiles.openfreemap.org/styles/liberty"
-              cursor="crosshair"
+              value={value}
+              featureGeometry={featureGeometry}
+            />
+
+            <IconButton
+              size="small"
+              onClick={() => setFullscreenOpen(true)}
+              title="Ouvrir en plein écran"
+              sx={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                zIndex: 1000,
+                color: 'primary.main',
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                backdropFilter: 'blur(8px)',
+                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.15)',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 1)',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+                },
+              }}
             >
-              {value && <Marker longitude={value.lng} latitude={value.lat} />}
-            </Map>
+              <FullscreenIcon sx={{ fontSize: 18 }} />
+            </IconButton>
           </Box>
         )}
       </Collapse>
+
+      <Dialog
+        open={fullscreenOpen}
+        onClose={() => setFullscreenOpen(false)}
+        maxWidth={false}
+        fullScreen
+        sx={{
+          '& .MuiDialog-paper': {
+            margin: 0,
+            maxHeight: '100%',
+            width: '100%',
+          },
+        }}
+      >
+        <Box sx={{ position: 'relative', height: '100vh', width: '100%' }}>
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 16,
+              right: 16,
+              zIndex: 1000,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 1,
+            }}
+          >
+            <Box
+              sx={{
+                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                backdropFilter: 'blur(8px)',
+                borderRadius: 1,
+                padding: 1,
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+              }}
+            >
+              <Typography variant="body2" color="text.secondary">
+                Position: {value ? formatCoordinates(value) : 'Non définie'}
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <IconButton
+                onClick={() => setFullscreenOpen(false)}
+                sx={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                  backdropFilter: 'blur(8px)',
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 1)',
+                  },
+                }}
+              >
+                <CloseIcon />
+              </IconButton>
+            </Box>
+          </Box>
+          <LocationPickerMap
+            viewState={viewState}
+            onMove={evt => setViewState(evt.viewState)}
+            onClick={handleMapClick}
+            value={value}
+            featureGeometry={featureGeometry}
+            style={{ width: '100%', height: '100%' }}
+          />
+        </Box>
+      </Dialog>
     </Box>
   );
 };
@@ -143,12 +235,17 @@ LocationPicker.propTypes = {
     maxLng: PropTypes.number.isRequired,
     maxLat: PropTypes.number.isRequired,
   }),
+  featureGeometry: PropTypes.shape({
+    type: PropTypes.string,
+    coordinates: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.array, PropTypes.number])),
+  }),
 };
 
 LocationPicker.defaultProps = {
   value: null,
   helperText: null,
   featureBbox: null,
+  featureGeometry: null,
 };
 
 export default LocationPicker;
