@@ -7,6 +7,8 @@ import ErrorBoundary from '../../../components/ErrorBoundary';
 import FeatureProperties from '../../Map/FeatureProperties';
 import Template from '../../Template';
 import { checkTokenValidity } from '../../../utils/jwt';
+import LoginButton from '../../../components/LoginButton';
+import SSOLoginFormRenderer from '../../Auth/components/LoginForm/SSOLoginFormRenderer';
 import ReportsIndicator from './ReportsIndicator';
 import ReportsCount from './ReportsCount';
 
@@ -22,7 +24,16 @@ const Details = ({
   isTableActive = false,
   translate = a => a,
   hasReportConfigs = false,
+  settings = {},
 }) => {
+  const {
+    ssoAuth: {
+      loginUrl,
+      ssoButtonText,
+      defaultButtonText,
+    } = {},
+    allowUserRegistration,
+  } = settings;
   const [index, setIndex] = useState(-1);
 
   const isAuthenticated = React.useMemo(() => {
@@ -78,6 +89,9 @@ const Details = ({
       sx={{
         width: 400,
         flexShrink: 0,
+        '& .login-button-details .bp3-icon': {
+          color: theme => `${theme.palette.primary.dark} !important`,
+        },
         '& .MuiDrawer-paper': {
           zIndex: 79,
           width: 400,
@@ -247,12 +261,27 @@ const Details = ({
                         Signaler une anomalie
                       </Button>
                       {!isAuthenticated && (
-                        <Box
-                          component="span"
-                          sx={{ mt: 1, display: 'block', textAlign: 'center', color: 'warning.main' }}
-                        >
-                          {translate('terralego.visualizer.reports.login_required')}
-                        </Box>
+                        <>
+                          <Box
+                            component="span"
+                            sx={{ mt: 1, display: 'block', textAlign: 'center', color: 'warning.main' }}
+                          >
+                            {translate('terralego.visualizer.reports.login_required')}
+                          </Box>
+                          <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+                            <LoginButton
+                              icon="log-in"
+                              label={translate('menu.login')}
+                              translate={translate}
+                              allowUserRegistration={allowUserRegistration}
+                              ssoLink={loginUrl}
+                              ssoButtonText={ssoButtonText}
+                              defaultButtonText={defaultButtonText}
+                              render={loginUrl ? SSOLoginFormRenderer : undefined}
+                              className="login-button-details"
+                            />
+                          </Box>
+                        </>
                       )}
                     </>
                   )}
@@ -292,6 +321,14 @@ Details.propTypes = {
   visible: PropTypes.bool,
   translate: PropTypes.func,
   hasReportConfigs: PropTypes.bool,
+  settings: PropTypes.shape({
+    ssoAuth: PropTypes.shape({
+      loginUrl: PropTypes.string,
+      ssoButtonText: PropTypes.string,
+      defaultButtonText: PropTypes.string,
+    }),
+    allowUserRegistration: PropTypes.bool,
+  }),
 };
 
 Details.defaultProps = {
@@ -306,6 +343,14 @@ Details.defaultProps = {
   visible: false,
   translate: a => a,
   hasReportConfigs: false,
+  settings: {
+    ssoAuth: {
+      loginUrl: undefined,
+      ssoButtonText: undefined,
+      defaultButtonText: undefined,
+    },
+    allowUserRegistration: false,
+  },
 };
 
 export default Details;

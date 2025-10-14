@@ -988,6 +988,7 @@ export class Visualizer extends React.Component {
         store: { options: { fallbackLng = [] } = nullObj } = nullObj,
       } = {},
       exportCallback,
+      settings,
       settings: {
         credits,
         frontendTools: {
@@ -1186,6 +1187,7 @@ export class Visualizer extends React.Component {
                       isTableActive={isTableVisible}
                       translate={t}
                       hasReportConfigs={hasReportConfigs}
+                      settings={settings}
                     />
                     <ReportingModule
                       open={isReportingVisible}
