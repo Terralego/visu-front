@@ -140,17 +140,6 @@ const DeclarationModule = ({
         }
       }
 
-      if (declarationConfig?.declaration_fields) {
-        declarationConfig.declaration_fields.forEach(field => {
-          const fieldKey = field.title.toLowerCase().replace(/\s+/g, '_');
-          const value = formData[fieldKey];
-
-          if (field.title.toLowerCase().includes('identifiant') && (!value || !value.trim())) {
-            errors[fieldKey] = 'Ce champ est obligatoire';
-          }
-        });
-      }
-
       if (Object.keys(errors).length > 0) {
         setValidationErrors(errors);
         setSubmitError('Veuillez corriger les erreurs du formulaire');
