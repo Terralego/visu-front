@@ -49,7 +49,6 @@ const ReportsIndicator = ({ feature, fetchProperties, translate = a => a }) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
-                cursor: 'pointer',
               }}
             >
               <AnnouncementIcon sx={{ color: 'white', fontSize: '1.2rem' }} />
