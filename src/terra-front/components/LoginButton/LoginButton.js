@@ -7,6 +7,7 @@ import {
   Overlay,
   Classes,
   Button,
+  Card,
 } from '@blueprintjs/core';
 import { LoginForm, SignupForm } from '../../modules/Auth';
 import translateMock from '../../utils/translate';
@@ -25,6 +26,7 @@ export const LoginButton = ({
   render = LoginFormRenderer,
   ssoLink,
   defaultButtonText,
+  loginMessage,
   ssoButtonText,
   ...props
 }) => {
@@ -69,6 +71,15 @@ export const LoginButton = ({
             'modal-signin__form',
           )}
         >
+          {loginMessage && loginMessage !== '' && (
+          <Card style={{ marginBottom: '1rem' }}>
+            { /* eslint-disable-next-line react/no-danger */ }
+            <div dangerouslySetInnerHTML={{
+              __html: loginMessage,
+            }}
+            />
+          </Card>
+          )}
           {isOpen && !authenticated
           && (
           <Tabs id="login">
@@ -137,6 +148,7 @@ LoginButton.propTypes = {
   logoutAction: PropTypes.func,
   translate: PropTypes.func,
   ssoLink: PropTypes.string,
+  loginMessage: PropTypes.string,
   defaultButtonText: PropTypes.string,
   ssoButtonText: PropTypes.string,
 };
@@ -148,6 +160,7 @@ LoginButton.defaultProps = {
   ssoLink: undefined,
   defaultButtonText: undefined,
   ssoButtonText: undefined,
+  loginMessage: undefined,
   logoutAction () {},
   translate: translateMock({
     'auth.loginform.title': 'Sign in',
