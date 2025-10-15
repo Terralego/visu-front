@@ -138,7 +138,7 @@ export class DataTable extends React.Component {
     this.setState({ selectedFeatures });
   }
 
-  exportDataAction = () => {
+  exportDataAction = (format = 'xlsx') => {
     const {
       displayedLayer: {
         label: name,
@@ -169,6 +169,7 @@ export class DataTable extends React.Component {
       name,
       data,
       callback: exportCallback,
+      format,
     });
   };
 
