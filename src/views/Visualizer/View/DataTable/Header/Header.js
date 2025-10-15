@@ -1,6 +1,6 @@
 import React from 'react';
 import classnames from 'classnames';
-import { Tag, Intent, Position, Popover, PopoverInteractionKind, Button, AnchorButton } from '@blueprintjs/core';
+import { Tag, Intent, Position, Popover, PopoverInteractionKind, Button, AnchorButton, Menu, MenuItem, ButtonGroup } from '@blueprintjs/core';
 import ColumnsSelector from '@terralego/core/modules/Table/components/ColumnsSelector';
 
 import Loading from '../../../../../components/Loading';
@@ -53,21 +53,49 @@ export const Header = ({
     </div>
     <div className="table-header__actions">
       {exportData && (
-        <Popover
-          content="Exporter"
-          interactionKind={PopoverInteractionKind.HOVER}
-        >
-          <Button
-            onClick={exportData}
-            icon="export"
-            minimal
-            intent={Intent.PRIMARY}
-            style={{
-              opacity: !resultsTotal || loading ? 0.5 : 1,
-            }}
-            disabled={!resultsTotal || loading}
-          />
-        </Popover>
+        <ButtonGroup minimal>
+          <Popover
+            content="Exporter en XLSX"
+            interactionKind={PopoverInteractionKind.HOVER}
+          >
+            <Button
+              onClick={() => exportData('xlsx')}
+              icon="export"
+              intent={Intent.PRIMARY}
+              style={{
+                opacity: !resultsTotal || loading ? 0.5 : 1,
+              }}
+              disabled={!resultsTotal || loading}
+            />
+          </Popover>
+          <Popover
+            content={(
+              <Menu>
+                <MenuItem
+                  icon="export"
+                  text="Exporter en XLSX"
+                  onClick={() => exportData('xlsx')}
+                />
+                <MenuItem
+                  icon="export"
+                  text="Exporter en CSV"
+                  onClick={() => exportData('csv')}
+                />
+              </Menu>
+            )}
+            position={Position.TOP_LEFT}
+            usePortal={false}
+          >
+            <Button
+              icon="caret-down"
+              intent={Intent.PRIMARY}
+              style={{
+                opacity: !resultsTotal || loading ? 0.5 : 1,
+              }}
+              disabled={!resultsTotal || loading}
+            />
+          </Popover>
+        </ButtonGroup>
       )}
       {compare && (
         <Popover
