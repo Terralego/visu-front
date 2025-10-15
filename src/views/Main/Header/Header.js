@@ -44,6 +44,7 @@ export const Header = ({
     extraMenuItems = [],
     allowUserRegistration,
     infoContent,
+    loginMessage,
   },
 }) => {
   const [menu, setMenu] = useState([]);
@@ -85,6 +86,7 @@ export const Header = ({
             ssoLink={authenticated ? logoutUrl : loginUrl}
             ssoButtonText={ssoButtonText}
             defaultButtonText={defaultButtonText}
+            loginMessage={loginMessage}
             render={loginUrl ? SSOLoginFormRenderer : undefined}
           />
         ),
@@ -102,6 +104,7 @@ export const Header = ({
     ssoButtonText,
     defaultButtonText,
     infoContent,
+    loginMessage,
   ]);
 
 
