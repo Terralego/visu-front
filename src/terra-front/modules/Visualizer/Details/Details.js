@@ -32,6 +32,7 @@ const Details = ({
       ssoButtonText,
       defaultButtonText,
     } = {},
+    loginMessage,
     allowUserRegistration,
   } = settings;
   const [index, setIndex] = useState(-1);
@@ -277,6 +278,7 @@ const Details = ({
                               ssoLink={loginUrl}
                               ssoButtonText={ssoButtonText}
                               defaultButtonText={defaultButtonText}
+                              loginMessage={loginMessage}
                               render={loginUrl ? SSOLoginFormRenderer : undefined}
                               className="login-button-details"
                             />
