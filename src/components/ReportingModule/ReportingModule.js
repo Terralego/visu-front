@@ -43,6 +43,16 @@ const ReportingModule = ({
     return token && checkTokenValidity(token);
   }, []);
 
+  const handleClose = () => {
+    setFormData({});
+    images.forEach(img => URL.revokeObjectURL(img.preview));
+    setImages([]);
+    setLocation(null);
+    setSubmitError(null);
+    setValidationErrors({});
+    onClose();
+  };
+
   const featureBbox = React.useMemo(() => {
     if (!featureGeometry) {
       return null;
@@ -141,9 +151,19 @@ const ReportingModule = ({
 
             return result;
           } catch (error) {
-            setSubmitError(
-              error.message || "Une erreur est survenue lors de l'envoi du signalement",
-            );
+            const errorData = error.data || {};
+            if (
+              errorData.content &&
+              Array.isArray(errorData.content) &&
+              errorData.content.length === 1 &&
+              errorData.content[0].includes('cannot be empty')
+            ) {
+              setSubmitError("Veuillez remplir au moins un champ avant d'envoyer le signalement");
+            } else {
+              setSubmitError(
+                error.message || "Une erreur est survenue lors de l'envoi du signalement",
+              );
+            }
             throw error;
           } finally {
             setIsSubmitting(false);
@@ -306,7 +326,7 @@ const ReportingModule = ({
                   Signalement
                 </Typography>
                 {onClose && (
-                  <IconButton onClick={onClose} size="small" sx={{ ml: 1 }}>
+                  <IconButton onClick={handleClose} size="small" sx={{ ml: 1 }}>
                     <CloseIcon />
                   </IconButton>
                 )}
@@ -351,7 +371,11 @@ const ReportingModule = ({
                             disablePadding
                             sx={{ flexDirection: 'column', alignItems: 'stretch' }}
                           >
-                            <ListItemText primary={`${field.helptext}`} sx={{ my: 0.5 }} />
+                            <ListItemText
+                              primary={`${field.helptext}`}
+                              secondary={field.required && 'Champ requis'}
+                              sx={{ my: 0.5 }}
+                            />
                             <Box sx={{ mt: 1, mb: 2 }}>{renderFieldInput(field)}</Box>
                           </ListItem>
                         ))}
