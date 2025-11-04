@@ -375,6 +375,30 @@ export class Visualizer extends React.Component {
     this.setState({ interactions: newInteractions });
   }
 
+  findLayerByMapboxId = (layers, mapboxLayerId) => {
+    const flattenLayers = layers.reduce((acc, item) => {
+      if (item.layers) {
+        return [...acc, ...item.layers];
+      }
+      return [...acc, item];
+    }, []);
+
+    return (
+      flattenLayers.find(layer => layer.layers && layer.layers.includes(mapboxLayerId)) || null
+    );
+  };
+
+  findLayerById = (layers, targetId) => {
+    const flattenLayers = layers.reduce((acc, item) => {
+      if (item.layers) {
+        return [...acc, ...item.layers];
+      }
+      return [...acc, item];
+    }, []);
+
+    return flattenLayers.find(layer => layer.id === targetId) || null;
+  };
+
   setLayerExtent = bounds => {
     this.setState({ bounds });
   };
@@ -518,20 +542,7 @@ export class Visualizer extends React.Component {
       properties: featureData,
     };
 
-    const findLayersTreeLayerByMapboxLayer = (tree, mapboxLayerId) => {
-      const flattenLayers = tree.reduce((acc, item) => {
-        if (item.layers) {
-          return [...acc, ...item.layers];
-        }
-        return [...acc, item];
-      }, []);
-
-      return (
-        flattenLayers.find(layer => layer.layers && layer.layers.includes(mapboxLayerId)) || null
-      );
-    };
-
-    const layersTreeLayer = findLayersTreeLayerByMapboxLayer(layersTree, detailLayer);
+    const layersTreeLayer = this.findLayerByMapboxId(layersTree, detailLayer);
 
     this.hideDetails();
 
@@ -880,6 +891,9 @@ export class Visualizer extends React.Component {
     } = feature;
     const { details: { hide = () => {} } = {} } = this.state;
     const { highlight_color: highlightColor } = interaction;
+    const {
+      view: { layersTree },
+    } = this.props;
 
     hide();
 
@@ -904,12 +918,15 @@ export class Visualizer extends React.Component {
         highlightColor,
       );
     }
+    const currentLayer = this.findLayerByMapboxId(layersTree, interactionLayerId);
+    const layerTreeId = currentLayer?.id;
 
     this.setState({
       details: {
         layer: interactionLayerId,
         feature,
         interaction,
+        layerTreeId,
         hide: () => layerId && removeHighlight({ layerId, featureId }),
       },
     });
@@ -1033,37 +1050,13 @@ export class Visualizer extends React.Component {
 
     const isStory = type === 'story';
 
-    const findLayerByMapboxId = (layers, mapboxLayerId) => {
-      const flattenLayers = layers.reduce((acc, item) => {
-        if (item.layers) {
-          return [...acc, ...item.layers];
-        }
-        return [...acc, item];
-      }, []);
-
-      return (
-        flattenLayers.find(layer => layer.layers && layer.layers.includes(mapboxLayerId)) || null
-      );
-    };
-
-    const findLayerById = (layers, targetId) => {
-      const flattenLayers = layers.reduce((acc, item) => {
-        if (item.layers) {
-          return [...acc, ...item.layers];
-        }
-        return [...acc, item];
-      }, []);
-
-      return flattenLayers.find(layer => layer.id === targetId) || null;
-    };
-
     const selectedLayer = selectedLayerForReporting
-      ? findLayerById(layersTree, selectedLayerForReporting)
+      ? this.findLayerById(layersTree, selectedLayerForReporting)
       : null;
 
     const currentDetailLayer = details?.layer;
     const layerForReportConfig = currentDetailLayer
-      ? findLayerByMapboxId(layersTree, currentDetailLayer)
+      ? this.findLayerByMapboxId(layersTree, currentDetailLayer)
       : selectedLayer;
 
     const hasReportConfigs =
@@ -1077,7 +1070,8 @@ export class Visualizer extends React.Component {
       isReportingModuleVisible && !isDeclarationModuleVisible && hasReportConfigs;
 
     const currentFeatureList = Object.values(features).find(({ layers }) =>
-      layers.includes(detailLayer));
+      layers.includes(detailLayer),
+    );
     const { features: featuresForDetail = [] } = isDetailsVisible ? currentFeatureList || {} : [];
 
     const displaySearchInMap = Array.from(layersTreeState.keys()).some(
