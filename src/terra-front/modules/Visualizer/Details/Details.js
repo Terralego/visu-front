@@ -25,13 +25,10 @@ const Details = ({
   translate = a => a,
   hasReportConfigs = false,
   settings = {},
+  layerTreeId,
 }) => {
   const {
-    ssoAuth: {
-      loginUrl,
-      ssoButtonText,
-      defaultButtonText,
-    } = {},
+    ssoAuth: { loginUrl, ssoButtonText, defaultButtonText } = {},
     loginMessage,
     allowUserRegistration,
   } = settings;
@@ -111,6 +108,7 @@ const Details = ({
         <ReportsIndicator
           feature={featureToDisplay}
           fetchProperties={fetchProperties}
+          layerId={layerTreeId}
           translate={translate}
         />
       )}
@@ -290,6 +288,7 @@ const Details = ({
                   <ReportsCount
                     feature={featureToDisplay}
                     fetchProperties={fetchProperties}
+                    layerId={layerTreeId}
                     translate={translate}
                   />
                 </Box>
@@ -313,6 +312,7 @@ Details.propTypes = {
   interaction: PropTypes.shape({
     template: PropTypes.string,
     fetchProperties: PropTypes.shape(),
+    layer: PropTypes.string,
   }),
   features: PropTypes.arrayOf(propFeature),
   onChange: PropTypes.func,
@@ -323,6 +323,7 @@ Details.propTypes = {
   visible: PropTypes.bool,
   translate: PropTypes.func,
   hasReportConfigs: PropTypes.bool,
+  layerTreeId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   settings: PropTypes.shape({
     ssoAuth: PropTypes.shape({
       loginUrl: PropTypes.string,
@@ -345,6 +346,7 @@ Details.defaultProps = {
   visible: false,
   translate: a => a,
   hasReportConfigs: false,
+  layerTreeId: null,
   settings: {
     ssoAuth: {
       loginUrl: undefined,
