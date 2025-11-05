@@ -21,11 +21,14 @@ const ReportsCountContent = ({ featureId, layerId, translate }) => {
           querystring: {
             feature: featureId,
             layer: layerId,
+            status__in: 'NEW,PENDING',
+            ordering: '-created_at',
           },
         });
-        
+
         setCount(data.count || 0);
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('[ReportsCount] Error fetching reports count:', error);
         setCount(0);
       } finally {
@@ -80,8 +83,13 @@ const ReportsCount = ({ feature, fetchProperties, layerId, translate = a => a })
 );
 
 ReportsCount.propTypes = {
-  feature: PropTypes.shape(),
-  fetchProperties: PropTypes.shape(),
+  feature: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  }),
+  fetchProperties: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    url: PropTypes.string,
+  }),
   layerId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   translate: PropTypes.func,
 };

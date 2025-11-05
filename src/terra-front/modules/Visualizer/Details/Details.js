@@ -10,6 +10,7 @@ import { checkTokenValidity } from '../../../utils/jwt';
 import LoginButton from '../../../components/LoginButton';
 import SSOLoginFormRenderer from '../../Auth/components/LoginForm/SSOLoginFormRenderer';
 import ReportsIndicator from './ReportsIndicator';
+import ReportsList from './ReportsList';
 import ReportsCount from './ReportsCount';
 
 const Details = ({
@@ -263,7 +264,12 @@ const Details = ({
                         <>
                           <Box
                             component="span"
-                            sx={{ mt: 1, display: 'block', textAlign: 'center', color: 'warning.main' }}
+                            sx={{
+                              mt: 1,
+                              display: 'block',
+                              textAlign: 'center',
+                              color: 'warning.main',
+                            }}
                           >
                             {translate('terralego.visualizer.reports.login_required')}
                           </Box>
@@ -285,12 +291,21 @@ const Details = ({
                       )}
                     </>
                   )}
-                  <ReportsCount
-                    feature={featureToDisplay}
-                    fetchProperties={fetchProperties}
-                    layerId={layerTreeId}
-                    translate={translate}
-                  />
+                  {isAuthenticated ? (
+                    <ReportsList
+                      feature={featureToDisplay}
+                      fetchProperties={fetchProperties}
+                      layerId={layerTreeId}
+                      translate={translate}
+                    />
+                  ) : (
+                    <ReportsCount
+                      feature={featureToDisplay}
+                      fetchProperties={fetchProperties}
+                      layerId={layerTreeId}
+                      translate={translate}
+                    />
+                  )}
                 </Box>
               </Box>
             </Box>

@@ -22,11 +22,14 @@ const ReportsIndicatorContent = ({ featureId, layerId, translate }) => {
           querystring: {
             feature: featureId,
             layer: layerId,
+            status__in: 'NEW,PENDING',
+            ordering: '-created_at',
           },
         });
 
         setCount(data.count || 0);
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('[ReportsIndicator] Error fetching reports count:', error);
         setCount(0);
       } finally {

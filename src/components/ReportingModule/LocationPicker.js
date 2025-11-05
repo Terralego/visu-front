@@ -5,8 +5,15 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
 import LocationPickerMap from './LocationPickerMap';
 
-const LocationPicker = ({ value, onChange, helperText, featureBbox, featureGeometry }) => {
-  const [mapOpen, setMapOpen] = useState(false);
+const LocationPicker = ({
+  value,
+  onChange,
+  helperText,
+  featureBbox,
+  featureGeometry,
+  readOnly = false,
+}) => {
+  const [mapOpen, setMapOpen] = useState(readOnly);
   const [fullscreenOpen, setFullscreenOpen] = useState(false);
 
   const getInitialViewState = React.useCallback(() => {
@@ -57,15 +64,24 @@ const LocationPicker = ({ value, onChange, helperText, featureBbox, featureGeome
     }
   }, [mapOpen, hasInitialized, getInitialViewState]);
 
+  // Auto-open map when in read-only mode
+  React.useEffect(() => {
+    if (readOnly && !mapOpen) {
+      setMapOpen(true);
+    }
+  }, [readOnly, mapOpen]);
+
   const handleMapClick = useCallback(
     event => {
+      if (readOnly) return;
       const { lng, lat } = event.lngLat;
       onChange({ lng, lat });
     },
-    [onChange],
+    [onChange, readOnly],
   );
 
   const handleClearLocation = () => {
+    if (readOnly) return;
     onChange(null);
     setMapOpen(false);
   };
@@ -77,7 +93,7 @@ const LocationPicker = ({ value, onChange, helperText, featureBbox, featureGeome
 
   return (
     <Box sx={{ mb: 2 }}>
-      {!mapOpen && (
+      {!mapOpen && !readOnly && (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
           <Button
             variant="outlined"
@@ -95,13 +111,15 @@ const LocationPicker = ({ value, onChange, helperText, featureBbox, featureGeome
           <Typography variant="body2" color="text.secondary">
             Position: {value ? formatCoordinates(value) : 'Non définie'}
           </Typography>
-          <IconButton size="small" onClick={handleClearLocation} color="error">
-            <CloseIcon sx={{ fontSize: 16 }} />
-          </IconButton>
+          {!readOnly && (
+            <IconButton size="small" onClick={handleClearLocation} color="error">
+              <CloseIcon sx={{ fontSize: 16 }} />
+            </IconButton>
+          )}
         </Box>
       )}
 
-      {mapOpen && (
+      {mapOpen && !readOnly && (
         <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
           {helperText || 'Cliquez sur la carte pour sélectionner une position'}
         </Typography>
@@ -118,6 +136,7 @@ const LocationPicker = ({ value, onChange, helperText, featureBbox, featureGeome
               overflow: 'hidden',
               mt: 1,
               position: 'relative',
+              cursor: readOnly ? 'default' : 'crosshair',
             }}
           >
             <LocationPickerMap
@@ -126,6 +145,7 @@ const LocationPicker = ({ value, onChange, helperText, featureBbox, featureGeome
               onClick={handleMapClick}
               value={value}
               featureGeometry={featureGeometry}
+              readOnly={readOnly}
             />
 
             <IconButton
@@ -208,14 +228,23 @@ const LocationPicker = ({ value, onChange, helperText, featureBbox, featureGeome
               </IconButton>
             </Box>
           </Box>
-          <LocationPickerMap
-            viewState={viewState}
-            onMove={evt => setViewState(evt.viewState)}
-            onClick={handleMapClick}
-            value={value}
-            featureGeometry={featureGeometry}
-            style={{ width: '100%', height: '100%' }}
-          />
+          <Box
+            sx={{
+              width: '100%',
+              height: '100%',
+              cursor: readOnly ? 'default' : 'crosshair',
+            }}
+          >
+            <LocationPickerMap
+              viewState={viewState}
+              onMove={evt => setViewState(evt.viewState)}
+              onClick={handleMapClick}
+              value={value}
+              featureGeometry={featureGeometry}
+              style={{ width: '100%', height: '100%' }}
+              readOnly={readOnly}
+            />
+          </Box>
         </Box>
       </Dialog>
     </Box>
@@ -239,6 +268,7 @@ LocationPicker.propTypes = {
     type: PropTypes.string,
     coordinates: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.array, PropTypes.number])),
   }),
+  readOnly: PropTypes.bool,
 };
 
 LocationPicker.defaultProps = {
@@ -246,6 +276,7 @@ LocationPicker.defaultProps = {
   helperText: null,
   featureBbox: null,
   featureGeometry: null,
+  readOnly: false,
 };
 
 export default LocationPicker;
