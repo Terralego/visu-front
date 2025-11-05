@@ -175,6 +175,7 @@ export class Visualizer extends React.Component {
     selectedFeatureIdForReporting: null,
     selectedFeatureGeometryForReporting: null,
     selectedFetchPropertiesForReporting: {},
+    selectedMainFieldForReporting: null,
     legends: [],
     features: {},
     totalFeatures: 0,
@@ -552,6 +553,7 @@ export class Visualizer extends React.Component {
         selectedFeatureIdForReporting: featureId,
         selectedFeatureGeometryForReporting: featureGeometry,
         selectedFetchPropertiesForReporting: fetchProperties,
+        selectedMainFieldForReporting: layersTreeLayer.filters?.mainField || null,
         isReportingModuleVisible: true,
       });
     }
@@ -1029,6 +1031,7 @@ export class Visualizer extends React.Component {
       selectedFeatureIdForReporting,
       selectedFeatureGeometryForReporting,
       selectedFetchPropertiesForReporting,
+      selectedMainFieldForReporting,
       interactions,
       totalFeatures,
       features,
@@ -1190,6 +1193,7 @@ export class Visualizer extends React.Component {
                       featureId={selectedFeatureIdForReporting}
                       featureGeometry={selectedFeatureGeometryForReporting}
                       fetchProperties={selectedFetchPropertiesForReporting}
+                      mainField={selectedMainFieldForReporting}
                     />
                     <DeclarationWrapper
                       map={map}

@@ -4,22 +4,26 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { Map, Marker, Source, Layer } from 'react-map-gl/maplibre';
 
-const LocationPickerMap = ({ viewState, onMove, onClick, value, featureGeometry, style }) => (
+const LocationPickerMap = ({
+  viewState,
+  onMove,
+  onClick,
+  value,
+  featureGeometry,
+  style,
+  readOnly = false,
+}) => (
   <Map
     {...viewState}
     onMove={onMove}
     onClick={onClick}
     mapLib={maplibregl}
     mapStyle="https://tiles.openfreemap.org/styles/liberty"
-    cursor="crosshair"
+    cursor={readOnly ? 'default' : 'crosshair'}
     style={style}
   >
     {featureGeometry && (
-      <Source
-        id="feature-geometry"
-        type="geojson"
-        data={featureGeometry}
-      >
+      <Source id="feature-geometry" type="geojson" data={featureGeometry}>
         {featureGeometry.type === 'Point' ? (
           <Layer
             id="feature-point"
@@ -77,12 +81,14 @@ LocationPickerMap.propTypes = {
     coordinates: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.array, PropTypes.number])),
   }),
   style: PropTypes.objectOf(PropTypes.oneOfType([PropTypes.string, PropTypes.number])),
+  readOnly: PropTypes.bool,
 };
 
 LocationPickerMap.defaultProps = {
   value: null,
   featureGeometry: null,
   style: undefined,
+  readOnly: false,
 };
 
 export default LocationPickerMap;
