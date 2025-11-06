@@ -238,7 +238,7 @@ const ReportsListContent = ({ featureId, layerId }) => {
             layer: layerId,
             page,
             page_size: pageSize,
-            status__in: 'NEW,PENDING',
+            status: ['NEW', 'PENDING'],
             ordering: '-created_at',
           },
         });
