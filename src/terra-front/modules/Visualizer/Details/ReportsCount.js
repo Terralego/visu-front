@@ -21,7 +21,7 @@ const ReportsCountContent = ({ featureId, layerId, translate }) => {
           querystring: {
             feature: featureId,
             layer: layerId,
-            status__in: 'NEW,PENDING',
+            status: ['NEW', 'PENDING'],
             ordering: '-created_at',
           },
         });

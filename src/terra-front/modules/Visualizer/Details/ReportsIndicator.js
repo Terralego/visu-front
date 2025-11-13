@@ -22,8 +22,8 @@ const ReportsIndicatorContent = ({ featureId, layerId, translate }) => {
           querystring: {
             feature: featureId,
             layer: layerId,
-            status__in: 'NEW,PENDING',
             ordering: '-created_at',
+            status: ['NEW', 'PENDING'],
           },
         });
 

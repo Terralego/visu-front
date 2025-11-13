@@ -134,7 +134,7 @@ const ReportDetailsModal = ({ open, onClose, report }) => {
                       </>
                     ) : (
                       <>
-                        <ListItemText primary={item.label || 'Champ'} sx={{ my: 0.5 }} />
+                        <ListItemText primary={item.helpText || item.label || 'Champ'} sx={{ my: 0.5 }} />
                         <TextField
                           fullWidth
                           size="small"

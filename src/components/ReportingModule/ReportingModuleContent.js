@@ -111,6 +111,7 @@ const ReportingModuleContent = ({
           value: item.fieldValue,
           label: item.label || '',
           content: item.userComment,
+          helpText: item.helpText,
         };
       });
 
@@ -226,6 +227,7 @@ const ReportingModuleContent = ({
             sourceFieldId: field.sourceFieldId,
             fieldValue: field.value,
             userComment: comment.trim(),
+            helpText: field.helptext,
             label: field.label,
           });
         }
@@ -250,7 +252,7 @@ const ReportingModuleContent = ({
   const renderFieldInput = field => {
     if (!field) return null;
 
-    const { required, sourceFieldId, format_type: formatType, label } = field;
+    const { required, sourceFieldId, format_type: formatType, label, value } = field;
 
     return (
       <TextField
@@ -263,7 +265,7 @@ const ReportingModuleContent = ({
         rows={2}
         required={required}
         error={!!validationErrors[sourceFieldId]}
-        helperText={`Champ source : ${label} (${formatType})`}
+        helperText={`Champ source : ${value} (${formatType})`}
         value={formData[sourceFieldId] || ''}
         onChange={e => handleFieldChange(sourceFieldId, e.target.value)}
       />
@@ -354,7 +356,7 @@ const ReportingModuleContent = ({
                       sx={{ flexDirection: 'column', alignItems: 'stretch' }}
                     >
                       <ListItemText
-                        primary={`${field.helptext}`}
+                        primary={`${field.helptext || field.label || field.value}`}
                         secondary={field.required && 'Champ requis'}
                         sx={{ my: 0.5 }}
                       />
