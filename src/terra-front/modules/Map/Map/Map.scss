@@ -14,6 +14,21 @@
   z-index: 30;
 }
 
+.mapboxgl-ctrl-top-right {
+  display: flex;
+  flex-direction: column;
+
+  & > mapboxgl-ctrl-group {
+    order: 0;
+  }
+  & > .mapboxgl-ctrl-share {
+    order: 1;
+  }
+  & > .mapboxgl-ctrl-declaration {
+    order: 2;
+  }
+}
+
 // Avoid .mapboxgl-ctrl-group to override .bp3-button
 .mapboxgl-ctrl-group .bp3-button {
   display: inline-flex;

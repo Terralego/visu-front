@@ -62,6 +62,7 @@ import DataTable from './DataTable';
 import Widgets from './Widgets';
 import { generateClusterList } from './interactions';
 import searchInMap from './search';
+import ShareWrapper from '../../../components/ShareModule/ShareWrapper';
 
 export const INTERACTION_DISPLAY_DETAILS = 'displayDetails';
 
@@ -169,6 +170,7 @@ export class Visualizer extends React.Component {
     isLayersTreeVisible: true,
     isReportingModuleVisible: false,
     isDeclarationModuleVisible: false,
+    isShareModuleVisible: false,
     waitingForMapClick: false,
     declarationLocation: null,
     selectedLayerForReporting: null,
@@ -501,6 +503,12 @@ export class Visualizer extends React.Component {
   toggleReportingModule = () => {
     this.setState(({ isReportingModuleVisible }) => ({
       isReportingModuleVisible: !isReportingModuleVisible,
+    }));
+  };
+
+  toggleShareModule = () => {
+    this.setState(({ isShareModuleVisible }) => ({
+      isShareModuleVisible: !isShareModuleVisible,
     }));
   };
 
@@ -1026,6 +1034,7 @@ export class Visualizer extends React.Component {
       isLayersTreeVisible,
       isReportingModuleVisible,
       isDeclarationModuleVisible,
+      isShareModuleVisible,
       declarationLocation,
       selectedLayerForReporting,
       selectedFeatureIdForReporting,
@@ -1201,6 +1210,11 @@ export class Visualizer extends React.Component {
                       onToggleDeclarationModule={this.toggleDeclarationModule}
                       onMapClick={this.handleDeclarationMapClick}
                       selectedLocation={declarationLocation}
+                    />
+                    <ShareWrapper
+                      map={map}
+                      isShareModuleVisible={isShareModuleVisible}
+                      onToggleShareModule={this.toggleShareModule}
                     />
                   </BoundingBoxObserver>
                   <DataTable
