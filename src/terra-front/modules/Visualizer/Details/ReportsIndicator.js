@@ -57,10 +57,10 @@ const ReportsIndicatorContent = ({ featureId, layerId, translate }) => {
       <Box
         sx={{
           position: 'absolute',
-          top: 8,
-          left: 8,
+          top: 12,
+          left: 12,
           zIndex: 80,
-          backgroundColor: 'warning.main',
+          backgroundColor: 'secondary.main',
           borderRadius: '50%',
           width: 32,
           height: 32,

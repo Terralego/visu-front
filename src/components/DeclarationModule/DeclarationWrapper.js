@@ -9,6 +9,7 @@ const DeclarationWrapper = ({
   isDeclarationModuleVisible,
   onToggleDeclarationModule,
   onMapClick,
+  isTableActive,
   selectedLocation,
 }) => {
   const [declarationConfig, setDeclarationConfig] = useState(null);
@@ -76,6 +77,7 @@ const DeclarationWrapper = ({
 
   return (
     <DeclarationModule
+      isTableActive={isTableActive}
       open={isDeclarationModuleVisible}
       onClose={onToggleDeclarationModule}
       onMapClick={onMapClick}
@@ -87,6 +89,7 @@ const DeclarationWrapper = ({
 
 DeclarationWrapper.propTypes = {
   map: PropTypes.shape({}),
+  isTableActive: PropTypes.bool,
   isDeclarationModuleVisible: PropTypes.bool.isRequired,
   onToggleDeclarationModule: PropTypes.func.isRequired,
   onMapClick: PropTypes.func.isRequired,
@@ -97,6 +100,7 @@ DeclarationWrapper.propTypes = {
 };
 
 DeclarationWrapper.defaultProps = {
+  isTableActive: false,
   map: null,
   selectedLocation: null,
 };

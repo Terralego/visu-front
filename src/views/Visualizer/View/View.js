@@ -168,9 +168,7 @@ export class Visualizer extends React.Component {
 
   state = {
     isLayersTreeVisible: true,
-    isReportingModuleVisible: false,
-    isDeclarationModuleVisible: false,
-    isShareModuleVisible: false,
+    visibleDrawer: null,
     waitingForMapClick: false,
     declarationLocation: null,
     selectedLayerForReporting: null,
@@ -345,8 +343,8 @@ export class Visualizer extends React.Component {
             instance: { displayTooltip },
             layerId,
           }) => {
-            const { waitingForMapClick } = this.state;
-            if (waitingForMapClick) {
+            const { waitingForMapClick, visibleDrawer } = this.state;
+            if (waitingForMapClick || visibleDrawer === 'declaration') {
               return;
             }
 
@@ -484,7 +482,7 @@ export class Visualizer extends React.Component {
   hideDetails = () => {
     const { details: { hide = () => {} } = {} } = this.state;
     hide();
-    this.setState({ details: undefined });
+    this.setState({ details: undefined, visibleDrawer: null });
   };
 
   toggleLayersTree = () => {
@@ -501,23 +499,26 @@ export class Visualizer extends React.Component {
   };
 
   toggleReportingModule = () => {
-    this.setState(({ isReportingModuleVisible }) => ({
+    this.setState(({ isReportingModuleVisible, visibleDrawer }) => ({
       isReportingModuleVisible: !isReportingModuleVisible,
+      visibleDrawer: visibleDrawer === 'reporting' ? null : 'reporting',
     }));
   };
 
   toggleShareModule = () => {
-    this.setState(({ isShareModuleVisible }) => ({
+    this.setState(({ isShareModuleVisible, visibleDrawer }) => ({
+      visibleDrawer: visibleDrawer === 'share' ? null : 'share',
       isShareModuleVisible: !isShareModuleVisible,
     }));
   };
 
   toggleDeclarationModule = () => {
-    this.setState(({ isDeclarationModuleVisible }) => {
+    this.setState(({ isDeclarationModuleVisible, visibleDrawer }) => {
       const newDeclarationState = !isDeclarationModuleVisible;
 
       const stateUpdate = {
         isDeclarationModuleVisible: newDeclarationState,
+        visibleDrawer: visibleDrawer === 'declaration' ? null : 'declaration',
         waitingForMapClick: false,
         declarationLocation: null,
       };
@@ -562,7 +563,7 @@ export class Visualizer extends React.Component {
         selectedFeatureGeometryForReporting: featureGeometry,
         selectedFetchPropertiesForReporting: fetchProperties,
         selectedMainFieldForReporting: layersTreeLayer.filters?.mainField || null,
-        isReportingModuleVisible: true,
+        visibleDrawer: 'reporting',
       });
     }
   };
@@ -907,8 +908,6 @@ export class Visualizer extends React.Component {
 
     hide();
 
-    this.setState({ isReportingModuleVisible: false });
-
     this.onHighlightChange = () => null;
 
     if (layerId && highlightColor) {
@@ -932,6 +931,7 @@ export class Visualizer extends React.Component {
     const layerTreeId = currentLayer?.id;
 
     this.setState({
+      visibleDrawer: 'details',
       details: {
         layer: interactionLayerId,
         feature,
@@ -1035,6 +1035,7 @@ export class Visualizer extends React.Component {
       isReportingModuleVisible,
       isDeclarationModuleVisible,
       isShareModuleVisible,
+      visibleDrawer,
       declarationLocation,
       selectedLayerForReporting,
       selectedFeatureIdForReporting,
@@ -1077,9 +1078,9 @@ export class Visualizer extends React.Component {
       layerForReportConfig.report_configs.length > 0;
 
     const displayLayersTree = isLayersTreeVisible && !printIsOpened;
-    const isDetailsVisible = !!details && !printIsOpened && !isDeclarationModuleVisible;
+    const isDetailsVisible = !!details && !printIsOpened && visibleDrawer === 'details';
     const isReportingVisible =
-      isReportingModuleVisible && !isDeclarationModuleVisible && hasReportConfigs;
+      visibleDrawer === 'reporting' && hasReportConfigs;
 
     const currentFeatureList = Object.values(features).find(({ layers }) =>
       layers.includes(detailLayer),
@@ -1140,7 +1141,7 @@ export class Visualizer extends React.Component {
             'visualizer--with-table': isTableVisible && !printIsOpened,
             'visualizer--with-widgets': isWidgetsVisible,
             'visualizer--with-details': isDetailsVisible || isReportingVisible,
-            'visualizer--with-declaration': isDeclarationModuleVisible,
+            'visualizer--with-declaration': visibleDrawer === 'declaration',
           })}
         >
           <div
@@ -1199,6 +1200,7 @@ export class Visualizer extends React.Component {
                       open={isReportingVisible}
                       onClose={this.toggleReportingModule}
                       layer={selectedLayer}
+                      isTableActive={isTableVisible}
                       featureId={selectedFeatureIdForReporting}
                       featureGeometry={selectedFeatureGeometryForReporting}
                       fetchProperties={selectedFetchPropertiesForReporting}
@@ -1206,14 +1208,15 @@ export class Visualizer extends React.Component {
                     />
                     <DeclarationWrapper
                       map={map}
-                      isDeclarationModuleVisible={isDeclarationModuleVisible}
+                      isDeclarationModuleVisible={visibleDrawer === 'declaration'}
                       onToggleDeclarationModule={this.toggleDeclarationModule}
+                      isTableActive={isTableVisible}
                       onMapClick={this.handleDeclarationMapClick}
                       selectedLocation={declarationLocation}
                     />
                     <ShareWrapper
                       map={map}
-                      isShareModuleVisible={isShareModuleVisible}
+                      isShareModuleVisible={visibleDrawer === 'share'}
                       onToggleShareModule={this.toggleShareModule}
                     />
                   </BoundingBoxObserver>

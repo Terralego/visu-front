@@ -11,6 +11,7 @@ const ReportingModule = ({
   featureGeometry = null,
   fetchProperties = {},
   mainField = null,
+  isTableActive = false,
 }) => {
   const reportConfigs = layer?.report_configs || [];
 
@@ -39,6 +40,7 @@ const ReportingModule = ({
           featureGeometry={featureGeometry}
           fetchProperties={fetchProperties}
           mainField={mainField}
+          isTableActive={isTableActive}
           reportConfigs={reportConfigs}
           featureProperties={featureProperties}
         />
@@ -50,6 +52,7 @@ const ReportingModule = ({
 ReportingModule.propTypes = {
   open: PropTypes.bool,
   onClose: PropTypes.func.isRequired,
+  isTableActive: PropTypes.bool,
   layer: PropTypes.shape({
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     report_configs: PropTypes.arrayOf(
@@ -85,6 +88,7 @@ ReportingModule.defaultProps = {
   open: false,
   layer: null,
   featureId: null,
+  isTableActive: false,
   featureGeometry: null,
   fetchProperties: {},
   mainField: null,

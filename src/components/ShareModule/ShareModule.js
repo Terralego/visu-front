@@ -154,7 +154,7 @@ const ShareModule = ({ map, open = false, onClose }) => {
             right: 40,
             maxHeight: 'calc(100vh - 16px)',
             height: 'auto',
-            borderRadius: 2,
+            borderRadius: 1,
             border: '1px solid rgba(0, 0, 0, 0.1)',
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
           },

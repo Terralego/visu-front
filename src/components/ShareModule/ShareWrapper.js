@@ -8,7 +8,6 @@ const ShareWrapper = ({ map, isShareModuleVisible, onToggleShareModule }) => {
 
   // Add share control to map when map is ready
   useEffect(() => {
-    console.log('useEffect for adding ShareControl');
     if (map && !shareControl) {
       const control = new ShareControl(onToggleShareModule);
       map.addControl(control, 'top-right');

@@ -50,7 +50,7 @@ const ReportDetailsModal = ({ open, onClose, report }) => {
       fullWidth
       PaperProps={{
         sx: {
-          borderRadius: 2,
+          borderRadius: 1,
           backgroundColor: 'rgba(255, 255, 255, 0.95)',
           backdropFilter: 'blur(8px)',
         },

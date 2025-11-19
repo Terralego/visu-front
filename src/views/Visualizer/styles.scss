@@ -166,10 +166,13 @@ $bg-visualizer: rgb(49, 64, 77);
       &.visualizer--with-table .interactive-map__legends {
         transform: translate3d(-$widgetsWidth, -$tableHeight, 0);
       }
+      & .MuiDrawer-paper {
+        margin-right: calc($widgetsWidth + 10px) !important;
+      }
     }
 
     &-details {
-      .mapboxgl-ctrl-top-right,
+      // .mapboxgl-ctrl-top-right,
       .interactive-map__legends {
         transform: translate3d(-$detailsWidth, 0, 0);
       }
@@ -180,7 +183,7 @@ $bg-visualizer: rgb(49, 64, 77);
       }
 
       &.visualizer--with-widgets {
-        .mapboxgl-ctrl-top-right,
+        // .mapboxgl-ctrl-top-right,
         .mapboxgl-ctrl-bottom-right,
         .interactive-map__legends {
           transform: translate3d(-#{$widgetsWidth + $detailsWidth}, 0, 0);

@@ -2,6 +2,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import {
   Box,
   Button,
+  Card,
   Drawer,
   FormControl,
   IconButton,
@@ -26,6 +27,7 @@ const ReportingModuleContent = ({
   layer,
   featureGeometry,
   mainField,
+  isTableActive,
   reportConfigs,
   featureProperties,
 }) => {
@@ -281,222 +283,242 @@ const ReportingModuleContent = ({
         width: 400,
         flexShrink: 0,
         '& .MuiDrawer-paper': {
+          zIndex: 79,
           width: 400,
+          right: 40,
           boxSizing: 'border-box',
           backgroundColor: 'rgba(255, 255, 255, 0.8)',
           backdropFilter: 'blur(8px)',
           margin: 1,
-          height: 'calc(100vh - 16px)',
-          borderRadius: 2,
+          maxHeight: isTableActive ? '66vh' : 'calc(100vh - 16px)',
+          height: 'auto',
+          borderRadius: 1,
           border: '1px solid rgba(0, 0, 0, 0.1)',
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
         },
       }}
     >
-      <Box sx={{ p: 2.5 }}>
-        <Box
+      <Box sx={{ m: 1, overflow: 'auto' }}>
+        <Card
           sx={{
-            mb: 2.5,
-            pb: 1.25,
-            borderBottom: '1px solid #e0e0e0',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
+            backgroundColor: 'rgba(255, 255, 255, 0.98)',
+            backdropFilter: 'blur(4px)',
+            border: 'none',
+            boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+            px: 2.5,
+            pt: 1.5,
+            pb: 1.5,
           }}
         >
-          <Box sx={{ flex: 1, mr: 1 }}>
-            <Typography variant="h6" component="h2" sx={{ fontWeight: 600 }}>
-              {mainFieldValue ? `Signalement : ${mainFieldValue}` : 'Signalement'}
-            </Typography>
-          </Box>
-          {onClose && (
-            <IconButton onClick={handleClose} size="small" sx={{ ml: 1 }}>
-              <CloseIcon />
-            </IconButton>
-          )}
-        </Box>
-
-        {reportConfigs.length > 1 && (
-          <Box sx={{ mb: 3 }}>
-            <FormControl fullWidth size="small">
-              <InputLabel>Type de signalement</InputLabel>
-              <Select
-                value={selectedConfigIndex}
-                label="Type de signalement"
-                onChange={e => setSelectedConfigIndex(e.target.value)}
-              >
-                {reportConfigs.map((config, index) => (
-                  <MenuItem key={config.id || index} value={index}>
-                    {config.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Box>
-        )}
-
-        {selectedConfig && (
-          <List
+          <Box
             sx={{
-              '& .MuiListItem-root': {
-                padding: 0,
-              },
+              mb: 2.5,
+              pb: 1.25,
+              borderBottom: '1px solid #e0e0e0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
             }}
           >
-            <ListItem disablePadding>
-              <Box sx={{ width: '100%' }}>
-                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 1 }}>
-                  {selectedConfig.label}
+            <Box sx={{ flex: 1, mr: 1 }}>
+              <Typography variant="h6" component="h2" sx={{ fontWeight: 600 }}>
+                Signalement
+              </Typography>
+              {mainFieldValue && (
+                <Typography variant="body2" color="text.secondary">
+                  {mainFieldValue}
                 </Typography>
-                <List sx={{ pl: 0 }}>
-                  {selectedConfig.fields.map((field, fieldIndex) => (
-                    <ListItem
-                      key={field.sourceFieldId || fieldIndex}
-                      disablePadding
-                      sx={{ flexDirection: 'column', alignItems: 'stretch' }}
-                    >
-                      <ListItemText
-                        primary={`${field.helptext || field.label || field.value}`}
-                        secondary={field.required && 'Champ requis'}
-                        sx={{ my: 0.5 }}
-                      />
-                      <Box sx={{ mt: 1, mb: 2 }}>{renderFieldInput(field)}</Box>
-                    </ListItem>
-                  ))}
-                </List>
-              </Box>
-            </ListItem>
-          </List>
-        )}
-
-        <Box sx={{ mt: 3, mb: 3 }}>
-          <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 1 }}>
-            Commentaire libre
-          </Typography>
-          <TextField
-            fullWidth
-            size="small"
-            type="text"
-            variant="outlined"
-            helperText="Ajoutez ici tout commentaire supplémentaire"
-            multiline
-            rows={3}
-            sx={{ mb: 2 }}
-            value={formData.freeComment || ''}
-            onChange={e => handleFieldChange('freeComment', e.target.value)}
-          />
-        </Box>
-
-        <Box sx={{ mt: 3, mb: 3 }}>
-          <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 1 }}>
-            Fichiers joints
-          </Typography>
-          <Box sx={{ mb: 2 }}>
-            <input
-              accept="image/*"
-              style={{ display: 'none' }}
-              id="image-upload"
-              type="file"
-              multiple
-              onChange={handleImageUpload}
-            />
-            <label htmlFor="image-upload">
-              <Button
-                variant="outlined"
-                component="span"
-                size="small"
-                disabled={images.length >= 3}
-              >
-                Joindre un fichier
-              </Button>
-            </label>
-            <Typography
-              variant="caption"
-              sx={{ display: 'block', mt: 0.5, color: 'text.secondary' }}
-            >
-              {images.length}/3 fichiers ajoutées
-            </Typography>
+              )}
+            </Box>
+            {onClose && (
+              <IconButton onClick={handleClose} size="small" sx={{ ml: 1 }}>
+                <CloseIcon />
+              </IconButton>
+            )}
           </Box>
 
-          {images.length > 0 && (
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-              {images.map(image => (
-                <Box
-                  key={image.id}
-                  sx={{
-                    position: 'relative',
-                    width: 80,
-                    height: 80,
-                    borderRadius: 1,
-                    border: '1px solid #e0e0e0',
-                  }}
+          {reportConfigs.length > 1 && (
+            <Box sx={{ mb: 3 }}>
+              <FormControl fullWidth size="small">
+                <InputLabel>Type de signalement</InputLabel>
+                <Select
+                  value={selectedConfigIndex}
+                  label="Type de signalement"
+                  onChange={e => setSelectedConfigIndex(e.target.value)}
                 >
-                  <img
-                    src={image.preview}
-                    alt="Preview"
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'cover',
-                    }}
-                  />
-                  <IconButton
-                    onClick={() => removeImage(image.id)}
-                    sx={{
-                      position: 'absolute',
-                      top: -8,
-                      right: -8,
-                      backgroundColor: 'background.paper',
-                      width: 20,
-                      height: 20,
-                      boxShadow: 1,
-                      '&:hover': {
-                        backgroundColor: 'error.light',
-                      },
-                    }}
-                  >
-                    <CloseIcon sx={{ fontSize: 12 }} />
-                  </IconButton>
-                </Box>
-              ))}
+                  {reportConfigs.map((config, index) => (
+                    <MenuItem key={config.id || index} value={index}>
+                      {config.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Box>
           )}
-        </Box>
 
-        <Box sx={{ mt: 3, mb: 3 }}>
-          <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 1 }}>
-            Localisation (optionnel)
-          </Typography>
-          <LocationPicker
-            key={actualFeatureId || 'no-feature'}
-            value={location}
-            onChange={setLocation}
-            helperText="Sélectionnez la position géographique du signalement"
-            featureBbox={featureBbox}
-            featureGeometry={featureGeometry}
-          />
-        </Box>
-
-        <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-          {submitError && (
-            <Typography
-              variant="body2"
-              color="error"
-              sx={{ mr: 2, alignSelf: 'center', fontSize: '0.875rem' }}
+          {selectedConfig && (
+            <List
+              sx={{
+                '& .MuiListItem-root': {
+                  padding: 0,
+                },
+              }}
             >
-              {submitError}
-            </Typography>
+              <ListItem disablePadding>
+                <Box sx={{ width: '100%' }}>
+                  <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 1 }}>
+                    {selectedConfig.label}
+                  </Typography>
+                  <List sx={{ pl: 0 }}>
+                    {selectedConfig.fields.map((field, fieldIndex) => (
+                      <ListItem
+                        key={field.sourceFieldId || fieldIndex}
+                        disablePadding
+                        sx={{ flexDirection: 'column', alignItems: 'stretch' }}
+                      >
+                        <ListItemText
+                          primary={`${field.helptext || field.label || field.value}`}
+                          secondary={field.required && 'Champ requis'}
+                          sx={{ my: 0.5 }}
+                        />
+                        <Box sx={{ mt: 1, mb: 2 }}>{renderFieldInput(field)}</Box>
+                      </ListItem>
+                    ))}
+                  </List>
+                </Box>
+              </ListItem>
+            </List>
           )}
-          <Button
-            variant="contained"
-            color={submitError ? 'error' : 'primary'}
-            sx={{ textTransform: 'none' }}
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? 'Envoi en cours...' : 'Envoyer signalement'}
-          </Button>
-        </Box>
+
+          <Box sx={{ mt: 3, mb: 3 }}>
+            <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 1 }}>
+              Commentaire libre
+            </Typography>
+            <TextField
+              fullWidth
+              size="small"
+              type="text"
+              variant="outlined"
+              helperText="Ajoutez ici tout commentaire supplémentaire"
+              multiline
+              rows={3}
+              sx={{ mb: 2 }}
+              value={formData.freeComment || ''}
+              onChange={e => handleFieldChange('freeComment', e.target.value)}
+            />
+          </Box>
+
+          <Box sx={{ mt: 3, mb: 3 }}>
+            <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 1 }}>
+              Fichiers joints
+            </Typography>
+            <Box sx={{ mb: 2 }}>
+              <input
+                accept="image/*"
+                style={{ display: 'none' }}
+                id="image-upload"
+                type="file"
+                multiple
+                onChange={handleImageUpload}
+              />
+              <label htmlFor="image-upload">
+                <Button
+                  variant="outlined"
+                  component="span"
+                  size="small"
+                  disabled={images.length >= 3}
+                >
+                  Joindre un fichier
+                </Button>
+              </label>
+              <Typography
+                variant="caption"
+                sx={{ display: 'block', mt: 0.5, color: 'text.secondary' }}
+              >
+                {images.length}/3 fichiers ajoutées
+              </Typography>
+            </Box>
+
+            {images.length > 0 && (
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                {images.map(image => (
+                  <Box
+                    key={image.id}
+                    sx={{
+                      position: 'relative',
+                      width: 80,
+                      height: 80,
+                      borderRadius: 1,
+                      border: '1px solid #e0e0e0',
+                    }}
+                  >
+                    <img
+                      src={image.preview}
+                      alt="Preview"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                      }}
+                    />
+                    <IconButton
+                      onClick={() => removeImage(image.id)}
+                      sx={{
+                        position: 'absolute',
+                        top: -8,
+                        right: -8,
+                        backgroundColor: 'background.paper',
+                        width: 20,
+                        height: 20,
+                        boxShadow: 1,
+                        '&:hover': {
+                          backgroundColor: 'error.light',
+                        },
+                      }}
+                    >
+                      <CloseIcon sx={{ fontSize: 12 }} />
+                    </IconButton>
+                  </Box>
+                ))}
+              </Box>
+            )}
+          </Box>
+
+          <Box sx={{ mt: 3, mb: 3 }}>
+            <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 1 }}>
+              Localisation (optionnel)
+            </Typography>
+            <LocationPicker
+              key={actualFeatureId || 'no-feature'}
+              value={location}
+              onChange={setLocation}
+              helperText="Sélectionnez la position géographique du signalement"
+              featureBbox={featureBbox}
+              featureGeometry={featureGeometry}
+            />
+          </Box>
+
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+            {submitError && (
+              <Typography
+                variant="body2"
+                color="error"
+                sx={{ mr: 2, alignSelf: 'center', fontSize: '0.875rem' }}
+              >
+                {submitError}
+              </Typography>
+            )}
+            <Button
+              variant="contained"
+              color={submitError ? 'error' : 'primary'}
+              sx={{ textTransform: 'none' }}
+              onClick={handleSubmit}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? 'Envoi en cours...' : 'Envoyer signalement'}
+            </Button>
+          </Box>
+        </Card>
       </Box>
     </Drawer>
   );
@@ -505,42 +527,52 @@ const ReportingModuleContent = ({
 ReportingModuleContent.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
+  isTableActive: PropTypes.bool,
   layer: PropTypes.shape({
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    report_configs: PropTypes.arrayOf(PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      label: PropTypes.string.isRequired,
-      fields: PropTypes.arrayOf(PropTypes.shape({
-        sourceFieldId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-        label: PropTypes.string,
-        helptext: PropTypes.string,
-        format_type: PropTypes.string,
-        required: PropTypes.bool,
-        value: PropTypes.string,
-      })),
-    })),
+    report_configs: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        label: PropTypes.string.isRequired,
+        fields: PropTypes.arrayOf(
+          PropTypes.shape({
+            sourceFieldId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+            label: PropTypes.string,
+            helptext: PropTypes.string,
+            format_type: PropTypes.string,
+            required: PropTypes.bool,
+            value: PropTypes.string,
+          }),
+        ),
+      }),
+    ),
   }).isRequired,
   featureGeometry: PropTypes.shape({
     type: PropTypes.string,
     coordinates: PropTypes.array,
   }),
   mainField: PropTypes.string,
-  reportConfigs: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    label: PropTypes.string.isRequired,
-    fields: PropTypes.arrayOf(PropTypes.shape({
-      sourceFieldId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-      label: PropTypes.string,
-      helptext: PropTypes.string,
-      format_type: PropTypes.string,
-      required: PropTypes.bool,
-      value: PropTypes.string,
-    })),
-  })).isRequired,
+  reportConfigs: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      label: PropTypes.string.isRequired,
+      fields: PropTypes.arrayOf(
+        PropTypes.shape({
+          sourceFieldId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+          label: PropTypes.string,
+          helptext: PropTypes.string,
+          format_type: PropTypes.string,
+          required: PropTypes.bool,
+          value: PropTypes.string,
+        }),
+      ),
+    }),
+  ).isRequired,
   featureProperties: PropTypes.object,
 };
 
 ReportingModuleContent.defaultProps = {
+  isTableActive: false,
   featureGeometry: null,
   mainField: null,
   featureProperties: null,
