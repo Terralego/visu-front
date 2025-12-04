@@ -23,10 +23,8 @@ const WidgetItem = ({
   const displayedLayer = displayedLayers.find(({ label }) => label === layerLabel);
   const title = translate('terralego.widget.synthesis.title', { layer: layerLabel });
 
-
   return (
     <WidgetLayout
-      key={`${component}${index}`} // eslint-disable-line react/no-array-index-key
       widget={widget}
       title={title}
       {...rest}

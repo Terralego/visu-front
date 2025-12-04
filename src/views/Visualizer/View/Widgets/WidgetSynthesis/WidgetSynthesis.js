@@ -6,6 +6,7 @@ import isEqual from 'react-fast-compare';
 import debounce from 'debounce';
 
 import Loading from './Loading';
+import WidgetGraph from './WidgetGraph';
 
 const env = nunjucks.configure();
 env.addFilter('formatNumber', value => new Intl.NumberFormat().format(value));
@@ -17,8 +18,6 @@ const getAggregationValue = (aggregation, match = []) => {
 
   if (buckets) {
     return buckets
-      .filter(({ key }) => match.includes(key))
-      .reduce((total, { doc_count: docCount }) => total + docCount, 0);
   }
 
   return value;
@@ -78,6 +77,34 @@ export class WidgetSynthesis extends React.Component {
     map.off('zoomend', this.debouncedLoad);
   }
 
+  getContent(item) {
+    const { values: { [item.name]: rawValue } } = this.state;
+
+    if (item.type === 'terms') {
+      return (
+        <div className="widget-synthesis__value">
+          <WidgetGraph
+            data={rawValue ?? []}
+            type={item.graph.type}
+            loading={rawValue === undefined}
+          />
+        </div>
+      );
+    }
+    const value = this.formatValue(item)
+    if (rawValue === undefined) {
+      return <Loading />;
+    }
+    return (
+      <div
+        className="widget-synthesis__value"
+        // Value could contains html that should be rendered
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={item.type !== 'terms' ? { __html: value } : undefined}
+      />
+    );
+  }
+
   resetValues () {
     this.setState({ values: {} });
   }
@@ -100,9 +127,16 @@ export class WidgetSynthesis extends React.Component {
     if (!map) return;
     const boundingBox = boundingBoxMode === 'defined' ? boundingBoxValue : getExtent(map, visibleBoundingBox);
 
-    const aggregations = items.map(({ name, type, field }) => ({
-      name, type, field,
-    }));
+    const aggregations = items.map(({ name, type, field }) => {
+      if (type === 'terms') {
+        return ({
+          name, type, field: `${field}.keyword`,
+        });
+      }
+      return ({
+        name, type, field,
+      });
+    });
 
     const properties = {
       ...Object.keys(filters).reduce((all, key) => ({
@@ -111,6 +145,7 @@ export class WidgetSynthesis extends React.Component {
       }), {}),
     };
 
+    this.setState({ values: {} });
     const data = await searchService.search({
       index: layer,
       query,
@@ -136,45 +171,30 @@ export class WidgetSynthesis extends React.Component {
     this.setState({ values });
   }
 
-  formatValue ({ name, label = name, template }) {
+  formatValue({ name, template }) {
     const { values: { [name]: rawValue } } = this.state;
-    const withValue = value => ({ label, value });
-    if (rawValue === undefined) {
-      return withValue(Loading);
-    }
-
     if (!template) {
-      return withValue(rawValue);
+      return rawValue;
     }
-
-    return withValue(
-      nunjucks.renderString(template, { value: rawValue }),
-    );
+    return nunjucks.renderString(template, { value: rawValue });
   }
 
-  render () {
+  render() {
     const { items } = this.props;
-    const values = items.map(item => this.formatValue(item));
 
     return (
       <div className="widget-synthesis">
-        {values.map(({ label, value: Value }) => (
-          <div
-            className="widget-synthesis__item"
-            key={`${label}${Value}`}
-          >
-            {typeof Value === 'function'
-              ? <Value />
-              : (
-                <div
-                  className="widget-synthesis__value"
-                  // Value could contains html that should be rendered
-                  // eslint-disable-next-line react/no-danger
-                  dangerouslySetInnerHTML={{ __html: Value }}
-                />
-              )}
-            <div className="widget-synthesis__label">{label}</div>
-          </div>
+        {items.map((item, index) => (
+          <>
+            <div
+              className="widget-synthesis__item"
+              key={`${JSON.stringify(item)}`}
+            >
+              {this.getContent(item)}
+              <div className="widget-synthesis__label">{item.name}</div>
+            </div>
+            {index < items.length - 1 && <hr style={{ width: '100%', borderTop: 1 }} />}
+          </>
         ))}
       </div>
     );
