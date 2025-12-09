@@ -76,7 +76,7 @@ export const buildQuery = ({
   properties/* = { propName: value }, { propName: { value, type: 'term'} } */,
   include,
   exclude,
-  aggregations/* = [{ type, field, name, options }] */,
+  aggregations/* = [{ type, field, name, options, nest }] */,
   baseQuery = {},
   hookQuery = () => {},
 }) => {
@@ -134,8 +134,8 @@ export const buildQuery = ({
   }
 
   if (aggregations) {
-    aggregations.forEach(({ type = 'terms', field, options, name }) =>
-      body.aggregation(type, field, options, name));
+    aggregations.forEach(({ type = 'terms', field, options, name, nest = undefined }) =>
+      body.aggregation(type, field, options, name, nest));
   }
 
   // Apply query hooks if any
