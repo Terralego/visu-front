@@ -80,11 +80,22 @@ export class WidgetSynthesis extends React.Component {
   getContent(item) {
     const { values: { [item.name]: rawValue } } = this.state;
 
-    if (item.type === 'terms') {
+    if (item.type === 'distribution') {
       return (
         <div className="widget-synthesis__value">
           <WidgetGraph
             data={rawValue ?? []}
+            type={item.graph.type}
+            loading={rawValue === undefined}
+          />
+        </div>
+      );
+    }
+    if (item.type === 'categoric') {
+      return (
+        <div className="widget-synthesis__value">
+          <WidgetGraph
+            data={rawValue ? rawValue.map(v => ({ key: v.key, doc_count: v.nested.value })) : []}
             type={item.graph.type}
             loading={rawValue === undefined}
           />
@@ -100,7 +111,7 @@ export class WidgetSynthesis extends React.Component {
         className="widget-synthesis__value"
         // Value could contains html that should be rendered
         // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={item.type !== 'terms' ? { __html: value } : undefined}
+        dangerouslySetInnerHTML={{ __html: value }}
       />
     );
   }
@@ -127,15 +138,26 @@ export class WidgetSynthesis extends React.Component {
     if (!map) return;
     const boundingBox = boundingBoxMode === 'defined' ? boundingBoxValue : getExtent(map, visibleBoundingBox);
 
-    const aggregations = items.map(({ name, type, field }) => {
-      if (type === 'terms') {
-        return ({
-          name, type, field: `${field}.keyword`,
-        });
+    const aggregations = items.map(({ name, type, field, graph }) => {
+      switch (type) {
+        case 'distribution':
+          return ({
+            name,
+            type: 'terms',
+            field: `${field}.keyword`,
+          });
+        case 'categoric':
+          return ({
+            name,
+            type: 'terms',
+            field: `${field}.keyword`,
+            nest: q => q.aggregation(graph.aggregation_type, graph.value_field, {}, 'nested'),
+          });
+        default:
+          return ({
+            name, type, field,
+          });
       }
-      return ({
-        name, type, field,
-      });
     });
 
     const properties = {
