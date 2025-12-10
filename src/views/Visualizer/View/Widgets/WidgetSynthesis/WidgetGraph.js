@@ -27,7 +27,7 @@ function LoadingOverlay({ height }) {
   );
 }
 
-function WidgetGraph({ data, type, loading }) {
+function WidgetGraph({ data: originalData, type, loading, isPercent }) {
   const theme = useTheme();
   const [highlightedItem, setHighLightedItem] = React.useState(null);
 
@@ -37,18 +37,34 @@ function WidgetGraph({ data, type, loading }) {
     ...blueberryTwilightPalette(mode),
   ]);
 
+  let data = originalData;
+  if (isPercent) {
+    const total = originalData.reduce((prev, curr) => prev + curr.value, 0);
+    data = originalData.map(d => ({ label: d.label, value: (d.value / total) * 100 }));
+  }
+
+  const valueFormatter = value => {
+    if (value === null) {
+      return null;
+    }
+    if (isPercent) {
+      return `${value.toFixed(1)} %`;
+    }
+    return value.toFixed(1);
+  };
+
   if (type === 'bars') {
     let biggestValue = 0;
     let longestLabel = '';
     data.forEach(d => {
-      if (d.key.length > longestLabel.length) {
-        longestLabel = d.key;
+      if (d.label.length > longestLabel.length) {
+        longestLabel = d.label;
       }
-      if (d.doc_count > biggestValue) {
-        biggestValue = d.doc_count;
+      if (d.value > biggestValue) {
+        biggestValue = d.value;
       }
     });
-    const biggestValueDigits = biggestValue.toString().length;
+    const biggestValueDigits = biggestValue.toFixed(1).length;
     // Make sure the yAxis legend does not overlap with the axis values
     const leftOffset = biggestValueDigits >= 3 ? (biggestValueDigits - 2) * 10 : 0;
     // Automatically adapt graph height to take into account the labels length
@@ -58,7 +74,7 @@ function WidgetGraph({ data, type, loading }) {
         dataset={data}
         xAxis={[{
           scaleType: 'band',
-          dataKey: 'key',
+          dataKey: 'label',
           tickLabelStyle: {
             angle: 60,
             textAnchor: 'start',
@@ -66,7 +82,7 @@ function WidgetGraph({ data, type, loading }) {
           },
         }]}
         yAxis={[{
-          label: 'Total',
+          label: `Total${isPercent ? ' (%)' : ''}`,
         }]}
         sx={
           {
@@ -78,8 +94,9 @@ function WidgetGraph({ data, type, loading }) {
         }
         series={[
           {
-            dataKey: 'doc_count',
+            dataKey: 'value',
             highlightScope: { highlight: 'item', fade: 'global' },
+            valueFormatter,
           },
         ]}
         height={graphHeight}
@@ -104,32 +121,32 @@ function WidgetGraph({ data, type, loading }) {
     let biggestValue = 0;
     let longestLabel = '';
     data.forEach(d => {
-      if (d.key.length > longestLabel.length) {
-        longestLabel = d.key;
+      if (d.label.length > longestLabel.length) {
+        longestLabel = d.label;
       }
-      if (d.doc_count > biggestValue) {
-        biggestValue = d.doc_count;
+      if (d.value > biggestValue) {
+        biggestValue = d.value;
       }
     });
-    const biggestValueDigits = biggestValue.toString().length;
+    const biggestValueDigits = biggestValue.toFixed(1).length;
     // Make sure the yAxis legend does not overlap with the axis values
     const leftOffset = biggestValueDigits >= 3 ? (biggestValueDigits - 2) * 10 : 0;
     // Automatically adapt graph height to take into account the labels length
     const graphHeight = 250 + longestLabel.length * 5;
-    console.log(data);
-    const stackedData = [{ key: '' }];
+
+    const stackedData = [{ label: '' }];
     data.forEach(d => {
-      stackedData[0][d.key] = d.doc_count
+      stackedData[0][d.label] = d.value
     });
     return (
       <BarChart
         dataset={stackedData}
         xAxis={[{
           scaleType: 'band',
-          dataKey: 'key',
+          dataKey: 'label',
         }]}
         yAxis={[{
-          label: 'Total',
+          label: `Total${isPercent ? ' (%)' : ''}`,
         }]}
         sx={
           {
@@ -139,7 +156,13 @@ function WidgetGraph({ data, type, loading }) {
             },
           }
         }
-        series={data.map(d => ({ dataKey: d.key, label: d.key, stack: 'stack', highlightScope: { highlight: 'item', fade: 'global' } }))}
+        series={data.map(d => ({
+          dataKey: d.label,
+          label: d.label,
+          stack: 'stack',
+          highlightScope: { highlight: 'item', fade: 'global' },
+          valueFormatter,
+        }))}
         tooltip={{ trigger: 'item' }}
         height={graphHeight}
         width={GRAPH_WIDTH}
@@ -177,11 +200,12 @@ function WidgetGraph({ data, type, loading }) {
       <PieChart
         series={[
           {
-            data: data.map(d => ({ value: d.doc_count, label: d.key })),
+            data,
             innerRadius: 30,
             paddingAngle: 2,
             cornerRadius: 5,
             highlightScope: { highlight: 'item', fade: 'global' },
+            valueFormatter: v => valueFormatter(v.value),
           },
         ]}
         width={GRAPH_WIDTH}

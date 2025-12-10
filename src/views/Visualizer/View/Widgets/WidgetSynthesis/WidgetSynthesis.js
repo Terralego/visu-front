@@ -90,9 +90,10 @@ export class WidgetSynthesis extends React.Component {
       return (
         <div className="widget-synthesis__value">
           <WidgetGraph
-            data={rawValue ?? []}
+            data={rawValue ? rawValue.map(v => ({ label: v.key, value: v.doc_count })) : []}
             type={item.graph.type}
             loading={rawValue === undefined}
+            isPercent={item.graph.percent}
           />
         </div>
       );
@@ -101,9 +102,10 @@ export class WidgetSynthesis extends React.Component {
       return (
         <div className="widget-synthesis__value">
           <WidgetGraph
-            data={rawValue ? rawValue.map(v => ({ key: v.key, doc_count: v.nested.value })) : []}
+            data={rawValue ? rawValue.map(v => ({ label: v.key, value: v.nested.value })) : []}
             type={item.graph.type}
             loading={rawValue === undefined}
+            isPercent={item.graph.percent}
           />
         </div>
       );
@@ -124,12 +126,13 @@ export class WidgetSynthesis extends React.Component {
                         key = foundField.label;
                       }
                     }
-                    return ({ key, doc_count: rawValue.all[k].value })
+                    return ({ label: key, value: rawValue.all[k].value })
                   })
                 : []
             }
             type={item.graph.type}
             loading={rawValue === undefined}
+            isPercent={item.graph.percent}
           />
         </div>
       );
