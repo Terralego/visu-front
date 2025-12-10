@@ -53,22 +53,23 @@ function WidgetGraph({ data: originalData, type, loading, isPercent }) {
     return value.toFixed(1);
   };
 
+  let biggestValue = 0;
+  let longestLabel = '';
+  data.forEach(d => {
+    if (d.label.length > longestLabel.length) {
+      longestLabel = d.label;
+    }
+    if (d.value > biggestValue) {
+      biggestValue = d.value;
+    }
+  });
+  const biggestValueDigits = biggestValue.toFixed(1).length;
+  // Make sure the yAxis legend on bar charts does not overlap with the axis values
+  const leftOffset = biggestValueDigits >= 3 ? (biggestValueDigits - 2) * 10 : 0;
+  // Automatically adapt graph height to take into account the labels length
+  const barGraphHeight = 250 + longestLabel.length * 5;
+
   if (type === 'bars') {
-    let biggestValue = 0;
-    let longestLabel = '';
-    data.forEach(d => {
-      if (d.label.length > longestLabel.length) {
-        longestLabel = d.label;
-      }
-      if (d.value > biggestValue) {
-        biggestValue = d.value;
-      }
-    });
-    const biggestValueDigits = biggestValue.toFixed(1).length;
-    // Make sure the yAxis legend does not overlap with the axis values
-    const leftOffset = biggestValueDigits >= 3 ? (biggestValueDigits - 2) * 10 : 0;
-    // Automatically adapt graph height to take into account the labels length
-    const graphHeight = 250 + longestLabel.length * 5;
     return (
       <BarChart
         dataset={data}
@@ -99,7 +100,7 @@ function WidgetGraph({ data: originalData, type, loading, isPercent }) {
             valueFormatter,
           },
         ]}
-        height={graphHeight}
+        height={barGraphHeight}
         width={GRAPH_WIDTH}
         margin={{
           left: 40 + leftOffset,
@@ -108,7 +109,7 @@ function WidgetGraph({ data: originalData, type, loading, isPercent }) {
           bottom: 10 + longestLabel.length * 5,
         }}
         slotProps={{ legend: { hidden: true } }}
-        slots={{ loadingOverlay: () => <LoadingOverlay height={graphHeight} /> }}
+        slots={{ loadingOverlay: () => <LoadingOverlay height={barGraphHeight} /> }}
         colors={graphColorPalette}
         loading={loading}
         highlightedItem={highlightedItem}
@@ -118,22 +119,6 @@ function WidgetGraph({ data: originalData, type, loading, isPercent }) {
   }
 
   if (type === 'stacked-bars') {
-    let biggestValue = 0;
-    let longestLabel = '';
-    data.forEach(d => {
-      if (d.label.length > longestLabel.length) {
-        longestLabel = d.label;
-      }
-      if (d.value > biggestValue) {
-        biggestValue = d.value;
-      }
-    });
-    const biggestValueDigits = biggestValue.toFixed(1).length;
-    // Make sure the yAxis legend does not overlap with the axis values
-    const leftOffset = biggestValueDigits >= 3 ? (biggestValueDigits - 2) * 10 : 0;
-    // Automatically adapt graph height to take into account the labels length
-    const graphHeight = 250 + longestLabel.length * 5;
-
     const stackedData = [{ label: '' }];
     data.forEach(d => {
       stackedData[0][d.label] = d.value
@@ -164,7 +149,7 @@ function WidgetGraph({ data: originalData, type, loading, isPercent }) {
           valueFormatter,
         }))}
         tooltip={{ trigger: 'item' }}
-        height={graphHeight}
+        height={barGraphHeight}
         width={GRAPH_WIDTH}
         margin={{
           left: 40 + leftOffset,
@@ -184,7 +169,7 @@ function WidgetGraph({ data: originalData, type, loading, isPercent }) {
             },
           },
         }}
-        slots={{ loadingOverlay: () => <LoadingOverlay height={graphHeight} /> }}
+        slots={{ loadingOverlay: () => <LoadingOverlay height={barGraphHeight} /> }}
         colors={graphColorPalette}
         loading={loading}
         highlightedItem={highlightedItem}
