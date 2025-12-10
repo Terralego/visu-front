@@ -265,21 +265,32 @@ export class WidgetSynthesis extends React.Component {
 
   render() {
     const { items } = this.props;
-
+    let isPreviousItemGraph = false;
     return (
       <div className="widget-synthesis">
-        {items.map((item, index) => (
-          <>
-            <div className="widget-synthesis__label">{item.name}</div>
-            <div
-              className="widget-synthesis__item"
-              key={`${JSON.stringify(item)}`}
-            >
-              {this.getContent(item)}
-            </div>
-            {index < items.length - 1 && <hr style={{ width: '100%', borderTop: 1 }} />}
-          </>
-        ))}
+        {items.map((item, index) => {
+          const isGraph = item.type !== 'sum' && item.type !== 'avg' && item.type !== 'value_count';
+          // Only add dividers to separate graphs from other elements
+          const shouldAddTopDivider = isGraph && !isPreviousItemGraph;
+          const shouldAddBottomDivider = isGraph && index < items.length - 1;
+          isPreviousItemGraph = isGraph;
+          return (
+            <>
+              {shouldAddTopDivider && <hr style={{ width: '100%', borderTop: 1 }} />}
+              <div
+                className="widget-synthesis__item"
+                key={`${JSON.stringify(item)}`}
+                style={{
+                  minWidth: isGraph ? '100%' : '50%',
+                }}
+              >
+                <div className="widget-synthesis__label">{item.name}</div>
+                {this.getContent(item)}
+              </div>
+              {shouldAddBottomDivider && <hr style={{ width: '100%', borderTop: 1 }} />}
+            </>
+          );
+        })}
       </div>
     );
   }
