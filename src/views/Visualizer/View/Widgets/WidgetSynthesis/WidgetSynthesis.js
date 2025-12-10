@@ -257,12 +257,12 @@ export class WidgetSynthesis extends React.Component {
       <div className="widget-synthesis">
         {items.map((item, index) => (
           <>
+            <div className="widget-synthesis__label">{item.name}</div>
             <div
               className="widget-synthesis__item"
               key={`${JSON.stringify(item)}`}
             >
               {this.getContent(item)}
-              <div className="widget-synthesis__label">{item.name}</div>
             </div>
             {index < items.length - 1 && <hr style={{ width: '100%', borderTop: 1 }} />}
           </>
