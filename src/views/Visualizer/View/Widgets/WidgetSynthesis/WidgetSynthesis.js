@@ -95,6 +95,7 @@ export class WidgetSynthesis extends React.Component {
             loading={rawValue === undefined}
             isPercent={item.graph.percent}
             unit={item.graph.unit}
+            decimals={item.decimals}
           />
         </div>
       );
@@ -108,6 +109,7 @@ export class WidgetSynthesis extends React.Component {
             loading={rawValue === undefined}
             isPercent={item.graph.percent}
             unit={item.graph.unit}
+            decimals={item.decimals}
           />
         </div>
       );
@@ -136,6 +138,7 @@ export class WidgetSynthesis extends React.Component {
             loading={rawValue === undefined}
             isPercent={item.graph.percent}
             unit={item.graph.unit}
+            decimals={item.decimals}
           />
         </div>
       );
@@ -248,12 +251,16 @@ export class WidgetSynthesis extends React.Component {
     this.setState({ values });
   }
 
-  formatValue({ name, template }) {
+  formatValue({ name, template, decimals }) {
     const { values: { [name]: rawValue } } = this.state;
-    if (!template) {
-      return rawValue;
+    let displayValue = rawValue;
+    if (rawValue && decimals !== undefined && decimals !== null) {
+      displayValue = rawValue.toFixed(decimals);
     }
-    return nunjucks.renderString(template, { value: rawValue });
+    if (!template) {
+      return displayValue;
+    }
+    return nunjucks.renderString(template, { value: displayValue });
   }
 
   render() {

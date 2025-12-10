@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { BarChart } from '@mui/x-charts/BarChart';
 import { PieChart } from '@mui/x-charts/PieChart';
 import { blueberryTwilightPalette } from '@mui/x-charts/colorPalettes';
@@ -27,7 +27,7 @@ function LoadingOverlay({ height }) {
   );
 }
 
-function WidgetGraph({ data: originalData, type, loading, isPercent, unit }) {
+function WidgetGraph({ data: originalData, type, loading, isPercent, unit, decimals }) {
   const theme = useTheme();
   const [highlightedItem, setHighLightedItem] = React.useState(null);
 
@@ -43,18 +43,22 @@ function WidgetGraph({ data: originalData, type, loading, isPercent, unit }) {
     data = originalData.map(d => ({ label: d.label, value: (d.value / total) * 100 }));
   }
 
-  const valueFormatter = value => {
+  const valueFormatter = useCallback(value => {
     if (value === null) {
       return null;
     }
+    let displayValue = value
+    if (decimals !== undefined && decimals !== null) {
+      displayValue = value.toFixed(decimals);
+    }
     if (isPercent) {
-      return `${value.toFixed(1)} %`;
+      return `${displayValue} %`;
     }
     if (unit) {
-      return `${value.toFixed(1)} (${unit})`;
+      return `${displayValue} (${unit})`;
     }
-    return value.toFixed(1);
-  };
+    return displayValue;
+  }, [decimals, isPercent, unit]);
 
   let biggestValue = 0;
   let longestLabel = '';
