@@ -27,7 +27,7 @@ function LoadingOverlay({ height }) {
   );
 }
 
-function WidgetGraph({ data: originalData, type, loading, isPercent }) {
+function WidgetGraph({ data: originalData, type, loading, isPercent, unit }) {
   const theme = useTheme();
   const [highlightedItem, setHighLightedItem] = React.useState(null);
 
@@ -50,6 +50,9 @@ function WidgetGraph({ data: originalData, type, loading, isPercent }) {
     if (isPercent) {
       return `${value.toFixed(1)} %`;
     }
+    if (unit) {
+      return `${value.toFixed(1)} (${unit})`;
+    }
     return value.toFixed(1);
   };
 
@@ -69,6 +72,16 @@ function WidgetGraph({ data: originalData, type, loading, isPercent }) {
   // Automatically adapt graph height to take into account the labels length
   const barGraphHeight = 250 + longestLabel.length * 5;
 
+  const getYLabel = () => {
+    if (isPercent) {
+      return 'Total (%)';
+    }
+    if (unit) {
+      return `Total (${unit})`;
+    }
+    return 'Total';
+  };
+
   if (type === 'bars') {
     return (
       <BarChart
@@ -83,7 +96,7 @@ function WidgetGraph({ data: originalData, type, loading, isPercent }) {
           },
         }]}
         yAxis={[{
-          label: `Total${isPercent ? ' (%)' : ''}`,
+          label: getYLabel(),
         }]}
         sx={
           {
@@ -131,7 +144,7 @@ function WidgetGraph({ data: originalData, type, loading, isPercent }) {
           dataKey: 'label',
         }]}
         yAxis={[{
-          label: `Total${isPercent ? ' (%)' : ''}`,
+          label: getYLabel(),
         }]}
         sx={
           {

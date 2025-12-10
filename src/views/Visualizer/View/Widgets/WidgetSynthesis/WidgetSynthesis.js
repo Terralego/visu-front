@@ -94,6 +94,7 @@ export class WidgetSynthesis extends React.Component {
             type={item.graph.type}
             loading={rawValue === undefined}
             isPercent={item.graph.percent}
+            unit={item.graph.unit}
           />
         </div>
       );
@@ -106,6 +107,7 @@ export class WidgetSynthesis extends React.Component {
             type={item.graph.type}
             loading={rawValue === undefined}
             isPercent={item.graph.percent}
+            unit={item.graph.unit}
           />
         </div>
       );
@@ -133,6 +135,7 @@ export class WidgetSynthesis extends React.Component {
             type={item.graph.type}
             loading={rawValue === undefined}
             isPercent={item.graph.percent}
+            unit={item.graph.unit}
           />
         </div>
       );
