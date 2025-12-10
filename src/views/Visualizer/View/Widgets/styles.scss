@@ -21,7 +21,8 @@ $containerWidth: 20rem;
   z-index: 80;
   background: rgb(48,64,77);
   will-change: width;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 
   &--visible {
     width: $containerWidth;
