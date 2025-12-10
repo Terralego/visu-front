@@ -37,7 +37,7 @@ function WidgetGraph({ data, type, loading }) {
     ...blueberryTwilightPalette(mode),
   ]);
 
-  if (type === 'bar') {
+  if (type === 'bars') {
     let biggestValue = 0;
     let longestLabel = '';
     data.forEach(d => {
@@ -100,6 +100,76 @@ function WidgetGraph({ data, type, loading }) {
     );
   }
 
+  if (type === 'stacked-bars') {
+    let biggestValue = 0;
+    let longestLabel = '';
+    data.forEach(d => {
+      if (d.key.length > longestLabel.length) {
+        longestLabel = d.key;
+      }
+      if (d.doc_count > biggestValue) {
+        biggestValue = d.doc_count;
+      }
+    });
+    const biggestValueDigits = biggestValue.toString().length;
+    // Make sure the yAxis legend does not overlap with the axis values
+    const leftOffset = biggestValueDigits >= 3 ? (biggestValueDigits - 2) * 10 : 0;
+    // Automatically adapt graph height to take into account the labels length
+    const graphHeight = 250 + longestLabel.length * 5;
+    console.log(data);
+    const stackedData = [{ key: '' }];
+    data.forEach(d => {
+      stackedData[0][d.key] = d.doc_count
+    });
+    return (
+      <BarChart
+        dataset={stackedData}
+        xAxis={[{
+          scaleType: 'band',
+          dataKey: 'key',
+        }]}
+        yAxis={[{
+          label: 'Total',
+        }]}
+        sx={
+          {
+            [`.${axisClasses.left} .${axisClasses.label}`]: {
+              // Move the y-axis label with CSS
+              transform: `translateX(-${leftOffset}px)`,
+            },
+          }
+        }
+        series={data.map(d => ({ dataKey: d.key, label: d.key, stack: 'stack', highlightScope: { highlight: 'item', fade: 'global' } }))}
+        tooltip={{ trigger: 'item' }}
+        height={graphHeight}
+        width={GRAPH_WIDTH}
+        margin={{
+          left: 40 + leftOffset,
+          right: 40,
+          top: 10,
+          bottom: 10 + data.length * 10,
+        }}
+        slotProps={{
+          legend: {
+            direction: 'row',
+            position: { vertical: 'bottom', horizontal: 'middle' },
+            padding: 0,
+            itemMarkHeight: 5,
+            itemGap: 5,
+            labelStyle: {
+              fontSize: 12,
+            },
+          },
+        }}
+        slots={{ loadingOverlay: () => <LoadingOverlay height={graphHeight} /> }}
+        colors={graphColorPalette}
+        loading={loading}
+        highlightedItem={highlightedItem}
+        onHighlightChange={setHighLightedItem}
+      />
+    );
+  }
+
   if (type === 'pie') {
     // Automatically adapt graph graph height totake into account the size of the legend
     const graphHeight = 250 + data.length * 10;
@@ -119,13 +189,13 @@ function WidgetGraph({ data, type, loading }) {
         margin={{
           left: 40,
           right: 40,
-          top: 10 + data.length * 10,
-          bottom: 10,
+          top: 10,
+          bottom: 10 + data.length * 10,
         }}
         slotProps={{
           legend: {
             direction: 'row',
-            position: { vertical: 'top', horizontal: 'middle' },
+            position: { vertical: 'bottom', horizontal: 'middle' },
             padding: 0,
             itemMarkHeight: 5,
             itemGap: 5,
