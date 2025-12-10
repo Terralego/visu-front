@@ -17,10 +17,14 @@ const getAggregationValue = (aggregation, match = []) => {
   const { value, buckets } = aggregation;
 
   if (buckets) {
-    return buckets
+    return buckets;
   }
 
-  return value;
+  if (value) {
+    return value;
+  }
+
+  return aggregation;
 };
 
 export class WidgetSynthesis extends React.Component {
@@ -78,7 +82,9 @@ export class WidgetSynthesis extends React.Component {
   }
 
   getContent(item) {
+    const { displayedLayer } = this.props;
     const { values: { [item.name]: rawValue } } = this.state;
+    const { filters } = displayedLayer;
 
     if (item.type === 'distribution') {
       return (
@@ -102,6 +108,33 @@ export class WidgetSynthesis extends React.Component {
         </div>
       );
     }
+    if (item.type === 'numeric') {
+      return (
+        <div className="widget-synthesis__value">
+          <WidgetGraph
+            data={
+              rawValue
+                ? Object.keys(rawValue.all)
+                  .filter(k => k !== 'doc_count')
+                  .map(k => {
+                    let key = k;
+                    if (filters.fields) {
+                      const foundField = filters.fields.find(f => f.value === k);
+                      if (foundField) {
+                        key = foundField.label;
+                      }
+                    }
+                    return ({ key, doc_count: rawValue.all[k].value })
+                  })
+                : []
+            }
+            type={item.graph.type}
+            loading={rawValue === undefined}
+          />
+        </div>
+      );
+    }
+
     const value = this.formatValue(item)
     if (rawValue === undefined) {
       return <Loading />;
@@ -152,6 +185,22 @@ export class WidgetSynthesis extends React.Component {
             type: 'terms',
             field: `${field}.keyword`,
             nest: q => q.aggregation(graph.aggregation_type, graph.value_field, {}, 'nested'),
+          });
+        case 'numeric':
+          return ({
+            name,
+            type: 'filters',
+            options: {
+              filters: {
+                all: {
+                  match_all: {},
+                },
+              },
+            },
+            nest: q => {
+              graph.value_field.forEach(v => q.aggregation(graph.aggregation_type, v, {}, v));
+              return q;
+            },
           });
         default:
           return ({

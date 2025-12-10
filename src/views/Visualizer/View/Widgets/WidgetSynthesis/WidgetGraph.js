@@ -50,7 +50,7 @@ function WidgetGraph({ data, type, loading }) {
     });
     const biggestValueDigits = biggestValue.toString().length;
     // Make sure the yAxis legend does not overlap with the axis values
-    const leftOffset = biggestValueDigits >= 3 ? (biggestValueDigits - 2) * 5 : 0;
+    const leftOffset = biggestValueDigits >= 3 ? (biggestValueDigits - 2) * 10 : 0;
     // Automatically adapt graph height to take into account the labels length
     const graphHeight = 250 + longestLabel.length * 5;
     return (
