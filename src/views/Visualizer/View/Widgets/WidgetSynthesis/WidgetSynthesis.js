@@ -96,6 +96,7 @@ export class WidgetSynthesis extends React.Component {
             isPercent={item.graph.percent}
             unit={item.graph.unit}
             decimals={item.decimals}
+            orientation={item.graph.orientation}
           />
         </div>
       );
@@ -110,6 +111,7 @@ export class WidgetSynthesis extends React.Component {
             isPercent={item.graph.percent}
             unit={item.graph.unit}
             decimals={item.decimals}
+            orientation={item.graph.orientation}
           />
         </div>
       );
@@ -139,6 +141,7 @@ export class WidgetSynthesis extends React.Component {
             isPercent={item.graph.percent}
             unit={item.graph.unit}
             decimals={item.decimals}
+            orientation={item.graph.orientation}
           />
         </div>
       );

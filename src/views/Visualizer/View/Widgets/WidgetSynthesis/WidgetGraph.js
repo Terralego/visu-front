@@ -7,6 +7,8 @@ import { axisClasses } from '@mui/x-charts/ChartsAxis';
 import Loading from './Loading';
 
 const GRAPH_WIDTH = 280;
+const GRAPH_HORIZONAL_MARGIN = 30;
+const GRAPH_VERTICAL_MARGIN = 10;
 
 function LoadingOverlay({ height }) {
   return (
@@ -27,7 +29,15 @@ function LoadingOverlay({ height }) {
   );
 }
 
-function WidgetGraph({ data: originalData, type, loading, isPercent, unit, decimals }) {
+function WidgetGraph({
+  data: originalData,
+  type,
+  loading,
+  isPercent,
+  unit,
+  decimals,
+  orientation,
+}) {
   const theme = useTheme();
   const [highlightedItem, setHighLightedItem] = React.useState(null);
 
@@ -70,7 +80,7 @@ function WidgetGraph({ data: originalData, type, loading, isPercent, unit, decim
       biggestValue = d.value;
     }
   });
-  const biggestValueDigits = biggestValue.toFixed(1).length;
+  const biggestValueDigits = biggestValue.toFixed(0).length;
   // Make sure the yAxis legend on bar charts does not overlap with the axis values
   const leftOffset = biggestValueDigits >= 3 ? (biggestValueDigits - 2) * 10 : 0;
   // Automatically adapt graph height to take into account the labels length
@@ -87,28 +97,37 @@ function WidgetGraph({ data: originalData, type, loading, isPercent, unit, decim
   };
 
   if (type === 'bars') {
+    const bandAxis = [{
+      scaleType: 'band',
+      dataKey: 'label',
+      tickLabelStyle: {
+        angle: orientation === 'horizontal' ? -45 : 60,
+        textAnchor: orientation === 'horizontal' ? 'end' : 'start',
+        fontSize: 10,
+      },
+      tickLabelPlacement: 'middle',
+    }];
+    const valueAxis = [{
+      label: getYLabel(),
+      domainLimit: isPercent ? () => ({
+        min: 0,
+        max: 100,
+      }) : undefined,
+    }];
     return (
       <BarChart
         dataset={data}
-        xAxis={[{
-          scaleType: 'band',
-          dataKey: 'label',
-          tickLabelStyle: {
-            angle: 60,
-            textAnchor: 'start',
-            fontSize: 10,
-          },
-        }]}
-        yAxis={[{
-          label: getYLabel(),
-        }]}
+        layout={orientation}
+        xAxis={orientation === 'horizontal' ? valueAxis : bandAxis}
+        yAxis={orientation === 'horizontal' ? bandAxis : valueAxis}
         sx={
-          {
-            [`.${axisClasses.left} .${axisClasses.label}`]: {
-              // Move the y-axis label with CSS
-              transform: `translateX(-${leftOffset}px)`,
-            },
-          }
+          orientation !== 'horizontal' ?
+            {
+              [`.${axisClasses.left} .${axisClasses.label}`]: {
+                // Move the y-axis label with CSS
+                transform: `translateX(-${leftOffset}px)`,
+              },
+            } : undefined
         }
         series={[
           {
@@ -120,10 +139,13 @@ function WidgetGraph({ data: originalData, type, loading, isPercent, unit, decim
         height={barGraphHeight}
         width={GRAPH_WIDTH}
         margin={{
-          left: 40 + leftOffset,
-          right: 40,
-          top: 10,
-          bottom: 10 + longestLabel.length * 5,
+          left: orientation === 'horizontal'
+            ? GRAPH_HORIZONAL_MARGIN + longestLabel.length * 3
+            : GRAPH_HORIZONAL_MARGIN + 10 + leftOffset,
+          right: GRAPH_HORIZONAL_MARGIN,
+          top: GRAPH_VERTICAL_MARGIN,
+          // Setting undefined is not the same as ommiting the key
+          ...(orientation === 'horizontal' ? {} : { bottom: GRAPH_VERTICAL_MARGIN + longestLabel.length * 5 }),
         }}
         slotProps={{ legend: { hidden: true } }}
         slots={{ loadingOverlay: () => <LoadingOverlay height={barGraphHeight} /> }}
@@ -140,23 +162,31 @@ function WidgetGraph({ data: originalData, type, loading, isPercent, unit, decim
     data.forEach(d => {
       stackedData[0][d.label] = d.value
     });
+    const bandAxis = [{
+      scaleType: 'band',
+      dataKey: 'label',
+    }];
+    const valueAxis = [{
+      label: getYLabel(),
+      domainLimit: isPercent ? () => ({
+        min: 0,
+        max: 100,
+      }) : undefined,
+    }];
     return (
       <BarChart
         dataset={stackedData}
-        xAxis={[{
-          scaleType: 'band',
-          dataKey: 'label',
-        }]}
-        yAxis={[{
-          label: getYLabel(),
-        }]}
+        layout={orientation}
+        xAxis={orientation === 'horizontal' ? valueAxis : bandAxis}
+        yAxis={orientation === 'horizontal' ? bandAxis : valueAxis}
         sx={
-          {
-            [`.${axisClasses.left} .${axisClasses.label}`]: {
-              // Move the y-axis label with CSS
-              transform: `translateX(-${leftOffset}px)`,
-            },
-          }
+          orientation !== 'horizontal' ?
+            {
+              [`.${axisClasses.left} .${axisClasses.label}`]: {
+                // Move the y-axis label with CSS
+                transform: `translateX(-${leftOffset}px)`,
+              },
+            } : undefined
         }
         series={data.map(d => ({
           dataKey: d.label,
@@ -169,10 +199,10 @@ function WidgetGraph({ data: originalData, type, loading, isPercent, unit, decim
         height={barGraphHeight}
         width={GRAPH_WIDTH}
         margin={{
-          left: 40 + leftOffset,
-          right: 40,
-          top: 10,
-          bottom: 10 + data.length * 10,
+          left: orientation === 'horizontal' ? GRAPH_HORIZONAL_MARGIN : GRAPH_HORIZONAL_MARGIN + 10 + leftOffset,
+          right: GRAPH_HORIZONAL_MARGIN,
+          top: GRAPH_VERTICAL_MARGIN,
+          bottom: orientation === 'horizontal' ? GRAPH_VERTICAL_MARGIN + 30 + data.length * 10 : GRAPH_VERTICAL_MARGIN + data.length * 10,
         }}
         slotProps={{
           legend: {
@@ -213,10 +243,10 @@ function WidgetGraph({ data: originalData, type, loading, isPercent, unit, decim
         width={GRAPH_WIDTH}
         height={graphHeight}
         margin={{
-          left: 40,
-          right: 40,
-          top: 10,
-          bottom: 10 + data.length * 10,
+          left: GRAPH_HORIZONAL_MARGIN,
+          right: GRAPH_HORIZONAL_MARGIN,
+          top: GRAPH_VERTICAL_MARGIN,
+          bottom: GRAPH_VERTICAL_MARGIN + data.length * 10,
         }}
         slotProps={{
           legend: {
