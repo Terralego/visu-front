@@ -8,7 +8,7 @@ const HIGHLIGHT_COLOR = '#00da12';
  * Hook that manages table selection highlights on the map in a declarative way.
  * Automatically adds/removes highlight layers based on the current selection state.
  */
-export const useTableSelectionHighlight = (map) => {
+export const useTableSelectionHighlight = map => {
   const { rowSelection, activeLayer } = useTableSelection();
 
   useEffect(() => {
@@ -17,7 +17,7 @@ export const useTableSelectionHighlight = (map) => {
     }
 
     const { mapboxLayerId, sourceLayer, source } = activeLayer;
-    
+
     if (!mapboxLayerId || !source) {
       return;
     }
@@ -31,7 +31,7 @@ export const useTableSelectionHighlight = (map) => {
 
     // Get the original layer to check its type
     const originalLayer = map.getLayer(mapboxLayerId);
-    
+
     if (!originalLayer) {
       return;
     }
