@@ -1,0 +1,132 @@
+.data-table-mui {
+  z-index: 90;
+  height: 0;
+  overflow: hidden;
+  transition: height 0.1s ease-in-out;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+
+  &--visible {
+    height: var(--table-height, 33vh);
+  }
+  &--full {
+    height: 100vh;
+  }
+}
+
+.table-container-mui {
+  margin-top: 8px;
+  position: relative;
+  height: 0;
+  overflow: hidden;
+  transition: height 0.3s ease-in-out;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  &--visible {
+    height: 100%;
+  }
+
+  &--full {
+    // position: fixed;
+    height: 100%;
+    // top: 0;
+    // left: 0;
+    // right: 0;
+    // bottom: 0;
+    // z-index: 100;
+  }
+
+  &--is-resizing {
+    transition: height 0.3s ease-in-out, top 0.3s ease-in-out;
+  }
+}
+
+.table-resize-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  cursor: ns-resize;
+  user-select: none;
+  // Transparent overlay to capture all mouse events
+}
+
+.table-resize-handle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  cursor: ns-resize;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    .table-resize-handle__bar {
+      opacity: 1;
+      background-color: #1976d2;
+    }
+  }
+
+  &__bar {
+    width: 40px;
+    height: 3px;
+    background-color: #393939;
+    border-radius: 2px;
+    opacity: 0.6;
+    transition: all 0.2s ease;
+  }
+}
+
+.table-header-mui {
+  &--is-loading {
+    opacity: 0.7;
+  }
+}
+
+// Override MUI DataGrid styles for better integration
+.MuiDataGrid-root {
+  border: none;
+
+  .MuiDataGrid-columnHeaders {
+    background-color: #fafafa;
+    border-bottom: 2px solid #e0e0e0;
+  }
+
+  .MuiDataGrid-columnHeaderTitle {
+    font-weight: 600;
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+  .MuiDataGrid-row {
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.04);
+    }
+  }
+
+  .MuiDataGrid-cell {
+    border-bottom: 1px solid #f0f0f0;
+
+    &:focus,
+    &:focus-within {
+      outline: none;
+    }
+  }
+
+  .MuiDataGrid-footerContainer {
+    border-top: 1px solid #e0e0e0;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .table-container-mui {
+    &--visible {
+      height: 40vh;
+    }
+  }
+}

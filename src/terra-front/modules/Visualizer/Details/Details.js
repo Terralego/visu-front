@@ -99,8 +99,7 @@ const Details = ({
           backdropFilter: 'blur(8px)',
           margin: 1,
           right: 40,
-          maxHeight: isTableActive ? '66vh' : 'calc(100vh - 16px)',
-          height: 'auto',
+          height: isTableActive ? 'calc(100vh - var(--table-height) - 16px)' : 'calc(100vh - 16px)',
           overflow: 'hidden',
           borderRadius: 1,
           border: '1px solid rgba(0, 0, 0, 0.1)',
@@ -305,22 +304,22 @@ const Details = ({
                               </Box>
                             </>
                           )}
+                          {isAuthenticated ? (
+                            <ReportsList
+                              feature={featureToDisplay}
+                              fetchProperties={fetchProperties}
+                              layerId={layerTreeId}
+                              translate={translate}
+                            />
+                          ) : (
+                            <ReportsCount
+                              feature={featureToDisplay}
+                              fetchProperties={fetchProperties}
+                              layerId={layerTreeId}
+                              translate={translate}
+                            />
+                          )}
                         </>
-                      )}
-                      {isAuthenticated ? (
-                        <ReportsList
-                          feature={featureToDisplay}
-                          fetchProperties={fetchProperties}
-                          layerId={layerTreeId}
-                          translate={translate}
-                        />
-                      ) : (
-                        <ReportsCount
-                          feature={featureToDisplay}
-                          fetchProperties={fetchProperties}
-                          layerId={layerTreeId}
-                          translate={translate}
-                        />
                       )}
                     </Box>
                   </Box>

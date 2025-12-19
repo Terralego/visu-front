@@ -58,11 +58,13 @@ import { connectSettings } from '../../Main/Provider/context';
 import BoundingBoxObserver from '../../../components/BoundingBoxObserver';
 import DeclarationWrapper from '../../../components/DeclarationModule/DeclarationWrapper';
 import ReportingModule from '../../../components/ReportingModule/ReportingModule';
-import DataTable from './DataTable';
+import DataTableMuiConnected from './DataTableMui/connectDataTableMui';
 import Widgets from './Widgets';
 import { generateClusterList } from './interactions';
 import searchInMap from './search';
 import ShareWrapper from '../../../components/ShareModule/ShareWrapper';
+import { TableSelectionProvider } from '../../../contexts/TableSelectionContext';
+import { useTableSelectionHighlight } from '../../../hooks/useTableSelectionHighlight';
 
 export const INTERACTION_DISPLAY_DETAILS = 'displayDetails';
 
@@ -118,6 +120,8 @@ const getControls = memoize(
 
 const nullObj = {};
 
+const TABLE_HEIGHT_DEFAULT = 33;
+
 export class Visualizer extends React.Component {
   static propTypes = {
     view: PropTypes.shape({
@@ -167,6 +171,7 @@ export class Visualizer extends React.Component {
   };
 
   state = {
+    DEBUG_MUI_TABLE: true,
     isLayersTreeVisible: true,
     visibleDrawer: null,
     waitingForMapClick: false,
@@ -180,6 +185,7 @@ export class Visualizer extends React.Component {
     features: {},
     totalFeatures: 0,
     interactions: [],
+    tableHeight: TABLE_HEIGHT_DEFAULT,
   };
 
   debouncedSearchQuery = debounce(query => this.search(query), 500);
@@ -412,6 +418,10 @@ export class Visualizer extends React.Component {
   };
 
   setLegends = legends => this.setState({ legends });
+
+  setTableHeight = height => {
+    this.setState({ tableHeight: height });
+  };
 
   refreshLayers = () => {
     delete this.prevLayersTreeState;
@@ -1047,6 +1057,7 @@ export class Visualizer extends React.Component {
       features,
       printIsOpened,
       bounds,
+      tableHeight,
     } = this.state;
 
     const {
@@ -1079,8 +1090,7 @@ export class Visualizer extends React.Component {
 
     const displayLayersTree = isLayersTreeVisible && !printIsOpened;
     const isDetailsVisible = !!details && !printIsOpened && visibleDrawer === 'details';
-    const isReportingVisible =
-      visibleDrawer === 'reporting' && hasReportConfigs;
+    const isReportingVisible = visibleDrawer === 'reporting' && hasReportConfigs;
 
     const currentFeatureList = Object.values(features).find(({ layers }) =>
       layers.includes(detailLayer),
@@ -1122,142 +1132,161 @@ export class Visualizer extends React.Component {
       getResourceBundle(language.split('-')[0]) || getResourceBundle(fallbackLng[0]) || nullObj;
 
     return (
-      <LayersTreeProvider
-        map={map}
-        layersTree={layersTree}
-        onChange={this.updateLayersTreeState}
-        initialLayersTreeState={layersTreeState}
-        fetchPropertyValues={fetchPropertyValues}
-        fetchPropertyRange={fetchPropertyRange}
-        translate={t}
-        layersExtent={bounds}
-        isDetailsVisible={isDetailsVisible}
-      >
-        <PrivateLayers layersTree={layersTree} />
-        <div
-          className={classnames({
-            visualizer: true,
-            'visualizer--with-layers-tree': displayLayersTree,
-            'visualizer--with-table': isTableVisible && !printIsOpened,
-            'visualizer--with-widgets': isWidgetsVisible,
-            'visualizer--with-details': isDetailsVisible || isReportingVisible,
-            'visualizer--with-declaration': visibleDrawer === 'declaration',
-          })}
+      <TableSelectionProvider>
+        <TableSelectionHighlightManager map={map} />
+        <LayersTreeProvider
+          map={map}
+          layersTree={layersTree}
+          onChange={this.updateLayersTreeState}
+          initialLayersTreeState={layersTreeState}
+          fetchPropertyValues={fetchPropertyValues}
+          fetchPropertyRange={fetchPropertyRange}
+          translate={t}
+          layersExtent={bounds}
+          isDetailsVisible={isDetailsVisible}
         >
+          <PrivateLayers layersTree={layersTree} />
           <div
             className={classnames({
-              'visualizer-view': true,
-              'is-layers-tree-visible': displayLayersTree,
+              visualizer: true,
+              'visualizer--with-layers-tree': displayLayersTree,
+              'visualizer--with-table': isTableVisible && !printIsOpened,
+              'visualizer--with-widgets': isWidgetsVisible,
+              'visualizer--with-details': isDetailsVisible || isReportingVisible,
+              'visualizer--with-declaration': visibleDrawer === 'declaration',
             })}
+            style={{
+              '--table-height': `${tableHeight}vh`,
+            }}
           >
-            {layersTree && (
-              <MapNavigation
-                title={title}
-                toggleLayersTree={toggleLayersTree}
-                visible={displayLayersTree}
-                renderHeader={renderHeader}
-                translate={t}
-              >
-                {isStory ? (
-                  <Story
-                    map={map}
-                    story={layersTreeToStory(layersTree)}
-                    setLegends={setLegends}
-                    translate={t}
-                  />
-                ) : (
-                  <LayersTree translate={t} filterable />
-                )}
-              </MapNavigation>
-            )}
-
-            <div className="visualizer-view__center col">
-              <div className="row">
-                <div className="col-data">
-                  <BoundingBoxObserver
-                    onChange={setVisibleBoundingBox}
-                    className={classnames({
-                      'visualizer-view__map': true,
-                      'visualizer-view__map--is-resizing': mapIsResizing,
-                    })}
-                  >
-                    <TooManyResults count={totalFeatures} translate={t} />
-
-                    <Details
-                      visible={isDetailsVisible}
-                      features={featuresForDetail.map(_id => ({ _id }))}
-                      {...details}
-                      onClose={hideDetails}
-                      onChange={this.onDetailsChange}
-                      onReport={this.onReportFeature}
-                      enableCarousel={enableDetailCarrousel}
-                      isTableActive={isTableVisible}
+            <div
+              className={classnames({
+                'visualizer-view': true,
+                'is-layers-tree-visible': displayLayersTree,
+              })}
+            >
+              {layersTree && (
+                <MapNavigation
+                  title={title}
+                  toggleLayersTree={toggleLayersTree}
+                  visible={displayLayersTree}
+                  renderHeader={renderHeader}
+                  translate={t}
+                >
+                  {isStory ? (
+                    <Story
+                      map={map}
+                      story={layersTreeToStory(layersTree)}
+                      setLegends={setLegends}
                       translate={t}
-                      hasReportConfigs={hasReportConfigs}
-                      settings={settings}
                     />
-                    <ReportingModule
-                      open={isReportingVisible}
-                      onClose={this.toggleReportingModule}
-                      layer={selectedLayer}
-                      isTableActive={isTableVisible}
-                      featureId={selectedFeatureIdForReporting}
-                      featureGeometry={selectedFeatureGeometryForReporting}
-                      fetchProperties={selectedFetchPropertiesForReporting}
-                      mainField={selectedMainFieldForReporting}
+                  ) : (
+                    <LayersTree translate={t} filterable />
+                  )}
+                </MapNavigation>
+              )}
+
+              <div className="visualizer-view__center col">
+                <div className="row">
+                  <div className="col-data">
+                    <BoundingBoxObserver
+                      onChange={setVisibleBoundingBox}
+                      className={classnames({
+                        'visualizer-view__map': true,
+                        'visualizer-view__map--is-resizing': mapIsResizing,
+                      })}
+                    >
+                      <TooManyResults count={totalFeatures} translate={t} />
+
+                      <Details
+                        visible={isDetailsVisible}
+                        features={featuresForDetail.map(_id => ({ _id }))}
+                        {...details}
+                        onClose={hideDetails}
+                        onChange={this.onDetailsChange}
+                        onReport={this.onReportFeature}
+                        enableCarousel={enableDetailCarrousel}
+                        isTableActive={isTableVisible}
+                        translate={t}
+                        hasReportConfigs={hasReportConfigs}
+                        settings={settings}
+                      />
+                      <ReportingModule
+                        open={isReportingVisible}
+                        onClose={this.toggleReportingModule}
+                        layer={selectedLayer}
+                        isTableActive={isTableVisible}
+                        featureId={selectedFeatureIdForReporting}
+                        featureGeometry={selectedFeatureGeometryForReporting}
+                        fetchProperties={selectedFetchPropertiesForReporting}
+                        mainField={selectedMainFieldForReporting}
+                      />
+                      <DeclarationWrapper
+                        map={map}
+                        isDeclarationModuleVisible={visibleDrawer === 'declaration'}
+                        onToggleDeclarationModule={this.toggleDeclarationModule}
+                        isTableActive={isTableVisible}
+                        onMapClick={this.handleDeclarationMapClick}
+                        selectedLocation={declarationLocation}
+                      />
+                      <ShareWrapper
+                        map={map}
+                        isShareModuleVisible={visibleDrawer === 'share'}
+                        onToggleShareModule={this.toggleShareModule}
+                      />
+                    </BoundingBoxObserver>
+                    <DataTableMuiConnected
+                      isTableVisible={isTableVisible && !printIsOpened}
+                      exportCallback={exportCallback}
+                      setTableHeight={this.setTableHeight}
+                      details={details}
+                      detailsFunction={interactions.find(
+                        ({ interaction, id }) => (interaction === INTERACTION_DISPLAY_DETAILS || interaction === 'function') && id === viewState?.table,
+                      )}
+                      interactiveMapInstance={this.state.interactiveMapInstance}
+                      hideDetails={hideDetails}
+                      translate={t}
                     />
-                    <DeclarationWrapper
-                      map={map}
-                      isDeclarationModuleVisible={visibleDrawer === 'declaration'}
-                      onToggleDeclarationModule={this.toggleDeclarationModule}
-                      isTableActive={isTableVisible}
-                      onMapClick={this.handleDeclarationMapClick}
-                      selectedLocation={declarationLocation}
-                    />
-                    <ShareWrapper
-                      map={map}
-                      isShareModuleVisible={visibleDrawer === 'share'}
-                      onToggleShareModule={this.toggleShareModule}
-                    />
-                  </BoundingBoxObserver>
-                  <DataTable
-                    isTableVisible={isTableVisible && !printIsOpened}
-                    exportCallback={exportCallback}
-                  />
-                </div>
-                <div className="col-widgets">
-                  <Widgets translate={t} />
+                  </div>
+                  <div className="col-widgets">
+                    <Widgets translate={t} />
+                  </div>
                 </div>
               </div>
             </div>
+            <InteractiveMap
+              {...mapProps}
+              className={Classes.DARK}
+              interactions={interactions}
+              legends={legends}
+              onMapLoaded={resetMap}
+              onMapUpdate={onMapUpdate}
+              onStyleChange={onStyleChange}
+              onClusterUpdate={onClusterUpdate}
+              translate={t}
+              locale={mapLocale}
+              controls={controls}
+              hash="map"
+              declarationMarker={declarationLocation}
+              onInit={this.interactiveMapInit}
+            >
+              <div className="interactive-map__header">
+                <img src={logo} alt="TerraVisu" className="app-logo" />
+                {brandLogo && <img src={brandLogo} alt="TerraVisu" className="brand-logo" />}
+              </div>
+              <div className="interactive-map__footer">{credits}</div>
+            </InteractiveMap>
           </div>
-          <InteractiveMap
-            {...mapProps}
-            className={Classes.DARK}
-            interactions={interactions}
-            legends={legends}
-            onMapLoaded={resetMap}
-            onMapUpdate={onMapUpdate}
-            onStyleChange={onStyleChange}
-            onClusterUpdate={onClusterUpdate}
-            translate={t}
-            locale={mapLocale}
-            controls={controls}
-            hash="map"
-            declarationMarker={declarationLocation}
-            onInit={this.interactiveMapInit}
-          >
-            <div className="interactive-map__header">
-              <img src={logo} alt="TerraVisu" className="app-logo" />
-              {brandLogo && <img src={brandLogo} alt="TerraVisu" className="brand-logo" />}
-            </div>
-            <div className="interactive-map__footer">{credits}</div>
-          </InteractiveMap>
-        </div>
-      </LayersTreeProvider>
+        </LayersTreeProvider>
+      </TableSelectionProvider>
     );
   }
 }
+
+const TableSelectionHighlightManager = ({ map }) => {
+  useTableSelectionHighlight(map);
+  return null;
+};
 
 export default connectState(
   'initialState',
