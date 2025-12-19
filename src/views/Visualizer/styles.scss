@@ -44,7 +44,8 @@ $bg-visualizer: rgb(49, 64, 77);
 
     &__map {
       position: relative;
-      flex: auto;
+      flex: content;
+      // flex-basis: 0;
       height: 100%;
       overflow: hidden;
 
@@ -129,7 +130,6 @@ $bg-visualizer: rgb(49, 64, 77);
 
   &--with {
     $layersTreeWidth: 22.5rem;
-    $tableHeight: 33vh;
     $widgetsWidth: 20rem;
     $detailsWidth: 25.5rem;
 
@@ -142,16 +142,16 @@ $bg-visualizer: rgb(49, 64, 77);
 
     &-table {
       .mapboxgl-ctrl-bottom-left {
-        transform: translate3d(3rem, -$tableHeight, 0);
+        transform: translate3d(3rem, calc(-1 * var(--table-height, 33vh)), 0);
       }
 
       .mapboxgl-ctrl-bottom-right,
       .interactive-map__legends {
-        transform: translate3d(0, -$tableHeight, 0);
+        transform: translate3d(0, calc(-1 * var(--table-height, 33vh)), 0);
       }
 
       &.visualizer--with-layers-tree .mapboxgl-ctrl-bottom-left {
-        transform: translate3d($layersTreeWidth, -$tableHeight, 0);
+        transform: translate3d($layersTreeWidth, calc(-1 * var(--table-height, 33vh)), 0);
       }
     }
 
@@ -164,7 +164,7 @@ $bg-visualizer: rgb(49, 64, 77);
 
       &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
       &.visualizer--with-table .interactive-map__legends {
-        transform: translate3d(-$widgetsWidth, -$tableHeight, 0);
+        transform: translate3d(-$widgetsWidth, calc(-1 * var(--table-height, 33vh)), 0);
       }
       & .MuiDrawer-paper {
         margin-right: calc($widgetsWidth + 10px) !important;
@@ -179,7 +179,7 @@ $bg-visualizer: rgb(49, 64, 77);
 
       &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
       &.visualizer--with-table .interactive-map__legends {
-        transform: translate3d(-$detailsWidth, - $tableHeight, 0);
+        transform: translate3d(-$detailsWidth, calc(-1 * var(--table-height, 33vh)), 0);
       }
 
       &.visualizer--with-widgets {
@@ -191,7 +191,7 @@ $bg-visualizer: rgb(49, 64, 77);
 
         &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
         &.visualizer--with-table .interactive-map__legends {
-          transform: translate3d(-#{$widgetsWidth + $detailsWidth}, - $tableHeight, 0);
+          transform: translate3d(-#{$widgetsWidth + $detailsWidth}, calc(-1 * var(--table-height, 33vh)), 0);
         }
       }
     }
@@ -380,7 +380,6 @@ $bg-visualizer: rgb(49, 64, 77);
   .visualizer {
     &--with {
       $layersTreeWidth: 20.2rem;
-      $tableHeight: 33vh;
       $widgetsWidth: 16rem;
       $detailsWidth: 17rem;
       &-layers-tree {
@@ -389,7 +388,7 @@ $bg-visualizer: rgb(49, 64, 77);
           transform: translate3d($layersTreeWidth, 0, 0);
         }
         &.visualizer--with-table .mapboxgl-ctrl-bottom-left {
-          transform: translate3d($layersTreeWidth, -$tableHeight, 0);
+          transform: translate3d($layersTreeWidth, calc(-1 * var(--table-height, 33vh)), 0);
         }
       }
       &-widgets {
@@ -400,7 +399,7 @@ $bg-visualizer: rgb(49, 64, 77);
         }
         &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
         &.visualizer--with-table .interactive-map__legends {
-          transform: translate3d(-$widgetsWidth, -$tableHeight, 0);
+          transform: translate3d(-$widgetsWidth, calc(-1 * var(--table-height, 33vh)), 0);
         }
       }
       &-details {
@@ -411,7 +410,7 @@ $bg-visualizer: rgb(49, 64, 77);
         }
         &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
         &.visualizer--with-table .interactive-map__legends {
-          transform: translate3d(-$detailsWidth, -$tableHeight, 0);
+          transform: translate3d(-$detailsWidth, calc(-1 * var(--table-height, 33vh)), 0);
         }
         &.visualizer--with-widgets {
           .mapboxgl-ctrl-top-right,
@@ -421,7 +420,7 @@ $bg-visualizer: rgb(49, 64, 77);
           }
           &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
           &.visualizer--with-table .interactive-map__legends {
-            transform: translate3d(-#{$widgetsWidth + $detailsWidth}, -$tableHeight, 0);
+            transform: translate3d(-#{$widgetsWidth + $detailsWidth}, calc(-1 * var(--table-height, 33vh)), 0);
           }
         }
       }
@@ -452,7 +451,6 @@ $bg-visualizer: rgb(49, 64, 77);
   .visualizer {
     &--with {
       $layersTreeWidth: 14rem;
-      $tableHeight: 33vh;
       $detailsWidth: 17rem;
       &-layers-tree {
         .mapboxgl-ctrl-top-left,
@@ -468,7 +466,7 @@ $bg-visualizer: rgb(49, 64, 77);
         }
         &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
         &.visualizer--with-table .interactive-map__legends {
-          transform: translate3d(-$detailsWidth, -$tableHeight, 0);
+          transform: translate3d(-$detailsWidth, calc(-1 * var(--table-height, 33vh)), 0);
         }
       }
     }

@@ -228,9 +228,9 @@ const DeclarationModule = ({
         flexShrink: 0,
         '& .MuiDrawer-paper': {
           right: 40,
-          maxHeight: isTableActive ? '66vh' : 'calc(100vh - 16px)',
+          maxHeight: isTableActive ? 'calc(100vh - var(--table-height) - 16px)' : 'calc(100vh - 16px)',
           height: 'auto',
-          borderRadius: 1,
+          borderRadius: '12px',
           border: '1px solid rgba(0, 0, 0, 0.1)',
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
           zIndex: 79,

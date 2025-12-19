@@ -290,7 +290,7 @@ const ReportingModuleContent = ({
           backgroundColor: 'rgba(255, 255, 255, 0.8)',
           backdropFilter: 'blur(8px)',
           margin: 1,
-          maxHeight: isTableActive ? '66vh' : 'calc(100vh - 16px)',
+          maxHeight: isTableActive ? 'calc(100vh - var(--table-height) - 16px)' : 'calc(100vh - 16px)',
           height: 'auto',
           borderRadius: 1,
           border: '1px solid rgba(0, 0, 0, 0.1)',
