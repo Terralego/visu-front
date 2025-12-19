@@ -2,7 +2,9 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import PropTypes from 'prop-types';
 import React from 'react';
-import { Map, Marker, Source, Layer } from 'react-map-gl/maplibre';
+import * as ReactMaplibre from 'react-map-gl/maplibre';
+
+const { Map, Marker, Source, Layer } = ReactMaplibre;
 
 const LocationPickerMap = ({
   viewState,

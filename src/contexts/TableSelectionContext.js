@@ -28,14 +28,10 @@ export const TableSelectionProvider = ({ children }) => {
       activeLayer,
       setActiveLayer,
     }),
-    [rowSelection, selectedFeatures, clearSelection, activeLayer]
+    [rowSelection, selectedFeatures, clearSelection, activeLayer],
   );
 
-  return (
-    <TableSelectionContext.Provider value={value}>
-      {children}
-    </TableSelectionContext.Provider>
-  );
+  return <TableSelectionContext.Provider value={value}>{children}</TableSelectionContext.Provider>;
 };
 
 TableSelectionProvider.propTypes = {
@@ -45,7 +41,7 @@ TableSelectionProvider.propTypes = {
 // Hook to use table selection
 export const useTableSelection = () => {
   const context = useContext(TableSelectionContext);
-  
+
   if (!context) {
     throw new Error('useTableSelection must be used within TableSelectionProvider');
   }
