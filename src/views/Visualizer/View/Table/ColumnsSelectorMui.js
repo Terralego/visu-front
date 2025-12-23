@@ -1,6 +1,14 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { IconButton, Popover, Box, FormControlLabel, Checkbox, Divider } from '@mui/material';
+import {
+  IconButton,
+  Popover,
+  Box,
+  FormControlLabel,
+  Checkbox,
+  Divider,
+  Typography,
+} from '@mui/material';
 import { ViewColumn as ColumnIcon } from '@mui/icons-material';
 
 const getToggleState = columns => {
@@ -49,6 +57,8 @@ const ColumnsSelectorMui = ({ columns, onChange }) => {
     [onChange],
   );
 
+  const visibleCount = columns.filter(col => col.display !== false).length;
+
   return (
     <>
       <IconButton onClick={handleClick} color="primary" size="small">
@@ -67,23 +77,36 @@ const ColumnsSelectorMui = ({ columns, onChange }) => {
           horizontal: 'left',
         }}
       >
-        <Box sx={{ p: 2, minWidth: 250 }}>
-          <FormControlLabel
-            control={(
-              <Checkbox
-                checked={toggleState > 0}
-                indeterminate={toggleState === null}
-                onChange={toggleAll}
-              />
-            )}
-            label={toggleState ? 'Cacher toutes les colonnes' : 'Afficher toutes les colonnes'}
-          />
-          <Divider sx={{ my: 1 }} />
+        <Box sx={{ py: 1, px: 1.5, minWidth: 200, maxHeight: 400, overflow: 'auto' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+            <Checkbox
+              checked={toggleState > 0}
+              indeterminate={toggleState === null}
+              onChange={toggleAll}
+              size="small"
+              sx={{ p: 0.5 }}
+            />
+            <Typography variant="body2" sx={{ fontWeight: 500, ml: 0.5 }}>
+              Tout sélectionner
+            </Typography>
+            <Typography variant="caption" sx={{ ml: 'auto', color: 'text.secondary' }}>
+              {visibleCount}/{columns.length}
+            </Typography>
+          </Box>
+          <Divider sx={{ my: 0.5 }} />
           {columns.map(({ value, display, label = value }, index) => (
-            <Box key={value}>
+            <Box key={value} sx={{ py: 0 }}>
               <FormControlLabel
-                control={<Checkbox checked={display} onChange={handleColumnToggle(index)} />}
-                label={label}
+                control={(
+                  <Checkbox
+                    checked={display !== false}
+                    onChange={handleColumnToggle(index)}
+                    size="small"
+                    sx={{ p: 0.5 }}
+                  />
+                )}
+                label={<Typography variant="body2">{label}</Typography>}
+                sx={{ m: 0, py: 0.25 }}
               />
             </Box>
           ))}

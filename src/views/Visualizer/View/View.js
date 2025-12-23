@@ -58,7 +58,7 @@ import { connectSettings } from '../../Main/Provider/context';
 import BoundingBoxObserver from '../../../components/BoundingBoxObserver';
 import DeclarationWrapper from '../../../components/DeclarationModule/DeclarationWrapper';
 import ReportingModule from '../../../components/ReportingModule/ReportingModule';
-import DataTableMuiConnected from './DataTableMui/connectDataTableMui';
+import TableConnected from './Table';
 import Widgets from './Widgets';
 import { generateClusterList } from './interactions';
 import searchInMap from './search';
@@ -1235,7 +1235,7 @@ export class Visualizer extends React.Component {
                         onToggleShareModule={this.toggleShareModule}
                       />
                     </BoundingBoxObserver>
-                    <DataTableMuiConnected
+                    <TableConnected
                       isTableVisible={isTableVisible && !printIsOpened}
                       exportCallback={exportCallback}
                       setTableHeight={this.setTableHeight}

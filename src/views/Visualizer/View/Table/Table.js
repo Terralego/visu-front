@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import debounce from 'debounce';
 import { createPortal } from 'react-dom';
-import { Box, Button } from '@mui/material';
+import { Box } from '@mui/material';
 
 import searchService, {
   getExtent,
@@ -11,7 +11,7 @@ import searchService, {
 } from '@terralego/core/modules/Visualizer/services/search';
 import { extractColumns, prepareData, exportSpreadsheet } from './dataUtils';
 import HeaderMui from './HeaderMui';
-import DataTableTanstack from '../DataTableTanstack/DataTableTanstack';
+import DataTable from '../DataTable';
 import { useTableSelection } from '../../../../contexts/TableSelectionContext';
 
 import './styles.scss';
@@ -36,6 +36,7 @@ const DataTableMui = ({
   hideDetails,
 }) => {
   const [columns, setColumns] = useState([]);
+  const [columnVisibility, setColumnVisibility] = useState({});
   const [rows, setRows] = useState([]);
   const [resultsTotal, setResultsTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -60,11 +61,9 @@ const DataTableMui = ({
     return cache;
   }, [rows]);
 
-  // Use the centralized selection
   const { rowSelection, setRowSelection, selectedFeatures, clearSelection, setActiveLayer } =
     useTableSelection();
 
-  // Set the active layer when table becomes visible
   useEffect(() => {
     if (isTableVisible && displayedLayer && map) {
       const { filters: { layer: esIndex } = {}, layers = [] } = displayedLayer;
@@ -87,14 +86,12 @@ const DataTableMui = ({
     }
   }, [isTableVisible, displayedLayer, map, setActiveLayer]);
 
-  // Clear selection when table closes
   useEffect(() => {
     if (!isTableVisible) {
       clearSelection();
     }
   }, [isTableVisible, clearSelection]);
 
-  // Transform 2D array data to rows format for TanStack
   const transformData = useCallback((blueprintColumns, data, hits) => {
     if (!data || !blueprintColumns) return [];
 
@@ -110,7 +107,6 @@ const DataTableMui = ({
     });
   }, []);
 
-  // Load results function
   const loadResults = useCallback(async () => {
     if (!displayedLayer) return;
 
@@ -167,7 +163,6 @@ const DataTableMui = ({
       setColumns(extractedColumns);
       setResultsTotal(total);
       setRows(transformData(extractedColumns, preparedData, hits));
-      // Update cache with latest rows
       const newCache = new Map(previousRowsByIdRef.current);
       preparedData.forEach((row, idx) => {
         const rowId = hits?.[idx]?._id || `row_${idx}`;
@@ -197,7 +192,6 @@ const DataTableMui = ({
     }
   }, [displayedLayer, query, extent, debouncedLoadResults]);
 
-  // Clear data only when switching to a different layer
   useEffect(() => {
     if (!displayedLayer) return;
 
@@ -208,10 +202,25 @@ const DataTableMui = ({
       setResultsTotal(0);
       setFeatures([]);
       setRowSelection({});
+      setColumnVisibility({});
       previousRowsByIdRef.current = new Map();
     }
     previousLayerIdRef.current = layerId;
   }, [displayedLayer, setRowSelection]);
+
+  useEffect(() => {
+    if (columns.length > 0 && Object.keys(columnVisibility).length === 0) {
+      const initialVisibility = {};
+      columns.forEach(col => {
+        if (col.value && col.display === false) {
+          initialVisibility[col.value] = false;
+        }
+      });
+      if (Object.keys(initialVisibility).length > 0) {
+        setColumnVisibility(initialVisibility);
+      }
+    }
+  }, [columns, columnVisibility]);
 
   const toggleExtent = () => setExtent(prev => !prev);
 
@@ -221,14 +230,17 @@ const DataTableMui = ({
     setTimeout(() => setIsResizing(false), 300);
   };
 
-  // Calculate selected features for parent components
   const selectedFeaturesMemo = useMemo(() => selectedFeatures, [selectedFeatures]);
 
   const handleColumnChange = ({ event, index }) => {
     const { checked } = event.target;
-    setColumns(prevColumns =>
-      prevColumns.map((col, i) => (i === index ? { ...col, display: checked } : col)),
-    );
+    const colId = columns[index]?.value;
+    if (colId) {
+      setColumnVisibility(prev => ({
+        ...prev,
+        [colId]: checked,
+      }));
+    }
   };
 
   const handleExport = (format = 'xlsx') => {
@@ -256,18 +268,6 @@ const DataTableMui = ({
     });
   };
 
-  // When the displayed layer changes, immediately clear previous data and selection
-  useEffect(() => {
-    if (!displayedLayer) return;
-
-    setLoading(true);
-    setRows([]);
-    setResultsTotal(0);
-    setFeatures([]);
-    setRowSelection({});
-  }, [displayedLayer, setRowSelection]);
-
-  // Resize handle drag logic
   const handleResizeStart = useCallback(
     e => {
       e.preventDefault();
@@ -303,11 +303,9 @@ const DataTableMui = ({
     setTableHeight(tableHeight);
   }, [tableHeight, setTableHeight]);
 
-  // Function to open feature details by ID
   const openFeatureDetails = useCallback(featureId => {
     if (!detailsFunction?.fn || !map || !displayedLayer) return;
 
-    // Find feature by ID
     const esFeature = features.find(f => f._id === featureId);
     if (!esFeature) {
       console.warn(`Feature with ID ${featureId} not found`);
@@ -322,12 +320,11 @@ const DataTableMui = ({
       return;
     }
 
-    // Transform ES feature to Mapbox feature
     const mapboxFeature = {
       type: 'Feature',
       properties: {
         ...esFeature._source,
-        _id: featureId, // Ensure _id is in properties
+        _id: featureId,
       },
       geometry: esFeature._source?.geom || null,
       layer: {
@@ -338,7 +335,6 @@ const DataTableMui = ({
       sourceLayer: mapLayer.sourceLayer,
     };
 
-    // Call the details function
     detailsFunction.fn({
       feature: mapboxFeature,
       map,
@@ -347,6 +343,15 @@ const DataTableMui = ({
       instance: interactiveMapInstance,
     });
   }, [detailsFunction, features, map, displayedLayer, interactiveMapInstance]);
+
+  const columnsWithDisplay = useMemo(
+    () =>
+      columns.map(col => ({
+        ...col,
+        display: columnVisibility[col.value] !== false,
+      })),
+    [columns, columnVisibility],
+  );
 
   if (!displayedLayer) return null;
 
@@ -358,9 +363,6 @@ const DataTableMui = ({
 
   const haveExportableField = fields.some(({ exportable: exportableField }) => exportableField);
   const showExportButton = exportable && haveExportableField;
-
-  // Filter visible columns for display
-  const visibleColumns = columns.filter(col => col.display !== false);
 
   return (
     <>
@@ -422,17 +424,19 @@ const DataTableMui = ({
                 full={full}
                 resize={resize}
                 exportData={showExportButton ? handleExport : null}
-                columns={columns}
+                columns={columnsWithDisplay}
                 onChange={handleColumnChange}
                 setLayerState={setLayerState}
                 displayedLayer={displayedLayer}
               />
               <Box sx={{ height: 'calc(100% - 44px)', width: '100%' }}>
-                <DataTableTanstack
-                  columns={visibleColumns}
+                <DataTable
+                  columns={columns}
                   rows={rows}
                   loading={loading}
                   rowSelection={rowSelection}
+                  columnVisibility={columnVisibility}
+                  onColumnVisibilityChange={setColumnVisibility}
                   details={
                     details?.layerTreeId === displayedLayer.id
                       ? details?.feature?.properties?._id
