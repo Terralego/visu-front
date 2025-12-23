@@ -1,5 +1,5 @@
 import { connectView } from '../context';
-import DataTableMui from './DataTableMui';
+import Table from './Table';
 
 export default connectView(({ 
   layersTreeState, 
@@ -16,4 +16,4 @@ export default connectView(({
     .from(layersTreeState)
     .filter(([, { table }]) => table)
     .map(([layer, state]) => ({ ...layer, state, layerRef: layer }))[0],
-}))(DataTableMui);
+}))(Table);
