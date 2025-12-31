@@ -1,17 +1,16 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { Box, Typography, CircularProgress, Chip, Tooltip } from '@mui/material';
 import {
+  CloseFullscreenRounded as CloseFullscreenIcon,
+  Close as CloseIcon,
+  FactCheckOutlined as FactCheckIcon,
   FileDownloadRounded as FileDownloadIcon,
   MapRounded as MapIcon,
-  FactCheckOutlined as FactCheckIcon,
-  CloseFullscreenRounded as CloseFullscreenIcon,
   OpenInFullRounded as OpenInFullIcon,
-  Close as CloseIcon,
   ZoomInMap,
 } from '@mui/icons-material';
+import { Box, Chip, CircularProgress, Tooltip, Typography } from '@mui/material';
 import classnames from 'classnames';
-import bbox from '@turf/bbox';
+import PropTypes from 'prop-types';
 
 import ColumnsSelectorMui from './ColumnsSelectorMui';
 import HeaderButton from './HeaderButton';
@@ -29,6 +28,7 @@ const HeaderMui = ({
   loading,
   title,
   resultsTotal,
+  totalWithoutFilter,
   toggleExtent,
   extent,
   columns,
@@ -41,6 +41,7 @@ const HeaderMui = ({
   compare = '',
   setLayerState,
   displayedLayer,
+  onZoomToSelection,
 }) => {
   // Get the original layer reference for setLayerState
   const layerRef = displayedLayer?.layerRef;
@@ -70,11 +71,9 @@ const HeaderMui = ({
         {loading && <CircularProgress size={20} />}
         {selectedFeatures.length > 0 ? (
           <Chip
-            label={
-              selectedFeatures.length > 0
-                ? `${selectedFeatures.length} sélectionné${selectedFeatures.length > 1 ? 's' : ''}`
-                : ''
-            }
+            label={`${selectedFeatures.length} sélectionné${
+              selectedFeatures.length > 1 ? 's' : ''
+            }`}
             sx={{
               height: 24,
               '& .MuiChip-icon': {
@@ -86,7 +85,13 @@ const HeaderMui = ({
             }}
             icon={(
               <Chip
-                label={`${resultsTotal} résultat${resultsTotal > 1 ? 's' : ''}`}
+                label={
+                  totalWithoutFilter && totalWithoutFilter !== resultsTotal
+                    ? `${resultsTotal} élément${resultsTotal > 1 ? 's' : ''} filtré${
+                      resultsTotal > 1 ? 's' : ''
+                    } sur ${totalWithoutFilter}`
+                    : `${resultsTotal} élément${resultsTotal > 1 ? 's' : ''}`
+                }
                 color="primary"
                 size="small"
               />
@@ -95,7 +100,13 @@ const HeaderMui = ({
           />
         ) : (
           <Chip
-            label={`${resultsTotal} résultat${resultsTotal > 1 ? 's' : ''}`}
+            label={
+              totalWithoutFilter && totalWithoutFilter !== resultsTotal
+                ? `${resultsTotal} élément${resultsTotal > 1 ? 's' : ''} filtré${
+                  resultsTotal > 1 ? 's' : ''
+                } sur ${totalWithoutFilter}`
+                : `${resultsTotal} élément${resultsTotal > 1 ? 's' : ''}`
+            }
             color="primary"
             size="small"
           />
@@ -127,20 +138,8 @@ const HeaderMui = ({
         <HeaderButton
           title="Zoomer sur la sélection"
           icon={<ZoomInMap />}
-          disabled={selectedFeatures.length === 0}
-          onClick={() => {
-            const features = window.__map__
-              .querySourceFeatures('terra_36', {
-                sourceLayer: 'zae',
-                filter: ['in', ['get', '_id'], ['literal', selectedFeatures.map(e => e._id)]],
-              })
-              .map(e => ({ type: 'feature', geometry: e.geometry }));
-            console.log({ type: 'FeatureCollection', features });
-            window.__map__.fitBounds(bbox({ type: 'FeatureCollection', features }), {
-              zoom: 13,
-              padding: 20,
-            });
-          }}
+          disabled={selectedFeatures.length === 0 || !onZoomToSelection}
+          onClick={() => onZoomToSelection?.(selectedFeatures)}
         />
         <HeaderButton
           title="Comparer ces données"
@@ -186,6 +185,7 @@ HeaderMui.propTypes = {
   loading: PropTypes.bool,
   title: PropTypes.string,
   resultsTotal: PropTypes.number,
+  totalWithoutFilter: PropTypes.number,
   toggleExtent: PropTypes.func,
   extent: PropTypes.bool,
   columns: PropTypes.arrayOf(PropTypes.object),
@@ -197,12 +197,14 @@ HeaderMui.propTypes = {
   compare: PropTypes.string,
   setLayerState: PropTypes.func,
   displayedLayer: PropTypes.object,
+  onZoomToSelection: PropTypes.func,
 };
 
 HeaderMui.defaultProps = {
   loading: false,
   title: '',
   resultsTotal: 0,
+  totalWithoutFilter: null,
   toggleExtent: () => {},
   extent: false,
   columns: [],
@@ -214,6 +216,7 @@ HeaderMui.defaultProps = {
   compare: '',
   setLayerState: () => {},
   displayedLayer: null,
+  onZoomToSelection: null,
 };
 
 export default HeaderMui;
