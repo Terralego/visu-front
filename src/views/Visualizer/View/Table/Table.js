@@ -1,15 +1,13 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import debounce from 'debounce';
 import { createPortal } from 'react-dom';
 import { Box } from '@mui/material';
 
-import searchService, {
-  getExtent,
-  getSearchParamFromProperty,
-} from '@terralego/core/modules/Visualizer/services/search';
+import bbox from '@turf/bbox';
+
 import { extractColumns, prepareData, exportSpreadsheet } from './dataUtils';
+import { fetchTableData, fetchGeometriesByIds, getExtent } from './tableService';
 import HeaderMui from './HeaderMui';
 import DataTable from '../DataTable';
 import { useTableSelection } from '../../../../contexts/TableSelectionContext';
@@ -39,6 +37,7 @@ const DataTableMui = ({
   const [columnVisibility, setColumnVisibility] = useState({});
   const [rows, setRows] = useState([]);
   const [resultsTotal, setResultsTotal] = useState(0);
+  const [totalWithoutFilter, setTotalWithoutFilter] = useState(0);
   const [loading, setLoading] = useState(true);
   const [extent, setExtent] = useState(false);
   const [full, setFull] = useState(false);
@@ -48,6 +47,7 @@ const DataTableMui = ({
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartY, setDragStartY] = useState(0);
   const [dragStartHeight, setDragStartHeight] = useState(0);
+  const [mapBoundsKey, setMapBoundsKey] = useState('');
   const previousLayerIdRef = React.useRef();
   const previousRowsByIdRef = React.useRef(new Map());
 
@@ -107,7 +107,7 @@ const DataTableMui = ({
     });
   }, []);
 
-  const loadResults = useCallback(async () => {
+  const loadResults = useCallback(async currentVisibleBoundingBox => {
     if (!displayedLayer) return;
 
     const {
@@ -118,50 +118,28 @@ const DataTableMui = ({
 
     setLoading(true);
 
-    const boundingBox = extent ? getExtent(map, visibleBoundingBox) : undefined;
-
-    const properties = {
-      ...Object.keys(filters).reduce(
-        (all, key) => ({
-          ...all,
-          ...getSearchParamFromProperty(filters, form, key),
-        }),
-        {},
-      ),
-    };
+    const boundingBox = extent && currentVisibleBoundingBox
+      ? getExtent(map, currentVisibleBoundingBox)
+      : undefined;
 
     try {
-      const resp = await searchService.search({
-        index: layer,
+      const { hits, total, unfilteredTotal } = await fetchTableData({
+        layer,
+        fields,
+        form,
+        filters,
+        baseEsQuery,
         query,
-        properties,
         boundingBox,
-        baseQuery: baseEsQuery,
-        include:
-          fields &&
-          fields.reduce((all, { value }) => {
-            const interpolation = value.match(/\{[^}]+\}/g);
-            return [
-              ...all,
-              ...(interpolation
-                ? interpolation.map(match => match.match(/\{([^}]+)\}/)[1])
-                : [value]),
-            ];
-          }, []),
       });
 
-      const {
-        hits: {
-          hits,
-          total: { value: total },
-        },
-      } = resp;
       const extractedColumns = extractColumns(fields, hits);
       const preparedData = prepareData(extractedColumns, hits);
 
       setFeatures(hits);
       setColumns(extractedColumns);
       setResultsTotal(total);
+      setTotalWithoutFilter(unfilteredTotal);
       setRows(transformData(extractedColumns, preparedData, hits));
       const newCache = new Map(previousRowsByIdRef.current);
       preparedData.forEach((row, idx) => {
@@ -177,20 +155,76 @@ const DataTableMui = ({
     } finally {
       setLoading(false);
     }
-  }, [displayedLayer, query, extent, map, visibleBoundingBox, transformData]);
+  }, [displayedLayer, query, extent, map, transformData]);
 
-  const debouncedLoadResults = useCallback(
-    debounce(() => {
-      loadResults();
-    }, 500),
-    [loadResults],
+  const loadResultsRef = React.useRef(loadResults);
+  loadResultsRef.current = loadResults;
+
+  const previousValuesRef = React.useRef({
+    displayedLayerId: null,
+    query: null,
+    extent: false,
+    bboxKey: null,
+    filtersKey: null,
+  });
+
+  const bboxKey = useMemo(() => {
+    if (!extent) return null;
+    return mapBoundsKey || null;
+  }, [extent, mapBoundsKey]);
+
+  const filtersKey = useMemo(
+    () => JSON.stringify(displayedLayer?.state?.filters || {}),
+    [displayedLayer?.state?.filters],
   );
 
   useEffect(() => {
-    if (displayedLayer) {
-      debouncedLoadResults();
+    if (!displayedLayer) return;
+
+    const prev = previousValuesRef.current;
+    const layerChanged = prev.displayedLayerId !== displayedLayer.id;
+    const queryChanged = prev.query !== query;
+    const extentChanged = prev.extent !== extent;
+    const bboxChanged = extent && prev.bboxKey !== bboxKey;
+    const filtersChanged = prev.filtersKey !== filtersKey;
+
+    const shouldRefetch =
+      layerChanged || queryChanged || extentChanged || bboxChanged || filtersChanged;
+
+    if (!shouldRefetch) return;
+
+    previousValuesRef.current = {
+      displayedLayerId: displayedLayer.id,
+      query,
+      extent,
+      bboxKey,
+      filtersKey,
+    };
+
+    loadResultsRef.current(extent ? visibleBoundingBox : null);
+  }, [displayedLayer, query, extent, bboxKey, filtersKey, visibleBoundingBox]);
+
+  useEffect(() => {
+    if (!map) return;
+
+    const updateBoundsKey = () => {
+      const bounds = map.getBounds();
+      const key = `${bounds.getWest().toFixed(6)},${bounds.getSouth().toFixed(6)},${bounds.getEast().toFixed(6)},${bounds.getNorth().toFixed(6)}`;
+      setMapBoundsKey(key);
+    };
+
+    // Set initial bounds
+    if (map.loaded()) {
+      updateBoundsKey();
+    } else {
+      map.once('load', updateBoundsKey);
     }
-  }, [displayedLayer, query, extent, debouncedLoadResults]);
+
+    map.on('moveend', updateBoundsKey);
+    return () => {
+      map.off('moveend', updateBoundsKey);
+    };
+  }, [map]);
 
   useEffect(() => {
     if (!displayedLayer) return;
@@ -303,6 +337,160 @@ const DataTableMui = ({
     setTableHeight(tableHeight);
   }, [tableHeight, setTableHeight]);
 
+  const handleZoomToSelection = useCallback(async selectedFeaturesList => {
+    if (!displayedLayer || !map || selectedFeaturesList.length === 0) return;
+
+    const { filters: { layer: esIndex } = {}, baseEsQuery } = displayedLayer;
+    const ids = selectedFeaturesList.map(f => f._id);
+
+    try {
+      const geometries = await fetchGeometriesByIds({
+        layer: esIndex,
+        ids,
+        baseEsQuery,
+      });
+
+      if (geometries.length === 0) {
+        return;
+      }
+
+      const featureCollection = {
+        type: 'FeatureCollection',
+        features: geometries.map(geom => ({
+          type: 'Feature',
+          geometry: geom,
+          properties: {},
+        })),
+      };
+
+      const bounds = bbox(featureCollection);
+
+      const mapContainer = map.getContainer();
+      const mapRect = mapContainer.getBoundingClientRect();
+      const mapWidth = mapContainer.offsetWidth;
+      const mapHeight = mapContainer.offsetHeight;
+
+      let fitPadding = { top: 50, bottom: 50, left: 50, right: 50 };
+
+      if (visibleBoundingBox) {
+        const visibleLeft = Math.max(0, visibleBoundingBox.left - mapRect.left);
+        const visibleTop = Math.max(0, visibleBoundingBox.top - mapRect.top);
+        const visibleRight = Math.min(mapWidth, visibleBoundingBox.right - mapRect.left);
+        const visibleBottom = Math.min(mapHeight, visibleBoundingBox.bottom - mapRect.top);
+
+        fitPadding = {
+          top: visibleTop + 20,
+          left: visibleLeft + 20,
+          right: mapWidth - visibleRight + 20,
+          bottom: mapHeight - visibleBottom + 20,
+        };
+      }
+
+      map.fitBounds(
+        [[bounds[0], bounds[1]], [bounds[2], bounds[3]]],
+        { padding: fitPadding },
+      );
+    } catch (error) {
+      console.error('Error fetching geometries for zoom:', error);
+    }
+  }, [displayedLayer, map, visibleBoundingBox]);
+
+  useEffect(() => {
+    if (!map) return;
+
+    const extentSourceId = 'extent-indicator-source';
+    const extentLayerId = 'extent-indicator-layer';
+    const padding = 2;
+
+    const updateExtentRect = () => {
+      if (!extent || !visibleBoundingBox) return;
+
+      const paddedBbox = {
+        ...visibleBoundingBox,
+        left: visibleBoundingBox.left + padding,
+        top: visibleBoundingBox.top + padding,
+        width: visibleBoundingBox.width - (padding * 2),
+        height: visibleBoundingBox.height - (padding * 2),
+      };
+
+      const [[lngMin, latMax], [lngMax, latMin]] = getExtent(map, paddedBbox);
+
+      const source = map.getSource(extentSourceId);
+      if (source) {
+        source.setData({
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'Polygon',
+            coordinates: [[
+              [lngMin, latMin],
+              [lngMax, latMin],
+              [lngMax, latMax],
+              [lngMin, latMax],
+              [lngMin, latMin],
+            ]],
+          },
+        });
+      }
+    };
+
+    const cleanup = () => {
+      map.off('moveend', updateExtentRect);
+      if (map.getLayer(extentLayerId)) map.removeLayer(extentLayerId);
+      if (map.getSource(extentSourceId)) map.removeSource(extentSourceId);
+    };
+
+    if (extent && visibleBoundingBox) {
+      cleanup();
+
+      const paddedBbox = {
+        ...visibleBoundingBox,
+        left: visibleBoundingBox.left + padding,
+        top: visibleBoundingBox.top + padding,
+        width: visibleBoundingBox.width - (padding * 2),
+        height: visibleBoundingBox.height - (padding * 2),
+      };
+
+      const [[lngMin, latMax], [lngMax, latMin]] = getExtent(map, paddedBbox);
+
+      map.addSource(extentSourceId, {
+        type: 'geojson',
+        data: {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'Polygon',
+            coordinates: [[
+              [lngMin, latMin],
+              [lngMax, latMin],
+              [lngMax, latMax],
+              [lngMin, latMax],
+              [lngMin, latMin],
+            ]],
+          },
+        },
+      });
+
+      map.addLayer({
+        id: extentLayerId,
+        type: 'line',
+        source: extentSourceId,
+        paint: {
+          'line-color': '#000000',
+          'line-width': 3,
+          'line-dasharray': [4, 2],
+          'line-opacity': 0.4,
+        },
+      });
+
+      map.on('moveend', updateExtentRect);
+    } else {
+      cleanup();
+    }
+
+    return cleanup;
+  }, [extent, map, visibleBoundingBox]);
+
   const openFeatureDetails = useCallback(featureId => {
     if (!detailsFunction?.fn || !map || !displayedLayer) return;
 
@@ -413,6 +601,7 @@ const DataTableMui = ({
             <>
               <HeaderMui
                 resultsTotal={resultsTotal}
+                totalWithoutFilter={totalWithoutFilter}
                 toggleExtent={toggleExtent}
                 extent={extent}
                 layer={layer}
@@ -428,6 +617,7 @@ const DataTableMui = ({
                 onChange={handleColumnChange}
                 setLayerState={setLayerState}
                 displayedLayer={displayedLayer}
+                onZoomToSelection={handleZoomToSelection}
               />
               <Box sx={{ height: 'calc(100% - 44px)', width: '100%' }}>
                 <DataTable

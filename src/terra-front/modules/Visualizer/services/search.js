@@ -6,8 +6,11 @@ export const MAX_SIZE = 10000;
 export const SEARCHES_QUEUE = new Set();
 
 export const getExtentWithPadding = (map, { top, left, width, height }) => {
-  const topLeft = map.unproject([left, top]).toArray();
-  const bottomRight = map.unproject([width + left, height + top]).toArray();
+  const mapRect = map.getContainer().getBoundingClientRect();
+  const relativeLeft = left - mapRect.left;
+  const relativeTop = top - mapRect.top;
+  const topLeft = map.unproject([relativeLeft, relativeTop]).toArray();
+  const bottomRight = map.unproject([relativeLeft + width, relativeTop + height]).toArray();
   return [topLeft, bottomRight];
 };
 

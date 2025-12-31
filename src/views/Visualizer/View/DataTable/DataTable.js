@@ -505,7 +505,7 @@ const DataTable = ({
     if (Object.keys(colSizes).length > 0) {
       setColumnSizeVars(colSizes);
     }
-  }, [columnSizingInfo, columnSizing, tableData.length, table]);
+  }, [columnSizingInfo, columnSizing, tableData.length, table, columnVisibility]);
 
   const filteredRowCount = table.getFilteredRowModel().rows.length;
   const paginationState = table.getState().pagination;
@@ -694,13 +694,13 @@ const DataTable = ({
       </TableContainer>
       <TablePagination
         component="div"
-        count={table.getFilteredRowModel().rows.length}
+        count={baseRows.length}
         page={table.getState().pagination.pageIndex}
         onPageChange={(_, page) => table.setPageIndex(page)}
         rowsPerPage={table.getState().pagination.pageSize}
         onRowsPerPageChange={e => table.setPageSize(Number(e.target.value))}
         rowsPerPageOptions={[10, 25, 50, 100]}
-        labelRowsPerPage="Lignes par page:"
+        labelRowsPerPage="Éléments par page:"
         labelDisplayedRows={({ from, to, count }) => `${from}-${to} sur ${count}`}
         sx={{
           borderTop: '1px solid rgba(224, 224, 224, 1)',
