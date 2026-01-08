@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
 import { useTableSelection } from '../contexts/TableSelectionContext';
+import { selectionHighlightColor } from '../mui-theme';
 
 const TABLE_SELECTION_HIGHLIGHT_LAYER_PREFIX = 'table-selection-highlight';
-const HIGHLIGHT_COLOR = '#00da12';
+const HIGHLIGHT_COLOR = selectionHighlightColor || '#00da12';
 
 /**
  * Hook that manages table selection highlights on the map in a declarative way.

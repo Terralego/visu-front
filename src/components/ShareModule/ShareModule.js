@@ -10,17 +10,19 @@ import {
   Tab,
   Tabs,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import React, { useEffect, useMemo, useState } from 'react';
 import PreviewIFrame from './PreviewIFrame';
 
-const ShareModule = ({ map, open = false, onClose }) => {
+const ShareModule = ({ map, open = false, onClose, layersTreeState }) => {
   const [iframeWidth, setIframeWidth] = useState(1000);
   const [iframeHeight, setIframeHeight] = useState(700);
   const [activeTab, setActiveTab] = useState(0);
   const [currentUrl, setCurrentUrl] = useState('');
+  const [copiedMessage, setCopiedMessage] = useState('');
 
   // États des switches - parsés depuis l'URL capturée
   const [includeMapCenter, setIncludeMapCenter] = useState(true);
@@ -74,7 +76,7 @@ const ShareModule = ({ map, open = false, onClose }) => {
       }
 
       const baseUrl = `${url.origin}${url.pathname}`;
-      const hashString = newParams.toString();
+      const hashString = decodeURIComponent(newParams.toString());
       return hashString ? `${baseUrl}#${hashString}` : baseUrl;
     } catch (error) {
       console.error('Error building share URL:', error); // eslint-disable-line no-console
@@ -92,10 +94,18 @@ const ShareModule = ({ map, open = false, onClose }) => {
     };
   }, [map, open]);
 
+  useEffect(() => {
+    if (open && layersTreeState) {
+      setCurrentUrl(window.location.href);
+    }
+  }, [open, layersTreeState]);
+
   const embedCode = `<iframe src="${shareUrl}" width="${iframeWidth}" height="${iframeHeight}"></iframe>`;
 
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(shareUrl);
+    setCopiedMessage('url');
+    setTimeout(() => setCopiedMessage(''), 2000);
   };
 
   const handleShareUrl = async () => {
@@ -117,6 +127,8 @@ const ShareModule = ({ map, open = false, onClose }) => {
 
   const handleCopyEmbed = () => {
     navigator.clipboard.writeText(embedCode);
+    setCopiedMessage('embed');
+    setTimeout(() => setCopiedMessage(''), 2000);
   };
 
   const handlePreviewEmbed = () => {
@@ -207,14 +219,23 @@ const ShareModule = ({ map, open = false, onClose }) => {
                     sx={{ mb: 2 }}
                   />
                   <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={handleCopyUrl}
-                      sx={{ flex: 1, textTransform: 'none' }}
+                    <Tooltip
+                      title="Copié !"
+                      open={copiedMessage === 'url'}
+                      disableFocusListener
+                      disableHoverListener
+                      disableTouchListener
+                      placement="top"
                     >
-                      Copier
-                    </Button>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={handleCopyUrl}
+                        sx={{ flex: 1, textTransform: 'none' }}
+                      >
+                        Copier
+                      </Button>
+                    </Tooltip>
                     {navigator.share && (
                       <Button
                         variant="contained"
@@ -267,14 +288,23 @@ const ShareModule = ({ map, open = false, onClose }) => {
                     sx={{ mb: 2 }}
                   />
                   <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={handleCopyEmbed}
-                      sx={{ flex: 1, textTransform: 'none' }}
+                    <Tooltip
+                      title="Copié !"
+                      open={copiedMessage === 'embed'}
+                      disableFocusListener
+                      disableHoverListener
+                      disableTouchListener
+                      placement="top"
                     >
-                      Copier
-                    </Button>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={handleCopyEmbed}
+                        sx={{ flex: 1, textTransform: 'none' }}
+                      >
+                        Copier
+                      </Button>
+                    </Tooltip>
                     <Button
                       variant="contained"
                       size="small"
@@ -379,11 +409,13 @@ ShareModule.propTypes = {
   }).isRequired,
   open: PropTypes.bool,
   onClose: PropTypes.func,
+  layersTreeState: PropTypes.instanceOf(Map),
 };
 
 ShareModule.defaultProps = {
   open: false,
   onClose: () => {},
+  layersTreeState: new Map(),
 };
 
 export default ShareModule;

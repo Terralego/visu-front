@@ -404,7 +404,7 @@ export class InteractiveMap extends React.Component {
     layerId,
     featureId,
     propertyId = '_id',
-    highlightColor,
+    highlightColor = 'hsl(59, 100%, 50%)',
     source = false,
     unique = false,
   }) => {

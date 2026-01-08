@@ -16,7 +16,6 @@ import CaptureControl from './components/CaptureControl';
 import DrawControl from './components/DrawControl';
 import PrintControl from './components/PrintControl';
 import HomeControl from './components/HomeControl';
-import ShareControl from './components/ShareControl';
 import WidgetControl from './components/WidgetControl';
 import MeasureControl from './components/MeasureControl';
 
@@ -92,7 +91,6 @@ export class MapComponent extends React.Component {
           CONTROL_DRAW,
           CONTROL_PRINT,
           CONTROL_HOME,
-          CONTROL_SHARE,
           CONTROL_CUSTOM,
           CONTROL_MEASURE,
         ]),
@@ -509,13 +507,6 @@ export class MapComponent extends React.Component {
           break;
         }
         case CONTROL_SHARE: {
-          const controlInstance = new ShareControl({
-            ...props,
-            map,
-            ...params,
-          });
-          this.controls.push(controlInstance);
-          map.addControl(controlInstance, position);
           break;
         }
         case CONTROL_CUSTOM: {
