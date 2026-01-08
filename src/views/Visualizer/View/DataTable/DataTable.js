@@ -23,39 +23,75 @@ import {
   Tooltip,
   IconButton,
 } from '@mui/material';
-import { Info } from '@mui/icons-material';
+import { FilterList, FilterListOff, Description, DescriptionOutlined } from '@mui/icons-material';
 
 import './styles.scss';
 
 const EmptyHeader = () => null;
 
-const SelectionCell = ({ row, rowSelection, onRowSelectionChange }) => {
+const SelectionHeader = ({ table, showSelectedOnly, onToggleShowSelectedOnly }) => {
+  const { rowSelection } = table.options.meta;
+  const hasSelection = rowSelection && Object.keys(rowSelection).some(key => rowSelection[key]);
+
+  return (
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <Tooltip
+        title={showSelectedOnly ? 'Afficher tous les éléments' : 'Afficher uniquement les éléments sélectionnés'}
+        disableInteractive
+      >
+        <span>
+          <IconButton
+            size="small"
+            onClick={onToggleShowSelectedOnly}
+            disabled={!hasSelection && !showSelectedOnly}
+            sx={{ padding: '2px' }}
+          >
+            {showSelectedOnly ? (
+              <FilterListOff fontSize="small" color="primary" />
+            ) : (
+              <FilterList fontSize="small" color={hasSelection ? 'action' : 'disabled'} />
+            )}
+          </IconButton>
+        </span>
+      </Tooltip>
+    </Box>
+  );
+};
+
+SelectionHeader.propTypes = {
+  table: PropTypes.shape({
+    options: PropTypes.shape({
+      meta: PropTypes.shape({
+        rowSelection: PropTypes.objectOf(PropTypes.bool),
+      }),
+    }),
+  }).isRequired,
+  showSelectedOnly: PropTypes.bool,
+  onToggleShowSelectedOnly: PropTypes.func,
+};
+
+SelectionHeader.defaultProps = {
+  showSelectedOnly: false,
+  onToggleShowSelectedOnly: () => {},
+};
+
+const SelectionCell = ({ row, table }) => {
+  const { rowSelection, onRowSelectionChange } = table.options.meta;
   const sourceId = row.original?.pinnedSourceId
     ? String(row.original.pinnedSourceId)
     : String(row.id);
-  const isPinnedDuplicate = Boolean(row.original && row.original.pinnedSourceId);
 
-  const checked = isPinnedDuplicate
-    ? Boolean(rowSelection && rowSelection[sourceId])
-    : row.getIsSelected();
-  const indeterminate = isPinnedDuplicate ? false : row.getIsSomeSelected();
+  const checked = Boolean(rowSelection && rowSelection[sourceId]);
 
   const handleChange = () => {
     if (!onRowSelectionChange) return;
-    const nextSelection = { ...(rowSelection || {}) };
-    if (nextSelection[sourceId]) {
-      delete nextSelection[sourceId];
-    } else {
-      nextSelection[sourceId] = true;
-    }
-    onRowSelectionChange(nextSelection);
+    onRowSelectionChange(sourceId);
   };
 
   return (
     <Checkbox
       checked={checked}
       disabled={!onRowSelectionChange}
-      indeterminate={indeterminate}
       onChange={handleChange}
       size="small"
       sx={{ padding: '2px' }}
@@ -66,21 +102,18 @@ const SelectionCell = ({ row, rowSelection, onRowSelectionChange }) => {
 SelectionCell.propTypes = {
   row: PropTypes.shape({
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    getIsSelected: PropTypes.func.isRequired,
-    getCanSelect: PropTypes.func.isRequired,
-    getIsSomeSelected: PropTypes.func.isRequired,
-    getToggleSelectedHandler: PropTypes.func.isRequired,
     original: PropTypes.shape({
       pinnedSourceId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     }),
   }).isRequired,
-  rowSelection: PropTypes.objectOf(PropTypes.bool),
-  onRowSelectionChange: PropTypes.func,
-};
-
-SelectionCell.defaultProps = {
-  rowSelection: {},
-  onRowSelectionChange: null,
+  table: PropTypes.shape({
+    options: PropTypes.shape({
+      meta: PropTypes.shape({
+        rowSelection: PropTypes.objectOf(PropTypes.bool),
+        onRowSelectionChange: PropTypes.func,
+      }),
+    }),
+  }).isRequired,
 };
 
 const MiniFicheCell = ({ row, details, onOpenDetails, onHideDetails }) => {
@@ -98,7 +131,7 @@ const MiniFicheCell = ({ row, details, onOpenDetails, onHideDetails }) => {
 
   return (
     <IconButton sx={{ padding: '2px' }} size="small" onClick={handleClick}>
-      {isDetailsRow ? <Info fontSize="small" color="primary" /> : <Info fontSize="small" color="disabled" />}
+      {isDetailsRow ? <Description fontSize="small" color="primary" /> : <DescriptionOutlined fontSize="small" color="disabled" />}
     </IconButton>
   );
 };
@@ -204,6 +237,7 @@ const TableRowMemo = React.memo(({ row, isPinned, hasDetails, rowSelection, colu
             sx={{
               padding: isFirstColumn ? 0 : '1px 4px',
               fontSize: '0.75rem',
+              textAlign: isFirstColumn ? 'center' : 'left',
               borderRight: '1px solid rgba(224, 224, 224, 1)',
               borderBottom: '1px solid rgba(224, 224, 224, 0.5)',
               whiteSpace: 'nowrap',
@@ -331,21 +365,35 @@ const DataTable = ({
   columnVisibility,
   onColumnVisibilityChange,
 }) => {
+  const [showSelectedOnly, setShowSelectedOnly] = React.useState(false);
+
+  const rowSelectionRef = React.useRef(rowSelection);
+  React.useEffect(() => {
+    rowSelectionRef.current = rowSelection;
+  }, [rowSelection]);
+
+  const handleToggleShowSelectedOnly = useCallback(() => {
+    setShowSelectedOnly(prev => !prev);
+  }, []);
+
+  useEffect(() => {
+    const hasSelection = rowSelection
+      && Object.keys(rowSelection).some(key => rowSelection[key]);
+    if (showSelectedOnly && !hasSelection) {
+      setShowSelectedOnly(false);
+    }
+  }, [rowSelection, showSelectedOnly]);
+
   const baseRows = useMemo(() => data || [], [data]);
   const cacheMap = useMemo(() => rowCache || new Map(), [rowCache]);
 
   const pinnedSourceIds = useMemo(() => {
     const ids = new Set();
-    if (rowSelection) {
-      Object.keys(rowSelection).forEach(key => {
-        if (rowSelection[key]) ids.add(String(key));
-      });
-    }
     if (details) {
       ids.add(String(details));
     }
     return Array.from(ids);
-  }, [rowSelection, details]);
+  }, [details]);
 
   const currentMap = useMemo(() => {
     const m = new Map();
@@ -373,19 +421,44 @@ const DataTable = ({
     [pinnedSourceIds, currentMap, cacheMap],
   );
 
-  const tableData = useMemo(() => [...baseRows, ...pinnedRows], [baseRows, pinnedRows]);
+  const filteredBaseRows = useMemo(() => {
+    if (!showSelectedOnly) return baseRows;
+    return baseRows.filter(row => {
+      const rowId = String(row.id);
+      return rowSelection && rowSelection[rowId];
+    });
+  }, [baseRows, showSelectedOnly, rowSelection]);
+
+  const tableData = useMemo(
+    () => [...filteredBaseRows, ...pinnedRows],
+    [filteredBaseRows, pinnedRows],
+  );
 
   const validPinnedIds = useMemo(() => pinnedRows.map(row => String(row.id)), [pinnedRows]);
+
+  const handleRowSelectionChange = useCallback(
+    sourceId => {
+      if (!onRowSelectionChange) return;
+      const currentSelection = rowSelectionRef.current || {};
+      const nextSelection = { ...currentSelection };
+      if (nextSelection[sourceId]) {
+        delete nextSelection[sourceId];
+      } else {
+        nextSelection[sourceId] = true;
+      }
+      onRowSelectionChange(nextSelection);
+    },
+    [onRowSelectionChange],
+  );
 
   const renderSelectionCell = useCallback(
     cellInfo => (
       <SelectionCell
         row={cellInfo.row}
-        rowSelection={rowSelection}
-        onRowSelectionChange={onRowSelectionChange}
+        table={cellInfo.table}
       />
     ),
-    [onRowSelectionChange, rowSelection],
+    [],
   );
 
   const renderMiniFicheCell = useCallback(
@@ -400,13 +473,24 @@ const DataTable = ({
     [details, onHideDetails, onOpenDetails],
   );
 
+  const renderSelectionHeader = useCallback(
+    ({ table: headerTable }) => (
+      <SelectionHeader
+        table={headerTable}
+        showSelectedOnly={showSelectedOnly}
+        onToggleShowSelectedOnly={handleToggleShowSelectedOnly}
+      />
+    ),
+    [showSelectedOnly, handleToggleShowSelectedOnly],
+  );
+
   const columns = useMemo(() => {
     if (!blueprintColumns || !blueprintColumns.length) return [];
 
     return [
       {
         id: 'select',
-        header: EmptyHeader,
+        header: renderSelectionHeader,
         cell: renderSelectionCell,
         enableSorting: false,
         enableResizing: false,
@@ -451,7 +535,13 @@ const DataTable = ({
         };
       }),
     ].filter(col => col !== null);
-  }, [blueprintColumns, hasDetails, renderMiniFicheCell, renderSelectionCell]);
+  }, [
+    blueprintColumns,
+    hasDetails,
+    renderMiniFicheCell,
+    renderSelectionCell,
+    renderSelectionHeader,
+  ]);
 
   const table = useReactTable({
     data: tableData || [],
@@ -459,9 +549,12 @@ const DataTable = ({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onRowSelectionChange,
     onColumnVisibilityChange,
     columnResizeMode: 'onChange',
+    meta: {
+      rowSelection,
+      onRowSelectionChange: handleRowSelectionChange,
+    },
     state: {
       rowSelection,
       columnVisibility: columnVisibility || {},
@@ -554,9 +647,11 @@ const DataTable = ({
   return (
     <Box
       className="data-table-tanstack"
-      sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}
+      component={Paper}
+      variant="outlined"
+      sx={{ height: 'calc(100% - 15px)', display: 'flex', mx: 1, flexDirection: 'column' }}
     >
-      <TableContainer component={Paper} sx={{ flex: 1, overflow: 'auto' }}>
+      <TableContainer component={Paper} sx={{ flex: 1, borderRadius: 0, overflow: 'auto' }}>
         <Table size="small" stickyHeader sx={{ tableLayout: 'fixed', ...columnSizeVars }}>
           <TableHead>
             {table.getHeaderGroups().map(headerGroup => (
@@ -574,7 +669,10 @@ const DataTable = ({
 
                   const renderHeaderContent = () => {
                     if (header.isPlaceholder) return null;
-                    if (header.column.id === 'select' || header.column.id === 'minifiche') {
+                    if (header.column.id === 'select') {
+                      return flexRender(header.column.columnDef.header, header.getContext());
+                    }
+                    if (header.column.id === 'minifiche') {
                       return <Box sx={{ minHeight: '20px' }} />;
                     }
 
@@ -681,12 +779,14 @@ const DataTable = ({
             <MemoTableBodyContent
               table={table}
               hasDetails={hasDetails}
+              rowSelection={rowSelection}
               columnVisibility={columnVisibility}
             />
           ) : (
             <TableBodyContent
               table={table}
               hasDetails={hasDetails}
+              rowSelection={rowSelection}
               columnVisibility={columnVisibility}
             />
           )}
@@ -694,7 +794,7 @@ const DataTable = ({
       </TableContainer>
       <TablePagination
         component="div"
-        count={baseRows.length}
+        count={filteredBaseRows.length}
         page={table.getState().pagination.pageIndex}
         onPageChange={(_, page) => table.setPageIndex(page)}
         rowsPerPage={table.getState().pagination.pageSize}
@@ -703,6 +803,7 @@ const DataTable = ({
         labelRowsPerPage="Éléments par page:"
         labelDisplayedRows={({ from, to, count }) => `${from}-${to} sur ${count}`}
         sx={{
+          backgroundColor: '#f5f5f5',
           borderTop: '1px solid rgba(224, 224, 224, 1)',
           '.MuiTablePagination-toolbar': {
             minHeight: '40px',

@@ -884,6 +884,7 @@ export class Visualizer extends React.Component {
 
       addHighlight({
         layerId,
+        highlightColor: details?.interaction?.highlight_color,
         featureId: newFeatureId,
         unique: true,
         source,
@@ -1233,6 +1234,7 @@ export class Visualizer extends React.Component {
                         map={map}
                         isShareModuleVisible={visibleDrawer === 'share'}
                         onToggleShareModule={this.toggleShareModule}
+                        layersTreeState={layersTreeState}
                       />
                     </BoundingBoxObserver>
                     <TableConnected

@@ -83,4 +83,8 @@ const theme = createTheme({
   cssVariables: true,
 });
 
+const selectionHighlightColor = theme.palette.primary.main;
+
+export { selectionHighlightColor };
+
 export default theme;

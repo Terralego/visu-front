@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import ShareModule from './ShareModule';
 import ShareControl from '../../views/Visualizer/View/ShareControl';
 
-const ShareWrapper = ({ map, isShareModuleVisible, onToggleShareModule }) => {
+const ShareWrapper = ({ map, isShareModuleVisible, onToggleShareModule, layersTreeState }) => {
   const [shareControl, setShareControl] = useState(null);
 
   // Add share control to map when map is ready
@@ -41,6 +41,7 @@ const ShareWrapper = ({ map, isShareModuleVisible, onToggleShareModule }) => {
       open={isShareModuleVisible}
       map={map}
       onClose={onToggleShareModule}
+      layersTreeState={layersTreeState}
     />
   );
 };
@@ -52,10 +53,12 @@ ShareWrapper.propTypes = {
   }),
   isShareModuleVisible: PropTypes.bool.isRequired,
   onToggleShareModule: PropTypes.func.isRequired,
+  layersTreeState: PropTypes.instanceOf(Map),
 };
 
 ShareWrapper.defaultProps = {
   map: null,
+  layersTreeState: new Map(),
 };
 
 export default ShareWrapper;
