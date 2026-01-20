@@ -5,6 +5,7 @@ import mapBoxGl from 'mapbox-gl';
 import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Box } from '@mui/material';
 import { v4 as uuid } from 'uuid';
 import { connectState } from '../../State/context';
 import MapComponent, { CONTROLS_TOP_RIGHT, DEFAULT_CONTROLS } from '../Map';
@@ -809,7 +810,20 @@ export class InteractiveMap extends React.Component {
     const { onMapInit, onMapLoaded } = this;
 
     return (
-      <div className="interactive-map" style={style}>
+      <Box
+        className="interactive-map"
+        sx={{
+          ...style,
+          '&.visualizer__print': {
+            display: 'flex',
+            flexDirection: 'column',
+          },
+        }}
+      >
+        <div className="print-header">
+          <div className="print-header__image" />
+          <div className="print-header__title" />
+        </div>
         <MapComponent
           {...mapProps}
           backgroundStyle={selectedBackgroundStyle}
@@ -834,7 +848,7 @@ export class InteractiveMap extends React.Component {
           </div>
         )}
         {children}
-      </div>
+      </Box>
     );
   }
 }

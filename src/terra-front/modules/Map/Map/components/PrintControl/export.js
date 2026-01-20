@@ -1,7 +1,7 @@
 import JsPdf from 'jspdf';
 import html2canvas from 'html2canvas';
 
-export default async function exportPdf (map, orientation, format = 'a4') {
+export default async function exportPdf(map, orientation, format = 'a4') {
   // html2canvas fails to render elements on top of page so we need to scroll
   window.scrollTo(0, 0);
 
@@ -12,7 +12,16 @@ export default async function exportPdf (map, orientation, format = 'a4') {
     get: () => dpi / 96,
   });
 
-  const container = map.getContainer().parentElement;
+  const mapContainer = map.getContainer();
+  let container = mapContainer.parentElement;
+
+  while (container && !container.classList.contains('visualizer__print')) {
+    container = container.parentElement;
+  }
+  if (!container) {
+    container = mapContainer.parentElement;
+  }
+
   const canvas = map.getCanvas();
   const canvasRoot = canvas.parentNode;
 
@@ -35,17 +44,31 @@ export default async function exportPdf (map, orientation, format = 'a4') {
   canvasRoot.removeChild(canvas);
 
   const renderedContainer = await html2canvas(container, {
-    // Remove control container
-    ignoreElements: ({ className: classes }) => typeof classes === 'string' && classes.includes('mapboxgl-control-container'),
+    // Remove control elements except attribution and scale
+    ignoreElements: element => {
+      const classes = element.className;
+      if (typeof classes !== 'string') return false;
+
+      // Keep attribution and scale controls
+      if (classes.includes('mapboxgl-ctrl-attrib') || classes.includes('mapboxgl-ctrl-scale')) {
+        return false;
+      }
+
+      // Ignore other controls (but not the container itself, just individual controls)
+      if (classes.includes('mapboxgl-ctrl-group') || classes.includes('mapboxgl-ctrl-print')) {
+        return true;
+      }
+
+      return false;
+    },
   });
 
-  // Convert canvas' dimensions from pixels to milimeters
-  const conversionFactor = 96 / 25.4;
-  const widthInmm = parseFloat(canvas.style.width) / conversionFactor;
-  const heightInmm = parseFloat(canvas.style.height) / conversionFactor;
+  // Get PDF page dimensions
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
 
   // Put the image full page
-  doc.addImage(renderedContainer, 'PNG', 0, 0, widthInmm, heightInmm);
+  doc.addImage(renderedContainer, 'PNG', 0, 0, pageWidth, pageHeight);
   doc.save(`export (${new Date(Date.now()).toLocaleDateString()}).pdf`);
 
   // Set back previous DPI, map will be resized back by control
