@@ -1276,7 +1276,7 @@ export class Visualizer extends React.Component {
                 <img src={logo} alt="TerraVisu" className="app-logo" />
                 {brandLogo && <img src={brandLogo} alt="TerraVisu" className="brand-logo" />}
               </div>
-              <div className="interactive-map__footer">{credits}</div>
+              {(credits && credits !== '') && <div className="interactive-map__footer">{credits}</div>}
             </InteractiveMap>
           </div>
         </LayersTreeProvider>
