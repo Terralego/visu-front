@@ -44,6 +44,10 @@ export default async function exportPdf(map, orientation, format = 'a4') {
   canvasRoot.removeChild(canvas);
 
   const renderedContainer = await html2canvas(container, {
+    scale: dpi / 96,
+    useCORS: true,
+    allowTaint: true,
+    backgroundColor: null,
     // Remove control elements except attribution and scale
     ignoreElements: element => {
       const classes = element.className;
