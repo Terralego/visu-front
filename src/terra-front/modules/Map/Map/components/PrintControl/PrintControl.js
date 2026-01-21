@@ -383,10 +383,11 @@ export class PrintControl extends AbstractMapControl {
         this.updateHeaderDisplay(hasHeaderImage, showTitle);
       });
     }
+
     setTimeout(() => this.setState({
       isOpen: nextOpenedState,
     }, this.setClasses), 500);
-  }
+  };
 
   handleDisposition = ({ target: { value: orientation } }) =>
     this.setState({ orientation }, this.setClasses);

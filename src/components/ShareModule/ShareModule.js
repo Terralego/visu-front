@@ -28,7 +28,18 @@ const ShareModule = ({ map, open = false, onClose, layersTreeState }) => {
   const [includeMapCenter, setIncludeMapCenter] = useState(true);
   const [includeLayers, setIncludeLayers] = useState(true);
   const [includeLayersTree, setIncludeLayersTree] = useState(true);
+  const [includeBasemap, setIncludeBasemap] = useState(true);
   const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+
+  const hasBasemapInUrl = useMemo(() => {
+    try {
+      if (!currentUrl) return false;
+      const url = new URL(currentUrl);
+      return url.hash.includes('basemap');
+    } catch {
+      return false;
+    }
+  }, [currentUrl]);
 
   // Capture URL when module opens
   useEffect(() => {
@@ -44,6 +55,7 @@ const ShareModule = ({ map, open = false, onClose, layersTreeState }) => {
       setIncludeMapCenter(params.has('map'));
       setIncludeLayers(params.has('layers'));
       setIncludeLayersTree(params.get('tree') !== 'false');
+      setIncludeBasemap(params.has('basemap'));
     } catch (error) {
       console.error('Error parsing URL:', error); // eslint-disable-line no-console
     }
@@ -75,6 +87,10 @@ const ShareModule = ({ map, open = false, onClose, layersTreeState }) => {
         newParams.set('tree', params.get('tree'));
       }
 
+      if (includeBasemap && params.has('basemap')) {
+        newParams.set('basemap', params.get('basemap'));
+      }
+
       const baseUrl = `${url.origin}${url.pathname}`;
       const hashString = decodeURIComponent(newParams.toString());
       return hashString ? `${baseUrl}#${hashString}` : baseUrl;
@@ -82,7 +98,7 @@ const ShareModule = ({ map, open = false, onClose, layersTreeState }) => {
       console.error('Error building share URL:', error); // eslint-disable-line no-console
       return currentUrl;
     }
-  }, [currentUrl, includeMapCenter, includeLayers, includeLayersTree, open]);
+  }, [currentUrl, includeMapCenter, includeLayers, includeLayersTree, includeBasemap, open]);
 
   useEffect(() => {
     const handlezoom = () => setCurrentUrl(window.location.href);
@@ -380,6 +396,28 @@ const ShareModule = ({ map, open = false, onClose, layersTreeState }) => {
                     '& .MuiFormControlLabel-label': {
                       fontSize: '0.825rem',
                       fontWeight: 500,
+                    },
+                    justifyContent: 'space-between',
+                    marginLeft: 0,
+                  }}
+                  labelPlacement="start"
+                />
+                <FormControlLabel
+                  control={(
+                    <Switch
+                      checked={includeBasemap}
+                      onChange={e => setIncludeBasemap(e.target.checked)}
+                      size="small"
+                      disabled={!hasBasemapInUrl}
+                    />
+                  )}
+                  label="Fond de carte"
+                  sx={{
+                    margin: 0,
+                    '& .MuiFormControlLabel-label': {
+                      fontSize: '0.825rem',
+                      fontWeight: 500,
+                      opacity: hasBasemapInUrl ? 1 : 0.5,
                     },
                     justifyContent: 'space-between',
                     marginLeft: 0,

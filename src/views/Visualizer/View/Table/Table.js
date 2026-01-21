@@ -388,7 +388,7 @@ const DataTableMui = ({
 
       map.fitBounds(
         [[bounds[0], bounds[1]], [bounds[2], bounds[3]]],
-        { padding: fitPadding },
+        { padding: fitPadding, maxZoom: 18 },
       );
     } catch (error) {
       console.error('Error fetching geometries for zoom:', error);

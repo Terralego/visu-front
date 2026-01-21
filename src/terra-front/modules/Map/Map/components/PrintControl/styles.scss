@@ -1,4 +1,10 @@
 .visualizer {
+  .interactive-map {
+    .print-header {
+      display: none;
+    }
+  }
+
   .visualizer__print {
     margin: 0 auto;
 
