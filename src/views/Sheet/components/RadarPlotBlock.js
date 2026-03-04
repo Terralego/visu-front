@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { ResponsiveRadar } from '@nivo/radar';
 import { Box, Typography } from '@mui/material';
-import { CHART_COLORS } from '../utils/chartColors';
+import CHART_COLORS from '../utils/chartColors';
 
 const RadarPlotBlock = ({
   fields,
@@ -44,7 +44,7 @@ const RadarPlotBlock = ({
     return {
       data: radarData,
       keys: allFeatures.map(f => f.name),
-      colors: allFeatures.map(f => f.color),
+      colors: allFeatures.map((f, idx) => f.color || CHART_COLORS[idx % CHART_COLORS.length]),
     };
   }, [fields, featureData, featureName, comparisonData]);
 
@@ -67,18 +67,19 @@ const RadarPlotBlock = ({
         gridLevels={5}
         gridShape="circular"
         colors={colors}
+        colorBy="key"
         borderWidth={2}
-        borderColor={{ from: 'color' }}
+        borderColor="inherit"
         dotSize={8}
-        dotColor={{ theme: 'background' }}
+        dotColor="inherit:darker(0.3)"
         dotBorderWidth={2}
-        dotBorderColor={{ from: 'color' }}
+        dotBorderColor="inherit"
         enableDots={false}
         enableDotLabel={false}
         fillOpacity={0.25}
-        blendMode="multiply"
         animate
-        motionConfig="gentle"
+        motionStiffness={90}
+        motionDamping={15}
         legends={[
           {
             anchor: 'top-left',

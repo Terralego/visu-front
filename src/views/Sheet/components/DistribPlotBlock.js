@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { ResponsivePie } from '@nivo/pie';
 import { Box, Typography } from '@mui/material';
-import { CHART_COLORS } from '../utils/chartColors';
+import CHART_COLORS from '../utils/chartColors';
 
 const LegendItem = ({ color, label, isActive, onMouseEnter, onMouseLeave }) => (
   <Box
@@ -99,22 +99,21 @@ const DistribPlotBlock = ({ fields, featureData }) => {
           cornerRadius={3}
           innerRadius={0.7}
           margin={{ top: 25, right: 25, bottom: 25, left: 25 }}
-          colors={({ id }) => getColor(id)}
+          colorBy={d => getColor(d.id)}
           borderWidth={1}
-          borderColor={{ from: 'color', modifiers: [['darker', 0.5]] }}
-          enableArcLabels
-          arcLabel={({ value }) => `${value} %`}
-          arcLabelsSkipAngle={15}
-          enableArcLinkLabels
-          arcLinkLabel="label"
-          arcLinkLabelsSkipAngle={10}
-          arcLinkLabelsTextColor="#333"
-          arcLinkLabelsThickness={2}
-          arcLinkLabelsColor={{ from: 'color' }}
-          onMouseEnter={node => setActiveId(node.id)}
+          borderColor="inherit:darker(0.5)"
+          enableRadialLabels
+          radialLabel={d => `${d.value} %`}
+          radialLabelsSkipAngle={15}
+          enableSlicesLabels
+          sliceLabel={d => d.label}
+          slicesLabelsSkipAngle={10}
+          slicesLabelsTextColor="#333"
+          onMouseEnter={(d, e) => setActiveId(d.id)}
           onMouseLeave={() => setActiveId(null)}
           animate
-          motionConfig="gentle"
+          motionStiffness={90}
+          motionDamping={15}
         />
       </Box>
 
