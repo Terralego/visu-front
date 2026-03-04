@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, Typography } from '@mui/material';
-import { CHART_COLORS } from '../utils/chartColors';
+import CHART_COLORS from '../utils/chartColors';
 
 const BarPlotBlock = ({
   fields,
@@ -84,7 +84,8 @@ const BarPlotBlock = ({
         padding={0.3}
         borderRadius={1}
         colors={CHART_COLORS}
-        borderColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
+        colorBy="id"
+        borderColor="inherit:darker(1.6)"
         axisLeft={{
           legend: 'Effectifs',
           legendPosition: 'middle',
@@ -111,7 +112,8 @@ const BarPlotBlock = ({
           },
         ]}
         animate
-        motionConfig="gentle"
+        motionStiffness={90}
+        motionDamping={15}
       />
     </Box>
   );

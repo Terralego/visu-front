@@ -1,5 +1,5 @@
 // Chart color palette (Category 10)
-export const CHART_COLORS = [
+const CHART_COLORS = [
   'rgb(31, 119, 180)',
   'rgb(255, 127, 14)',
   'rgb(44, 160, 44)',
@@ -11,3 +11,5 @@ export const CHART_COLORS = [
   'rgb(188, 189, 34)',
   'rgb(23, 190, 207)',
 ];
+
+export default CHART_COLORS;
