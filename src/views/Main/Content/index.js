@@ -11,6 +11,9 @@ import VisualizerLoading from '../../Visualizer/Loading';
 const Profile = lazy(() => import('../../Profile'));
 const Error404 = lazy(() => import('../../Error404'));
 const Visualizer = lazy(() => import('../../Visualizer'));
+const SheetView = lazy(() => import('../../Sheet/pages/SheetView'));
+const SheetCompare = lazy(() => import('../../Sheet/pages/SheetCompare'));
+const SheetList = lazy(() => import('../../Sheet/pages/SheetList'));
 
 
 const Content = ({
@@ -36,6 +39,21 @@ const Content = ({
   return (
     <div className="main__content">
       <Switch>
+        <Route exact path="/sheet/:sheetId">
+          <Suspense fallback={<Loading />}>
+            <SheetList />
+          </Suspense>
+        </Route>
+        <Route path="/sheet/:sheetId/compare">
+          <Suspense fallback={<Loading />}>
+            <SheetCompare />
+          </Suspense>
+        </Route>
+        <Route path="/sheet/:sheetId/details/:elementId">
+          <Suspense fallback={<Loading />}>
+            <SheetView />
+          </Suspense>
+        </Route>
         <Route path="/create-account/:id/:token">
           <Suspense fallback={<Loading />}>
             <Profile />
