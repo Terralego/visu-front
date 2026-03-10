@@ -29,6 +29,7 @@ const SheetView = () => {
   const [sheetData, setSheetData] = useState(null);
   const [esData, setEsData] = useState(null);
   const [tableData, setTableData] = useState({});
+  const [geometryData, setGeometryData] = useState({});
   const [activeTab, setActiveTab] = useState(0);
   const [hideEmptyFields, setHideEmptyFields] = useState(false);
 
@@ -152,6 +153,59 @@ const SheetView = () => {
     fetchTableData();
   }, [sheetData, esData, esClient]);
 
+  useEffect(() => {
+    if (!sheetData?.blocks || !esData) return;
+
+    const geomSources = new Set();
+
+    sheetData.blocks.forEach(block => {
+      if (block.type === 'MAP') {
+        if (block.first_geom_source?.source) {
+          geomSources.add(block.first_geom_source.source);
+        }
+        if (block.second_geom_source?.source) {
+          geomSources.add(block.second_geom_source.source);
+        }
+      }
+      if (block.type === 'PANORAMAX' && block.first_geom_source?.source) {
+        geomSources.add(block.first_geom_source.source);
+      }
+    });
+
+    if (geomSources.size === 0) return;
+
+    const linkField = sheetData.unique_identifier;
+    const linkValue = esData[linkField];
+    if (!linkValue) return;
+
+    const fetchGeometryData = async () => {
+      const newGeomData = {};
+
+      await Promise.all(
+        Array.from(geomSources).map(async source => {
+          try {
+            const response = await esClient.search({
+              index: source,
+              body: bodybuilder()
+                .filter('term', linkField, linkValue)
+                .size(10000)
+                .build(),
+            });
+
+            // eslint-disable-next-line no-underscore-dangle
+            newGeomData[source] = response.hits?.hits?.map(hit => hit._source) || [];
+          } catch (err) {
+            newGeomData[source] = [];
+          }
+        }),
+      );
+
+      setGeometryData(newGeomData);
+    };
+
+    fetchGeometryData();
+  }, [sheetData, esData, esClient]);
+
   const enrichedBlocks = useMemo(() => {
     if (!sheetData?.blocks) return [];
 
@@ -162,10 +216,32 @@ const SheetView = () => {
         return { ...block, tableData: tableData[block.id] || [] };
       }
 
-      if (block.type === 'MAP' || block.type === 'PANORAMAX') {
+      if (block.type === 'MAP') {
+        const firstSource = block.first_geom_source?.source;
+        const firstGeometries = firstSource && geometryData[firstSource]
+          ? geometryData[firstSource].map(row => row.geom).filter(Boolean)
+          : [];
+
+        const secondSource = block.second_geom_source?.source;
+        const secondGeometries = secondSource && geometryData[secondSource]
+          ? geometryData[secondSource].map(row => row.geom).filter(Boolean)
+          : [];
+
         return {
           ...block,
-          geometry: esData?.geom || esData?.geometry || null,
+          firstGeometries,
+          secondGeometries,
+        };
+      }
+
+      if (block.type === 'PANORAMAX') {
+        const source = block.first_geom_source?.source;
+        const geometries = source && geometryData[source]
+          ? geometryData[source].map(row => row.geom).filter(Boolean)
+          : [];
+        return {
+          ...block,
+          geometry: geometries[0] || null,
         };
       }
 
@@ -187,7 +263,7 @@ const SheetView = () => {
         })),
       };
     });
-  }, [sheetData, esData, tableData]);
+  }, [sheetData, esData, tableData, geometryData]);
 
   const filteredBlocks = useMemo(() => {
     if (!hideEmptyFields) return enrichedBlocks;

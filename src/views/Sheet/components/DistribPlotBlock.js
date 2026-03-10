@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import PropTypes from 'prop-types';
 import { ResponsivePie } from '@nivo/pie';
 import { Box, Typography } from '@mui/material';
-import CHART_COLORS from '../utils/chartColors';
+import { CHART_COLORS } from '../../../mui-theme';
 
 const LegendItem = ({ color, label, isActive, onMouseEnter, onMouseLeave }) => (
   <Box
@@ -72,11 +72,9 @@ const DistribPlotBlock = ({ fields, featureData }) => {
     return { data: pieData, colorMap: colors };
   }, [fields, featureData]);
 
-  const offColor = 'rgb(200, 200, 200)';
-
   const getColor = id => {
     if (activeId && activeId !== id) {
-      return offColor;
+      return 'rgb(200, 200, 200)';
     }
     return colorMap[id] || CHART_COLORS[0];
   };

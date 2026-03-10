@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, Typography } from '@mui/material';
-import CHART_COLORS from '../utils/chartColors';
+import { CHART_COLORS } from '../../../mui-theme';
 
 const BarPlotBlock = ({
   fields,
@@ -16,7 +16,6 @@ const BarPlotBlock = ({
       ...comparisonData,
     ];
 
-    // Build data for each feature
     const barData = allFeatures.map((feature, idx) => {
       const item = {
         feature: feature.name,
@@ -40,7 +39,6 @@ const BarPlotBlock = ({
     };
   }, [fields, featureData, featureName, comparisonData]);
 
-  // Custom tick to display feature colors
   const renderTick = tick => (
     <g transform={`translate(${tick.x},${tick.y + 22})`}>
       <text
