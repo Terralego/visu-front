@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { ResponsiveRadar } from '@nivo/radar';
 import { Box, Typography } from '@mui/material';
-import CHART_COLORS from '../utils/chartColors';
+import { CHART_COLORS } from '../../../mui-theme';
 
 const RadarPlotBlock = ({
   fields,

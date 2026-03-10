@@ -4,21 +4,37 @@ import maplibregl from 'maplibre-gl';
 import bbox from '@turf/bbox';
 import { Box, Typography } from '@mui/material';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import { CHART_COLORS } from '../../../mui-theme';
 
-const MapBlock = ({ geometry, color = 'rgb(31, 119, 180)' }) => {
+const MapBlock = ({
+  firstGeometries,
+  secondGeometries,
+}) => {
   const mapContainer = useRef(null);
   const map = useRef(null);
+  const color = CHART_COLORS[0];
 
   useEffect(() => {
-    if (!mapContainer.current || !geometry) return;
+    if (!mapContainer.current) return;
+    if (firstGeometries.length === 0 && secondGeometries.length === 0) return;
 
-    const geojson = {
-      type: 'Feature',
-      properties: {},
-      geometry,
+    const allGeometries = [
+      ...firstGeometries.filter(Boolean),
+      ...secondGeometries.filter(Boolean),
+    ];
+
+    if (allGeometries.length === 0) return;
+
+    const featureCollection = {
+      type: 'FeatureCollection',
+      features: allGeometries.map(geom => ({
+        type: 'Feature',
+        properties: {},
+        geometry: geom,
+      })),
     };
 
-    const [minX, minY, maxX, maxY] = bbox(geojson);
+    const [minX, minY, maxX, maxY] = bbox(featureCollection);
 
     map.current = new maplibregl.Map({
       container: mapContainer.current,
@@ -30,67 +46,71 @@ const MapBlock = ({ geometry, color = 'rgb(31, 119, 180)' }) => {
     map.current.on('load', () => {
       if (!map.current) return;
 
-      map.current.addSource('feature-geometry', {
-        type: 'geojson',
-        data: geojson,
+      map.current.addSource('geometries', { type: 'geojson', data: featureCollection });
+
+      // Polygons fill
+      map.current.addLayer({
+        id: 'geometries-fill',
+        type: 'fill',
+        source: 'geometries',
+        filter: ['any',
+          ['==', ['geometry-type'], 'Polygon'],
+          ['==', ['geometry-type'], 'MultiPolygon'],
+        ],
+        paint: { 'fill-color': color, 'fill-opacity': 0.3 },
       });
 
-      if (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon') {
-        map.current.addLayer({
-          id: 'feature-fill',
-          type: 'fill',
-          source: 'feature-geometry',
-          paint: {
-            'fill-color': color,
-            'fill-opacity': 0.3,
-          },
-        });
+      // Polygons outline
+      map.current.addLayer({
+        id: 'geometries-outline',
+        type: 'line',
+        source: 'geometries',
+        filter: ['any',
+          ['==', ['geometry-type'], 'Polygon'],
+          ['==', ['geometry-type'], 'MultiPolygon'],
+        ],
+        paint: { 'line-color': color, 'line-width': 2 },
+      });
 
-        map.current.addLayer({
-          id: 'feature-outline',
-          type: 'line',
-          source: 'feature-geometry',
-          paint: {
-            'line-color': color,
-            'line-width': 2,
-          },
-        });
-      }
+      // Points
+      map.current.addLayer({
+        id: 'geometries-points',
+        type: 'circle',
+        source: 'geometries',
+        filter: ['any',
+          ['==', ['geometry-type'], 'Point'],
+          ['==', ['geometry-type'], 'MultiPoint'],
+        ],
+        paint: {
+          'circle-radius': 4,
+          'circle-color': color,
+          'circle-stroke-width': 1.5,
+          'circle-stroke-color': '#fff',
+        },
+      });
 
-      if (geometry.type === 'Point' || geometry.type === 'MultiPoint') {
-        map.current.addLayer({
-          id: 'feature-points',
-          type: 'circle',
-          source: 'feature-geometry',
-          paint: {
-            'circle-radius': 6,
-            'circle-color': color,
-            'circle-stroke-width': 2,
-            'circle-stroke-color': color,
-          },
-        });
-      }
-
-      if (geometry.type === 'LineString' || geometry.type === 'MultiLineString') {
-        map.current.addLayer({
-          id: 'feature-line',
-          type: 'line',
-          source: 'feature-geometry',
-          paint: {
-            'line-color': color,
-            'line-width': 3,
-          },
-        });
-      }
+      // Lines
+      map.current.addLayer({
+        id: 'geometries-line',
+        type: 'line',
+        source: 'geometries',
+        filter: ['any',
+          ['==', ['geometry-type'], 'LineString'],
+          ['==', ['geometry-type'], 'MultiLineString'],
+        ],
+        paint: { 'line-color': color, 'line-width': 3 },
+      });
     });
 
     // eslint-disable-next-line consistent-return
     return () => {
       map.current?.remove();
     };
-  }, [geometry, color]);
+  }, [firstGeometries, secondGeometries, color]);
 
-  if (!geometry) {
+  const hasGeometries = firstGeometries.length > 0 || secondGeometries.length > 0;
+
+  if (!hasGeometries) {
     return (
       <Box sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>
         <Typography>Aucune géométrie disponible</Typography>
@@ -115,13 +135,14 @@ const MapBlock = ({ geometry, color = 'rgb(31, 119, 180)' }) => {
 
 MapBlock.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
-  geometry: PropTypes.object,
-  color: PropTypes.string,
+  firstGeometries: PropTypes.array,
+  // eslint-disable-next-line react/forbid-prop-types
+  secondGeometries: PropTypes.array,
 };
 
 MapBlock.defaultProps = {
-  geometry: null,
-  color: 'rgb(31, 119, 180)',
+  firstGeometries: [],
+  secondGeometries: [],
 };
 
 export default MapBlock;

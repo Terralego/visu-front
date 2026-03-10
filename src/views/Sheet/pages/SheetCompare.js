@@ -32,8 +32,8 @@ import useEsClient from '../utils/useEsClient';
 import {
   getEsIndexFromBlocks,
   hideSplashScreen,
-  COMPARE_COLORS,
 } from '../utils/sheetUtils';
+import { CHART_COLORS } from '../../../mui-theme';
 import { SheetLoading, SheetError, SheetInfo } from '../layouts/SheetLoadingStates';
 
 const SheetCompare = () => {
@@ -478,7 +478,7 @@ const SheetCompare = () => {
                     key={sheet.id}
                     label={sheet.name}
                     size="small"
-                    sx={{ backgroundColor: COMPARE_COLORS[idx % COMPARE_COLORS.length], color: 'white', fontWeight: 500 }}
+                    sx={{ backgroundColor: CHART_COLORS[idx % CHART_COLORS.length], color: 'white', fontWeight: 500 }}
                   />
                 ))}
               </Box>
@@ -502,7 +502,7 @@ const SheetCompare = () => {
                   <TableBody>
                     {sheets.flatMap((sheet, sheetIdx) => {
                       const rows = sheetsTableData[sheet.id] || [];
-                      const color = COMPARE_COLORS[sheetIdx % COMPARE_COLORS.length];
+                      const color = CHART_COLORS[sheetIdx % CHART_COLORS.length];
 
                       return rows.map((row, rowIdx) => (
                         // eslint-disable-next-line react/no-array-index-key

@@ -214,7 +214,12 @@ const renderBlockContent = block => {
     case 'FIELDS_TABLE':
       return <FieldsTableBlock fields={block.fields} tableData={block.tableData} />;
     case 'MAP':
-      return <MapBlock geometry={block.geometry} color={block.color} />;
+      return (
+        <MapBlock
+          firstGeometries={block.firstGeometries}
+          secondGeometries={block.secondGeometries}
+        />
+      );
     case 'PANORAMAX':
       return <PanoramaxBlock geometry={block.geometry} />;
     case 'RADAR_PLOT':

@@ -1,5 +1,8 @@
 import { createTheme } from '@mui/material';
 
+const PRIMARY = '#1C4984';
+const SECONDARY = '#EF7720';
+
 const theme = createTheme({
   typography: {
     button: {
@@ -12,10 +15,10 @@ const theme = createTheme({
   },
   palette: {
     primary: {
-      main: '#1C4984',
+      main: PRIMARY,
     },
     secondary: {
-      main: '#EF7720',
+      main: SECONDARY,
       contrastText: '#FFFFFF',
     },
   },
@@ -82,6 +85,19 @@ const theme = createTheme({
   },
   cssVariables: true,
 });
+
+export const CHART_COLORS = [
+  PRIMARY,
+  SECONDARY,
+  '#2ca02c',
+  '#d62728',
+  '#9467bd',
+  '#8c564b',
+  '#e377c2',
+  '#7f7f7f',
+  '#bcbd22',
+  '#17becf',
+];
 
 const selectionHighlightColor = theme.palette.primary.main;
 
