@@ -18,6 +18,7 @@ import {
   TableHead,
   TableRow,
   TablePagination,
+  TableSortLabel,
   Button,
   Chip,
   Checkbox,
@@ -25,12 +26,17 @@ import {
   InputAdornment,
   Skeleton,
 } from '@mui/material';
-import { CompareArrows as CompareIcon, Search as SearchIcon } from '@mui/icons-material';
+import {
+  CompareArrows as CompareIcon,
+  Search as SearchIcon,
+  Close as CloseIcon,
+} from '@mui/icons-material';
 
 import Api from '@terralego/core/modules/Api';
 import useEsClient from '../utils/useEsClient';
 import { hideSplashScreen, getEsIndexFromBlocks } from '../utils/sheetUtils';
 import { SheetLoading, SheetError, SheetInfo } from '../layouts/SheetLoadingStates';
+import { CHART_COLORS } from '../../../mui-theme';
 
 const MAX_COMPARE = 3;
 
@@ -46,9 +52,11 @@ const SheetList = () => {
   const [data, setData] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
   const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 25 });
-  const [selectedSheetIds, setSelectedSheetIds] = useState([]);
+  const [selectedItems, setSelectedItems] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sorting, setSorting] = useState({ field: null, order: 'asc' });
 
+  const selectedSheetIds = useMemo(() => selectedItems.map(item => item.id), [selectedItems]);
   useEffect(() => {
     hideSplashScreen();
   }, []);
@@ -113,18 +121,29 @@ const SheetList = () => {
       try {
         const fieldsToFetch = [uniqueIdentifier, ...listFields.map(f => f.field)];
 
+        const sortField = sorting.field || uniqueIdentifier;
+        const sortFieldConfig = listFields.find(f => f.field === sortField);
+        const isNumericField = sortFieldConfig?.type === 'number';
+        const sortFieldKey = isNumericField ? sortField : `${sortField}.keyword`;
+        const sortOption = [{
+          [sortFieldKey]: {
+            order: sorting.order || 'asc',
+            unmapped_type: isNumericField ? 'long' : 'keyword',
+          },
+        }];
+
         let query = bodybuilder()
           .size(pagination.pageSize)
           .rawOption('from', pagination.pageIndex * pagination.pageSize)
           .rawOption('_source', fieldsToFetch)
-          .rawOption('sort', [{ [`${uniqueIdentifier}.keyword`]: { order: 'asc' } }]);
+          .rawOption('sort', sortOption);
 
         if (searchQuery.trim()) {
-          const textFields = listFields.filter(f => f.type !== 'number').map(f => f.field);
-          if (textFields.length > 0) {
+          const nameField = listFields[1]?.field;
+          if (nameField) {
             query = query.query('query_string', {
               query: `*${searchQuery.trim()}*`,
-              fields: textFields,
+              fields: [nameField],
               default_operator: 'AND',
             });
           }
@@ -155,19 +174,26 @@ const SheetList = () => {
     };
 
     fetchData();
-  }, [esSource, uniqueIdentifier, listFields, esClient, pagination, searchQuery, isInitialLoad]);
+  }, [
+    esSource, uniqueIdentifier, listFields, esClient,
+    pagination, searchQuery, isInitialLoad, sorting,
+  ]);
 
   const columns = useMemo(() => {
     if (!listFields || listFields.length === 0) return [];
 
+    const nameField = listFields[1]?.field;
+
     const selectColumn = {
       id: 'select',
+      size: 50,
+      meta: { isSelectColumn: true },
       // eslint-disable-next-line react/no-unstable-nested-components
       header: () => (
         <Checkbox
           checked={false}
           indeterminate={selectedSheetIds.length > 0}
-          onChange={() => setSelectedSheetIds([])}
+          onChange={() => setSelectedItems([])}
           disabled={selectedSheetIds.length === 0}
           size="small"
           title="Tout désélectionner"
@@ -183,18 +209,23 @@ const SheetList = () => {
           <Checkbox
             checked={isSelected}
             disabled={!canSelect}
-            onChange={e => {
-              e.stopPropagation();
-              if (isSelected) {
-                setSelectedSheetIds(prev => prev.filter(id => id !== rowId));
-              } else if (canSelect) {
-                setSelectedSheetIds(prev => [...prev, rowId]);
-              }
-            }}
-            onClick={e => e.stopPropagation()}
             size="small"
+            sx={{ pointerEvents: 'none' }}
           />
         );
+      },
+      getToggleHandler: row => {
+        const rowId = row.original[uniqueIdentifier];
+        const rowName = row.original[nameField] || rowId;
+        const isSelected = selectedSheetIds.includes(rowId);
+        const canSelect = isSelected || selectedSheetIds.length < MAX_COMPARE;
+        return () => {
+          if (isSelected) {
+            setSelectedItems(prev => prev.filter(item => item.id !== rowId));
+          } else if (canSelect) {
+            setSelectedItems(prev => [...prev, { id: rowId, name: rowName }]);
+          }
+        };
       },
     };
 
@@ -202,10 +233,24 @@ const SheetList = () => {
       accessorKey: field.field,
       header: field.field,
       cell: info => info.getValue() ?? '-',
+      enableSorting: true,
     }));
 
     return [selectColumn, ...dataColumns];
   }, [listFields, selectedSheetIds, uniqueIdentifier]);
+
+  const handleSort = fieldName => {
+    setSorting(prev => {
+      if (prev.field === fieldName) {
+        if (prev.order === 'asc') {
+          return { field: fieldName, order: 'desc' };
+        }
+        return { field: null, order: 'asc' };
+      }
+      return { field: fieldName, order: 'asc' };
+    });
+    setPagination(prev => ({ ...prev, pageIndex: 0 }));
+  };
 
   const handleSearchChange = event => {
     setSearchQuery(event.target.value);
@@ -239,13 +284,17 @@ const SheetList = () => {
   if (loading && data.length === 0) return <SheetLoading />;
   if (error) return <SheetError message={error} />;
 
-  if (!listFields || listFields.length === 0) {
+  if (!loading && sheetConfig && (!listFields || listFields.length === 0)) {
     return (
       <SheetInfo message="Aucune configuration de liste trouvée.">
         <br />
         La configuration doit contenir des &quot;list_fields&quot;.
       </SheetInfo>
     );
+  }
+
+  if (!listFields || listFields.length === 0) {
+    return <SheetLoading />;
   }
 
   return (
@@ -294,7 +343,17 @@ const SheetList = () => {
         )}
       </Box>
 
-      <Box sx={{ px: 3, py: 2, backgroundColor: 'white', borderBottom: 1, borderColor: 'divider' }}>
+      <Box sx={{
+        px: 3,
+        py: 2,
+        backgroundColor: 'white',
+        borderBottom: 1,
+        borderColor: 'divider',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 1.5,
+      }}
+      >
         <TextField
           fullWidth
           size="small"
@@ -309,6 +368,67 @@ const SheetList = () => {
             ),
           }}
         />
+
+        <Box sx={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          flexWrap: 'wrap',
+          minHeight: 32,
+        }}
+        >
+          <Typography variant="body2" color="text.secondary" sx={{ mr: 0.5 }}>
+            Sélection :
+          </Typography>
+          {selectedItems.length === 0 ? (
+            <Typography variant="body2" color="text.disabled" sx={{ fontStyle: 'italic' }}>
+              Aucune (max {MAX_COMPARE})
+            </Typography>
+          ) : (
+            selectedItems.map((item, index) => {
+              const chipColor = CHART_COLORS[index % CHART_COLORS.length];
+              return (
+                <Chip
+                  key={item.id}
+                  label={item.name}
+                  size="small"
+                  sx={{
+                    borderColor: chipColor,
+                    color: chipColor,
+                    '& .MuiChip-deleteIcon': {
+                      color: chipColor,
+                      '&:hover': { color: chipColor },
+                    },
+                  }}
+                  variant="outlined"
+                  avatar={(
+                    <Box
+                      component="span"
+                      sx={{
+                        '&&': {
+                          width: 20,
+                          height: 20,
+                          borderRadius: '50%',
+                          backgroundColor: chipColor,
+                          color: '#fff',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '0.75rem',
+                          fontWeight: 'bold',
+                        },
+                      }}
+                    >
+                      {index + 1}
+                    </Box>
+                  )}
+                  onDelete={() => setSelectedItems(prev => prev.filter(i => i.id !== item.id))}
+                  deleteIcon={<CloseIcon fontSize="small" />}
+                />
+              );
+            })
+          )}
+        </Box>
       </Box>
 
       <Box sx={{ p: 3, flex: 1, overflow: 'auto' }}>
@@ -318,16 +438,50 @@ const SheetList = () => {
               <TableHead>
                 {table.getHeaderGroups().map(headerGroup => (
                   <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map(header => (
-                      <TableCell
-                        key={header.id}
-                        sx={{ fontWeight: 'bold', backgroundColor: 'grey.100', textTransform: 'capitalize' }}
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(header.column.columnDef.header, header.getContext())}
-                      </TableCell>
-                    ))}
+                    {headerGroup.headers.map(header => {
+                      const isSortable = header.column.columnDef.enableSorting;
+                      const fieldName = header.column.columnDef.accessorKey;
+                      const isCurrentSort = sorting.field === fieldName;
+                      const sortDirection = isCurrentSort ? sorting.order : 'asc';
+                      const isSelectColumn = header.column.columnDef.meta?.isSelectColumn;
+
+                      return (
+                        <TableCell
+                          key={header.id}
+                          sx={{
+                            fontWeight: 'bold',
+                            backgroundColor: 'grey.100',
+                            textTransform: 'capitalize',
+                            ...(isSelectColumn && {
+                              width: 50,
+                              minWidth: 50,
+                              maxWidth: 50,
+                              textAlign: 'center',
+                              p: 0,
+                            }),
+                          }}
+                          sortDirection={isCurrentSort ? sorting.order : false}
+                        >
+                          {(() => {
+                            if (header.isPlaceholder) return null;
+                            const content = flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            );
+                            if (!isSortable) return content;
+                            return (
+                              <TableSortLabel
+                                active={isCurrentSort}
+                                direction={sortDirection}
+                                onClick={() => handleSort(fieldName)}
+                              >
+                                {content}
+                              </TableSortLabel>
+                            );
+                          })()}
+                        </TableCell>
+                      );
+                    })}
                   </TableRow>
                 ))}
               </TableHead>
@@ -359,11 +513,34 @@ const SheetList = () => {
                             backgroundColor: isSelected ? 'action.selected' : 'inherit',
                           }}
                         >
-                          {row.getVisibleCells().map(cell => (
-                            <TableCell key={cell.id}>
-                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                            </TableCell>
-                          ))}
+                          {row.getVisibleCells().map(cell => {
+                            const isSelectCell = cell.column.columnDef.meta?.isSelectColumn;
+                            const toggleHandler = cell.column.columnDef.getToggleHandler?.(row);
+                            return (
+                              <TableCell
+                                key={cell.id}
+                                onClick={isSelectCell ? (e => {
+                                  e.stopPropagation();
+                                  toggleHandler?.();
+                                }) : undefined}
+                                sx={isSelectCell ? {
+                                  width: 50,
+                                  minWidth: 50,
+                                  maxWidth: 50,
+                                  cursor: 'pointer',
+                                  textAlign: 'center',
+                                  p: 0,
+                                } : {
+                                  '&:hover': {
+                                    textDecoration: 'underline',
+                                    textUnderlineOffset: '2px',
+                                  },
+                                }}
+                              >
+                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                              </TableCell>
+                            );
+                          })}
                         </TableRow>
                       );
                     })}

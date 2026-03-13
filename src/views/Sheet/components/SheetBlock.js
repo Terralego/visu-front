@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import {
   Box,
@@ -23,7 +23,16 @@ import BarPlotBlock from './BarPlotBlock';
 import DistribPlotBlock from './DistribPlotBlock';
 
 export const FieldsBlock = ({ fields }) => (
-  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+  <Box
+    sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 1.5,
+      '@media print': {
+        gap: 0.5,
+      },
+    }}
+  >
     {fields?.map(field => (
       <Box
         key={field.id}
@@ -34,12 +43,31 @@ export const FieldsBlock = ({ fields }) => (
           py: 0.5,
           borderBottom: '1px solid',
           borderColor: 'divider',
+          '@media print': {
+            py: 0.25,
+          },
         }}
       >
-        <Typography variant="body2" color="text.secondary" component="span">
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          component="span"
+          sx={{
+            '@media print': {
+              fontSize: '11px',
+            },
+          }}
+        >
           <FieldLabel label={field.label} description={field.description} />
         </Typography>
-        <Typography variant="body1">
+        <Typography
+          variant="body1"
+          sx={{
+            '@media print': {
+              fontSize: '11px',
+            },
+          }}
+        >
           {field.value || '-'}
           {field.suffix && ` ${field.suffix}`}
         </Typography>
@@ -64,8 +92,65 @@ FieldsBlock.defaultProps = {
   fields: [],
 };
 
+const BooleanIcon = ({ field }) => {
+  const pictoUrl = field.value ? field.picto_true : field.picto_false;
+
+  if (pictoUrl) {
+    return (
+      <Box
+        component="img"
+        src={pictoUrl}
+        alt={field.label}
+        sx={{
+          width: 48,
+          height: 48,
+          objectFit: 'contain',
+          '@media print': {
+            width: 24,
+            height: 24,
+          },
+        }}
+      />
+    );
+  }
+
+  return (
+    <Box
+      sx={{
+        width: 48,
+        height: 48,
+        borderRadius: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: field.value ? 'primary.main' : 'grey.300',
+        color: field.value ? 'primary.contrastText' : 'grey.500',
+      }}
+    >
+      {field.value ? <CheckIcon /> : <CloseIcon />}
+    </Box>
+  );
+};
+
+BooleanIcon.propTypes = {
+  field: PropTypes.shape({
+    value: PropTypes.bool,
+    label: PropTypes.string,
+    picto_true: PropTypes.string,
+    picto_false: PropTypes.string,
+  }).isRequired,
+};
+
 export const BooleansBlock = ({ fields }) => (
-  <Grid container spacing={2}>
+  <Grid
+    container
+    spacing={2}
+    sx={{
+      '@media print': {
+        spacing: 1,
+      },
+    }}
+  >
     {fields?.map(field => (
       <Grid item xs={6} sm={4} md={3} lg={2} key={field.id}>
         <Box
@@ -75,32 +160,21 @@ export const BooleansBlock = ({ fields }) => (
             alignItems: 'center',
             textAlign: 'center',
             gap: 0.5,
+            '@media print': {
+              gap: 0.25,
+            },
           }}
         >
-          <Box
-            sx={{
-              width: 48,
-              height: 48,
-              borderRadius: 1,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: field.value ? 'primary.main' : 'grey.300',
-              color: field.value ? 'primary.contrastText' : 'grey.500',
-            }}
-          >
-            {field.value ? (
-              <CheckIcon />
-            ) : (
-              <CloseIcon />
-            )}
-          </Box>
+          <BooleanIcon field={field} />
           <Typography
             variant="caption"
             component="span"
             sx={{
               color: field.value ? 'text.primary' : 'text.secondary',
               lineHeight: 1.2,
+              '@media print': {
+                fontSize: '9px',
+              },
             }}
           >
             <FieldLabel label={field.label} description={field.description} />
@@ -127,7 +201,15 @@ BooleansBlock.defaultProps = {
 };
 
 export const TextBlock = ({ text }) => (
-  <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+  <Typography
+    variant="body1"
+    sx={{
+      whiteSpace: 'pre-wrap',
+      '@media print': {
+        fontSize: '11px',
+      },
+    }}
+  >
     {text}
   </Typography>
 );
@@ -142,7 +224,18 @@ TextBlock.defaultProps = {
 
 export const FieldsTableBlock = ({ fields, tableData }) => (
   <TableContainer>
-    <Table size="small">
+    <Table
+      size="small"
+      sx={{
+        '@media print': {
+          '& th, & td': {
+            border: '1px solid #ddd !important',
+            padding: '2px 4px !important',
+            fontSize: '10px !important',
+          },
+        },
+      }}
+    >
       <TableHead>
         <TableRow>
           {fields?.map(field => (
@@ -203,7 +296,7 @@ PlaceholderBlock.propTypes = {
   type: PropTypes.string.isRequired,
 };
 
-const renderBlockContent = block => {
+const renderBlockContent = (block, { onPanoramaxEmpty, isPrintMode } = {}) => {
   switch (block.type) {
     case 'FIELDS':
       return <FieldsBlock fields={block.fields} />;
@@ -221,7 +314,7 @@ const renderBlockContent = block => {
         />
       );
     case 'PANORAMAX':
-      return <PanoramaxBlock geometry={block.geometry} />;
+      return <PanoramaxBlock geometry={block.geometry} onEmpty={onPanoramaxEmpty} />;
     case 'RADAR_PLOT':
       return (
         <RadarPlotBlock
@@ -229,6 +322,7 @@ const renderBlockContent = block => {
           featureData={block.featureData}
           featureName={block.featureName}
           comparisonData={block.comparisonData}
+          isPrintMode={isPrintMode}
         />
       );
     case 'BAR_PLOT':
@@ -238,6 +332,7 @@ const renderBlockContent = block => {
           featureData={block.featureData}
           featureName={block.featureName}
           comparisonData={block.comparisonData}
+          isPrintMode={isPrintMode}
         />
       );
     case 'DISTRIB_PLOT':
@@ -245,6 +340,7 @@ const renderBlockContent = block => {
         <DistribPlotBlock
           fields={block.fields}
           featureData={block.featureData}
+          isPrintMode={isPrintMode}
         />
       );
     default:
@@ -252,29 +348,78 @@ const renderBlockContent = block => {
   }
 };
 
-const SheetBlock = ({ block }) => (
-  <Paper
-    elevation={0}
-    sx={{
-      p: 3,
-      mb: 2,
-      backgroundColor: 'background.paper',
-      border: '1px solid',
-      borderColor: 'divider',
-      borderRadius: 2,
-    }}
-  >
-    {block.display_title && (
-      <>
-        <Typography variant="h6" gutterBottom color="primary.main" fontWeight="600">
-          {block.title}
-        </Typography>
-        <Divider sx={{ mb: 2 }} />
-      </>
-    )}
-    {renderBlockContent(block)}
-  </Paper>
-);
+const SheetBlock = ({ block, isPrintMode }) => {
+  const [isPanoramaxHidden, setIsPanoramaxHidden] = useState(false);
+
+  const handlePanoramaxEmpty = useCallback(() => {
+    setIsPanoramaxHidden(true);
+  }, []);
+
+  useEffect(() => {
+    if (block.type === 'PANORAMAX' && block.geometry) {
+      setIsPanoramaxHidden(false);
+    }
+  }, [block.type, block.geometry]);
+
+  if (block.type === 'PANORAMAX' && isPanoramaxHidden) {
+    return null;
+  }
+
+  const hideOnPrint = ['MAP', 'PANORAMAX'].includes(block.type);
+
+  return (
+    <Paper
+      elevation={0}
+      sx={{
+        p: 3,
+        mb: 2,
+        backgroundColor: 'background.paper',
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 2,
+        '@media print': {
+          display: hideOnPrint ? 'none' : 'block',
+          p: 1.5,
+          mb: 1,
+          boxShadow: 'none',
+          border: 'none',
+          borderBottom: '1px solid #ddd',
+          borderRadius: 0,
+          pageBreakInside: 'avoid',
+          breakInside: 'avoid',
+        },
+      }}
+    >
+      {block.display_title && (
+        <>
+          <Typography
+            variant="h6"
+            gutterBottom
+            color="primary.main"
+            fontWeight="600"
+            sx={{
+              '@media print': {
+                fontSize: '14px',
+                mb: 0.5,
+              },
+            }}
+          >
+            {block.title}
+          </Typography>
+          <Divider
+            sx={{
+              mb: 2,
+              '@media print': {
+                mb: 1,
+              },
+            }}
+          />
+        </>
+      )}
+      {renderBlockContent(block, { onPanoramaxEmpty: handlePanoramaxEmpty, isPrintMode })}
+    </Paper>
+  );
+};
 
 SheetBlock.propTypes = {
   block: PropTypes.shape({
@@ -285,7 +430,14 @@ SheetBlock.propTypes = {
     fields: PropTypes.arrayOf(PropTypes.shape({})),
     text: PropTypes.string,
     tableData: PropTypes.arrayOf(PropTypes.shape({})),
+    // eslint-disable-next-line react/forbid-prop-types
+    geometry: PropTypes.object,
   }).isRequired,
+  isPrintMode: PropTypes.bool,
+};
+
+SheetBlock.defaultProps = {
+  isPrintMode: false,
 };
 
 export default SheetBlock;
