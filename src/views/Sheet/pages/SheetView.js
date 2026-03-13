@@ -19,6 +19,14 @@ import { getEsIndexFromBlocks, hideSplashScreen } from '../utils/sheetUtils';
 import { SheetLoading, SheetError, SheetWarning } from '../layouts/SheetLoadingStates';
 import SheetBlock from '../components/SheetBlock';
 
+const printStyles = {
+  hideOnPrint: {
+    '@media print': {
+      display: 'none !important',
+    },
+  },
+};
+
 const SheetView = () => {
   const { sheetId, elementId } = useParams();
   const history = useHistory();
@@ -32,6 +40,7 @@ const SheetView = () => {
   const [geometryData, setGeometryData] = useState({});
   const [activeTab, setActiveTab] = useState(0);
   const [hideEmptyFields, setHideEmptyFields] = useState(false);
+  const [isPrintMode, setIsPrintMode] = useState(false);
 
   useEffect(() => {
     hideSplashScreen();
@@ -74,7 +83,7 @@ const SheetView = () => {
 
     const esIndex = getEsIndexFromBlocks(sheetData.blocks);
     const uniqueId = sheetData.unique_identifier;
-    
+
     if (!esIndex || !uniqueId) {
       setLoading(false);
       return;
@@ -209,7 +218,9 @@ const SheetView = () => {
   const enrichedBlocks = useMemo(() => {
     if (!sheetData?.blocks) return [];
 
-    const featureName = esData?.nom_officiel || esData?.nom_ppal || sheetData.name || 'Feature';
+    // todo : change with name field from config when implemented
+    const nameField = sheetData.list_fields?.[1]?.field;
+    const featureName = (nameField && esData?.[nameField]) || sheetData.name || 'Feature';
 
     return sheetData.blocks.map(block => {
       if (block.type === 'FIELDS_TABLE') {
@@ -295,15 +306,19 @@ const SheetView = () => {
   }, [enrichedBlocks, hideEmptyFields]);
 
   const handleBack = () => history.push(`/sheet/${sheetId}`);
-  const handlePrint = () => window.print();
+  const handlePrint = () => {
+    setIsPrintMode(true);
+    setTimeout(() => {
+      window.print();
+      setIsPrintMode(false);
+    }, 500);
+  };
   const handleTabChange = (event, newValue) => setActiveTab(newValue);
 
   if (loading) return <SheetLoading />;
   if (error) return <SheetError message={error} />;
   if (!sheetData && !loading) return <SheetWarning message="Fiche non trouvée" />;
   if (!sheetData) return <SheetLoading />;
-
-  const subtitle = esData?.epci || esData?.nom_epci || '';
 
   return (
     <Box
@@ -361,24 +376,48 @@ const SheetView = () => {
           },
         }}
       >
-        <Paper elevation={0} sx={{ p: 3 }}>
+        <Paper
+          elevation={0}
+          sx={{
+            p: 3,
+            '@media print': {
+              p: 1,
+              boxShadow: 'none',
+            },
+          }}
+        >
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
             <Box>
-              <Typography variant="h4" component="h1" gutterBottom sx={{ mt: 0 }}>
-                {esData?.nom_officiel || sheetData.name}
+              <Typography
+                variant="h4"
+                component="h1"
+                gutterBottom
+                sx={{
+                  mt: 0,
+                  '@media print': {
+                    fontSize: '20px',
+                    mb: 0.5,
+                  },
+                }}
+              >
+                {(() => {
+                  const nameField = sheetData?.list_fields?.[1]?.field;
+                  return (nameField && esData?.[nameField]) || sheetData.name;
+                })()}
               </Typography>
-              {subtitle && (
-                <Typography variant="h6" component="h2" color="text.secondary">
-                  {subtitle}
-                </Typography>
-              )}
             </Box>
-            <Button variant="contained" color="primary" startIcon={<PrintIcon />} onClick={handlePrint}>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<PrintIcon />}
+              onClick={handlePrint}
+              sx={printStyles.hideOnPrint}
+            >
               Imprimer la fiche
             </Button>
           </Box>
 
-          <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2, ...printStyles.hideOnPrint }}>
             <Tabs value={activeTab} onChange={handleTabChange}>
               <Tab label="Description" />
               <Tab label="Toutes les valeurs" />
@@ -387,7 +426,7 @@ const SheetView = () => {
 
           {activeTab === 0 && (
             <Box>
-              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, ...printStyles.hideOnPrint }}>
                 <FormControlLabel
                   control={(
                     <Switch
@@ -399,7 +438,7 @@ const SheetView = () => {
                 />
               </Box>
               {filteredBlocks.map(block => (
-                <SheetBlock key={block.id} block={block} />
+                <SheetBlock key={block.id} block={block} isPrintMode={isPrintMode} />
               ))}
             </Box>
           )}

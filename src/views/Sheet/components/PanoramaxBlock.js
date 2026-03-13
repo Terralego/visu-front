@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import bbox from '@turf/bbox';
-import { Box, Typography, CircularProgress } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 
 const getCoordinates = geometry => {
   if (!geometry) return null;
@@ -16,60 +16,68 @@ const getCoordinates = geometry => {
   }
 };
 
-const PanoramaxBlock = ({ geometry }) => {
+const PanoramaxBlock = ({ geometry, onEmpty }) => {
   const coords = useMemo(() => getCoordinates(geometry), [geometry]);
   const [photoId, setPhotoId] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    if (!coords) return;
+    setPhotoId(null);
+    setNotFound(false);
+    setLoading(true);
+
+    if (!coords) {
+      setNotFound(true);
+      setLoading(false);
+      onEmpty?.();
+      return;
+    }
+
+    let cancelled = false;
 
     const fetchNearestPhoto = async () => {
-      setLoading(true);
-      setError(null);
-
       try {
         const url = `https://api.panoramax.xyz/api/search?limit=1&place_position=${coords.lng},${coords.lat}&place_distance=5-100`;
         const response = await fetch(url);
         const data = await response.json();
 
-        if (!data.features || data.features.length === 0) {
-          setError('Aucune photo trouvée à proximité');
-          return;
-        }
+        if (cancelled) return;
 
-        setPhotoId(data.features[0].id);
+        if (!data.features || data.features.length === 0) {
+          setNotFound(true);
+          onEmpty?.();
+        } else {
+          setPhotoId(data.features[0].id);
+        }
       } catch (e) {
-        setError(`Erreur lors du chargement: ${e.message}`);
+        if (cancelled) return;
+        setNotFound(true);
+        onEmpty?.();
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
     fetchNearestPhoto();
+
+    // eslint-disable-next-line consistent-return
+    return () => {
+      cancelled = true;
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coords]);
 
-  if (!coords) {
-    return (
-      <Box sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>
-        <Typography>Coordonnées non disponibles</Typography>
-      </Box>
-    );
+  if (notFound) {
+    return null;
   }
 
   if (loading) {
     return (
       <Box sx={{ p: 4, textAlign: 'center' }}>
         <CircularProgress size={32} />
-      </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Box sx={{ p: 4, textAlign: 'center', color: 'text.secondary' }}>
-        <Typography>{error}</Typography>
       </Box>
     );
   }
@@ -101,10 +109,12 @@ const PanoramaxBlock = ({ geometry }) => {
 PanoramaxBlock.propTypes = {
   // eslint-disable-next-line react/forbid-prop-types
   geometry: PropTypes.object,
+  onEmpty: PropTypes.func,
 };
 
 PanoramaxBlock.defaultProps = {
   geometry: null,
+  onEmpty: null,
 };
 
 export default PanoramaxBlock;

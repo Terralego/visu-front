@@ -9,10 +9,11 @@ import { CHART_COLORS } from '../../../mui-theme';
 const MapBlock = ({
   firstGeometries,
   secondGeometries,
+  color: colorProp,
 }) => {
   const mapContainer = useRef(null);
   const map = useRef(null);
-  const color = CHART_COLORS[0];
+  const color = colorProp || CHART_COLORS[0];
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -138,11 +139,13 @@ MapBlock.propTypes = {
   firstGeometries: PropTypes.array,
   // eslint-disable-next-line react/forbid-prop-types
   secondGeometries: PropTypes.array,
+  color: PropTypes.string,
 };
 
 MapBlock.defaultProps = {
   firstGeometries: [],
   secondGeometries: [],
+  color: null,
 };
 
 export default MapBlock;

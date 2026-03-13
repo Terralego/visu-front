@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useLocation, useHistory, useParams, Link } from 'react-router-dom';
 import Api from '@terralego/core/modules/Api';
 import bodybuilder from 'bodybuilder';
@@ -17,15 +17,15 @@ import {
   FormControlLabel,
   Switch,
   Chip,
-  IconButton,
   Divider,
+  IconButton,
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
   Print as PrintIcon,
-  Delete as DeleteIcon,
   Check as CheckIcon,
   Close as CloseIcon,
+  Delete as DeleteIcon,
 } from '@mui/icons-material';
 
 import useEsClient from '../utils/useEsClient';
@@ -35,6 +35,79 @@ import {
 } from '../utils/sheetUtils';
 import { CHART_COLORS } from '../../../mui-theme';
 import { SheetLoading, SheetError, SheetInfo } from '../layouts/SheetLoadingStates';
+import MapBlock from '../components/MapBlock';
+import PanoramaxBlock from '../components/PanoramaxBlock';
+import RadarPlotBlock from '../components/RadarPlotBlock';
+import BarPlotBlock from '../components/BarPlotBlock';
+import DistribPlotBlock from '../components/DistribPlotBlock';
+import { TextBlock } from '../components/SheetBlock';
+
+const printStyles = {
+  hideOnPrint: {
+    '@media print': {
+      display: 'none !important',
+    },
+  },
+  blockPrint: {
+    '@media print': {
+      pageBreakInside: 'avoid',
+      breakInside: 'avoid',
+      mb: 0.5,
+      boxShadow: 'none',
+      border: 'none',
+      borderBottom: '1px solid #ddd',
+      borderRadius: 0,
+    },
+  },
+  blockHeaderPrint: {
+    '@media print': {
+      p: 0.5,
+      backgroundColor: 'transparent !important',
+      borderBottom: 'none',
+    },
+  },
+  blockTitlePrint: {
+    '@media print': {
+      fontSize: '12px !important',
+      fontWeight: '600 !important',
+    },
+  },
+  tablePrint: {
+    '@media print': {
+      '& th, & td': {
+        border: '1px solid #ddd !important',
+        padding: '2px 4px !important',
+        fontSize: '9px !important',
+      },
+    },
+  },
+  chipPrint: {
+    '@media print': {
+      height: '14px !important',
+      fontSize: '8px !important',
+      minWidth: '14px !important',
+      '& .MuiChip-label': {
+        padding: '0 4px !important',
+      },
+    },
+  },
+  forceColors: {
+    '@media print': {
+      WebkitPrintColorAdjust: 'exact',
+      printColorAdjust: 'exact',
+      colorAdjust: 'exact',
+    },
+  },
+};
+
+const blockPaperSx = {
+  mb: 3,
+  border: '1px solid',
+  borderColor: 'divider',
+  borderRadius: 2,
+  overflow: 'hidden',
+  ...printStyles.blockPrint,
+};
 
 const SheetCompare = () => {
   const { sheetId } = useParams();
@@ -47,7 +120,10 @@ const SheetCompare = () => {
   const [sheetConfig, setSheetConfig] = useState(null);
   const [sheetsEsData, setSheetsEsData] = useState({});
   const [sheetsTableData, setSheetsTableData] = useState({});
+  const [sheetsGeometryData, setSheetsGeometryData] = useState({});
+  const [panoramaxEmptyStates, setPanoramaxEmptyStates] = useState({});
   const [hideEmptyFields, setHideEmptyFields] = useState(false);
+  const [isPrintMode, setIsPrintMode] = useState(false);
 
   useEffect(() => {
     hideSplashScreen();
@@ -91,7 +167,7 @@ const SheetCompare = () => {
 
     const esIndex = getEsIndexFromBlocks(sheetConfig.blocks);
     const uniqueId = sheetConfig.unique_identifier;
-    
+
     if (!esIndex || !uniqueId) {
       setError('Configuration de la fiche incomplète');
       setLoading(false);
@@ -138,33 +214,44 @@ const SheetCompare = () => {
       const linkField = sheetConfig.unique_identifier;
 
       await Promise.all(
-        Object.entries(sheetsEsData).map(async ([elementId, esData]) => {
-          const linkValue = esData[linkField];
-          if (!linkValue) return;
-
-          const tableBlock = tableBlocks[0];
+        tableBlocks.map(async tableBlock => {
           const tableEsIndex = tableBlock?.fields?.[0]?.field_source;
           if (!tableEsIndex) return;
 
-          try {
-            let query = bodybuilder()
-              .filter('term', linkField, linkValue)
-              .size(tableBlock.limit || 1000);
+          newTableData[tableBlock.id] = {};
 
-            if (tableBlock.order_field) {
-              query = query.sort(tableBlock.order_field, 'asc');
-            }
+          await Promise.all(
+            Object.entries(sheetsEsData).map(async ([elementId, esData]) => {
+              const linkValue = esData[linkField];
+              if (!linkValue) return;
 
-            const response = await esClient.search({
-              index: tableEsIndex,
-              body: query.build(),
-            });
+              try {
+                let query = bodybuilder()
+                  .filter('term', linkField, linkValue);
 
-            // eslint-disable-next-line no-underscore-dangle
-            newTableData[elementId] = response.hits?.hits?.map(hit => hit._source) || [];
-          } catch (err) {
-            newTableData[elementId] = [];
-          }
+                if (tableBlock.limit) {
+                  query = query.size(tableBlock.limit);
+                } else {
+                  query = query.size(10000);
+                }
+
+                if (tableBlock.order_field) {
+                  query = query.sort(tableBlock.order_field, 'asc');
+                }
+
+                const response = await esClient.search({
+                  index: tableEsIndex,
+                  body: query.build(),
+                });
+
+                // eslint-disable-next-line no-underscore-dangle
+                const rows = response.hits?.hits?.map(hit => hit._source) || [];
+                newTableData[tableBlock.id][elementId] = rows;
+              } catch (err) {
+                newTableData[tableBlock.id][elementId] = [];
+              }
+            }),
+          );
         }),
       );
 
@@ -174,8 +261,70 @@ const SheetCompare = () => {
     fetchAllTableData();
   }, [sheetConfig, sheetsEsData, esClient]);
 
+  useEffect(() => {
+    if (!sheetConfig?.blocks || Object.keys(sheetsEsData).length === 0) return;
+
+    const geomSources = new Set();
+    sheetConfig.blocks.forEach(block => {
+      if (block.type === 'MAP') {
+        if (block.first_geom_source?.source) {
+          geomSources.add(block.first_geom_source.source);
+        }
+        if (block.second_geom_source?.source) {
+          geomSources.add(block.second_geom_source.source);
+        }
+      }
+      if (block.type === 'PANORAMAX' && block.first_geom_source?.source) {
+        geomSources.add(block.first_geom_source.source);
+      }
+    });
+
+    if (geomSources.size === 0) return;
+
+    const linkField = sheetConfig.unique_identifier;
+
+    const fetchAllGeometryData = async () => {
+      const newGeomData = {};
+
+      await Promise.all(
+        Object.entries(sheetsEsData).map(async ([elementId, esData]) => {
+          const linkValue = esData[linkField];
+          if (!linkValue) return;
+
+          newGeomData[elementId] = {};
+
+          await Promise.all(
+            Array.from(geomSources).map(async source => {
+              try {
+                const response = await esClient.search({
+                  index: source,
+                  body: bodybuilder()
+                    .filter('term', linkField, linkValue)
+                    .size(10000)
+                    .build(),
+                });
+
+                // eslint-disable-next-line no-underscore-dangle
+                newGeomData[elementId][source] = response.hits?.hits?.map(hit => hit._source) || [];
+              } catch (err) {
+                newGeomData[elementId][source] = [];
+              }
+            }),
+          );
+        }),
+      );
+
+      setSheetsGeometryData(newGeomData);
+    };
+
+    fetchAllGeometryData();
+  }, [sheetConfig, sheetsEsData, esClient]);
+
   const sheets = useMemo(() => {
     if (!sheetConfig?.blocks) return [];
+
+    // todo : change with name field from config when implemented
+    const nameField = sheetConfig.list_fields?.[1]?.field;
 
     return ids
       .filter(id => sheetsEsData[id])
@@ -183,8 +332,7 @@ const SheetCompare = () => {
         const esData = sheetsEsData[id];
         return {
           id,
-          name: esData.nom_officiel || esData.nom_ppal || `Zone ${id}`,
-          subtitle: esData.epci || esData.nom_epci || '',
+          name: (nameField && esData[nameField]) || `Fiche ${id}`,
           esData,
           blocks: sheetConfig.blocks.map(block => ({
             ...block,
@@ -222,25 +370,80 @@ const SheetCompare = () => {
   };
 
   const handleBack = () => history.push(`/sheet/${sheetId}`);
-  const handlePrint = () => window.print();
+  const handlePrint = () => {
+    setIsPrintMode(true);
+    setTimeout(() => {
+      window.print();
+      setIsPrintMode(false);
+    }, 500);
+  };
 
-  const handleRemoveSheet = idToRemove => {
-    const newIds = ids.filter(id => id !== idToRemove);
-    if (newIds.length > 0) {
+  const handleRemoveSheet = sheetIdToRemove => {
+    const newIds = ids.filter(id => id !== sheetIdToRemove);
+    if (newIds.length >= 2) {
       history.replace(`/sheet/${sheetId}/compare?ids=${newIds.join(',')}`);
+    } else if (newIds.length === 1) {
+      history.push(`/sheet/${sheetId}/details/${newIds[0]}`);
     } else {
       history.push(`/sheet/${sheetId}`);
     }
   };
 
-  const renderFieldValue = field => {
+  const handlePanoramaxEmpty = useCallback(sheetItemId => {
+    setPanoramaxEmptyStates(prev => ({ ...prev, [sheetItemId]: true }));
+  }, []);
+
+  const renderFieldValue = (field, isBooleanBlock = false) => {
     const { value } = field;
 
-    if (typeof value === 'boolean') {
-      return value ? (
-        <CheckIcon sx={{ color: 'success.main' }} />
-      ) : (
-        <CloseIcon sx={{ color: 'grey.400' }} />
+    const isBooleanField = isBooleanBlock
+      || field.type === 'boolean'
+      || field.type === 'BOOLEAN'
+      || typeof value === 'boolean';
+
+    if (isBooleanField) {
+      const boolValue = value === true || value === 1 || value === '1' || value === 'true' || value === 'Oui' || value === 'oui';
+
+      const pictoUrl = boolValue ? field.picto_true : field.picto_false;
+      if (pictoUrl) {
+        return (
+          <Box
+            component="img"
+            src={pictoUrl}
+            alt={field.label}
+            sx={{
+              width: 32,
+              height: 32,
+              objectFit: 'contain',
+              '@media print': {
+                width: 16,
+                height: 16,
+              },
+            }}
+          />
+        );
+      }
+
+      return (
+        <Box
+          sx={{
+            width: 32,
+            height: 32,
+            borderRadius: 1,
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: boolValue ? 'primary.main' : 'grey.300',
+            color: boolValue ? 'primary.contrastText' : 'grey.500',
+            ...printStyles.forceColors,
+            '@media print': {
+              width: 16,
+              height: 16,
+            },
+          }}
+        >
+          {boolValue ? <CheckIcon fontSize="small" /> : <CloseIcon fontSize="small" />}
+        </Box>
       );
     }
 
@@ -277,6 +480,7 @@ const SheetCompare = () => {
               label: field.label,
               field_name: field.field_name,
               type: field.type,
+              isBooleanBlock: block.type === 'BOOLEANS',
             });
           }
         });
@@ -295,11 +499,6 @@ const SheetCompare = () => {
     if (!block) return null;
     return block.fields?.find(f => f.label === fieldLabel) || null;
   };
-
-  const tableBlocks = useMemo(() => {
-    if (!sheetConfig?.blocks) return [];
-    return sheetConfig.blocks.filter(block => block.type === 'FIELDS_TABLE');
-  }, [sheetConfig]);
 
   if (loading) return <SheetLoading />;
   if (error) return <SheetError message={error} />;
@@ -322,6 +521,18 @@ const SheetCompare = () => {
         display: 'flex',
         flexDirection: 'column',
         overflow: 'hidden',
+        '@media print': {
+          height: 'auto !important',
+          minHeight: '0 !important',
+          maxHeight: 'none !important',
+          backgroundColor: 'white',
+          overflow: 'visible !important',
+          display: 'block',
+          fontSize: '9px',
+          padding: 0,
+          margin: 0,
+          ...printStyles.forceColors['@media print'],
+        },
       }}
     >
       <Box
@@ -334,6 +545,7 @@ const SheetCompare = () => {
           alignItems: 'center',
           gap: 2,
           flexShrink: 0,
+          ...printStyles.hideOnPrint,
         }}
       >
         <Button
@@ -350,18 +562,56 @@ const SheetCompare = () => {
         </Typography>
       </Box>
 
-      <Box sx={{ p: 3, width: '100%', flex: 1, overflow: 'auto' }}>
-        <Paper elevation={0} sx={{ p: 3 }}>
+      <Box
+        sx={{
+          p: 3,
+          width: '100%',
+          flex: 1,
+          overflow: 'auto',
+          '@media print': {
+            p: 0,
+            overflow: 'visible !important',
+            flex: 'none',
+            width: 'auto',
+            height: 'auto !important',
+          },
+        }}
+      >
+        <Paper
+          elevation={0}
+          sx={{
+            p: 3,
+            '@media print': {
+              p: 0.5,
+              boxShadow: 'none',
+              overflow: 'visible !important',
+            },
+          }}
+        >
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-            <Typography variant="h4" component="h1" gutterBottom sx={{ mt: 0 }}>
+            <Typography
+              variant="h4"
+              component="h1"
+              gutterBottom
+              sx={{
+                mt: 0,
+                '@media print': { fontSize: '18px', mb: 1 },
+              }}
+            >
               Comparaison
             </Typography>
-            <Button variant="contained" color="primary" startIcon={<PrintIcon />} onClick={handlePrint}>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<PrintIcon />}
+              onClick={handlePrint}
+              sx={printStyles.hideOnPrint}
+            >
               Imprimer
             </Button>
           </Box>
 
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2, ...printStyles.hideOnPrint }}>
             <FormControlLabel
               control={(
                 <Switch
@@ -373,170 +623,664 @@ const SheetCompare = () => {
             />
           </Box>
 
-          <Paper elevation={0} sx={{ mb: 3, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item sx={{ minWidth: 150 }}>
-                <Typography variant="subtitle2" color="text.secondary">
-                  Fiches comparées
-                </Typography>
-              </Grid>
-              {sheets.map(sheet => (
-                <Grid item xs key={sheet.id} sx={{ minWidth: 200 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Link to={`/sheet/${sheetId}/details/${sheet.id}`} style={{ textDecoration: 'none' }}>
+          <Paper
+            elevation={0}
+            sx={{
+              mb: 3,
+              border: '1px solid',
+              borderColor: 'divider',
+              borderRadius: 2,
+              overflow: 'hidden',
+            }}
+          >
+            <Grid container spacing={0}>
+              {sheets.map((sheet, idx) => (
+                <Grid
+                  item
+                  xs={12}
+                  md={Math.floor(12 / sheets.length)}
+                  key={sheet.id}
+                  sx={{
+                    borderRight: idx < sheets.length - 1 ? '1px solid' : 'none',
+                    borderColor: 'divider',
+                  }}
+                >
+                  <Box
+                    sx={{
+                      p: 2,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      backgroundColor: 'grey.50',
+                      ...printStyles.blockHeaderPrint,
+                    }}
+                  >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Chip
+                        label={idx + 1}
+                        size="small"
+                        sx={{
+                          backgroundColor: CHART_COLORS[idx % CHART_COLORS.length],
+                          color: 'white',
+                          fontWeight: 600,
+                          minWidth: 24,
+                          ...printStyles.forceColors,
+                          ...printStyles.chipPrint,
+                        }}
+                      />
                       <Typography
-                        variant="body1"
-                        sx={{ fontWeight: 'bold', color: 'primary.main', '&:hover': { textDecoration: 'underline' } }}
+                        component={Link}
+                        to={`/sheet/${sheetId}/details/${sheet.id}`}
+                        variant="subtitle1"
+                        sx={{
+                          fontWeight: 600,
+                          color: 'inherit',
+                          textDecoration: 'none',
+                          '&:hover': { textDecoration: 'underline' },
+                          '@media print': { fontSize: '10px' },
+                        }}
                       >
                         {sheet.name}
                       </Typography>
-                    </Link>
-                    <IconButton size="small" onClick={() => handleRemoveSheet(sheet.id)} title="Retirer de la comparaison">
+                    </Box>
+                    <IconButton
+                      size="small"
+                      onClick={() => handleRemoveSheet(sheet.id)}
+                      title="Retirer de la comparaison"
+                      sx={{ color: 'error.main', ...printStyles.hideOnPrint }}
+                    >
                       <DeleteIcon fontSize="small" />
                     </IconButton>
                   </Box>
-                  {sheet.subtitle && (
-                    <Typography variant="body2" color="text.secondary">
-                      {sheet.subtitle}
-                    </Typography>
-                  )}
-                  <Chip label={`ID: ${sheet.id}`} size="small" variant="outlined" sx={{ mt: 0.5 }} />
                 </Grid>
               ))}
             </Grid>
           </Paper>
 
-          {comparisonData.map(block => (
-            <Paper
-              key={block.title}
-              elevation={0}
-              sx={{ mb: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2, overflow: 'hidden' }}
-            >
-              {block.display_title && (
-                <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: 'divider', backgroundColor: 'grey.50' }}>
-                  <Typography variant="h6" color="primary.main" fontWeight="600">
-                    {block.title}
-                  </Typography>
-                </Box>
-              )}
-              <TableContainer>
-                <Table size="small" sx={{ tableLayout: 'fixed' }}>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell sx={{ fontWeight: 'bold', width: 200, backgroundColor: 'grey.50' }}>
-                        Champ
-                      </TableCell>
-                      {sheets.map(sheet => (
-                        <TableCell
+          {sheetConfig?.blocks?.map(block => {
+            if (block.type === 'TEXT') {
+              return (
+                <Paper
+                  key={block.id}
+                  elevation={0}
+                  sx={blockPaperSx}
+                >
+                  {block.display_title && (
+                    <Box
+                      sx={{
+                        p: 2,
+                        borderBottom: '1px solid',
+                        borderColor: 'divider',
+                        backgroundColor: 'grey.50',
+                        ...printStyles.blockHeaderPrint,
+                      }}
+                    >
+                      <Typography
+                        variant="h6"
+                        color="primary.main"
+                        fontWeight="600"
+                        sx={printStyles.blockTitlePrint}
+                      >
+                        {block.title}
+                      </Typography>
+                    </Box>
+                  )}
+                  <Box sx={{ p: 2 }}>
+                    <TextBlock text={block.text} />
+                  </Box>
+                </Paper>
+              );
+            }
+
+            if (block.type === 'MAP') {
+              return (
+                <Paper
+                  key={block.id}
+                  elevation={0}
+                  sx={{ ...blockPaperSx, ...printStyles.hideOnPrint }}
+                >
+                  {block.display_title && (
+                    <Box
+                      sx={{
+                        p: 2,
+                        borderBottom: '1px solid',
+                        borderColor: 'divider',
+                        backgroundColor: 'grey.50',
+                      }}
+                    >
+                      <Typography variant="h6" color="primary.main" fontWeight="600">
+                        {block.title}
+                      </Typography>
+                    </Box>
+                  )}
+                  <Grid container spacing={2} sx={{ p: 2 }}>
+                    {sheets.map((sheet, idx) => {
+                      const geomData = sheetsGeometryData[sheet.id] || {};
+                      const firstSource = block.first_geom_source?.source;
+                      const secondSource = block.second_geom_source?.source;
+
+                      const firstGeometries = firstSource && geomData[firstSource]
+                        ? geomData[firstSource].map(row => row.geom).filter(Boolean)
+                        : [];
+                      const secondGeometries = secondSource && geomData[secondSource]
+                        ? geomData[secondSource].map(row => row.geom).filter(Boolean)
+                        : [];
+
+                      return (
+                        <Grid
+                          item
+                          xs={12}
+                          md={Math.max(4, Math.floor(12 / sheets.length))}
                           key={sheet.id}
-                          sx={{ backgroundColor: 'grey.50', width: `calc((100% - 200px) / ${sheets.length})` }}
                         >
-                          {sheet.name}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {block.fields.map(fieldDef => (
-                      <TableRow key={fieldDef.label} hover>
-                        <TableCell sx={{ color: 'text.secondary', fontWeight: 500 }}>
-                          {fieldDef.label}
-                        </TableCell>
-                        {sheets.map(sheet => {
-                          const field = getFieldValue(sheet, block.title, fieldDef.label);
-                          return (
-                            <TableCell key={sheet.id}>
-                              {field ? renderFieldValue(field) : '-'}
-                            </TableCell>
-                          );
-                        })}
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Paper>
-          ))}
-
-          {tableBlocks.map(block => (
-            <Paper
-              key={block.id}
-              elevation={0}
-              sx={{ mb: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2, overflow: 'hidden' }}
-            >
-              {block.display_title && (
-                <Box sx={{ p: 2, borderBottom: '1px solid', borderColor: 'divider', backgroundColor: 'grey.50' }}>
-                  <Typography variant="h6" color="primary.main" fontWeight="600">
-                    {block.title}
-                  </Typography>
-                </Box>
-              )}
-
-              <Box sx={{ p: 2, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-                {sheets.map((sheet, idx) => (
-                  <Chip
-                    key={sheet.id}
-                    label={sheet.name}
-                    size="small"
-                    sx={{ backgroundColor: CHART_COLORS[idx % CHART_COLORS.length], color: 'white', fontWeight: 500 }}
-                  />
-                ))}
-              </Box>
-
-              <Divider />
-
-              <TableContainer>
-                <Table size="small">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell sx={{ fontWeight: 'bold', backgroundColor: 'grey.50', width: 40 }}>
-                        Fiche
-                      </TableCell>
-                      {block.fields?.map(field => (
-                        <TableCell key={field.id} sx={{ fontWeight: 'bold', backgroundColor: 'grey.50' }}>
-                          {field.label}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {sheets.flatMap((sheet, sheetIdx) => {
-                      const rows = sheetsTableData[sheet.id] || [];
-                      const color = CHART_COLORS[sheetIdx % CHART_COLORS.length];
-
-                      return rows.map((row, rowIdx) => (
-                        // eslint-disable-next-line react/no-array-index-key
-                        <TableRow key={`${sheet.id}-${rowIdx}`} hover>
-                          <TableCell sx={{ borderLeft: `4px solid ${color}`, width: 40 }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                             <Chip
-                              label={sheet.name.substring(0, 3)}
+                              label={idx + 1}
                               size="small"
-                              sx={{ backgroundColor: color, color: 'white', fontSize: '0.7rem', height: 20 }}
+                              sx={{
+                                backgroundColor: CHART_COLORS[idx % CHART_COLORS.length],
+                                color: 'white',
+                                fontWeight: 600,
+                                minWidth: 24,
+                              }}
                             />
+                            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                              {sheet.name}
+                            </Typography>
+                          </Box>
+                          <MapBlock
+                            firstGeometries={firstGeometries}
+                            secondGeometries={secondGeometries}
+                            color={CHART_COLORS[idx % CHART_COLORS.length]}
+                          />
+                        </Grid>
+                      );
+                    })}
+                  </Grid>
+                </Paper>
+              );
+            }
+
+            if (block.type === 'PANORAMAX') {
+              const source = block?.first_geom_source?.source;
+
+              const allEmpty = sheets.every(sheet => {
+                const geomData = sheetsGeometryData[sheet.id];
+                const geometry = source ? geomData?.[source]?.[0]?.geom || null : null;
+                return !geometry || panoramaxEmptyStates[sheet.id];
+              });
+
+              if (allEmpty) return null;
+
+              return (
+                <Paper
+                  key={block.id}
+                  elevation={0}
+                  sx={{
+                    mb: 3,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    borderRadius: 2,
+                    overflow: 'hidden',
+                    ...printStyles.hideOnPrint,
+                  }}
+                >
+                  {block.display_title && (
+                    <Box
+                      sx={{
+                        p: 2,
+                        borderBottom: '1px solid',
+                        borderColor: 'divider',
+                        backgroundColor: 'grey.50',
+                      }}
+                    >
+                      <Typography variant="h6" color="primary.main" fontWeight="600">
+                        {block.title}
+                      </Typography>
+                    </Box>
+                  )}
+                  <Grid container spacing={2} sx={{ p: 2 }}>
+                    {sheets.map((sheet, idx) => {
+                      const geomData = sheetsGeometryData[sheet.id];
+                      const geometry = source ? geomData?.[source]?.[0]?.geom || null : null;
+
+                      return (
+                        <Grid
+                          item
+                          xs={12}
+                          md={Math.max(4, Math.floor(12 / sheets.length))}
+                          key={sheet.id}
+                        >
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                            <Chip
+                              label={idx + 1}
+                              size="small"
+                              sx={{
+                                backgroundColor: CHART_COLORS[idx % CHART_COLORS.length],
+                                color: 'white',
+                                fontWeight: 600,
+                                minWidth: 24,
+                              }}
+                            />
+                            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                              {sheet.name}
+                            </Typography>
+                          </Box>
+                          {geometry ? (
+                            <PanoramaxBlock
+                              geometry={geometry}
+                              onEmpty={() => handlePanoramaxEmpty(sheet.id)}
+                            />
+                          ) : (
+                            <Box
+                              sx={{
+                                height: 400,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                backgroundColor: 'grey.100',
+                                borderRadius: 1,
+                                color: 'text.secondary',
+                              }}
+                            >
+                              <Typography>Pas d&apos;image disponible</Typography>
+                            </Box>
+                          )}
+                        </Grid>
+                      );
+                    })}
+                  </Grid>
+                </Paper>
+              );
+            }
+
+            if (block.type === 'RADAR_PLOT') {
+              const comparisonDataForRadar = sheets.slice(1).map((sheet, idx) => ({
+                name: sheet.name,
+                data: sheet.esData,
+                color: CHART_COLORS[(idx + 1) % CHART_COLORS.length],
+              }));
+
+              return (
+                <Paper
+                  key={block.id}
+                  elevation={0}
+                  sx={blockPaperSx}
+                >
+                  {block.display_title && (
+                    <Box
+                      sx={{
+                        p: 2,
+                        borderBottom: '1px solid',
+                        borderColor: 'divider',
+                        backgroundColor: 'grey.50',
+                        ...printStyles.blockHeaderPrint,
+                      }}
+                    >
+                      <Typography
+                        variant="h6"
+                        color="primary.main"
+                        fontWeight="600"
+                        sx={printStyles.blockTitlePrint}
+                      >
+                        {block.title}
+                      </Typography>
+                    </Box>
+                  )}
+                  <Box sx={{ p: 2 }}>
+                    <RadarPlotBlock
+                      fields={block.fields}
+                      featureData={sheets[0]?.esData || {}}
+                      featureName={sheets[0]?.name || ''}
+                      comparisonData={comparisonDataForRadar}
+                      isPrintMode={isPrintMode}
+                    />
+                  </Box>
+                </Paper>
+              );
+            }
+
+            if (block.type === 'BAR_PLOT') {
+              const comparisonDataForBar = sheets.slice(1).map((sheet, idx) => ({
+                name: sheet.name,
+                data: sheet.esData,
+                color: CHART_COLORS[(idx + 1) % CHART_COLORS.length],
+              }));
+
+              return (
+                <Paper
+                  key={block.id}
+                  elevation={0}
+                  sx={blockPaperSx}
+                >
+                  {block.display_title && (
+                    <Box
+                      sx={{
+                        p: 2,
+                        borderBottom: '1px solid',
+                        borderColor: 'divider',
+                        backgroundColor: 'grey.50',
+                        ...printStyles.blockHeaderPrint,
+                      }}
+                    >
+                      <Typography
+                        variant="h6"
+                        color="primary.main"
+                        fontWeight="600"
+                        sx={printStyles.blockTitlePrint}
+                      >
+                        {block.title}
+                      </Typography>
+                    </Box>
+                  )}
+                  <Box sx={{ p: 2 }}>
+                    <BarPlotBlock
+                      fields={block.fields}
+                      featureData={sheets[0]?.esData || {}}
+                      featureName={sheets[0]?.name || ''}
+                      comparisonData={comparisonDataForBar}
+                      isPrintMode={isPrintMode}
+                    />
+                  </Box>
+                </Paper>
+              );
+            }
+
+            if (block.type === 'DISTRIB_PLOT') {
+              return (
+                <Paper
+                  key={block.id}
+                  elevation={0}
+                  sx={blockPaperSx}
+                >
+                  {block.display_title && (
+                    <Box
+                      sx={{
+                        p: 2,
+                        borderBottom: '1px solid',
+                        borderColor: 'divider',
+                        backgroundColor: 'grey.50',
+                        ...printStyles.blockHeaderPrint,
+                      }}
+                    >
+                      <Typography
+                        variant="h6"
+                        color="primary.main"
+                        fontWeight="600"
+                        sx={printStyles.blockTitlePrint}
+                      >
+                        {block.title}
+                      </Typography>
+                    </Box>
+                  )}
+                  <Grid container spacing={2} sx={{ p: 2 }}>
+                    {sheets.map((sheet, idx) => (
+                      <Grid
+                        item
+                        xs={12}
+                        md={Math.max(4, Math.floor(12 / sheets.length))}
+                        key={sheet.id}
+                      >
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 1,
+                            mb: 1,
+                          }}
+                        >
+                          <Chip
+                            label={idx + 1}
+                            size="small"
+                            sx={{
+                              backgroundColor: CHART_COLORS[idx % CHART_COLORS.length],
+                              color: 'white',
+                              fontWeight: 600,
+                              minWidth: 24,
+                              ...printStyles.forceColors,
+                              ...printStyles.chipPrint,
+                            }}
+                          />
+                          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                            {sheet.name}
+                          </Typography>
+                        </Box>
+                        <Box>
+                          <DistribPlotBlock
+                            fields={block.fields}
+                            featureData={sheet.esData}
+                            isPrintMode={isPrintMode}
+                          />
+                        </Box>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </Paper>
+              );
+            }
+
+            if (['FIELDS', 'BOOLEANS'].includes(block.type)) {
+              const blockComparisonData = comparisonData.find(b => b.title === block.title);
+              if (!blockComparisonData) return null;
+
+              return (
+                <Paper
+                  key={block.id}
+                  elevation={0}
+                  sx={blockPaperSx}
+                >
+                  {block.display_title && (
+                    <Box
+                      sx={{
+                        p: 2,
+                        borderBottom: '1px solid',
+                        borderColor: 'divider',
+                        backgroundColor: 'grey.50',
+                        ...printStyles.blockHeaderPrint,
+                      }}
+                    >
+                      <Typography
+                        variant="h6"
+                        color="primary.main"
+                        fontWeight="600"
+                        sx={printStyles.blockTitlePrint}
+                      >
+                        {block.title}
+                      </Typography>
+                    </Box>
+                  )}
+                  <TableContainer>
+                    <Table size="small" sx={{ tableLayout: 'fixed', ...printStyles.tablePrint }}>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell
+                            sx={{ fontWeight: 'bold', width: 200, backgroundColor: 'grey.50' }}
+                          >
+                            Champ
                           </TableCell>
-                          {block.fields?.map(field => (
-                            <TableCell key={field.id}>
-                              {row[field.field_name] || '-'}
+                          {sheets.map((sheet, idx) => (
+                            <TableCell
+                              key={sheet.id}
+                              sx={{
+                                backgroundColor: 'grey.50',
+                                width: `calc((100% - 200px) / ${sheets.length})`,
+                              }}
+                            >
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <Chip
+                                  label={idx + 1}
+                                  size="small"
+                                  sx={{
+                                    backgroundColor: CHART_COLORS[idx % CHART_COLORS.length],
+                                    color: 'white',
+                                    fontSize: '0.7rem',
+                                    height: 20,
+                                    minWidth: 20,
+                                    ...printStyles.forceColors,
+                                    ...printStyles.chipPrint,
+                                  }}
+                                />
+                                {sheet.name}
+                              </Box>
                             </TableCell>
                           ))}
                         </TableRow>
-                      ));
-                    })}
-                    {sheets.every(sheet => (sheetsTableData[sheet.id] || []).length === 0) && (
-                      <TableRow>
-                        <TableCell
-                          colSpan={(block.fields?.length || 0) + 1}
-                          sx={{ textAlign: 'center', fontStyle: 'italic', opacity: 0.6 }}
-                        >
-                          Aucun établissement trouvé
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Paper>
-          ))}
+                      </TableHead>
+                      <TableBody>
+                        {blockComparisonData.fields.map(fieldDef => (
+                          <TableRow key={fieldDef.label} hover>
+                            <TableCell sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                              {fieldDef.label}
+                            </TableCell>
+                            {sheets.map(sheet => {
+                              const field = getFieldValue(sheet, block.title, fieldDef.label);
+                              return (
+                                <TableCell key={sheet.id}>
+                                  {field
+                                    ? renderFieldValue(field, fieldDef.isBooleanBlock)
+                                    : '-'}
+                                </TableCell>
+                              );
+                            })}
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Paper>
+              );
+            }
+
+            if (block.type === 'FIELDS_TABLE') {
+              return (
+                <Paper
+                  key={block.id}
+                  elevation={0}
+                  sx={blockPaperSx}
+                >
+                  {block.display_title && (
+                    <Box
+                      sx={{
+                        p: 2,
+                        borderBottom: '1px solid',
+                        borderColor: 'divider',
+                        backgroundColor: 'grey.50',
+                        ...printStyles.blockHeaderPrint,
+                      }}
+                    >
+                      <Typography
+                        variant="h6"
+                        color="primary.main"
+                        fontWeight="600"
+                        sx={printStyles.blockTitlePrint}
+                      >
+                        {block.title}
+                      </Typography>
+                    </Box>
+                  )}
+
+                  <Box sx={{ p: 2, display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+                    {sheets.map((sheet, idx) => (
+                      <Box
+                        key={sheet.id}
+                        sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+                      >
+                        <Chip
+                          label={idx + 1}
+                          size="small"
+                          sx={{
+                            backgroundColor: CHART_COLORS[idx % CHART_COLORS.length],
+                            color: 'white',
+                            fontWeight: 500,
+                            minWidth: 24,
+                            ...printStyles.forceColors,
+                            ...printStyles.chipPrint,
+                          }}
+                        />
+                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                          {sheet.name}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+
+                  <Divider />
+
+                  <TableContainer>
+                    <Table size="small" sx={printStyles.tablePrint}>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell
+                            sx={{ fontWeight: 'bold', backgroundColor: 'grey.50', width: 40 }}
+                          >
+                            Fiche
+                          </TableCell>
+                          {block.fields?.map(field => (
+                            <TableCell
+                              key={field.id}
+                              sx={{ fontWeight: 'bold', backgroundColor: 'grey.50' }}
+                            >
+                              {field.label}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {sheets.flatMap((sheet, sheetIdx) => {
+                          const blockData = sheetsTableData[block.id] || {};
+                          const rows = blockData[sheet.id] || [];
+                          const color = CHART_COLORS[sheetIdx % CHART_COLORS.length];
+
+                          return rows.map((row, rowIdx) => (
+                            // eslint-disable-next-line react/no-array-index-key
+                            <TableRow key={`${sheet.id}-${rowIdx}`} hover>
+                              <TableCell
+                                sx={{ borderLeft: `4px solid ${color}`, width: 40 }}
+                              >
+                                <Chip
+                                  label={sheetIdx + 1}
+                                  size="small"
+                                  sx={{
+                                    backgroundColor: color,
+                                    color: 'white',
+                                    fontSize: '0.7rem',
+                                    height: 20,
+                                    ...printStyles.forceColors,
+                                    ...printStyles.chipPrint,
+                                  }}
+                                />
+                              </TableCell>
+                              {block.fields?.map(field => (
+                                <TableCell key={field.id}>
+                                  {row[field.field_name] || '-'}
+                                </TableCell>
+                              ))}
+                            </TableRow>
+                          ));
+                        })}
+                        {sheets.every(sheet => {
+                          const blockData = sheetsTableData[block.id] || {};
+                          return (blockData[sheet.id] || []).length === 0;
+                        }) && (
+                          <TableRow>
+                            <TableCell
+                              colSpan={(block.fields?.length || 0) + 1}
+                              sx={{ textAlign: 'center', fontStyle: 'italic', opacity: 0.6 }}
+                            >
+                              Aucun élément trouvé
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                </Paper>
+              );
+            }
+
+            return null;
+          })}
         </Paper>
       </Box>
     </Box>

@@ -9,6 +9,7 @@ const RadarPlotBlock = ({
   featureData,
   featureName,
   comparisonData = [],
+  isPrintMode = false,
 }) => {
   const { data, keys, colors } = useMemo(() => {
     const allFeatures = [
@@ -16,23 +17,13 @@ const RadarPlotBlock = ({
       ...comparisonData,
     ];
 
-    const totals = fields.reduce((acc, field) => {
-      const total = allFeatures.reduce(
-        (sum, f) => sum + (Number(f.data[field.field_name]) || 0),
-        0,
-      );
-      return { ...acc, [field.field_name]: total };
-    }, {});
-
     const radarData = fields
       .map(field => {
         const axis = { label: field.label };
 
         allFeatures.forEach(f => {
           const value = Number(f.data[field.field_name]) || 0;
-          const total = totals[field.field_name];
-          const percentage = total > 0 ? Math.round((value / total) * 100 * 100) / 100 : 0;
-          axis[f.name] = percentage;
+          axis[f.name] = Math.round(value * 100 * 100) / 100;
         });
 
         return axis;
@@ -57,7 +48,17 @@ const RadarPlotBlock = ({
   }
 
   return (
-    <Box sx={{ height: 400 }}>
+    <Box
+      sx={{
+        height: isPrintMode ? 300 : 400,
+        width: isPrintMode ? 650 : 'auto',
+        '@media print': {
+          width: '650px',
+          height: '300px',
+          maxWidth: '100%',
+        },
+      }}
+    >
       <ResponsiveRadar
         data={data}
         keys={keys}
@@ -114,10 +115,12 @@ RadarPlotBlock.propTypes = {
       color: PropTypes.string,
     }),
   ),
+  isPrintMode: PropTypes.bool,
 };
 
 RadarPlotBlock.defaultProps = {
   comparisonData: [],
+  isPrintMode: false,
 };
 
 export default RadarPlotBlock;

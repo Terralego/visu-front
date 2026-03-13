@@ -9,6 +9,7 @@ const BarPlotBlock = ({
   featureData,
   featureName,
   comparisonData = [],
+  isPrintMode = false,
 }) => {
   const { data, keys } = useMemo(() => {
     const allFeatures = [
@@ -46,7 +47,7 @@ const BarPlotBlock = ({
         dominantBaseline="middle"
         style={{
           fontSize: 12,
-          fill: data[tick.tickIndex]?.featureColor || '#333',
+          fill: '#333',
         }}
       >
         {tick.value}
@@ -62,11 +63,20 @@ const BarPlotBlock = ({
     );
   }
 
-  // Dynamic legend height
   const legendHeight = (20 + 2) * keys.length;
 
   return (
-    <Box sx={{ height: 400 }}>
+    <Box
+      sx={{
+        height: isPrintMode ? 300 : 400,
+        width: isPrintMode ? 650 : 'auto',
+        '@media print': {
+          width: '650px',
+          height: '300px',
+          maxWidth: '100%',
+        },
+      }}
+    >
       <ResponsiveBar
         data={data}
         keys={keys}
@@ -95,6 +105,7 @@ const BarPlotBlock = ({
         }}
         labelSkipWidth={12}
         labelSkipHeight={12}
+        labelTextColor="#ffffff"
         legends={[
           {
             dataFrom: 'keys',
@@ -133,10 +144,12 @@ BarPlotBlock.propTypes = {
       color: PropTypes.string,
     }),
   ),
+  isPrintMode: PropTypes.bool,
 };
 
 BarPlotBlock.defaultProps = {
   comparisonData: [],
+  isPrintMode: false,
 };
 
 export default BarPlotBlock;
