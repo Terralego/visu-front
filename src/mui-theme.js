@@ -105,6 +105,46 @@ const theme = extendTheme({
         },
       },
     },
+    MuiSwitch: {
+      variants: [
+        {
+          props: { variant: 'contained', size: 'small' },
+          style: {
+            padding: 0,
+            width: 30,
+            '& .MuiSwitch-switchBase.Mui-checked': {
+              transform: 'translateX(10px)',
+              color: '#fff',
+            },
+            '& .MuiSwitch-switchBase': {
+              paddingLeft: 0,
+            },
+            '& .MuiSwitch-thumb': {
+              width: 12,
+              height: 12,
+              margin: 2,
+              transition: 'width 200ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
+            },
+            '& .MuiSwitch-track': {
+              borderRadius: 8,
+              border: '1px solid rgba(255, 255, 255, 0.5)',
+              margin: 4,
+              marginLeft: 0,
+              height: 'calc(100% - 8px)',
+            },
+            '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+              opacity: 0.8,
+            },
+            '&:active .MuiSwitch-thumb': {
+              width: 15,
+            },
+            '&:active .MuiSwitch-switchBase.Mui-checked': {
+              transform: 'translateX(7px)',
+            },
+          },
+        },
+      ],
+    },
   },
 });
 

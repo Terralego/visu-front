@@ -1004,6 +1004,7 @@ export class Visualizer extends React.Component {
         theme: { logo, brandLogo } = {},
       },
       enableDetailCarrousel,
+onLoadLayerData,
     } = this.props;
 
     const {
@@ -1109,6 +1110,7 @@ export class Visualizer extends React.Component {
           translate={t}
           layersExtent={bounds}
           isDetailsVisible={isDetailsVisible}
+onLoadLayerData={onLoadLayerData}
         >
           <PrivateLayers layersTree={layersTree} />
           <div

@@ -37,6 +37,7 @@ export class LayersTreeProvider extends React.Component {
     fetchPropertyRange: PropTypes.func,
     translate: PropTypes.func,
     setCurrentState: PropTypes.func,
+    onLoadLayerData: PropTypes.func,
   };
 
   static defaultProps = {
@@ -47,6 +48,7 @@ export class LayersTreeProvider extends React.Component {
     fetchPropertyRange () {},
     translate: undefined,
     setCurrentState () {},
+    onLoadLayerData: null,
   };
 
   constructor (props) {
@@ -56,10 +58,6 @@ export class LayersTreeProvider extends React.Component {
   }
 
   componentDidMount () {
-    const { setCurrentState } = this.props;
-    // Reset current tree state from hash
-    setCurrentState({ layers: undefined });
-
     this.initLayersState();
   }
 
@@ -84,6 +82,22 @@ export class LayersTreeProvider extends React.Component {
   }
 
   setLayerState = ({ layer, state: newState, reset }) => {
+    const { onLoadLayerData } = this.props;
+
+    if (newState.active && !layer.fetched && onLoadLayerData) {
+      const loadingState = { ...newState, loading: true };
+      this.resetState(({ layersTreeState }) => ({
+        layersTreeState: setLayerStateAction(layer, loadingState, layersTreeState, reset),
+      }));
+      onLoadLayerData(layer).then(() => {
+        if (this.isUnmount) return;
+        this.resetState(({ layersTreeState }) => ({
+          layersTreeState: setLayerStateAction(layer, { loading: false }, layersTreeState),
+        }));
+      });
+      return;
+    }
+
     this.resetState(({ layersTreeState }) => ({
       layersTreeState: setLayerStateAction(layer, newState, layersTreeState, reset),
     }));
@@ -178,10 +192,12 @@ export class LayersTreeProvider extends React.Component {
       };
 
       layersTreeState.forEach(populateActiveLayersAndTable);
-      // Deduplicate render
-      if (activeLayers !== initialState.layers || table !== initialState.table) {
-        setCurrentState({ layers: activeLayers, table });
-      }
+
+      setCurrentState({
+        layers: activeLayers.length > 0 ? activeLayers : undefined,
+        table: table || undefined,
+      });
+
       onChange(layersTreeState);
     };
 
@@ -196,6 +212,7 @@ export class LayersTreeProvider extends React.Component {
       translate,
       layersExtent,
       isDetailsVisible,
+      onLoadLayerData,
     } = this.props;
     const { layersTreeState } = this.state;
     const {
@@ -213,6 +230,7 @@ export class LayersTreeProvider extends React.Component {
       translate,
       layersExtent,
       isDetailsVisible,
+      onLoadLayerData,
     };
     return (
       <Provider value={value}>

@@ -1,5 +1,4 @@
 import bbox from '@turf/bbox';
-import moize from 'moize';
 import debounce from 'lodash.debounce';
 
 import { PREFIXES } from './cluster';
@@ -7,13 +6,11 @@ import { PREFIXES } from './cluster';
 export const PREV_STATE = {};
 export const LAYER_TYPES_ORDER = ['background', 'raster', 'hillshade', 'fill', 'line', 'heatmap', 'fill-extrusion', 'circle', 'symbol'];
 
-export const getRelatedLayers = moize({
-  serializer: (map, layerId) => `${layerId}${map.getStyle().layers.map(id => id).join('')}`,
-})((map, layerId) => {
+export const getRelatedLayers = (map, layerId) => {
   const regexp = new RegExp(`^${layerId}(-(${PREFIXES.join('|')}))?(-[0-9]+)?$`);
   return map.getStyle().layers
     .filter(({ id }) => id.match(regexp) || id === `${layerId}-label`);
-});
+};
 
 export function toggleLayerVisibility (map, layerId, visibility) {
   getRelatedLayers(map, layerId)

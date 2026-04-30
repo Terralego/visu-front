@@ -8,7 +8,7 @@ import parser from 'pivotql/packages/pivotql-parser-expression/src';
 import compilerMb from 'pivotql-compiler-mapboxgl';
 import compilerEs from 'pivotql-compiler-elasticsearch';
 
-import { fetchViewConfig } from '../../services/visualizer';
+import { fetchViewConfig, loadLayerData } from '../../services/visualizer';
 import Loading from './Loading';
 import View from './View';
 import NotFound from './NotFound';
@@ -94,7 +94,52 @@ export const Visualizer = ({
     }));
   }, []);
 
-  // Cleanup function to cancel effects
+  const handleLoadLayerData = React.useCallback(async (layer, { hidden = false } = {}) => {
+    const data = await loadLayerData(viewName, layer.id);
+
+    if (data.details) {
+      const { details } = data;
+      Object.keys(details).forEach(key => {
+        if (layer[key] === undefined || layer[key] === null) {
+          // eslint-disable-next-line no-param-reassign
+          layer[key] = details[key];
+        }
+      });
+      // eslint-disable-next-line no-param-reassign
+      layer.layers = details.layers ?? layer.layers;
+      // eslint-disable-next-line no-param-reassign
+      layer.source = details.source ?? layer.source;
+      // eslint-disable-next-line no-param-reassign
+      layer.fetched = true;
+    }
+
+    const mapboxLayersToAdd = hidden
+      ? data.mapboxLayers.map(l => ({
+        ...l,
+        layout: { ...(l.layout || {}), visibility: 'none' },
+      }))
+      : data.mapboxLayers;
+
+    setViewConfig(prev => {
+      if (!prev) return prev;
+      const newConfig = { ...prev };
+      newConfig.map = { ...prev.map };
+      newConfig.map.customStyle = { ...prev.map.customStyle };
+      const existingSourceIds = new Set(
+        prev.map.customStyle.sources.map(s => s.id),
+      );
+      newConfig.map.customStyle.sources = [
+        ...prev.map.customStyle.sources,
+        ...data.mapboxSources.filter(s => !existingSourceIds.has(s.id)),
+      ];
+      newConfig.map.customStyle.layers = [
+        ...prev.map.customStyle.layers,
+        ...mapboxLayersToAdd,
+      ];
+      return newConfig;
+    });
+  }, [viewName]);
+
   useEffect(() => () => { isUnmount.current = true; }, []);
 
   useEffect(() => {
@@ -125,6 +170,7 @@ export const Visualizer = ({
       key={viewName}
       view={viewConfig}
       onViewStateUpdate={onViewStateUpdate}
+      onLoadLayerData={handleLoadLayerData}
       {...props}
     />
   );
