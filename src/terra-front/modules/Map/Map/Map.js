@@ -3,7 +3,6 @@ import mapBoxGl from 'mapbox-gl';
 import PropTypes from 'prop-types';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
-import { detailedDiff } from 'deep-object-diff';
 
 import { LAYER_TYPES_ORDER, getControlName } from '../services/mapUtils';
 import { updateCluster } from '../services/cluster';
@@ -246,24 +245,33 @@ export class MapComponent extends React.Component {
     this.addLayers(customStyle);
   }
 
-  addLayers ({ sources = [], layers = [] }) {
+  addLayers ({ sources = [], layers = [] }, allOrderedLayers = []) {
     const { map } = this.props;
 
-    sources.forEach(({ id, ...sourceAttrs }) => map.addSource(id, sourceAttrs));
+    sources.forEach(({ id, ...sourceAttrs }) => {
+      if (!map.getSource(id)) map.addSource(id, sourceAttrs);
+    });
 
     const labelLayerTypes = ['fill', 'circle', 'line'];
 
     layers.forEach(layer => {
+      if (map.getLayer(layer.id)) return;
+
+      const indexInFull = allOrderedLayers.indexOf(layer.id);
+      const beforeId = allOrderedLayers
+        .slice(indexInFull + 1)
+        .find(id => map.getLayer(id));
+
       if (layer.type === 'piechart') return createCustomMarker('piechart', layer, map);
       if (layer.cluster) return this.createClusterLayer(layer);
       if (layer.advanced_style?.show_value_on_map?.type === 'fixed' && labelLayerTypes.includes(layer.type)) {
-        return this.createLabelLayer(layer);
+        return this.createLabelLayer(layer, beforeId);
       }
-      return map.addLayer(layer);
+      return map.addLayer(layer, beforeId);
     });
   }
 
-  createLabelLayer (layer) {
+  createLabelLayer (layer, beforeId) {
     const { map } = this.props;
     const { id, source, 'source-layer': sourceLayer } = layer;
     const {
@@ -295,8 +303,8 @@ export class MapComponent extends React.Component {
         'text-halo-width': 1,
       },
     };
-    map.addLayer(layer);
-    map.addLayer(labelLayer);
+    map.addLayer(layer, beforeId);
+    map.addLayer(labelLayer, beforeId);
   }
 
   createClusterLayer (layer) {
@@ -332,40 +340,38 @@ export class MapComponent extends React.Component {
   }
 
   replaceLayers (prevCustomStyle, customStyle) {
-    const { added, deleted, updated } = detailedDiff(prevCustomStyle, customStyle);
-    const getDiffWith = type => (action, style) => (
-      !action[type]
-        ? []
-        : Object.keys(action[type]).map(index => style[type][Number(index)])
-    );
+    const prevSources = prevCustomStyle.sources || [];
+    const nextSources = customStyle.sources || [];
+    const prevLayers = prevCustomStyle.layers || [];
+    const nextLayers = customStyle.layers || [];
 
-    const getDiffWithSources = getDiffWith('sources');
-    const getDiffWithLayers = getDiffWith('layers');
+    const prevSourceIds = new Set(prevSources.map(s => s.id));
+    const nextSourceIds = new Set(nextSources.map(s => s.id));
+    const prevLayerIds = new Set(prevLayers.map(l => l.id));
+    const nextLayerIds = new Set(nextLayers.map(l => l.id));
 
-    const getListDiffed = (action, style = {}) => [
-      getDiffWithSources(action, style),
-      getDiffWithLayers(action, style),
-    ];
+    const prevLayerById = new Map(prevLayers.map(l => [l.id, l]));
 
-    const [deletedSources, deletedLayers] = getListDiffed(deleted, prevCustomStyle);
-    const [updatedSources, updatedLayers] = getListDiffed(updated, customStyle);
-    const [addedSources, addedLayers] = getListDiffed(added, customStyle);
+    const deletedSources = prevSources.filter(s => !nextSourceIds.has(s.id));
+    const addedSources = nextSources.filter(s => !prevSourceIds.has(s.id));
 
-    const stylesToRemove = {
-      sources: [...deletedSources, ...updatedSources],
-      layers: [...deletedLayers, ...updatedLayers],
-    };
-    const stylesToAdd = {
-      sources: [...addedSources, ...updatedSources],
-      layers: [...addedLayers, ...updatedLayers],
-    };
+    const deletedLayers = prevLayers.filter(l => !nextLayerIds.has(l.id));
+    const addedLayers = nextLayers.filter(l => !prevLayerIds.has(l.id));
+    const updatedLayers = nextLayers.filter(l => {
+      const prev = prevLayerById.get(l.id);
+      return prev && prev !== l && JSON.stringify(prev) !== JSON.stringify(l);
+    });
 
-    if (stylesToRemove.sources.length || stylesToRemove.layers.length) {
-      this.removeLayers(stylesToRemove);
+    if (deletedSources.length || deletedLayers.length || updatedLayers.length) {
+      this.removeLayers({ sources: deletedSources, layers: [...deletedLayers, ...updatedLayers] });
     }
 
-    if (stylesToAdd.sources.length || stylesToAdd.layers.length) {
-      this.addLayers(stylesToAdd);
+    if (addedSources.length || addedLayers.length || updatedLayers.length) {
+      const allOrderedLayerIds = nextLayers.map(l => l.id);
+      this.addLayers(
+        { sources: addedSources, layers: [...updatedLayers, ...addedLayers] },
+        allOrderedLayerIds,
+      );
     }
   }
 

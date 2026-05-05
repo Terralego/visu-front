@@ -9,6 +9,7 @@ import compilerMb from 'pivotql-compiler-mapboxgl';
 import compilerEs from 'pivotql-compiler-elasticsearch';
 
 import { fetchViewConfig, loadLayerData } from '../../services/visualizer';
+import { sortCustomLayers } from '../../terra-front/modules/Visualizer/services/layersTreeUtils';
 import Loading from './Loading';
 import View from './View';
 import NotFound from './NotFound';
@@ -132,10 +133,10 @@ export const Visualizer = ({
         ...prev.map.customStyle.sources,
         ...data.mapboxSources.filter(s => !existingSourceIds.has(s.id)),
       ];
-      newConfig.map.customStyle.layers = [
-        ...prev.map.customStyle.layers,
-        ...mapboxLayersToAdd,
-      ];
+      newConfig.map.customStyle.layers = sortCustomLayers(
+        [...prev.map.customStyle.layers, ...mapboxLayersToAdd],
+        newConfig.layersTree,
+      );
       return newConfig;
     });
   }, [viewName]);
