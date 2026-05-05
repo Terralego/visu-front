@@ -18,18 +18,29 @@ const resetLayers = map => ({ layers = [] }) => {
   });
 };
 
-export const Story = ({ map, story: { beforeEach = [], slides }, setLegends, translate }) => {
+export const Story = ({
+  map, story: { beforeEach = [], slides }, setLegends, translate, onLoadLayerData,
+}) => {
   const [step, setStep] = useState(0);
 
   const slideCount = slides.length - 1;
 
-  const { layouts = [], legends } = useMemo(() => slides[step], [slides, step]);
+  const { layouts = [], legends, layerNode } = useMemo(() => slides[step], [slides, step]);
 
   useEffect(() => {
     if (!map) return;
-    beforeEach.forEach(resetLayers(map));
-    layouts.forEach(toggleLayers(map));
-  }, [map, beforeEach, layouts]);
+
+    const doToggle = () => {
+      beforeEach.forEach(resetLayers(map));
+      layouts.forEach(toggleLayers(map));
+    };
+
+    if (layerNode && !layerNode.fetched && onLoadLayerData) {
+      onLoadLayerData(layerNode, { hidden: true }).then(doToggle);
+    } else {
+      doToggle();
+    }
+  }, [map, beforeEach, layouts, layerNode, onLoadLayerData]);
 
   useEffect(() => {
     setLegends(legends);
@@ -116,11 +127,13 @@ Story.propTypes = {
   }).isRequired,
   setLegends: PropTypes.func,
   translate: PropTypes.func,
+  onLoadLayerData: PropTypes.func,
 };
 
 Story.defaultProps = {
   map: undefined,
   setLegends: () => {},
+  onLoadLayerData: null,
   translate: translateMock({
     'terralego.visualizer.story.start': 'Start',
     'terralego.visualizer.story.next': 'Next',

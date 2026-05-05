@@ -289,37 +289,27 @@ const flattenLayersTreeGroup = tree => {
 export const layersTreeToStory = layersTree => {
   const arrayOfLayers = flattenLayersTreeGroup(layersTree);
 
-  const story = arrayOfLayers.reduce(({
-    beforeEach: [beforeEachConfig],
-    slides,
-  }, {
-    label: title,
-    content = '',
-    layers = [],
-    ...layerAttrs
-  }) => ({
-    beforeEach: [{
-      ...beforeEachConfig,
-      layers: [
-        ...beforeEachConfig.layers,
-        ...layers.filter(layer => typeof layer === 'string'),
-      ],
-    }],
-    slides: [
-      ...slides, {
-        title,
-        content,
-        layouts: [{
-          layers: layers.filter(layer => typeof layer === 'string'),
-          active: true,
-        }],
-        ...layerAttrs,
+  const story = arrayOfLayers.reduce(({ beforeEach: [beforeEachConfig], slides }, layer) => {
+    const { label: title, content = '', layers = [], legends, ...layerAttrs } = layer;
+    const mapboxLayers = layers.filter(l => typeof l === 'string');
+    return {
+      beforeEach: [{
+        ...beforeEachConfig,
+        layers: [...beforeEachConfig.layers, ...mapboxLayers],
       }],
-  }), {
-    beforeEach: [{
-      layers: [],
-      active: false,
-    }],
+      slides: [
+        ...slides, {
+          title,
+          content,
+          legends,
+          layouts: [{ layers: mapboxLayers, active: true }],
+          layerNode: layer,
+          ...layerAttrs,
+        },
+      ],
+    };
+  }, {
+    beforeEach: [{ layers: [], active: false }],
     slides: [],
   });
 

@@ -1146,6 +1146,7 @@ export class Visualizer extends React.Component {
                       story={layersTreeToStory(layersTree)}
                       setLegends={setLegends}
                       translate={t}
+                      onLoadLayerData={onLoadLayerData}
                     />
                   ) : (
                     <LayersTree translate={t} filterable />
