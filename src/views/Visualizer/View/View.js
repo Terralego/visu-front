@@ -140,6 +140,7 @@ export class Visualizer extends React.Component {
     layersTreeState: PropTypes.instanceOf(Map),
     setLayersTreeState: PropTypes.func,
     settings: PropTypes.objectOf(PropTypes.any),
+    onLoadLayerData: PropTypes.func,
   };
 
   static defaultProps = {
@@ -156,6 +157,7 @@ export class Visualizer extends React.Component {
     layersTreeState: new Map(),
     setLayersTreeState() {},
     settings: {},
+    onLoadLayerData: null,
   };
 
   state = {

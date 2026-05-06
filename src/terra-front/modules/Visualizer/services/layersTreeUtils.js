@@ -1,7 +1,7 @@
-
 import searchService, { MAX_SIZE } from './search';
 
 import { PREFIX_SOURCE } from '../../Map/services/cluster';
+import { LAYER_TYPES_ORDER } from '../../Map/services/mapUtils';
 
 export const INITIAL_FILTERS = new Map();
 
@@ -173,7 +173,6 @@ export const filterFeatures = (
   });
 };
 
-
 export const resetFilters = (map, layersTreeState) => {
   Array.from(layersTreeState).forEach(([{
     layers = [], filters,
@@ -196,22 +195,26 @@ export const resetFilters = (map, layersTreeState) => {
   });
 };
 
-const flattenLayersTreeLayersId = layersTree => layersTree.reduce((all, { group, layers }) => [
-  ...all,
-  ...(group ? flattenLayersTreeLayersId(layers) : layers),
-], []);
+const flattenLayersTreeNodeIds = layersTree => layersTree.reduce(
+  (all, node) => [
+    ...all,
+    ...(node.group ? flattenLayersTreeNodeIds(node.layers) : [node.id]),
+  ],
+  [],
+);
 
 export const sortCustomLayers = (customLayers, layersTree) => {
-  const newCustomLayers = [...customLayers];
-  const flattenLayersTree = flattenLayersTreeLayersId(layersTree);
-  flattenLayersTree.forEach(layerId => {
-    const pos = newCustomLayers.findIndex(({ id }) => id === layerId);
-    if (pos > -1) {
-      newCustomLayers.push(...newCustomLayers.splice(pos, 1));
-    }
+  const nodeIds = flattenLayersTreeNodeIds(layersTree);
+  const nodeIdIndex = new Map([...nodeIds].reverse().map((id, i) => [id, i]));
+
+  return [...customLayers].sort((a, b) => {
+    const typeA = LAYER_TYPES_ORDER.indexOf(a.type);
+    const typeB = LAYER_TYPES_ORDER.indexOf(b.type);
+    if (typeA !== typeB) return typeA - typeB;
+    const posA = nodeIdIndex.has(a.layerId) ? nodeIdIndex.get(a.layerId) : Infinity;
+    const posB = nodeIdIndex.has(b.layerId) ? nodeIdIndex.get(b.layerId) : Infinity;
+    return posA - posB;
   });
-  // Reverse order as we want first layer come over next layer
-  return newCustomLayers.reverse();
 };
 
 /**
