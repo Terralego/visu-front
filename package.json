@@ -17,6 +17,7 @@
     "@mapbox/mapbox-gl-sync-move": "0.2.0",
     "@mui/icons-material": "^5.15.0",
     "@mui/material": "^5.15.0",
+    "@mui/x-charts": "^7.29.1",
     "@nivo/bar": "^0.52.1",
     "@nivo/core": "^0.52.1",
     "@nivo/pie": "^0.52.1",
