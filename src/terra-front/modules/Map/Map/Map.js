@@ -242,7 +242,8 @@ export class MapComponent extends React.Component {
 
   createLayers () {
     const { customStyle } = this.props;
-    this.addLayers(customStyle);
+    const allOrderedLayerIds = (customStyle.layers || []).map(l => l.id);
+    this.addLayers(customStyle, allOrderedLayerIds);
   }
 
   addLayers ({ sources = [], layers = [] }, allOrderedLayers = []) {
@@ -252,6 +253,7 @@ export class MapComponent extends React.Component {
       if (!map.getSource(id)) map.addSource(id, sourceAttrs);
     });
 
+    const firstBaseSymbolId = map.getStyle().layers.find(({ type }) => type === 'symbol')?.id;
     const labelLayerTypes = ['fill', 'circle', 'line'];
 
     layers.forEach(layer => {
@@ -260,7 +262,8 @@ export class MapComponent extends React.Component {
       const indexInFull = allOrderedLayers.indexOf(layer.id);
       const beforeId = allOrderedLayers
         .slice(indexInFull + 1)
-        .find(id => map.getLayer(id));
+        .find(id => map.getLayer(id))
+        || firstBaseSymbolId;
 
       if (layer.type === 'piechart') return createCustomMarker('piechart', layer, map);
       if (layer.cluster) return this.createClusterLayer(layer);
