@@ -245,7 +245,7 @@ const TableRowMemo = React.memo(({ row, isPinned, hasDetails, rowSelection, colu
               textOverflow: 'ellipsis',
               lineHeight: 1.3,
               height: '24px',
-              width: `calc(var(--col-${cell.column.id}-size) * 1px)`,
+              width: `calc(var(--col-${cellIndex}-size) * 1px)`,
               position: isSticky ? 'sticky' : 'relative',
               left: stickyLeft,
               zIndex: isSticky ? 1 : 'auto',
@@ -585,14 +585,14 @@ const DataTable = ({
   useEffect(() => {
     const colSizes = {};
     const headers = table.getFlatHeaders();
-    headers.forEach(header => {
+    headers.forEach((header, index) => {
       const headerSize = header.getSize();
       const colSize = header.column.getSize();
       if (headerSize && headerSize > 0) {
-        colSizes[`--header-${header.id}-size`] = headerSize;
+        colSizes[`--header-${index}-size`] = headerSize;
       }
       if (colSize && colSize > 0) {
-        colSizes[`--col-${header.column.id}-size`] = colSize;
+        colSizes[`--col-${index}-size`] = colSize;
       }
     });
     if (Object.keys(colSizes).length > 0) {
@@ -727,7 +727,7 @@ const DataTable = ({
                     <TableCell
                       key={header.id}
                       sx={{
-                        width: `calc(var(--header-${header.id}-size) * 1px)`,
+                        width: `calc(var(--header-${headerIndex}-size) * 1px)`,
                         position: 'sticky',
                         top: 0,
                         left: headerLeft,
