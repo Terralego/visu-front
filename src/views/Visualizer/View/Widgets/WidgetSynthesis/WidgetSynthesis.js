@@ -84,6 +84,7 @@ export class WidgetSynthesis extends React.Component {
   getContent(item) {
     const { displayedLayer } = this.props;
     const { values: { [item.name]: rawValue } } = this.state;
+    if (!displayedLayer) return null;
     const { filters } = displayedLayer;
 
     if (item.type === 'distribution') {
