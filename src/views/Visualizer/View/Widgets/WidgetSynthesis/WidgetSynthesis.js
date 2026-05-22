@@ -17,6 +17,10 @@ const getAggregationValue = (aggregation, match = []) => {
   const { value, buckets } = aggregation;
 
   if (buckets) {
+    if (match.length > 0) {
+      const matched = buckets.filter(b => match.includes(b.key));
+      return matched.reduce((sum, b) => sum + b.doc_count, 0);
+    }
     return buckets;
   }
 
@@ -288,7 +292,7 @@ export class WidgetSynthesis extends React.Component {
                   minWidth: isGraph ? '100%' : '50%',
                 }}
               >
-                <div className="widget-synthesis__label">{item.name}</div>
+                <div className="widget-synthesis__label">{item.label ?? item.name}</div>
                 {this.getContent(item)}
               </div>
               {shouldAddBottomDivider && <hr style={{ width: '100%', borderTop: 1 }} />}
