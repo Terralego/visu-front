@@ -6,38 +6,69 @@ import { CHART_COLORS } from '../../../mui-theme';
 
 const RadarPlotBlock = ({
   fields,
+  extraFields = [],
   featureData,
   featureName,
   comparisonData = [],
   isPrintMode = false,
 }) => {
   const { data, keys, colors } = useMemo(() => {
+    const hasExtraDim = extraFields.length > 0 && extraFields.length === fields.length;
+
     const allFeatures = [
       { name: featureName, data: featureData, color: CHART_COLORS[0] },
       ...comparisonData,
     ];
 
+    const seriesEntries = hasExtraDim
+      ? allFeatures.flatMap((f, idx) => [
+        {
+          key: f.name,
+          fieldSet: fields,
+          scale: 100,
+          data: f.data,
+          color: f.color || CHART_COLORS[(idx * 2) % CHART_COLORS.length],
+        },
+        {
+          key: 'Médiane',
+          fieldSet: extraFields,
+          scale: 1,
+          data: f.data,
+          color: CHART_COLORS[(idx * 2 + 1) % CHART_COLORS.length],
+        },
+      ])
+      : allFeatures.map((f, idx) => ({
+        key: f.name,
+        fieldSet: fields,
+        scale: 100,
+        data: f.data,
+        color: f.color || CHART_COLORS[idx % CHART_COLORS.length],
+      }));
+
     const radarData = fields
-      .map(field => {
+      .map((field, i) => {
         const axis = { label: field.label };
 
-        allFeatures.forEach(f => {
-          const value = Number(f.data[field.field_name]) || 0;
-          axis[f.name] = Math.round(value * 100 * 100) / 100;
+        seriesEntries.forEach(s => {
+          const fieldRef = s.fieldSet[i];
+          if (!fieldRef) return;
+          const value = Number(s.data[fieldRef.field_name]) || 0;
+          axis[s.key] = Math.round(value * s.scale * 100) / 100;
         });
 
         return axis;
-      })
-      .filter(axis => !Object.values(axis).some(
-        v => typeof v === 'number' && (Number.isNaN(v) || v < 0 || v > 100),
-      ));
+      });
+
+    const filtered = radarData.filter(axis => !Object.values(axis).some(
+      v => typeof v === 'number' && (Number.isNaN(v) || v < 0 || v > 100),
+    ));
 
     return {
-      data: radarData,
-      keys: allFeatures.map(f => f.name),
-      colors: allFeatures.map((f, idx) => f.color || CHART_COLORS[idx % CHART_COLORS.length]),
+      data: filtered,
+      keys: seriesEntries.map(s => s.key),
+      colors: seriesEntries.map(s => s.color),
     };
-  }, [fields, featureData, featureName, comparisonData]);
+  }, [fields, extraFields, featureData, featureName, comparisonData]);
 
   if (!data.length || !keys.length) {
     return (
@@ -106,6 +137,12 @@ RadarPlotBlock.propTypes = {
       label: PropTypes.string.isRequired,
     }),
   ).isRequired,
+  extraFields: PropTypes.arrayOf(
+    PropTypes.shape({
+      field_name: PropTypes.string.isRequired,
+      label: PropTypes.string.isRequired,
+    }),
+  ),
   featureData: PropTypes.shape({}).isRequired,
   featureName: PropTypes.string.isRequired,
   comparisonData: PropTypes.arrayOf(
@@ -119,6 +156,7 @@ RadarPlotBlock.propTypes = {
 };
 
 RadarPlotBlock.defaultProps = {
+  extraFields: [],
   comparisonData: [],
   isPrintMode: false,
 };

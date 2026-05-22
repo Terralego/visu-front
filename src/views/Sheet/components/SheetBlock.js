@@ -319,6 +319,7 @@ const renderBlockContent = (block, { onPanoramaxEmpty, isPrintMode } = {}) => {
       return (
         <RadarPlotBlock
           fields={block.fields}
+          extraFields={block.extra_fields}
           featureData={block.featureData}
           featureName={block.featureName}
           comparisonData={block.comparisonData}
