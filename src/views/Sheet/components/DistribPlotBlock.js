@@ -4,6 +4,8 @@ import { ResponsivePie } from '@nivo/pie';
 import { Box, Typography } from '@mui/material';
 import { CHART_COLORS } from '../../../mui-theme';
 
+const ROUND_SLICE_LABELS = true;
+
 const DistribPlotBlock = ({ fields, featureData, isPrintMode = false }) => {
   const [activeId, setActiveId] = useState(null);
 
@@ -83,7 +85,7 @@ const DistribPlotBlock = ({ fields, featureData, isPrintMode = false }) => {
         radialLabel={d => d.label}
         radialLabelsSkipAngle={15}
         enableSlicesLabels
-        sliceLabel={d => `${d.value}${commonSuffix}`}
+        sliceLabel={d => `${ROUND_SLICE_LABELS ? Math.round(d.value) : d.value}${commonSuffix}`}
         slicesLabelsSkipAngle={10}
         slicesLabelsTextColor="#fff"
         radialLabelsTextColor="#333"
