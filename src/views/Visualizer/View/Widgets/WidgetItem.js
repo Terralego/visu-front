@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import WidgetSynthesis from './WidgetSynthesis';
 import { COMPONENT_SYNTHESIS } from './WidgetsTypes';
 import WidgetLayout from './WidgetLayout';
@@ -12,21 +12,39 @@ const WidgetItem = ({
   index,
   displayedLayers,
   translate,
+  layersTreeState,
+  setLayerState,
   ...rest
 }) => {
   const { component } = widget;
 
-  if (component !== COMPONENT_SYNTHESIS) {
+  const displayedLayer = displayedLayers.find(({ label }) => label === layerLabel);
+
+  useEffect(() => {
+    if (displayedLayer) return;
+    const entry = Array.from(layersTreeState).find(([, { widgets = [] }]) =>
+      widgets.includes(widget),
+    );
+    if (!entry) return;
+    const [entryLayer, state] = entry;
+    setLayerState({
+      layer: entryLayer,
+      state: { widgets: state.widgets.filter(w => w !== widget) },
+    });
+  }, [displayedLayer]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (component !== COMPONENT_SYNTHESIS || !displayedLayer) {
     return null;
   }
 
-  const displayedLayer = displayedLayers.find(({ label }) => label === layerLabel);
   const title = translate('terralego.widget.synthesis.title', { layer: layerLabel });
 
   return (
     <WidgetLayout
       widget={widget}
       title={title}
+      layersTreeState={layersTreeState}
+      setLayerState={setLayerState}
       {...rest}
     >
       <WidgetSynthesis
