@@ -438,7 +438,12 @@ const SheetView = () => {
                 />
               </Box>
               {filteredBlocks.map(block => (
-                <SheetBlock key={block.id} block={block} isPrintMode={isPrintMode} />
+                <SheetBlock
+                  key={block.id}
+                  block={block}
+                  isPrintMode={isPrintMode}
+                  hideEmptyFields={hideEmptyFields}
+                />
               ))}
             </Box>
           )}

@@ -1,7 +1,8 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import bbox from '@turf/bbox';
-import { Box, CircularProgress } from '@mui/material';
+import { Box, CircularProgress, Typography, Link, Divider } from '@mui/material';
+import { ImageSearchOutlined } from '@mui/icons-material';
 
 const getCoordinates = geometry => {
   if (!geometry) return null;
@@ -67,11 +68,41 @@ const PanoramaxBlock = ({ geometry, onEmpty }) => {
     return () => {
       cancelled = true;
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [coords]);
 
   if (notFound) {
-    return null;
+    return (
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 1.5,
+          py: 2,
+          textAlign: 'center',
+        }}
+      >
+        <ImageSearchOutlined sx={{ fontSize: 40, color: 'text.disabled' }} />
+        <Typography variant="body1" fontWeight={600}>
+          Aucune image Panoramax n'est encore disponible sur cette zone.
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Vous pouvez contribuer à enrichir la couverture du territoire en partageant vos propres
+          photos panoramiques. Chaque contribution améliore les données ouvertes et bénéficie à
+          l'ensemble de la communauté.
+        </Typography>
+        <Divider flexItem />
+        <Link
+          href="https://panoramax.fr/comment-participer-a-panoramax/guide-collecte-pieton-debutant"
+          target="_blank"
+          rel="noopener noreferrer"
+          variant="body2"
+        >
+          Comment contribuer à Panoramax ?
+        </Link>
+      </Box>
+    );
   }
 
   if (loading) {

@@ -348,20 +348,15 @@ const renderBlockContent = (block, { onPanoramaxEmpty, isPrintMode } = {}) => {
   }
 };
 
-const SheetBlock = ({ block, isPrintMode }) => {
+const SheetBlock = ({ block, isPrintMode, hideEmptyFields }) => {
   const [isPanoramaxHidden, setIsPanoramaxHidden] = useState(false);
-
-  const handlePanoramaxEmpty = useCallback(() => {
-    setIsPanoramaxHidden(true);
-  }, []);
+  const handlePanoramaxEmpty = useCallback(() => setIsPanoramaxHidden(true), []);
 
   useEffect(() => {
-    if (block.type === 'PANORAMAX' && block.geometry) {
-      setIsPanoramaxHidden(false);
-    }
-  }, [block.type, block.geometry]);
+    setIsPanoramaxHidden(false);
+  }, [block.geometry]);
 
-  if (block.type === 'PANORAMAX' && isPanoramaxHidden) {
+  if (block.type === 'PANORAMAX' && isPanoramaxHidden && hideEmptyFields) {
     return null;
   }
 
@@ -434,10 +429,12 @@ SheetBlock.propTypes = {
     geometry: PropTypes.object,
   }).isRequired,
   isPrintMode: PropTypes.bool,
+  hideEmptyFields: PropTypes.bool,
 };
 
 SheetBlock.defaultProps = {
   isPrintMode: false,
+  hideEmptyFields: false,
 };
 
 export default SheetBlock;
