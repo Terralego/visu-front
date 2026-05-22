@@ -501,8 +501,7 @@ const DataTableMui = ({
     }
 
     const mapboxLayerId = displayedLayer.layers?.[0];
-    const mapLayer = map.getLayer(mapboxLayerId);
-    
+    const mapLayer = map.getLayer(mapboxLayerId) ?? map.getLayer(`${mapboxLayerId}-cluster-data`);
     if (!mapLayer) {
       console.warn(`Layer ${mapboxLayerId} not found in map`);
       return;
