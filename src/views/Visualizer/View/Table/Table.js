@@ -258,6 +258,12 @@ const DataTableMui = ({
 
   const toggleExtent = () => setExtent(prev => !prev);
 
+  useEffect(() => {
+    if (!isTableVisible && extent) {
+      setExtent(false);
+    }
+  }, [isTableVisible, extent]);
+
   const resize = () => {
     setIsResizing(true);
     setFull(prev => !prev);
