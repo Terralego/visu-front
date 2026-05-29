@@ -202,7 +202,7 @@ function WidgetGraph({
           left: orientation === 'horizontal' ? GRAPH_HORIZONAL_MARGIN : GRAPH_HORIZONAL_MARGIN + 10 + leftOffset,
           right: GRAPH_HORIZONAL_MARGIN,
           top: GRAPH_VERTICAL_MARGIN,
-          bottom: orientation === 'horizontal' ? GRAPH_VERTICAL_MARGIN + 30 + data.length * 10 : GRAPH_VERTICAL_MARGIN + data.length * 10,
+          bottom: orientation === 'horizontal' ? GRAPH_VERTICAL_MARGIN + 30 + data.length * 10 : GRAPH_VERTICAL_MARGIN + data.length * 18,
         }}
         slotProps={{
           legend: {
