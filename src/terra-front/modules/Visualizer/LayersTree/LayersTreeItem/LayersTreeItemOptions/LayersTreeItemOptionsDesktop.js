@@ -108,6 +108,7 @@ const LayersTreeItemOptionsDesktop = ({
                   key={context}
                   className="layerstree-node-content__options__tooltip widgets"
                   content={actionText}
+                  position="top-right"
                 >
                   <Button
                     className={classnames({
