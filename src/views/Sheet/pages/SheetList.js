@@ -97,7 +97,7 @@ const SheetList = () => {
     }
 
     const listFieldsToUse = sheetConfig.list_fields;
-    const source = listFieldsToUse[0]?.source || getEsIndexFromBlocks(sheetConfig.blocks);
+    const source = listFieldsToUse[0]?.field_source || getEsIndexFromBlocks(sheetConfig.blocks);
     const uniqueId = sheetConfig.unique_identifier;
 
     return {
@@ -119,11 +119,13 @@ const SheetList = () => {
       }
 
       try {
-        const fieldsToFetch = [uniqueIdentifier, ...listFields.map(f => f.field)];
+        const fieldsToFetch = listFields.map(f => f.field_name);
 
         const sortField = sorting.field || uniqueIdentifier;
-        const sortFieldConfig = listFields.find(f => f.field === sortField);
-        const isNumericField = sortFieldConfig?.type === 'number';
+        const sortFieldConfig = listFields.find(f => f.field_name === sortField);
+        const isNumericField = sortFieldConfig
+          ? sortFieldConfig.type === 'NUMERICAL'
+          : false;
         const sortFieldKey = isNumericField ? sortField : `${sortField}.keyword`;
         const sortOption = [{
           [sortFieldKey]: {
@@ -139,7 +141,7 @@ const SheetList = () => {
           .rawOption('sort', sortOption);
 
         if (searchQuery.trim()) {
-          const nameField = listFields[1]?.field;
+          const nameField = listFields[1]?.field_name;
           if (nameField) {
             query = query.query('query_string', {
               query: `*${searchQuery.trim()}*`,
@@ -182,7 +184,7 @@ const SheetList = () => {
   const columns = useMemo(() => {
     if (!listFields || listFields.length === 0) return [];
 
-    const nameField = listFields[1]?.field;
+    const nameField = listFields[1]?.field_name;
 
     const selectColumn = {
       id: 'select',
@@ -230,9 +232,10 @@ const SheetList = () => {
     };
 
     const dataColumns = listFields.map(field => ({
-      accessorKey: field.field,
-      header: field.field,
+      accessorKey: field.field_name,
+      header: field.label,
       cell: info => info.getValue() ?? '-',
+      id: field.id,
       enableSorting: true,
     }));
 

@@ -212,6 +212,8 @@ const SheetCompare = () => {
     const fetchAllTableData = async () => {
       const newTableData = {};
       const linkField = sheetConfig.unique_identifier;
+      const linkFieldConfig = sheetConfig.list_fields?.find(f => f.field_name === linkField);
+      const linkFieldTerm = linkFieldConfig?.type === 'TEXTUAL' ? `${linkField}.keyword` : linkField;
 
       await Promise.all(
         tableBlocks.map(async tableBlock => {
@@ -227,7 +229,7 @@ const SheetCompare = () => {
 
               try {
                 let query = bodybuilder()
-                  .filter('term', linkField, linkValue);
+                  .filter('term', linkFieldTerm, linkValue);
 
                 if (tableBlock.limit) {
                   query = query.size(tableBlock.limit);
@@ -236,7 +238,13 @@ const SheetCompare = () => {
                 }
 
                 if (tableBlock.order_field) {
-                  query = query.sort(tableBlock.order_field, 'asc');
+                  const orderFieldConfig = tableBlock.fields?.find(
+                    f => f.field_name === tableBlock.order_field,
+                  );
+                  const orderFieldKey = orderFieldConfig?.type === 'TEXTUAL'
+                    ? `${tableBlock.order_field}.keyword`
+                    : tableBlock.order_field;
+                  query = query.sort(orderFieldKey, 'asc');
                 }
 
                 const response = await esClient.search({
@@ -323,8 +331,7 @@ const SheetCompare = () => {
   const sheets = useMemo(() => {
     if (!sheetConfig?.blocks) return [];
 
-    // todo : change with name field from config when implemented
-    const nameField = sheetConfig.list_fields?.[1]?.field;
+    const nameField = sheetConfig.name_field;
 
     return ids
       .filter(id => sheetsEsData[id])
@@ -350,7 +357,7 @@ const SheetCompare = () => {
 
     const alwaysVisibleTypes = ['MAP', 'PANORAMAX', 'RADAR_PLOT', 'BAR_PLOT', 'DISTRIB_PLOT', 'BOOLEANS', 'TEXT'];
 
-    return sheet.blocks
+    return sheet.blocks.filter(block => !block.is_tab)
       .map(block => {
         if (alwaysVisibleTypes.includes(block.type)) return block;
         if (block.type === 'FIELDS_TABLE') return null;
@@ -697,7 +704,7 @@ const SheetCompare = () => {
             </Grid>
           </Paper>
 
-          {sheetConfig?.blocks?.map(block => {
+          {sheetConfig?.blocks?.filter(block => !block.is_tab).map(block => {
             if (block.type === 'TEXT') {
               return (
                 <Paper

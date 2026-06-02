@@ -123,6 +123,9 @@ const SheetView = () => {
     const linkValue = esData[linkField];
     if (!linkValue) return;
 
+    const linkFieldConfig = sheetData.list_fields?.find(f => f.field_name === linkField);
+    const linkFieldTerm = linkFieldConfig?.type === 'TEXTUAL' ? `${linkField}.keyword` : linkField;
+
     const fetchTableData = async () => {
       const newTableData = {};
 
@@ -136,11 +139,15 @@ const SheetView = () => {
 
           try {
             let query = bodybuilder()
-              .filter('term', linkField, linkValue)
+              .filter('term', linkFieldTerm, linkValue)
               .size(block.limit || 1000);
 
             if (block.order_field) {
-              query = query.sort(block.order_field, 'asc');
+              const orderFieldConfig = block.fields?.find(f => f.field_name === block.order_field);
+              const orderFieldKey = orderFieldConfig?.type === 'TEXTUAL'
+                ? `${block.order_field}.keyword`
+                : block.order_field;
+              query = query.sort(orderFieldKey, 'asc');
             }
 
             const response = await esClient.search({
@@ -218,8 +225,7 @@ const SheetView = () => {
   const enrichedBlocks = useMemo(() => {
     if (!sheetData?.blocks) return [];
 
-    // todo : change with name field from config when implemented
-    const nameField = sheetData.list_fields?.[1]?.field;
+    const nameField = sheetData.name_field;
     const featureName = (nameField && esData?.[nameField]) || sheetData.name || 'Feature';
 
     return sheetData.blocks.map(block => {
@@ -304,6 +310,16 @@ const SheetView = () => {
       })
       .filter(Boolean);
   }, [enrichedBlocks, hideEmptyFields]);
+
+  const tabbedBlocks = useMemo(
+    () => filteredBlocks.filter(block => block.is_tab),
+    [filteredBlocks],
+  );
+
+  const mainBlocks = useMemo(
+    () => filteredBlocks.filter(block => !block.is_tab),
+    [filteredBlocks],
+  );
 
   const handleBack = () => history.push(`/sheet/${sheetId}`);
   const handlePrint = () => {
@@ -401,7 +417,7 @@ const SheetView = () => {
                 }}
               >
                 {(() => {
-                  const nameField = sheetData?.list_fields?.[1]?.field;
+                  const nameField = sheetData.name_field;
                   return (nameField && esData?.[nameField]) || sheetData.name;
                 })()}
               </Typography>
@@ -420,7 +436,9 @@ const SheetView = () => {
           <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2, ...printStyles.hideOnPrint }}>
             <Tabs value={activeTab} onChange={handleTabChange}>
               <Tab label="Description" />
-              <Tab label="Toutes les valeurs" />
+              {tabbedBlocks.map(block => (
+                <Tab key={block.id} label={block.title} />
+              ))}
             </Tabs>
           </Box>
 
@@ -437,7 +455,7 @@ const SheetView = () => {
                   label="Cacher les champs vides"
                 />
               </Box>
-              {filteredBlocks.map(block => (
+              {mainBlocks.map(block => (
                 <SheetBlock
                   key={block.id}
                   block={block}
@@ -448,11 +466,12 @@ const SheetView = () => {
             </Box>
           )}
 
-          {activeTab === 1 && (
+          {activeTab > 0 && tabbedBlocks[activeTab - 1] && (
             <Box>
-              <Typography variant="body2" color="text.secondary">
-                Affichage de toutes les valeurs brutes - À implémenter
-              </Typography>
+              <SheetBlock
+                block={tabbedBlocks[activeTab - 1]}
+                isPrintMode={isPrintMode}
+              />
             </Box>
           )}
         </Paper>
