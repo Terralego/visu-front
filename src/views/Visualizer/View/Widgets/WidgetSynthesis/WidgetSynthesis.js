@@ -152,7 +152,7 @@ export class WidgetSynthesis extends React.Component {
       );
     }
 
-    const value = this.formatValue(item)
+    const value = this.formatValue(item);
     if (rawValue === undefined) {
       return <Loading />;
     }
@@ -262,7 +262,9 @@ export class WidgetSynthesis extends React.Component {
   formatValue({ name, template, decimals }) {
     const { values: { [name]: rawValue } } = this.state;
     let displayValue = rawValue;
-    if (rawValue && decimals !== undefined && decimals !== null) {
+    if (rawValue?.value === 0) {
+      displayValue = 0;
+    } else if (rawValue && decimals !== undefined && decimals !== null) {
       displayValue = rawValue.toFixed(decimals);
     }
     if (!template) {
