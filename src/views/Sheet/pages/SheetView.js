@@ -82,7 +82,9 @@ const SheetView = () => {
     if (!sheetData || !elementId) return;
 
     const esIndex = getEsIndexFromBlocks(sheetData.blocks);
-    const uniqueId = sheetData.unique_identifier;
+    const uniqueId = sheetData.list_fields?.find(f => f.field_name === sheetData.unique_identifier)?.type === 'TEXTUAL'
+      ? `${sheetData.unique_identifier}.keyword`
+      : sheetData.unique_identifier;
 
     if (!esIndex || !uniqueId) {
       setLoading(false);
@@ -190,20 +192,22 @@ const SheetView = () => {
 
     if (geomSources.size === 0) return;
 
+    const linkFieldKeyword = sheetData.list_fields?.find(f => f.field_name === sheetData.unique_identifier)?.type === 'TEXTUAL'
+      ? `${sheetData.unique_identifier}.keyword`
+      : sheetData.unique_identifier;
     const linkField = sheetData.unique_identifier;
     const linkValue = esData[linkField];
     if (!linkValue) return;
 
     const fetchGeometryData = async () => {
       const newGeomData = {};
-
       await Promise.all(
         Array.from(geomSources).map(async source => {
           try {
             const response = await esClient.search({
               index: source,
               body: bodybuilder()
-                .filter('term', linkField, linkValue)
+                .filter('term', linkFieldKeyword, linkValue)
                 .size(10000)
                 .build(),
             });

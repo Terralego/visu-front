@@ -4,6 +4,11 @@ import { ResponsiveRadar } from '@nivo/radar';
 import { Box, Typography } from '@mui/material';
 import { CHART_COLORS } from '../../../mui-theme';
 
+const withAlpha = (hex, alpha) => {
+  const a = Math.round(alpha * 255).toString(16).padStart(2, '0');
+  return `${hex}${a}`;
+};
+
 const RadarPlotBlock = ({
   fields,
   extraFields = [],
@@ -14,6 +19,7 @@ const RadarPlotBlock = ({
 }) => {
   const { data, keys, colors } = useMemo(() => {
     const hasExtraDim = extraFields.length > 0 && extraFields.length === fields.length;
+    const isComparison = comparisonData.length > 0;
 
     const allFeatures = [
       { name: featureName, data: featureData, color: CHART_COLORS[0] },
@@ -21,22 +27,28 @@ const RadarPlotBlock = ({
     ];
 
     const seriesEntries = hasExtraDim
-      ? allFeatures.flatMap((f, idx) => [
-        {
-          key: f.name,
-          fieldSet: fields,
-          scale: 100,
-          data: f.data,
-          color: f.color || CHART_COLORS[(idx * 2) % CHART_COLORS.length],
-        },
-        {
-          key: 'Médiane',
-          fieldSet: extraFields,
-          scale: 1,
-          data: f.data,
-          color: CHART_COLORS[(idx * 2 + 1) % CHART_COLORS.length],
-        },
-      ])
+      ? allFeatures.flatMap((f, idx) => {
+        const mainColor = f.color || CHART_COLORS[idx % CHART_COLORS.length];
+        const medianColor = isComparison
+          ? withAlpha(mainColor, 0.4)
+          : CHART_COLORS[1];
+        return [
+          {
+            key: f.name,
+            fieldSet: fields,
+            scale: 100,
+            data: f.data,
+            color: mainColor,
+          },
+          {
+            key: `Médiane (${f.name})`,
+            fieldSet: extraFields,
+            scale: 1,
+            data: f.data,
+            color: medianColor,
+          },
+        ];
+      })
       : allFeatures.map((f, idx) => ({
         key: f.name,
         fieldSet: fields,

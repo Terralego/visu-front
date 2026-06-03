@@ -141,11 +141,11 @@ const SheetList = () => {
           .rawOption('sort', sortOption);
 
         if (searchQuery.trim()) {
-          const nameField = listFields[1]?.field_name;
+          const nameField = sheetConfig.name_field;
           if (nameField) {
             query = query.query('query_string', {
               query: `*${searchQuery.trim()}*`,
-              fields: [nameField],
+              fields: sheetConfig.list_fields.filter(f => f.type === 'TEXTUAL').map(f => f.field_name),
               default_operator: 'AND',
             });
           }

@@ -166,7 +166,9 @@ const SheetCompare = () => {
     }
 
     const esIndex = getEsIndexFromBlocks(sheetConfig.blocks);
-    const uniqueId = sheetConfig.unique_identifier;
+    const uniqueId = sheetConfig.list_fields?.find(f => f.field_name === sheetConfig.unique_identifier)?.type === 'TEXTUAL'
+      ? `${sheetConfig.unique_identifier}.keyword`
+      : sheetConfig.unique_identifier;
 
     if (!esIndex || !uniqueId) {
       setError('Configuration de la fiche incomplète');
@@ -290,6 +292,9 @@ const SheetCompare = () => {
     if (geomSources.size === 0) return;
 
     const linkField = sheetConfig.unique_identifier;
+    const linkFieldKeyword = sheetConfig.list_fields?.find(f => f.field_name === sheetConfig.unique_identifier)?.type === 'TEXTUAL'
+      ? `${sheetConfig.unique_identifier}.keyword`
+      : sheetConfig.unique_identifier;
 
     const fetchAllGeometryData = async () => {
       const newGeomData = {};
@@ -307,7 +312,7 @@ const SheetCompare = () => {
                 const response = await esClient.search({
                   index: source,
                   body: bodybuilder()
-                    .filter('term', linkField, linkValue)
+                    .filter('term', linkFieldKeyword, linkValue)
                     .size(10000)
                     .build(),
                 });
@@ -937,6 +942,7 @@ const SheetCompare = () => {
                   <Box sx={{ p: 2 }}>
                     <RadarPlotBlock
                       fields={block.fields}
+                      extraFields={block.extra_fields}
                       featureData={sheets[0]?.esData || {}}
                       featureName={sheets[0]?.name || ''}
                       comparisonData={comparisonDataForRadar}
