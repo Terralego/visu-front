@@ -54,6 +54,11 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { connectSettings } from '../../Main/Provider/context';
+import {
+  addCustomIconToMap,
+  getCustomIcons,
+  isCustomIconId,
+} from '../../../services/customIcons';
 
 import BoundingBoxObserver from '../../../components/BoundingBoxObserver';
 import DeclarationWrapper from '../../../components/DeclarationModule/DeclarationWrapper';
@@ -256,6 +261,13 @@ export class Visualizer extends React.Component {
     if (interactions !== prevInteractions) {
       this.setInteractions();
     }
+  }
+
+  get customIcons() {
+    const { view } = this.props;
+    const customStyleLayers =
+      (view && view.map && view.map.customStyle && view.map.customStyle.layers) || [];
+    return getCustomIcons(customStyleLayers);
   }
 
   get legends() {
@@ -467,6 +479,12 @@ export class Visualizer extends React.Component {
     map.on('click', onMapClick);
     map.on('load', () => this.updateLayersTree());
     map.on('styleimagemissing', ({ id }) => {
+      if (isCustomIconId(id)) {
+        const icon = this.customIcons[id];
+        if (icon) addCustomIconToMap(map, id, icon);
+        return;
+      }
+
       const { view: { styleImages = [] } = {} } = this.props;
       const foundImage = styleImages.find(({ slug }) => slug === id);
 
