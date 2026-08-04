@@ -30,6 +30,7 @@ export class LayersTreeItem extends React.Component {
     isMobileSized: PropTypes.bool,
     isPhoneSized: PropTypes.bool,
     customLabel: PropTypes.string,
+    children: PropTypes.node,
   };
 
   static defaultProps = {
@@ -41,6 +42,7 @@ export class LayersTreeItem extends React.Component {
     isMobileSized: false,
     isPhoneSized: false,
     customLabel: null,
+    children: null,
   }
 
   state = {
@@ -141,6 +143,7 @@ export class LayersTreeItem extends React.Component {
       extent,
       isDetailsVisible,
       customLabel,
+      children,
     } = this.props;
 
     if (hidden) return null;
@@ -267,6 +270,7 @@ export class LayersTreeItem extends React.Component {
             layer={layer}
           />
         )}
+        {children}
       </Card>
     );
   }

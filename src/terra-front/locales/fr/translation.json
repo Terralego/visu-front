@@ -218,6 +218,8 @@
       "fold": "Replier",
       "layerstree": {
         "group": {
+          "counterTooltip": "{{active}} couche(s) active(s) sur {{total}}",
+          "deactivateAll": "Désactiver les {{active}} couche(s) active(s) du groupe",
           "selector": "Aucune couche disponible"
         },
         "itemFilters": {

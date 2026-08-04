@@ -2,6 +2,9 @@ import { createTheme } from '@mui/material';
 
 const PRIMARY = '#1C4984';
 const SECONDARY = '#EF7720';
+const LAYERS_TREE_FOREGROUND = PRIMARY;
+
+const { palette } = createTheme();
 
 const theme = createTheme({
   typography: {
@@ -21,6 +24,7 @@ const theme = createTheme({
       main: SECONDARY,
       contrastText: '#FFFFFF',
     },
+    contrasted: palette.augmentColor({ color: { main: LAYERS_TREE_FOREGROUND }, name: 'contrasted' }),
   },
   shadows: [
     'none',

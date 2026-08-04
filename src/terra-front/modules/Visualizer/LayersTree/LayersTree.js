@@ -9,6 +9,7 @@ import SearchInput from '../../Map/Map/components/SearchControl/SearchInput';
 import translateMock from '../../../utils/translate';
 
 import LayersTreeVariableItem from './LayersTreeItem/LayersTreeVariableItem';
+import { getNodesKeys } from './LayersTreeGroup/utils';
 import './styles.scss';
 
 const filterLayers = (layers, searchQuery) =>
@@ -37,6 +38,7 @@ export const LayersTree = ({ layersTree, translate, filterable }) => {
   const [layersTreeFilter, setLayerTreeFilter] = useState('');
 
   const filteredLayersTree = filterable ? filterLayers(layersTree, layersTreeFilter) : layersTree;
+  const keys = getNodesKeys(filteredLayersTree);
 
   return (
     <div className="layerstree-panel-list">
@@ -49,11 +51,12 @@ export const LayersTree = ({ layersTree, translate, filterable }) => {
         />
       )}
       {filteredLayersTree.map((layer, index) => {
+        const key = keys[index];
+
         if (layer.group && !layer.exclusive) {
           return (
             <LayersTreeGroup
-              // Done to avoid duplicate warning on same label
-              key={index} // eslint-disable-line react/no-array-index-key
+              key={key}
               title={layer.group}
               layer={layer}
             />
@@ -63,6 +66,7 @@ export const LayersTree = ({ layersTree, translate, filterable }) => {
         if (layer.group && layer.exclusive && layer.byVariable) {
           return (
             <LayersTreeVariableItem
+              key={key}
               layers={layer.layers}
               group={layer}
               activeLayer={layer.layers.find(l => l.initialState.active)}
@@ -70,7 +74,7 @@ export const LayersTree = ({ layersTree, translate, filterable }) => {
           );
         }
         return (
-          <LayersTreeItem key={layer.label || layer.group} layer={layer} />
+          <LayersTreeItem key={key} layer={layer} />
         );
       })}
     </div>
