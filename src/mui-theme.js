@@ -1,12 +1,32 @@
-import { createTheme } from '@mui/material';
+import { experimental_extendTheme as extendTheme } from '@mui/material';
 
+const WHITE = '#FFFFFF';
 const PRIMARY = '#1C4984';
 const SECONDARY = '#EF7720';
-const LAYERS_TREE_FOREGROUND = PRIMARY;
+const CONTRASTED = PRIMARY;
 
-const { palette } = createTheme();
+const rgbChannel = hex =>
+  [1, 3, 5].map(index => parseInt(hex.slice(index, index + 2), 16)).join(' ');
 
-const theme = createTheme({
+const cssVar = (name, fallback) => `var(--${name}, ${fallback})`;
+
+const overridable = (name, fallback) => {
+  const color = cssVar(name, fallback);
+  const channel = cssVar(`${name}-channel`, rgbChannel(fallback));
+
+  return {
+    main: color,
+    light: color,
+    dark: color,
+    mainChannel: channel,
+    lightChannel: channel,
+    darkChannel: channel,
+    contrastText: cssVar(`${name}-contrast-text`, WHITE),
+    contrastTextChannel: cssVar(`${name}-contrast-text-channel`, rgbChannel(WHITE)),
+  };
+};
+
+const theme = extendTheme({
   typography: {
     button: {
       textTransform: 'unset',
@@ -16,15 +36,14 @@ const theme = createTheme({
   shape: {
     borderRadius: 10,
   },
-  palette: {
-    primary: {
-      main: PRIMARY,
+  colorSchemes: {
+    light: {
+      palette: {
+        primary: overridable('primary', PRIMARY),
+        secondary: overridable('secondary', SECONDARY),
+        contrasted: overridable('contrasted', CONTRASTED),
+      },
     },
-    secondary: {
-      main: SECONDARY,
-      contrastText: '#FFFFFF',
-    },
-    contrasted: palette.augmentColor({ color: { main: LAYERS_TREE_FOREGROUND }, name: 'contrasted' }),
   },
   shadows: [
     'none',
@@ -87,7 +106,6 @@ const theme = createTheme({
       },
     },
   },
-  cssVariables: true,
 });
 
 export const CHART_COLORS = [
@@ -103,7 +121,7 @@ export const CHART_COLORS = [
   '#17becf',
 ];
 
-const selectionHighlightColor = theme.palette.primary.main;
+const selectionHighlightColor = PRIMARY;
 
 export { selectionHighlightColor };
 

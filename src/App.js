@@ -8,7 +8,7 @@ import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
 import './app.scss';
 import '@blueprintjs/datetime/lib/css/blueprint-datetime.css';
-import { ThemeProvider } from '@mui/material';
+import { Experimental_CssVarsProvider as CssVarsProvider } from '@mui/material';
 
 import SettingsProvider from './views/Main/Provider';
 import withEnv from './config/withEnv';
@@ -22,7 +22,7 @@ const Loading = () => null;
 const App = ({ env: { API_HOST } }) => (
   <ApiProvider host={API_HOST}>
     <AuthProvider>
-      <ThemeProvider theme={theme}>
+      <CssVarsProvider theme={theme}>
         <StateProvider>
           <BrowserRouter>
             <Suspense fallback={<Loading />}>
@@ -32,7 +32,7 @@ const App = ({ env: { API_HOST } }) => (
             </Suspense>
           </BrowserRouter>
         </StateProvider>
-      </ThemeProvider>
+      </CssVarsProvider>
     </AuthProvider>
   </ApiProvider>
 );
