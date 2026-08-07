@@ -2,6 +2,9 @@
 
 $transitionSpeed: .2s;
 $bg-visualizer: rgb(49, 64, 77);
+$layersTreeWidth: 22.5rem;
+$widgetsWidth: 20rem;
+$detailsWidth: 25.5rem;
 
 .visualizer {
   width: 100%;
@@ -131,10 +134,6 @@ $bg-visualizer: rgb(49, 64, 77);
   }
 
   &--with {
-    $layersTreeWidth: 22.5rem;
-    $widgetsWidth: 20rem;
-    $detailsWidth: 25.5rem;
-
     &-layers-tree {
       .mapboxgl-ctrl-top-left,
       .mapboxgl-ctrl-bottom-left {
@@ -469,5 +468,24 @@ $bg-visualizer: rgb(49, 64, 77);
         }
       }
     }
+  }
+}
+
+@media screen and (min-width: $breakpoints-tablet + 1) {
+  body:has(.visualizer--with-layers-tree) .mapboxgl-ctrl-search__input {
+    --search-left: #{$layersTreeWidth};
+  }
+
+  body:has(.visualizer--with-widgets) .mapboxgl-ctrl-search__input {
+    --search-right: #{$widgetsWidth};
+  }
+
+  body:has(.visualizer--with-details) .mapboxgl-ctrl-search__input {
+    --search-right: #{$detailsWidth};
+  }
+
+  body:has(.visualizer--with-widgets):has(.visualizer--with-details)
+    .mapboxgl-ctrl-search__input {
+    --search-right: #{$widgetsWidth + $detailsWidth};
   }
 }

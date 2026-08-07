@@ -66,7 +66,12 @@ import ReportingModule from '../../../components/ReportingModule/ReportingModule
 import TableConnected from './Table';
 import Widgets from './Widgets';
 import { generateClusterList } from './interactions';
-import searchInMap from './search';
+import {
+  buildSearchControl,
+  getSearchableLayers,
+  getSearchAvailability,
+  selectSearchResult,
+} from './Search';
 import ShareWrapper from '../../../components/ShareModule/ShareWrapper';
 import { TableSelectionProvider } from '../../../contexts/TableSelectionContext';
 import { useTableSelectionHighlight } from '../../../hooks/useTableSelectionHighlight';
@@ -339,9 +344,7 @@ export class Visualizer extends React.Component {
 
   get activeAndSearchableLayers() {
     const { layersTreeState } = this.props;
-    return filterLayersStatesFromLayersState(layersTreeState, ({ active }) => !!active).filter(
-      ([{ filters: { layer, mainField } = {} }]) => layer && mainField,
-    );
+    return getSearchableLayers(layersTreeState);
   }
 
   setInteractions() {
@@ -794,48 +797,13 @@ export class Visualizer extends React.Component {
     this.setState({ printIsOpened });
   };
 
-  searchResultClick = ({
-    result,
-    result: { label, layers, id },
-    map,
-    focusOnSearchResult,
-    setQuery,
-  }) => {
-    focusOnSearchResult(result);
-    setQuery(label);
-    this.hideDetails();
-
-    map.once('moveend', () => {
-      const { interactions } = this.state;
-      const interaction = interactions.find(
-        ({ id: iId, trigger = 'click' }) => layers.includes(iId) && trigger === 'click',
-      );
-
-      if (!interaction) return;
-
-      let layerName = interaction.id;
-      if (!map.getLayer(layerName)) {
-        layerName = `${interaction.id}-cluster-data`;
-      }
-
-      if (!map.getLayer(layerName)) {
-        return;
-      }
-
-      const features = map.queryRenderedFeatures({
-        layers: [layerName],
-        filter: ['==', ['to-string', ['get', '_id']], `${id}`],
-      });
-
-      if (!features.length) return;
-
-      map.triggerInteraction({
-        interaction,
-        feature: features[0],
-      });
-      map.fire('updateMap');
+  searchResultClick = params =>
+    selectSearchResult({
+      ...params,
+      interactions: this.state.interactions,
+      interactiveMapInstance: this.state.interactiveMapInstance,
+      hideDetails: this.hideDetails,
     });
-  };
 
   updateLayersTreeState = layersTreeState => {
     const { setLayersTreeState } = this.props;
@@ -1116,14 +1084,18 @@ export class Visualizer extends React.Component {
     );
     const { features: featuresForDetail = [] } = isDetailsVisible ? currentFeatureList || {} : [];
 
-    const displaySearchInMap = Array.from(layersTreeState.keys()).some(
-      ({ filters: { mainField } = {} }) => mainField,
-    );
+    const { display: displaySearchInMap, disabled: disableSearch } = getSearchAvailability({
+      layersTreeState,
+      layersEnable,
+      locationsEnable,
+      searchProvider,
+      activeLayers: activeAndSearchableLayers,
+    });
 
     const controls = getControls(
       displaySearchInMap,
       Array.isArray(mapProps.backgroundStyle),
-      !activeAndSearchableLayers.length,
+      disableSearch,
       isMobileSized,
       this.onPrintToggle,
       viewState,
@@ -1132,16 +1104,18 @@ export class Visualizer extends React.Component {
     );
 
     if (displaySearchInMap) {
-      const search = controls.find(({ control }) => control === CONTROL_SEARCH);
-      search.onSearch = searchInMap({
-        language,
-        searchProvider,
-        locationsEnable,
-        layersEnable,
-        translate: t,
-        layers: activeAndSearchableLayers,
-      });
-      search.onSearchResultClick = this.searchResultClick;
+      Object.assign(
+        controls.find(({ control }) => control === CONTROL_SEARCH),
+        buildSearchControl({
+          language,
+          searchProvider,
+          locationsEnable,
+          layersEnable,
+          translate: t,
+          layers: activeAndSearchableLayers,
+          onResultClick: this.searchResultClick,
+        }),
+      );
     }
 
     const isTableVisible = hasTable(layersTreeState);

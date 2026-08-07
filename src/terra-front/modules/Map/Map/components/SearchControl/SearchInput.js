@@ -6,6 +6,7 @@ export const SearchInput = ({
   onClose,
   onKeyPress,
   loading,
+  minQueryLength,
   ...props
 }) => (
   <Card className="search-input">

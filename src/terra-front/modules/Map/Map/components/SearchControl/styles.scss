@@ -1,29 +1,64 @@
 @import "node_modules/@blueprintjs/core/lib/scss/variables";
+@import "../../../../../utils/variables.scss";
 
 .mapboxgl-ctrl-search {
   position: relative;
   overflow: visible;
 
   &__input {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 0;
-    transition: width .2s ease-in;
-    overflow: hidden;
-    border-radius: 4px;
-    box-shadow: $pt-elevation-shadow-0;
-    .bp3-dark & {
-      box-shadow: $pt-dark-elevation-shadow-0;
+    --search-left: 3rem;
+    --search-right: 0rem;
+
+    position: fixed;
+    top: 2rem;
+    left: 50%;
+    transform: translateX(calc(-50% + (var(--search-left) - var(--search-right)) / 2))
+      translateY(-.5rem) scale(.98);
+    width: max(
+      18rem,
+      min(38rem, calc(100vw - var(--search-left) - var(--search-right) - 1.5rem))
+    );
+    z-index: 10000;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      transform .18s cubic-bezier(.2, .8, .2, 1),
+      opacity .15s ease-out;
+    padding: .5rem;
+    border-radius: 14px;
+    background-color: rgba(255, 255, 255, .8);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 0, 0, .1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, .1);
+
+    @media screen and (max-width: $breakpoints-tablet) {
+      --search-left: 0rem;
+      --search-right: 0rem;
+
+      top: .5rem;
+      width: calc(100vw - 1rem);
     }
 
     &--expanded {
-      width: 20rem;
+      transform: translateX(calc(-50% + (var(--search-left) - var(--search-right)) / 2))
+        translateY(0) scale(1);
+      opacity: 1;
+      pointer-events: auto;
     }
 
     .bp3-input:focus {
       box-shadow: none;
     }
+  }
+
+  &__panel {
+    overflow: hidden;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, .98);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .08);
   }
 
   .search-input {
