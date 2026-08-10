@@ -2,12 +2,22 @@ import turfCenter from '@turf/center';
 import turfBbox from '@turf/bbox';
 
 import Api from '@terralego/core/modules/Api';
+import elasticsearch from '@terralego/core/modules/Visualizer/services/search';
 
-export const SEARCH_RESULTS_PER_LAYER = 5;
+const SEARCH_WITH_ELASTICSEARCH = true;
 
-export const SEARCH_MIN_QUERY_LENGTH = 2;
+const SEARCH_RESULTS_PER_LAYER = 10;
+
+export const SEARCH_MIN_QUERY_LENGTH = 3;
 
 export const DEFAULT_NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search';
+
+const errorGroup = label => ({ group: label, total: 0, results: [], error: true });
+
+const toBounds = geom => {
+  const [west, south, east, north] = turfBbox(geom);
+  return west === east && south === north ? undefined : [west, south, east, north];
+};
 
 export const canSearchLocations = (locationsEnable, { provider } = {}) =>
   !!locationsEnable && `${provider}`.toLowerCase() === 'nominatim';
@@ -66,7 +76,7 @@ export const fetchNominatim = async ({
   ];
 };
 
-export const searchInLayer = async ({ label, layers, filters }, query) => {
+const searchInLayer = async ({ label, layers, filters }, query) => {
   const { layer: source, mainField } = filters;
 
   let response;
@@ -80,7 +90,7 @@ export const searchInLayer = async ({ label, layers, filters }, query) => {
   } catch (e) {
     // eslint-disable-next-line no-console
     console.error(`Search failed on layer "${source}":`, e);
-    return { group: label, total: 0, results: [], error: true };
+    return errorGroup(label);
   }
 
   const { count = 0, results = [] } = response || {};
@@ -112,10 +122,9 @@ export const fetchResultGeometry = async ({ source, id }) => {
       { querystring: { geometry: true } },
     );
     if (!geometry) return {};
-    const [west, south, east, north] = turfBbox(geometry);
     return {
       geometry,
-      bounds: west === east && south === north ? undefined : [west, south, east, north],
+      bounds: toBounds(geometry),
       center: turfCenter(geometry).geometry.coordinates,
     };
   } catch (e) {
@@ -124,6 +133,69 @@ export const fetchResultGeometry = async ({ source, id }) => {
     return {};
   }
 };
+
+const stripAccents = value =>
+  `${value}`.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase();
+
+const findMatchedField = (properties, query, mainField) => {
+  const needle = stripAccents(query);
+  const matched = Object.keys(properties).find(
+    key =>
+      key !== '_feature_id' &&
+      properties[key] !== null &&
+      stripAccents(properties[key]).includes(needle),
+  );
+  return matched === mainField ? undefined : matched;
+};
+
+const searchLayersInElasticsearch = async (layers, query) => {
+  let responses;
+  try {
+    ({ responses } = await elasticsearch.msearch(
+      layers.map(([{ filters: { layer }, baseEsQuery }]) => ({
+        query,
+        index: layer,
+        baseQuery: baseEsQuery,
+        size: SEARCH_RESULTS_PER_LAYER,
+      })),
+    ));
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.error('Search failed:', e);
+    return layers.map(([{ label }]) => errorGroup(label));
+  }
+
+  return layers.map(([{ label, layers: mapLayers, filters: { mainField } }], index) => {
+    const { hits } = responses?.[index] || {};
+    if (!hits) return errorGroup(label);
+
+    return {
+      group: label,
+      total: hits.total.value,
+      results: hits.hits.map(({ _id: id, _source: { geom, ...properties } }) => {
+        const matchedField = findMatchedField(properties, query, mainField);
+        return {
+          ...properties,
+          label: properties[mainField] || id,
+          id,
+          _feature_id: id,
+          matchedField,
+          matchedValue: matchedField && properties[matchedField],
+          geom,
+          bounds: toBounds(geom),
+          center: turfCenter(geom).geometry.coordinates,
+          source: undefined,
+          layers: mapLayers,
+        };
+      }),
+    };
+  });
+};
+
+const searchLayers = (layers, query) =>
+  (SEARCH_WITH_ELASTICSEARCH
+    ? searchLayersInElasticsearch(layers, query)
+    : Promise.all(layers.map(([layer]) => searchInLayer(layer, query))));
 
 const searchInMap = ({
   searchProvider: { provider, baseUrl, options = {} } = {},
@@ -140,7 +212,7 @@ const searchInMap = ({
 
   const [locations, results] = await Promise.all([
     searchLocations ? fetchNominatim({ query, language, translate, baseUrl, options }) : [],
-    Promise.all(searchedLayers.map(([layer]) => searchInLayer(layer, query))),
+    searchedLayers.length ? searchLayers(searchedLayers, query) : [],
   ]);
 
   return [...results, ...locations];
