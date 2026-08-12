@@ -121,6 +121,20 @@ export const CHART_COLORS = [
   '#17becf',
 ];
 
+export const resolveCssVar = value => {
+  if (typeof value !== 'string' || !value.startsWith('var(') || typeof window === 'undefined') {
+    return value;
+  }
+  const inner = value.slice('var('.length, -1);
+  const separator = inner.indexOf(',');
+  const name = (separator === -1 ? inner : inner.slice(0, separator)).trim();
+  const fallback = separator === -1 ? undefined : inner.slice(separator + 1).trim();
+  const resolved = window.getComputedStyle(document.documentElement)
+    .getPropertyValue(name)
+    .trim();
+  return resolved || (fallback ? resolveCssVar(fallback) : value);
+};
+
 const selectionHighlightColor = PRIMARY;
 
 export { selectionHighlightColor };

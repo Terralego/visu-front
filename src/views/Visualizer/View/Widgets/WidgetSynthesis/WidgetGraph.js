@@ -4,6 +4,7 @@ import { PieChart } from '@mui/x-charts/PieChart';
 import { blueberryTwilightPalette } from '@mui/x-charts/colorPalettes';
 import { Typography, useTheme } from '@mui/material';
 import { axisClasses } from '@mui/x-charts/ChartsAxis';
+import { resolveCssVar } from '../../../../../mui-theme';
 import Loading from './Loading';
 
 const GRAPH_WIDTH = 280;
@@ -42,8 +43,8 @@ function WidgetGraph({
   const [highlightedItem, setHighLightedItem] = React.useState(null);
 
   const graphColorPalette = mode => ([
-    theme.palette.primary.main,
-    theme.palette.secondary.main,
+    resolveCssVar(theme.palette.primary.main),
+    resolveCssVar(theme.palette.secondary.main),
     ...blueberryTwilightPalette(mode),
   ]);
 
