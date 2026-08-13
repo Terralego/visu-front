@@ -151,6 +151,8 @@ export const LayersTreeGroup = ({
               onDelete={activeCount ? deactivateAll : undefined}
               deleteIcon={<CloseIcon />}
               sx={{
+                letterSpacing: '0.2em',
+                transform: 'scale(0.85)',
                 flexShrink: 0,
                 '& .MuiChip-deleteIcon': {
                   width: 0,
