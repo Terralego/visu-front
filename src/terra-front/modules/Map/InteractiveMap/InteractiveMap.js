@@ -1,19 +1,17 @@
+/* eslint-disable react/sort-comp */
+import centroid from '@turf/centroid';
+import debounce from 'lodash.debounce';
+import mapBoxGl from 'mapbox-gl';
+import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import PropTypes from 'prop-types';
-import mapBoxGl from 'mapbox-gl';
-import debounce from 'lodash.debounce';
-import centroid from '@turf/centroid';
-import uuid from 'uuid/v4';
+import { Box } from '@mui/material';
+import { v4 as uuid } from 'uuid';
 import { connectState } from '../../State/context';
-import { setInteractions, fitZoom } from '../services/mapUtils';
+import MapComponent, { CONTROLS_TOP_RIGHT, DEFAULT_CONTROLS } from '../Map';
 import { getClusteredFeatures } from '../services/cluster';
-import MapComponent, {
-  CONTROLS_TOP_RIGHT,
-  DEFAULT_CONTROLS,
-} from '../Map';
+import { fitZoom, setInteractions } from '../services/mapUtils';
 
-import BackgroundStyles from './components/BackgroundStyles';
 import Legend from './components/Legend';
 import Tooltip from './components/Tooltip';
 import './styles.scss';
@@ -25,7 +23,6 @@ export const INTERACTION_DISPLAY_TOOLTIP = 'displayTooltip';
 export const INTERACTION_HIGHLIGHT = 'highlight';
 export const INTERACTION_FN = 'function';
 
-export const CONTROL_BACKGROUND_STYLES = 'BackgroundStylesControl';
 
 const generateTooltipContainer = ({ fetchProperties, properties, template, content, history }) => {
   const container = document.createElement('div');
@@ -76,68 +73,77 @@ const isOverMap = (target, map) => {
 
 const getUniqueLegends = legends => {
   const uniques = [];
-  legends.forEach(legend => uniques.find(({ title, items }) =>
-    title === legend.title &&
-    items.length === legend.items.length &&
-    items.every((item, index) => item.label === legend.items[index].label))
-      || uniques.push(legend));
+  legends.forEach(
+    legend =>
+      uniques.find(
+        ({ title, items }) =>
+          title === legend.title &&
+          items.length === legend.items.length &&
+          items.every((item, index) => item.label === legend.items[index].label),
+      ) || uniques.push(legend),
+  );
   return uniques;
 };
 
-export const DEFAULT_INTERACTIVE_MAP_CONTROLS = [...DEFAULT_CONTROLS, {
-  control: CONTROL_BACKGROUND_STYLES,
-  position: CONTROLS_TOP_RIGHT,
-}];
+export const DEFAULT_INTERACTIVE_MAP_CONTROLS = [...DEFAULT_CONTROLS];
 
 export class InteractiveMap extends React.Component {
   static propTypes = {
     backgroundStyle: PropTypes.oneOfType([
       PropTypes.arrayOf(PropTypes.objectOf(PropTypes.string)),
       PropTypes.string,
-      PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.number,
-        url: PropTypes.string,
-        label: PropTypes.string,
-      })),
+      PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.number,
+          url: PropTypes.string,
+          label: PropTypes.string,
+        }),
+      ),
     ]),
-    interactions: PropTypes.arrayOf(PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      trigger: PropTypes.oneOf(['click', 'mouseover']),
-      interaction: PropTypes.oneOf([
-        INTERACTION_FIT_ZOOM,
-        INTERACTION_DISPLAY_TOOLTIP,
-        INTERACTION_ZOOM,
-        INTERACTION_FLY_TO,
-        INTERACTION_HIGHLIGHT,
-        INTERACTION_FN,
-      ]),
-      constraints: PropTypes.arrayOf(PropTypes.shape({
-        minZoom: PropTypes.number,
-        maxZoom: PropTypes.number,
-        // withLayers takes a list of layers ids which should exists and be visible,
-        // or with "!layerId", should not
-        withLayers: PropTypes.arrayOf(PropTypes.string),
-        // Pass if the feature is a cluster of features
-        isCluster: PropTypes.bool,
-      })),
-      // for INTERACTION_DISPLAY_TOOLTIP
-      template: PropTypes.string,
-      content: PropTypes.string,
-      unique: PropTypes.bool, // Tooltip should be unique in screen
-      fixed: PropTypes.bool, // Tooltip should be anchored on feature centroid
-      fetchProperties: PropTypes.shape({
-        // URL where to fetch properties. Url should take a {{id}} placeholder
-        // Ex : /api/something/{{id}}
-        url: PropTypes.string.isRequired,
-        // name of the feature's property which will fit the "id" placeholder
+    declarationMarker: PropTypes.shape({
+      lng: PropTypes.number.isRequired,
+      lat: PropTypes.number.isRequired,
+    }),
+    interactions: PropTypes.arrayOf(
+      PropTypes.shape({
         id: PropTypes.string.isRequired,
+        trigger: PropTypes.oneOf(['click', 'mouseover']),
+        interaction: PropTypes.oneOf([
+          INTERACTION_FIT_ZOOM,
+          INTERACTION_DISPLAY_TOOLTIP,
+          INTERACTION_ZOOM,
+          INTERACTION_FLY_TO,
+          INTERACTION_HIGHLIGHT,
+          INTERACTION_FN,
+        ]),
+        constraints: PropTypes.arrayOf(
+          PropTypes.shape({
+            minZoom: PropTypes.number,
+            maxZoom: PropTypes.number,
+            // withLayers takes a list of layers ids which should exists and be visible,
+            // or with "!layerId", should not
+            withLayers: PropTypes.arrayOf(PropTypes.string),
+            // Pass if the feature is a cluster of features
+            isCluster: PropTypes.bool,
+          }),
+        ),
+        // for INTERACTION_DISPLAY_TOOLTIP
+        template: PropTypes.string,
+        content: PropTypes.string,
+        unique: PropTypes.bool, // Tooltip should be unique in screen
+        fixed: PropTypes.bool, // Tooltip should be anchored on feature centroid
+        fetchProperties: PropTypes.shape({
+          // URL where to fetch properties. Url should take a {{id}} placeholder
+          // Ex : /api/something/{{id}}
+          url: PropTypes.string.isRequired,
+          // name of the feature's property which will fit the "id" placeholder
+          id: PropTypes.string.isRequired,
+        }),
+        // for INTERACTION_FN
+        fn: PropTypes.func,
       }),
-      // for INTERACTION_FN
-      fn: PropTypes.func,
-    })),
-    legends: PropTypes.arrayOf(PropTypes.shape({
-
-    })),
+    ),
+    legends: PropTypes.arrayOf(PropTypes.shape({})),
     onInit: PropTypes.func,
     onStyleChange: PropTypes.func,
   };
@@ -146,13 +152,15 @@ export class InteractiveMap extends React.Component {
     backgroundStyle: 'mapbox://styles/mapbox/light-v9',
     interactions: [],
     legends: [],
-    onInit () {},
-    onStyleChange () {},
+    onInit() {},
+    onStyleChange() {},
   };
 
-  interactionsEnable = true
+  interactionsEnable = true;
 
   popups = new Map();
+
+  declarationMarker = null;
 
   hideTooltip = debounce(({ layerId }) => {
     if (!this.popups.has(layerId)) {
@@ -165,7 +173,7 @@ export class InteractiveMap extends React.Component {
 
   highlightedLayers = new Map();
 
-  constructor (props) {
+  constructor(props) {
     super(props);
     const { backgroundStyle = [] } = props;
     const backgroundArray = Array.isArray(backgroundStyle) ? backgroundStyle : [backgroundStyle];
@@ -188,10 +196,10 @@ export class InteractiveMap extends React.Component {
     };
   }
 
-  componentDidMount () {
+  componentDidMount() {
     const { onInit } = this.props;
     onInit(this);
-    this.insertBackgroundStyleControl();
+    this.syncControls();
 
     this.mouseMoveListener = ({ target }) => {
       if (!this.map) return;
@@ -216,13 +224,14 @@ export class InteractiveMap extends React.Component {
     document.body.addEventListener('mousemove', this.mouseMoveListener);
   }
 
-  componentDidUpdate ({
+  componentDidUpdate({
     interactions: prevInteractions,
     legends: prevLegends,
     controls: prevControls,
     backgroundStyle: prevBackgroundStyle,
+    declarationMarker: prevDeclarationMarker,
   }) {
-    const { interactions, legends, controls, backgroundStyle } = this.props;
+    const { interactions, legends, controls, backgroundStyle, declarationMarker } = this.props;
 
     if (interactions !== prevInteractions) {
       this.setInteractions(prevInteractions);
@@ -232,14 +241,20 @@ export class InteractiveMap extends React.Component {
       this.addUuidToLegends();
     }
 
-    if (controls !== prevControls ||
-        backgroundStyle !== prevBackgroundStyle) {
-      this.insertBackgroundStyleControl();
+    if (controls !== prevControls || backgroundStyle !== prevBackgroundStyle) {
+      this.syncControls();
+    }
+
+    if (JSON.stringify(declarationMarker) !== JSON.stringify(prevDeclarationMarker)) {
+      this.updateDeclarationMarker();
     }
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     document.body.removeEventListener('mousemove', this.mouseMoveListener);
+    if (this.declarationMarker) {
+      this.declarationMarker.remove();
+    }
   }
 
   onMapInit = map => {
@@ -262,15 +277,14 @@ export class InteractiveMap extends React.Component {
     const { onMapLoaded = () => {} } = this.props;
     this.map = map;
     this.setInteractions();
+    this.updateDeclarationMarker();
     onMapLoaded(map);
   };
 
   onBackgroundChange = selectedBackgroundStyle => {
     const { backgroundStyle = [] } = this.props;
     const backgroundArray = Array.isArray(backgroundStyle) ? backgroundStyle : [backgroundStyle];
-    const selectedBasemap = backgroundArray.find(
-      ({ url }) => url === selectedBackgroundStyle,
-    );
+    const selectedBasemap = backgroundArray.find(({ url }) => url === selectedBackgroundStyle);
 
     if (selectedBasemap) {
       const url = new URL(window.location);
@@ -281,17 +295,12 @@ export class InteractiveMap extends React.Component {
     }
 
     this.setState({ selectedBackgroundStyle });
-    if (this.backgroundStyleControl) {
-      this.backgroundStyleControl.setProps({
-        selected: selectedBackgroundStyle,
-      });
-    }
   };
 
   getOriginalTarget = ({ originalEvent }) =>
     originalEvent.relatedTarget || originalEvent.explicitOriginalTarget;
 
-  async setInteractions (prevInteractions) {
+  async setInteractions(prevInteractions) {
     const { map } = this;
 
     if (!map) return;
@@ -323,7 +332,7 @@ export class InteractiveMap extends React.Component {
 
   setInteractionsEnable = isEnable => {
     this.interactionsEnable = isEnable;
-  }
+  };
 
   addUuidToLegends = () => {
     const { legends } = this.props;
@@ -331,12 +340,9 @@ export class InteractiveMap extends React.Component {
     this.setState({
       legends: uuidLegends,
     });
-  }
+  };
 
-  removeHighlight = ({
-    layerId,
-    featureId,
-  }) => {
+  removeHighlight = ({ layerId, featureId }) => {
     const { map } = this;
     if (!map || !layerId) return;
 
@@ -358,7 +364,7 @@ export class InteractiveMap extends React.Component {
       },
     });
     this.highlight();
-  }
+  };
 
   /**
    * Adds an highlight on a feature in a layer
@@ -386,7 +392,7 @@ export class InteractiveMap extends React.Component {
     layerId,
     featureId,
     propertyId = '_id',
-    highlightColor,
+    highlightColor = 'hsl(59, 100%, 50%)',
     source = false,
     unique = false,
   }) => {
@@ -394,9 +400,7 @@ export class InteractiveMap extends React.Component {
 
     const { layersState: { ids = [] } = {} } = this.highlightedLayers.get(layerId) || {};
     const layersState = {
-      ids: unique
-        ? [featureId]
-        : [...ids, !ids.includes(featureId) && featureId].filter(a => a),
+      ids: unique ? [featureId] : [...ids, !ids.includes(featureId) && featureId].filter(a => a),
       highlightColor,
     };
 
@@ -448,17 +452,17 @@ export class InteractiveMap extends React.Component {
     if (!global.matchMedia('(hover: hover)').matches) return;
 
     const zoom = map.getZoom();
-    const container = element || generateTooltipContainer({
-      fetchProperties,
-      properties: { ...properties, clusteredFeatures, zoom },
-      template,
-      content,
-      history,
-    });
+    const container =
+      element ||
+      generateTooltipContainer({
+        fetchProperties,
+        properties: { ...properties, clusteredFeatures, zoom },
+        template,
+        content,
+        history,
+      });
 
-    const lnglat = !fixed
-      ? [lngLat.lng, lngLat.lat]
-      : centroid(feature).geometry.coordinates;
+    const lnglat = !fixed ? [lngLat.lng, lngLat.lat] : centroid(feature).geometry.coordinates;
 
     if (this.popups.has(layerId)) {
       if (this.popups.get(layerId).content === container.innerHTML) {
@@ -488,9 +492,29 @@ export class InteractiveMap extends React.Component {
       popupContent.removeEventListener('mouseleave', onMouseLeave);
     };
     popupContent.addEventListener('mouseleave', onMouseLeave);
-  }
+  };
 
-  flyTo (feature, targetZoom = 12) {
+  updateDeclarationMarker = () => {
+    const { declarationMarker } = this.props;
+    const { map } = this;
+
+    if (!map) return;
+
+    if (this.declarationMarker) {
+      this.declarationMarker.remove();
+      this.declarationMarker = null;
+    }
+
+    if (declarationMarker && declarationMarker.lng && declarationMarker.lat) {
+      this.declarationMarker = new mapBoxGl.Marker()
+        .setLngLat([declarationMarker.lng, declarationMarker.lat])
+        .addTo(map);
+    }
+
+    this.highlight();
+  };
+
+  flyTo(feature, targetZoom = 12) {
     const { map } = this;
     const minZoom = map.getMinZoom() + 1;
     map.flyTo({
@@ -500,7 +524,7 @@ export class InteractiveMap extends React.Component {
     map.fire('updateMap');
   }
 
-  zoom (feature, step = 1) {
+  zoom(feature, step = 1) {
     const { map } = this;
     map.flyTo({
       center: centroid(feature).geometry.coordinates,
@@ -509,95 +533,158 @@ export class InteractiveMap extends React.Component {
     map.fire('updateMap');
   }
 
-  highlight () {
+  highlight() {
     const { map } = this;
+    const { declarationMarker } = this.props;
+    const shouldHideHighlight = declarationMarker && declarationMarker.lng && declarationMarker.lat;
 
-    this.highlightedLayers.forEach((
-      { layersState: { ids, highlightColor = '' }, source, propertyId },
-      layerId,
-    ) => {
-      const layer = map.getLayer(layerId);
-      if (!layer) return;
+    this.highlightedLayers.forEach(
+      ({ layersState: { ids, highlightColor = '' }, source, propertyId }, layerId) => {
+        const layer = map.getLayer(layerId);
+        if (!layer) return;
 
-      const { sourceLayer, type } = layer;
+        const { sourceLayer, type } = layer;
 
-      const targetType = () => {
-        if (!['line', 'fill', 'circle'].includes(type)) {
-          // eslint-disable-next-line no-console
-          console.warn(`Interactive Map: "${type}" type is not yet supported for highlighting`);
-          return { [type]: {} };
+        if (shouldHideHighlight) {
+          const emptyStyles = this.getEmptyHighlightStyles(type);
+          Object.keys(emptyStyles).forEach(highlightType => {
+            const highlightTypeId = getHighlightLayerId(layerId, highlightType);
+            if (map.getLayer(highlightTypeId)) {
+              Object.keys(emptyStyles[highlightType]).forEach(paintProperty => {
+                map.setPaintProperty(
+                  highlightTypeId,
+                  paintProperty,
+                  emptyStyles[highlightType][paintProperty],
+                );
+              });
+            }
+          });
+          return;
         }
 
-        const targetLayerColor = map.getPaintProperty(layerId, `${type}-color`);
-
-        const layerColor = highlightColor || targetLayerColor;
-
-        const line = {
-          'line-color': layerColor,
-          'line-width': 2,
-        };
-
-        const fill = {
-          'fill-color': layerColor,
-          'fill-opacity': 0.4,
-        };
-
-        const circle = {
-          'circle-color': layerColor,
-          'circle-radius': (type === 'circle' && map.getPaintProperty(layerId, 'circle-radius')) || 5,
-          'circle-stroke-width': 2,
-          'circle-opacity': 0.4,
-          'circle-stroke-color': layerColor,
-        };
-
-        if (type === 'line') {
-          return { line };
-        }
-
-        if (type === 'circle') {
-          return { circle };
-        }
-
-        return { line, fill };
-      };
-
-      Object.keys(targetType()).forEach(highlightType => {
-        const highlightTypeId = getHighlightLayerId(layerId, highlightType);
-        if (!map.getLayer(highlightTypeId)) {
-          const highlightLayer = {
-            id: highlightTypeId,
-            source,
-            type: highlightType,
-            paint: targetType()[highlightType],
-          };
-          if (sourceLayer) {
-            highlightLayer['source-layer'] = sourceLayer;
+        const targetType = () => {
+          if (!['line', 'fill', 'circle'].includes(type)) {
+            // eslint-disable-next-line no-console
+            console.warn(`Interactive Map: "${type}" type is not yet supported for highlighting`);
+            return { [type]: {} };
           }
-          map.addLayer(highlightLayer);
-        }
-        map.setFilter(highlightTypeId, ['in', propertyId, ...ids]);
-      });
-    });
+
+          const targetLayerColor = map.getPaintProperty(layerId, `${type}-color`);
+          const layerColor = highlightColor || targetLayerColor;
+
+          const line = {
+            'line-color': layerColor,
+            'line-width': 2,
+            'line-opacity': 1,
+          };
+
+          const fill = {
+            'fill-color': layerColor,
+            'fill-opacity': 0.4,
+          };
+
+          const circle = {
+            'circle-color': layerColor,
+            'circle-radius':
+              (type === 'circle' && map.getPaintProperty(layerId, 'circle-radius')) || 5,
+            'circle-stroke-width': 2,
+            'circle-opacity': 0.4,
+            'circle-stroke-color': layerColor,
+          };
+
+          if (type === 'line') {
+            return { line };
+          }
+
+          if (type === 'circle') {
+            return { circle };
+          }
+
+          return { line, fill };
+        };
+
+        Object.keys(targetType()).forEach(highlightType => {
+          const highlightTypeId = getHighlightLayerId(layerId, highlightType);
+          if (!map.getLayer(highlightTypeId)) {
+            const highlightLayer = {
+              id: highlightTypeId,
+              source,
+              type: highlightType,
+              paint: targetType()[highlightType],
+            };
+            if (sourceLayer) {
+              highlightLayer['source-layer'] = sourceLayer;
+            }
+            map.addLayer(highlightLayer);
+          } else {
+            Object.keys(targetType()[highlightType]).forEach(paintProperty => {
+              map.setPaintProperty(
+                highlightTypeId,
+                paintProperty,
+                targetType()[highlightType][paintProperty],
+              );
+            });
+          }
+          map.setFilter(highlightTypeId, ['in', propertyId, ...ids]);
+        });
+      },
+    );
   }
 
-  async triggerInteraction ({ map, event, feature = {}, layerId, interaction, eventType }) {
+  getEmptyHighlightStyles = layerType => {
+    const emptyLine = {
+      'line-opacity': 0,
+      'line-width': 0,
+    };
+
+    const emptyFill = {
+      'fill-opacity': 0,
+    };
+
+    const emptyCircle = {
+      'circle-opacity': 0,
+      'circle-stroke-width': 0,
+    };
+
+    if (layerType === 'line') {
+      return { line: emptyLine };
+    }
+
+    if (layerType === 'circle') {
+      return { circle: emptyCircle };
+    }
+
+    return { line: emptyLine, fill: emptyFill };
+  };
+
+  async triggerInteraction({ map, event, feature = {}, layerId, interaction, eventType }) {
     if (!this.interactionsEnable) {
       return;
     }
 
     const {
-      id, interaction: interactionType, fn,
-      trigger = 'click', fixed, constraints,
-      highlightColor, unique, highlight,
-      zoomConfig, targetZoom, step, ...config
+      id,
+      interaction: interactionType,
+      fn,
+      trigger = 'click',
+      fixed,
+      constraints,
+      highlightColor,
+      unique,
+      highlight,
+      zoomConfig,
+      targetZoom,
+      step,
+      ...config
     } = interaction;
-    if ((trigger === 'mouseover' && !['mousemove', 'mouseleave'].includes(eventType)) ||
-        (trigger !== 'mouseover' && trigger !== eventType)) return;
+    if (
+      (trigger === 'mouseover' && !['mousemove', 'mouseleave'].includes(eventType)) ||
+      (trigger !== 'mouseover' && trigger !== eventType)
+    ) {
+      return;
+    }
 
-    const {
-      properties: { _id: featureId, cluster } = {},
-      layer: { source } = {},
-    } = feature;
+    const { properties: { _id: featureId, cluster } = {}, layer: { source } = {} } = feature;
     const clusteredFeatures = await getClusteredFeatures(map, feature);
 
     switch (interactionType) {
@@ -611,15 +698,16 @@ export class InteractiveMap extends React.Component {
           return;
         }
 
-        !cluster && this.displayTooltip({
-          layerId,
-          feature,
-          event,
-          unique: ['mouseover', 'mousemove'].includes(trigger),
-          fixed,
-          clusteredFeatures,
-          ...config,
-        });
+        !cluster &&
+          this.displayTooltip({
+            layerId,
+            feature,
+            event,
+            unique: ['mouseover', 'mousemove'].includes(trigger),
+            fixed,
+            clusteredFeatures,
+            ...config,
+          });
         break;
       case INTERACTION_FIT_ZOOM:
         fitZoom({ feature, map, zoomConfig });
@@ -662,37 +750,12 @@ export class InteractiveMap extends React.Component {
     }
   }
 
-  insertBackgroundStyleControl () {
-    const { controls = DEFAULT_INTERACTIVE_MAP_CONTROLS, backgroundStyle } = this.props;
-    const { selectedBackgroundStyle } = this.state;
-
-    try {
-      if (typeof backgroundStyle === 'string') throw new Error('Single background');
-
-      const pos = controls.findIndex(({ control }) =>
-        control === CONTROL_BACKGROUND_STYLES);
-
-      if (pos === -1) throw new Error('BackgroundStyleControl not found');
-
-      const backgroundStyleControl = { ...controls[pos] };
-      this.backgroundStyleControl = new BackgroundStyles({
-        ...this.props,
-        ...backgroundStyleControl,
-        onChange: this.onBackgroundChange,
-        styles: backgroundStyle,
-        selected: selectedBackgroundStyle,
-      });
-      backgroundStyleControl.control = this.backgroundStyleControl;
-      const newControls = [...controls];
-      newControls[pos] = backgroundStyleControl;
-
-      this.setState({ controls: newControls });
-    } catch (e) {
-      this.setState({ controls });
-    }
+  syncControls() {
+    const { controls = DEFAULT_INTERACTIVE_MAP_CONTROLS } = this.props;
+    this.setState({ controls });
   }
 
-  render () {
+  render() {
     const {
       layersTree,
       style,
@@ -707,16 +770,23 @@ export class InteractiveMap extends React.Component {
     } = this.props;
 
     const { selectedBackgroundStyle, legends, controls } = this.state;
-    const {
-      onMapInit,
-      onMapLoaded,
-    } = this;
+    const { onMapInit, onMapLoaded } = this;
 
     return (
-      <div
+      <Box
         className="interactive-map"
-        style={style}
+        sx={{
+          ...style,
+          '&.visualizer__print': {
+            display: 'flex',
+            flexDirection: 'column',
+          },
+        }}
       >
+        <div className="print-header">
+          <div className="print-header__image" />
+          <div className="print-header__title" />
+        </div>
         <MapComponent
           {...mapProps}
           backgroundStyle={selectedBackgroundStyle}
@@ -730,19 +800,18 @@ export class InteractiveMap extends React.Component {
         />
         {!!legends.length && (
           <div className="interactive-map__legends">
-            {getUniqueLegends(legends)
-              .map(legend => (
-                <Legend
-                  key={`${legend.renderUuid}`}
-                  history={history}
-                  translate={translate}
-                  {...legend}
-                />
-              ))}
+            {getUniqueLegends(legends).map(legend => (
+              <Legend
+                key={`${legend.renderUuid}`}
+                history={history}
+                translate={translate}
+                {...legend}
+              />
+            ))}
           </div>
         )}
         {children}
-      </div>
+      </Box>
     );
   }
 }

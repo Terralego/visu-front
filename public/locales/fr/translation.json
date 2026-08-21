@@ -121,7 +121,25 @@
         "button_label": "Impression vers PDF",
         "cancel_label": "Annuler",
         "landscape_label": "Paysage",
-        "portrait_label": "Portrait"
+        "portrait_label": "Portrait",
+        "border_radius_label": "Coins arrondis",
+        "border_radius_none": "Aucun",
+        "border_radius_uniform": "Uniforme",
+        "border_radius_custom": "Personnalisé",
+        "title_label": "Titre",
+        "title_placeholder": "Saisissez un titre...",
+        "title_size_label": "Taille",
+        "title_align_label": "Alignement",
+        "show_attribution_label": "Afficher les attributions",
+        "show_scale_label": "Afficher l'échelle",
+        "header_image_label": "Image d'en-tête",
+        "header_layout_label": "Disposition",
+        "header_layout_column": "Image au-dessus",
+        "header_layout_row": "Image à gauche",
+        "header_layout_row_reverse": "Image à droite",
+        "align_left": "Gauche",
+        "align_center": "Centre",
+        "align_right": "Droite"
       },
       "report_control": {
         "toaster": "Cliquer sur la carte pour indiquer la localisation du signalement",
@@ -205,6 +223,8 @@
       },
       "layerstree": {
         "group": {
+          "counterTooltip": "{{active}} couche(s) active(s) sur {{total}}",
+          "deactivateAll": "Désactiver les {{active}} couche(s) active(s) du groupe",
           "selector": "Aucune couche disponible"
         },
         "list": {
@@ -257,7 +277,12 @@
         }
       },
       "too_many_results": "Votre recherche contient trop de résultats ({{number}}), veuillez affiner votre requête ou zoomer sur une zone plus restreinte.",
-      "unfold": "Déplier"
+      "unfold": "Déplier",
+      "reports": {
+        "login_required": "Vous devez être connecté pour faire un signalement",
+        "count_text": "{{count}} signalement en cours",
+        "count_text_plural": "{{count}} signalements en cours"
+      }
     }
   }
 }

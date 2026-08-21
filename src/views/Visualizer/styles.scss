@@ -2,6 +2,9 @@
 
 $transitionSpeed: .2s;
 $bg-visualizer: rgb(49, 64, 77);
+$layersTreeWidth: 22.5rem;
+$widgetsWidth: 20rem;
+$detailsWidth: 25.5rem;
 
 .visualizer {
   width: 100%;
@@ -28,10 +31,12 @@ $bg-visualizer: rgb(49, 64, 77);
 
     .col-data {
       position: relative;
+      height: 100vh;
     }
 
     .col-widgets {
       flex: none;
+      height: 100vh;
       @media print {
         display: none;
       }
@@ -44,7 +49,8 @@ $bg-visualizer: rgb(49, 64, 77);
 
     &__map {
       position: relative;
-      flex: auto;
+      flex: content;
+      // flex-basis: 0;
       height: 100%;
       overflow: hidden;
 
@@ -61,13 +67,6 @@ $bg-visualizer: rgb(49, 64, 77);
         }
       }
     }
-  }
-
-  .mapboxgl-ctrl-search {
-      z-index: 1;
-  }
-  .mapboxgl-ctrl-search .search-results__item button {
-    height: auto;
   }
 
   .mapboxgl-popup {
@@ -122,17 +121,29 @@ $bg-visualizer: rgb(49, 64, 77);
     transition: transform .2s ease-in;
   }
 
+  .mapboxgl-ctrl-top-right,
+  .mapboxgl-ctrl-bottom-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .mapboxgl-ctrl-bottom-right {
+    > * {
+      order: 1;
+    }
+
+    > .mapboxgl-ctrl-attrib {
+      order: 2;
+    }
+  }
+
   .mapboxgl-ctrl-top-left,
   .mapboxgl-ctrl-bottom-left {
     transform: translate3d(3rem, 0, 0);
   }
 
   &--with {
-    $layersTreeWidth: 22.5rem;
-    $tableHeight: 33vh;
-    $widgetsWidth: 20rem;
-    $detailsWidth: 25.5rem;
-
     &-layers-tree {
       .mapboxgl-ctrl-top-left,
       .mapboxgl-ctrl-bottom-left {
@@ -142,16 +153,16 @@ $bg-visualizer: rgb(49, 64, 77);
 
     &-table {
       .mapboxgl-ctrl-bottom-left {
-        transform: translate3d(3rem, -$tableHeight, 0);
+        transform: translate3d(3rem, calc(-1 * var(--table-height, 33vh)), 0);
       }
 
       .mapboxgl-ctrl-bottom-right,
       .interactive-map__legends {
-        transform: translate3d(0, -$tableHeight, 0);
+        transform: translate3d(0, calc(-1 * var(--table-height, 33vh)), 0);
       }
 
       &.visualizer--with-layers-tree .mapboxgl-ctrl-bottom-left {
-        transform: translate3d($layersTreeWidth, -$tableHeight, 0);
+        transform: translate3d($layersTreeWidth, calc(-1 * var(--table-height, 33vh)), 0);
       }
     }
 
@@ -164,31 +175,25 @@ $bg-visualizer: rgb(49, 64, 77);
 
       &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
       &.visualizer--with-table .interactive-map__legends {
-        transform: translate3d(-$widgetsWidth, -$tableHeight, 0);
+        transform: translate3d(-$widgetsWidth, calc(-1 * var(--table-height, 33vh)), 0);
+      }
+      & .MuiDrawer-paper {
+        margin-right: calc($widgetsWidth + 10px) !important;
       }
     }
 
     &-details {
-      .mapboxgl-ctrl-top-right,
-      .interactive-map__legends {
-        transform: translate3d(-$detailsWidth, 0, 0);
-      }
-
-      &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
-      &.visualizer--with-table .interactive-map__legends {
-        transform: translate3d(-$detailsWidth, - $tableHeight, 0);
+      &.visualizer--with-table .mapboxgl-ctrl-bottom-right {
+        transform: translate3d(-$detailsWidth, calc(-1 * var(--table-height, 33vh)), 0);
       }
 
       &.visualizer--with-widgets {
-        .mapboxgl-ctrl-top-right,
-        .mapboxgl-ctrl-bottom-right,
-        .interactive-map__legends {
+        .mapboxgl-ctrl-bottom-right {
           transform: translate3d(-#{$widgetsWidth + $detailsWidth}, 0, 0);
         }
 
-        &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
-        &.visualizer--with-table .interactive-map__legends {
-          transform: translate3d(-#{$widgetsWidth + $detailsWidth}, - $tableHeight, 0);
+        &.visualizer--with-table .mapboxgl-ctrl-bottom-right {
+          transform: translate3d(-#{$widgetsWidth + $detailsWidth}, calc(-1 * var(--table-height, 33vh)), 0);
         }
       }
     }
@@ -241,9 +246,6 @@ $bg-visualizer: rgb(49, 64, 77);
     left: 58px;
   }
 
-  .mapboxgl-ctrl-bottom-left {
-    display: none;
-  }
 
   .interactive-map__footer {
     display: flex;
@@ -272,7 +274,8 @@ $bg-visualizer: rgb(49, 64, 77);
 
       .mapboxgl-ctrl-logo,
       .bp3-popover-wrapper,
-      .mapboxgl-ctrl-top-right {
+      .mapboxgl-ctrl-top-right,
+      .mapboxgl-ctrl-bottom-right .mapboxgl-ctrl-group {
         display: none;
       }
     }
@@ -377,7 +380,6 @@ $bg-visualizer: rgb(49, 64, 77);
   .visualizer {
     &--with {
       $layersTreeWidth: 20.2rem;
-      $tableHeight: 33vh;
       $widgetsWidth: 16rem;
       $detailsWidth: 17rem;
       &-layers-tree {
@@ -386,7 +388,7 @@ $bg-visualizer: rgb(49, 64, 77);
           transform: translate3d($layersTreeWidth, 0, 0);
         }
         &.visualizer--with-table .mapboxgl-ctrl-bottom-left {
-          transform: translate3d($layersTreeWidth, -$tableHeight, 0);
+          transform: translate3d($layersTreeWidth, calc(-1 * var(--table-height, 33vh)), 0);
         }
       }
       &-widgets {
@@ -397,28 +399,24 @@ $bg-visualizer: rgb(49, 64, 77);
         }
         &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
         &.visualizer--with-table .interactive-map__legends {
-          transform: translate3d(-$widgetsWidth, -$tableHeight, 0);
+          transform: translate3d(-$widgetsWidth, calc(-1 * var(--table-height, 33vh)), 0);
         }
       }
       &-details {
         .mapboxgl-ctrl-top-right,
-        .mapboxgl-ctrl-bottom-right,
-        .interactive-map__legends {
+        .mapboxgl-ctrl-bottom-right {
           transform: translate3d(-$detailsWidth, 0, 0);
         }
-        &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
-        &.visualizer--with-table .interactive-map__legends {
-          transform: translate3d(-$detailsWidth, -$tableHeight, 0);
+        &.visualizer--with-table .mapboxgl-ctrl-bottom-right {
+          transform: translate3d(-$detailsWidth, calc(-1 * var(--table-height, 33vh)), 0);
         }
         &.visualizer--with-widgets {
           .mapboxgl-ctrl-top-right,
-          .mapboxgl-ctrl-bottom-right,
-          .interactive-map__legends {
+          .mapboxgl-ctrl-bottom-right {
             transform: translate3d(-#{$widgetsWidth + $detailsWidth}, 0, 0);
           }
-          &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
-          &.visualizer--with-table .interactive-map__legends {
-            transform: translate3d(-#{$widgetsWidth + $detailsWidth}, -$tableHeight, 0);
+          &.visualizer--with-table .mapboxgl-ctrl-bottom-right {
+            transform: translate3d(-#{$widgetsWidth + $detailsWidth}, calc(-1 * var(--table-height, 33vh)), 0);
           }
         }
       }
@@ -449,7 +447,6 @@ $bg-visualizer: rgb(49, 64, 77);
   .visualizer {
     &--with {
       $layersTreeWidth: 14rem;
-      $tableHeight: 33vh;
       $detailsWidth: 17rem;
       &-layers-tree {
         .mapboxgl-ctrl-top-left,
@@ -459,15 +456,32 @@ $bg-visualizer: rgb(49, 64, 77);
       }
       &-details {
         .mapboxgl-ctrl-top-right,
-        .mapboxgl-ctrl-bottom-right,
-        .interactive-map__legends {
+        .mapboxgl-ctrl-bottom-right {
           transform: translate3d(-$detailsWidth, 0, 0);
         }
-        &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
-        &.visualizer--with-table .interactive-map__legends {
-          transform: translate3d(-$detailsWidth, -$tableHeight, 0);
+        &.visualizer--with-table .mapboxgl-ctrl-bottom-right {
+          transform: translate3d(-$detailsWidth, calc(-1 * var(--table-height, 33vh)), 0);
         }
       }
     }
+  }
+}
+
+@media screen and (min-width: $breakpoints-tablet + 1) {
+  body:has(.visualizer--with-layers-tree) .mapboxgl-ctrl-search__input {
+    --search-left: #{$layersTreeWidth};
+  }
+
+  body:has(.visualizer--with-widgets) .mapboxgl-ctrl-search__input {
+    --search-right: #{$widgetsWidth};
+  }
+
+  body:has(.visualizer--with-details) .mapboxgl-ctrl-search__input {
+    --search-right: #{$detailsWidth};
+  }
+
+  body:has(.visualizer--with-widgets):has(.visualizer--with-details)
+    .mapboxgl-ctrl-search__input {
+    --search-right: #{$widgetsWidth + $detailsWidth};
   }
 }

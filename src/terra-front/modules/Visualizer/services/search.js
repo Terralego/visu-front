@@ -6,8 +6,11 @@ export const MAX_SIZE = 10000;
 export const SEARCHES_QUEUE = new Set();
 
 export const getExtentWithPadding = (map, { top, left, width, height }) => {
-  const topLeft = map.unproject([left, top]).toArray();
-  const bottomRight = map.unproject([width + left, height + top]).toArray();
+  const mapRect = map.getContainer().getBoundingClientRect();
+  const relativeLeft = left - mapRect.left;
+  const relativeTop = top - mapRect.top;
+  const topLeft = map.unproject([relativeLeft, relativeTop]).toArray();
+  const bottomRight = map.unproject([relativeLeft + width, relativeTop + height]).toArray();
   return [topLeft, bottomRight];
 };
 
@@ -76,7 +79,7 @@ export const buildQuery = ({
   properties/* = { propName: value }, { propName: { value, type: 'term'} } */,
   include,
   exclude,
-  aggregations/* = [{ type, field, name, options }] */,
+  aggregations/* = [{ type, field, name, options, nest }] */,
   baseQuery = {},
   hookQuery = () => {},
 }) => {
@@ -134,8 +137,8 @@ export const buildQuery = ({
   }
 
   if (aggregations) {
-    aggregations.forEach(({ type = 'terms', field, options, name }) =>
-      body.aggregation(type, field, options, name));
+    aggregations.forEach(({ type = 'terms', field, options, name, nest = undefined }) =>
+      body.aggregation(type, field, options, name, nest));
   }
 
   // Apply query hooks if any

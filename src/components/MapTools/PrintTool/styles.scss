@@ -1,0 +1,191 @@
+.visualizer {
+  .interactive-map {
+    .print-header {
+      display: none;
+    }
+  }
+
+  .visualizer__print {
+    margin: 0 auto;
+
+    + .visualizer-view {
+      position: absolute;
+      top: 0;
+      right: 0;
+    }
+
+    .tf-map {
+      flex: 1;
+      min-height: 0;
+    }
+
+    .mapboxgl-map {
+      border-top-left-radius: var(--print-border-radius-top-left, 0);
+      border-top-right-radius: var(--print-border-radius-top-right, 0);
+      border-bottom-right-radius: var(--print-border-radius-bottom-right, 0);
+      border-bottom-left-radius: var(--print-border-radius-bottom-left, 0);
+      overflow: hidden;
+    }
+
+    .print-header {
+      display: var(--print-header-display, none);
+      flex-direction: var(--print-header-layout, column);
+      align-items: center;
+      
+      &__image {
+        display: var(--print-header-image-display, none);
+        background-image: var(--print-header-image);
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        flex-shrink: 0;
+      }
+      
+      &__title {
+        display: var(--print-title-display, none);
+        font-size: var(--print-title-font-size, 24px);
+        padding: 10px 20px;
+        font-weight: bold;
+        text-align: var(--print-title-align, center);
+      }
+
+      &[data-layout="column"] {
+        .print-header__image {
+          width: 100%;
+          height: auto;
+          min-height: var(--print-header-image-height, 80px);
+        }
+        .print-header__title {
+          width: 100%;
+        }
+      }
+      
+      &[data-layout="row"],
+      &[data-layout="row-reverse"] {
+        .print-header__image {
+          min-width: var(--print-header-image-height, 80px);
+          height: var(--print-header-image-height, 80px);
+        }
+        .print-header__title {
+          flex: 1;
+        }
+      }
+    }
+
+    .mapboxgl-ctrl-top-right,
+    .mapboxgl-ctrl-top-left {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .mapboxgl-ctrl-print {
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
+
+    .mapboxgl-ctrl-bottom-left {
+      left: calc(var(--print-border-radius-bottom-left, 0) * 0.3);
+      bottom: calc(var(--print-border-radius-bottom-left, 0) * 0.3);
+
+      .mapboxgl-ctrl {
+        opacity: 0;
+        pointer-events: none;
+      }
+    }
+
+    .mapboxgl-ctrl-bottom-right {
+      right: calc(var(--print-border-radius-bottom-right, 0) * 0.3);
+      bottom: calc(var(--print-border-radius-bottom-right, 0) * 0.3);
+    }
+
+    .mapboxgl-ctrl-attrib-button,
+    .mapboxgl-ctrl-attrib {
+      display: var(--print-attribution-display, block) !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
+
+    .mapboxgl-ctrl-scale {
+      display: var(--print-scale-display, block) !important;
+      opacity: 1 !important;
+      pointer-events: auto !important;
+    }
+  }
+
+  .visualizer__print .mapboxgl-ctrl-top-left,
+  .visualizer__print .mapboxgl-ctrl-bottom-left {
+    transform: none;
+  }
+
+  .visualizer__print .tf-legend {
+    // See https://github.com/niklasvh/html2canvas/issues/1856
+    box-shadow: none;
+  }
+
+  .visualizer__print--portrait {
+    width: 21cm;
+    height: 29.7cm;
+  }
+
+  .visualizer__print--landscape {
+    height: 21cm;
+    width: 29.7cm;
+  }
+}
+
+// Styles for print control panel
+.print-control__header-section {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 10px;
+}
+
+.print-control__header-layout {
+  margin-top: 8px;
+}
+
+.print-control__title-section {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 10px;
+}
+
+.print-control__title-inputs {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+
+  .bp3-input-group {
+    flex: 1;
+  }
+
+  .bp3-html-select {
+    flex: 0 0 auto;
+    
+    &:nth-child(2) {
+      flex: 0 0 80px;
+    }
+    
+    &:nth-child(3) {
+      flex: 0 0 50px;
+    }
+  }
+}
+
+.print-control__border-radius {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.print-control__border-radius-inputs {
+  margin-top: 8px;
+  margin-bottom: 10px;
+}
+
+.print-control__border-radius-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}

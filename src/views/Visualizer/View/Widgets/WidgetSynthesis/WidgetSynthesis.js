@@ -6,6 +6,7 @@ import isEqual from 'react-fast-compare';
 import debounce from 'debounce';
 
 import Loading from './Loading';
+import WidgetGraph from './WidgetGraph';
 
 const env = nunjucks.configure();
 env.addFilter('formatNumber', value => new Intl.NumberFormat().format(value));
@@ -16,12 +17,18 @@ const getAggregationValue = (aggregation, match = []) => {
   const { value, buckets } = aggregation;
 
   if (buckets) {
-    return buckets
-      .filter(({ key }) => match.includes(key))
-      .reduce((total, { doc_count: docCount }) => total + docCount, 0);
+    if (match.length > 0) {
+      const matched = buckets.filter(b => match.includes(b.key));
+      return matched.reduce((sum, b) => sum + b.doc_count, 0);
+    }
+    return buckets;
   }
 
-  return value;
+  if (value) {
+    return value;
+  }
+
+  return aggregation;
 };
 
 export class WidgetSynthesis extends React.Component {
@@ -78,6 +85,87 @@ export class WidgetSynthesis extends React.Component {
     map.off('zoomend', this.debouncedLoad);
   }
 
+  getContent(item) {
+    const { displayedLayer } = this.props;
+    const { values: { [item.name]: rawValue } } = this.state;
+    if (!displayedLayer) return null;
+    const { filters } = displayedLayer;
+
+    if (item.type === 'distribution') {
+      return (
+        <div className="widget-synthesis__value">
+          <WidgetGraph
+            data={rawValue ? rawValue.map(v => ({ label: v.key, value: v.doc_count })) : []}
+            type={item.graph.type}
+            loading={rawValue === undefined}
+            isPercent={item.graph.percent}
+            unit={item.graph.unit}
+            decimals={item.decimals}
+            orientation={item.graph.orientation}
+          />
+        </div>
+      );
+    }
+    if (item.type === 'categoric') {
+      return (
+        <div className="widget-synthesis__value">
+          <WidgetGraph
+            data={rawValue ? rawValue.map(v => ({ label: v.key, value: v.nested.value })) : []}
+            type={item.graph.type}
+            loading={rawValue === undefined}
+            isPercent={item.graph.percent}
+            unit={item.graph.unit}
+            decimals={item.decimals}
+            orientation={item.graph.orientation}
+          />
+        </div>
+      );
+    }
+    if (item.type === 'numeric') {
+      return (
+        <div className="widget-synthesis__value">
+          <WidgetGraph
+            data={
+              rawValue
+                ? Object.keys(rawValue.all)
+                  .filter(k => k !== 'doc_count')
+                  .map(k => {
+                    let key = k;
+                    if (filters.fields) {
+                      const foundField = filters.fields.find(f => f.value === k);
+                      if (foundField) {
+                        key = foundField.label;
+                      }
+                    }
+                    return ({ label: key, value: rawValue.all[k].value })
+                  })
+                : []
+            }
+            type={item.graph.type}
+            loading={rawValue === undefined}
+            isPercent={item.graph.percent}
+            unit={item.graph.unit}
+            decimals={item.decimals}
+            orientation={item.graph.orientation}
+          />
+        </div>
+      );
+    }
+
+    const value = this.formatValue(item);
+    if (rawValue === undefined) {
+      return <Loading />;
+    }
+    return (
+      <div
+        className="widget-synthesis__value"
+        // Value could contains html that should be rendered
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: value }}
+      />
+    );
+  }
+
   resetValues () {
     this.setState({ values: {} });
   }
@@ -100,9 +188,43 @@ export class WidgetSynthesis extends React.Component {
     if (!map) return;
     const boundingBox = boundingBoxMode === 'defined' ? boundingBoxValue : getExtent(map, visibleBoundingBox);
 
-    const aggregations = items.map(({ name, type, field }) => ({
-      name, type, field,
-    }));
+    const aggregations = items.map(({ name, type, field, graph }) => {
+      switch (type) {
+        case 'distribution':
+          return ({
+            name,
+            type: 'terms',
+            field: `${field}.keyword`,
+          });
+        case 'categoric':
+          return ({
+            name,
+            type: 'terms',
+            field: `${field}.keyword`,
+            nest: q => q.aggregation(graph.aggregation_type, graph.value_field, {}, 'nested'),
+          });
+        case 'numeric':
+          return ({
+            name,
+            type: 'filters',
+            options: {
+              filters: {
+                all: {
+                  match_all: {},
+                },
+              },
+            },
+            nest: q => {
+              graph.value_field.forEach(v => q.aggregation(graph.aggregation_type, v, {}, v));
+              return q;
+            },
+          });
+        default:
+          return ({
+            name, type, field,
+          });
+      }
+    });
 
     const properties = {
       ...Object.keys(filters).reduce((all, key) => ({
@@ -111,6 +233,7 @@ export class WidgetSynthesis extends React.Component {
       }), {}),
     };
 
+    this.setState({ values: {} });
     const data = await searchService.search({
       index: layer,
       query,
@@ -136,46 +259,48 @@ export class WidgetSynthesis extends React.Component {
     this.setState({ values });
   }
 
-  formatValue ({ name, label = name, template }) {
+  formatValue({ name, template, decimals }) {
     const { values: { [name]: rawValue } } = this.state;
-    const withValue = value => ({ label, value });
-    if (rawValue === undefined) {
-      return withValue(Loading);
+    let displayValue = rawValue;
+    if (rawValue?.value === 0) {
+      displayValue = 0;
+    } else if (rawValue && decimals !== undefined && decimals !== null) {
+      displayValue = rawValue.toFixed(decimals);
     }
-
     if (!template) {
-      return withValue(rawValue);
+      return displayValue;
     }
-
-    return withValue(
-      nunjucks.renderString(template, { value: rawValue }),
-    );
+    return nunjucks.renderString(template, { value: displayValue });
   }
 
-  render () {
+  render() {
     const { items } = this.props;
-    const values = items.map(item => this.formatValue(item));
-
+    let isPreviousItemGraph = false;
     return (
       <div className="widget-synthesis">
-        {values.map(({ label, value: Value }) => (
-          <div
-            className="widget-synthesis__item"
-            key={`${label}${Value}`}
-          >
-            {typeof Value === 'function'
-              ? <Value />
-              : (
-                <div
-                  className="widget-synthesis__value"
-                  // Value could contains html that should be rendered
-                  // eslint-disable-next-line react/no-danger
-                  dangerouslySetInnerHTML={{ __html: Value }}
-                />
-              )}
-            <div className="widget-synthesis__label">{label}</div>
-          </div>
-        ))}
+        {items.map((item, index) => {
+          const isGraph = item.type !== 'sum' && item.type !== 'avg' && item.type !== 'value_count';
+          // Only add dividers to separate graphs from other elements
+          const shouldAddTopDivider = isGraph && !isPreviousItemGraph;
+          const shouldAddBottomDivider = isGraph && index < items.length - 1;
+          isPreviousItemGraph = isGraph;
+          return (
+            <>
+              {shouldAddTopDivider && <hr style={{ width: '100%', borderTop: 1 }} />}
+              <div
+                className="widget-synthesis__item"
+                key={`${JSON.stringify(item)}`}
+                style={{
+                  minWidth: isGraph ? '100%' : '50%',
+                }}
+              >
+                <div className="widget-synthesis__label">{item.label ?? item.name}</div>
+                {this.getContent(item)}
+              </div>
+              {shouldAddBottomDivider && <hr style={{ width: '100%', borderTop: 1 }} />}
+            </>
+          );
+        })}
       </div>
     );
   }

@@ -1,7 +1,50 @@
 import Api from '@terralego/core/modules/Api';
 import { sortCustomLayers } from '@terralego/core/modules/Visualizer/services/layersTreeUtils';
 import memoizee from 'memoizee';
+import { EXTENT_TYPE_MULTIPLE } from '../components/TerritorySelector/extentUtils';
 import defaultIcon from '../images/defaultLogo.svg';
+
+const mediaHost = () => Api.host.replace(/\/api\/?$/, '').replace(/\/$/, '');
+
+const resolveMediaUrl = url =>
+  (typeof url === 'string' && url.startsWith('/') ? `${mediaHost()}${url}` : url);
+
+const toNumber = value => (typeof value === 'string' ? Number(value) : value);
+
+const normalizeExtent = ({
+  id,
+  name,
+  category,
+  pictogram,
+  adapts_to_theme: adaptsToTheme,
+  minLat,
+  minLon,
+  maxLat,
+  maxLon,
+}) => {
+  const bounds = [
+    [toNumber(minLon), toNumber(minLat)],
+    [toNumber(maxLon), toNumber(maxLat)],
+  ];
+
+  if (!bounds.flat().every(Number.isFinite)) return null;
+
+  return {
+    id,
+    label: name,
+    category,
+    icon: resolveMediaUrl(pictogram),
+    adaptToTheme: !!adaptsToTheme,
+    bounds,
+  };
+};
+
+export const normalizeExtents = ({ map = {} } = {}) => ({
+  extentType: map.extent_type,
+  extents: (Array.isArray(map.extra_extents) ? map.extra_extents : [])
+    .map(normalizeExtent)
+    .filter(Boolean),
+});
 
 export const fetchViewConfig = memoizee(async viewName => {
   try {
@@ -16,6 +59,19 @@ export const fetchViewConfig = memoizee(async viewName => {
     configWithHost.map = configWithHost.map || {};
     configWithHost.map.customStyle = configWithHost.map.customStyle || {};
     configWithHost.map.customStyle.layers = sortCustomLayers(layers, layersTree);
+
+    const { extentType, extents } = normalizeExtents(configWithHost);
+    configWithHost.map.extentType = extentType;
+    configWithHost.map.extents = extents;
+
+    const { fitBounds } = configWithHost.map;
+    const [mainExtent] = extents;
+
+    if (extentType === EXTENT_TYPE_MULTIPLE && mainExtent) {
+      configWithHost.map.fitBounds = { ...fitBounds, coordinates: mainExtent.bounds };
+    } else if (!fitBounds?.coordinates) {
+      configWithHost.map.fitBounds = undefined;
+    }
 
     return configWithHost;
   } catch (e) {

@@ -121,7 +121,25 @@
         "button_label": "Impression vers PDF",
         "cancel_label": "Annuler",
         "landscape_label": "Paysage",
-        "portrait_label": "Portrait"
+        "portrait_label": "Portrait",
+        "border_radius_label": "Coins arrondis",
+        "border_radius_none": "Aucun",
+        "border_radius_uniform": "Uniforme",
+        "border_radius_custom": "Personnalisé",
+        "title_label": "Titre",
+        "title_placeholder": "Saisissez un titre...",
+        "title_size_label": "Taille",
+        "title_align_label": "Alignement",
+        "show_attribution_label": "Afficher les attributions",
+        "show_scale_label": "Afficher l'échelle",
+        "header_image_label": "Image d'en-tête",
+        "header_layout_label": "Disposition",
+        "header_layout_column": "Image au-dessus",
+        "header_layout_row": "Image à gauche",
+        "header_layout_row_reverse": "Image à droite",
+        "align_left": "Gauche",
+        "align_center": "Centre",
+        "align_right": "Droite"
       },
       "report_control": {
         "content": "signaler une information manquante ou incorrecte",
@@ -163,11 +181,20 @@
         "toaster": "Cliquer sur la carte pour indiquer la localisation du signalement"
       },
       "search_control": {
-        "button_label": "Rechercher"
+        "button_label": "Rechercher",
+        "clear": "Effacer la recherche",
+        "close": "Fermer la recherche",
+        "min_length": "Saisir au moins {{count}} caractères"
       },
       "search_results": {
+        "error": "La recherche a échoué sur cette couche",
+        "go_to": "Aller au résultat",
         "group_total": "(1 résultat trouvé)",
-        "group_total_plural": "({{count}} résultats trouvés)",
+        "group_total_one": "(1 résultat trouvé)",
+        "group_total_other": "({{count}} résultats trouvés)",
+        "locations": "Lieux",
+        "more_one": "+1 autre résultat",
+        "more_other": "+{{count}} autres résultats",
         "no_result": "Pas de résultat",
         "title": "Résultats de recherche"
       },
@@ -200,6 +227,8 @@
       "fold": "Replier",
       "layerstree": {
         "group": {
+          "counterTooltip": "{{active}} couche(s) active(s) sur {{total}}",
+          "deactivateAll": "Désactiver les {{active}} couche(s) active(s) du groupe",
           "selector": "Aucune couche disponible"
         },
         "itemFilters": {

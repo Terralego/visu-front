@@ -219,7 +219,10 @@ export const withMap = WrappedComponent => {
       } = this.props;
       mapBoxGl.accessToken = accessToken;
 
-      const hasHash = hash && !!global.location.hash;
+      const hashParts = global.location.hash.replace(/^#/, '').split('&');
+      const hasMapHash = !!hash && (hash === true
+        ? !!hashParts[0]
+        : hashParts.some(part => part.split('=')[0] === hash));
 
       const rawMap = new mapBoxGl.Map({
         container: this.containerEl.current,
@@ -243,9 +246,9 @@ export const withMap = WrappedComponent => {
         this.containerEl.current.mapboxInstance = map;
       }
 
-      if (fitBounds && (forceFitBounds || !hasHash)) {
+      if (fitBounds?.coordinates && (forceFitBounds || !hasMapHash)) {
         const { coordinates, ...fitBoundsParams } = fitBounds;
-        map.fitBounds(coordinates, fitBoundsParams);
+        map.fitBounds(coordinates, { animate: false, ...fitBoundsParams });
       }
 
       map.once('style.load', () => {
