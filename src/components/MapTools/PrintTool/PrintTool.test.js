@@ -3,7 +3,7 @@ import renderer from 'react-test-renderer';
 import { shallow } from 'enzyme';
 import { Button } from '@blueprintjs/core';
 
-import PrintControl from './PrintControl';
+import PrintTool from './PrintTool';
 import exportPdf from './export';
 
 jest.mock('jspdf', () => ({
@@ -14,19 +14,19 @@ jest.mock('./export', () => jest.fn());
 jest.useFakeTimers();
 
 it('should render', () => {
-  const tree = renderer.create(<PrintControl />);
+  const tree = renderer.create(<PrintTool />);
   expect(tree.toJSON()).toMatchSnapshot();
 });
 
 it('should render exporting', () => {
-  const tree = renderer.create(<PrintControl />);
+  const tree = renderer.create(<PrintTool />);
   tree.getInstance().setState({ isExporting: true });
   expect(tree.toJSON()).toMatchSnapshot();
 });
 
 it('should open and set classes', () => {
   const onToggle = jest.fn();
-  const instance = new PrintControl({ onToggle });
+  const instance = new PrintTool({ onToggle });
   instance.setClasses = jest.fn();
   instance.setState = jest.fn((state, fn) => fn());
   instance.handleInteraction(true);
@@ -47,7 +47,7 @@ it('should resize map', () => {
     getContainer: jest.fn(() => ({ parentElement: container })),
     resize: jest.fn(),
   };
-  const instance = new PrintControl({ map });
+  const instance = new PrintTool({ map });
   instance.popoverRef = { current: { reposition: jest.fn() } };
   instance.state = {
     isOpen: true,
@@ -59,7 +59,7 @@ it('should resize map', () => {
 });
 
 it('should handle disposition', () => {
-  const instance = new PrintControl({});
+  const instance = new PrintTool({});
   instance.setState = jest.fn();
   instance.handleDisposition({ target: { value: 'portrait' } });
   expect(instance.setState).toHaveBeenCalledWith({
@@ -69,7 +69,7 @@ it('should handle disposition', () => {
 
 it('should begin generation', async () => {
   const map = {};
-  const instance = new PrintControl({ map });
+  const instance = new PrintTool({ map });
   instance.state = {
     orientation: 'portrait',
   };
@@ -102,7 +102,7 @@ it('should set classes', () => {
     getContainer: () => ({ parentElement: container }),
   };
 
-  const instance = new PrintControl({ map });
+  const instance = new PrintTool({ map });
   instance.popoverRef = {
     current: {
       reposition: jest.fn(),
@@ -128,7 +128,7 @@ it('should set classes', () => {
 });
 
 it('should close menu', () => {
-  const instance = new PrintControl({ translate () {} });
+  const instance = new PrintTool({ translate () {} });
   instance.setState = jest.fn();
   const Content = () => instance.renderContent();
   const wrapper = shallow(<Content />);

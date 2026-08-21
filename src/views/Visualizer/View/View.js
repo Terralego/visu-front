@@ -1,15 +1,13 @@
 import { Classes } from '@blueprintjs/core';
 import withDeviceSize from '@terralego/core/hoc/withDeviceSize';
 import {
-  CONTROL_BACKGROUND_STYLES,
-  CONTROL_HOME,
+  CONTROL_ATTRIBUTION,
   CONTROL_MEASURE,
-  CONTROL_PRINT,
-  CONTROL_SEARCH,
-  CONTROL_SHARE,
+  CONTROL_NAVIGATION,
+  CONTROL_SCALE,
+  CONTROLS_BOTTOM_LEFT,
+  CONTROLS_BOTTOM_RIGHT,
   CONTROLS_TOP_LEFT,
-  CONTROLS_TOP_RIGHT,
-  DEFAULT_CONTROLS,
 } from '@terralego/core/modules/Map';
 import InteractiveMap, {
   INTERACTION_DISPLAY_TOOLTIP,
@@ -73,6 +71,7 @@ import {
   selectSearchResult,
 } from './Search';
 import ShareWrapper from '../../../components/ShareModule/ShareWrapper';
+import MapTools from '../../../components/MapTools';
 import { TableSelectionProvider } from '../../../contexts/TableSelectionContext';
 import { useTableSelectionHighlight } from '../../../hooks/useTableSelectionHighlight';
 
@@ -85,40 +84,19 @@ const LayersTreeGroupProps = PropTypes.shape({
 });
 
 const getControls = memoize(
-  (
-    displaySearch,
-    displayBackgroundStyles,
-    disableSearch,
-    isMobileSized,
-    onToggle,
-    viewState,
-    measureControl,
-    measureDrawStyles,
-  ) =>
+  (measureControl, measureDrawStyles) =>
     [
-      displaySearch && {
-        control: CONTROL_SEARCH,
-        position: CONTROLS_TOP_RIGHT,
-        disabled: disableSearch,
+      {
+        control: CONTROL_NAVIGATION,
+        position: CONTROLS_BOTTOM_RIGHT,
       },
       {
-        control: CONTROL_HOME,
-        position: CONTROLS_TOP_RIGHT,
-      },
-      ...DEFAULT_CONTROLS,
-      displayBackgroundStyles && {
-        control: CONTROL_BACKGROUND_STYLES,
-        position: CONTROLS_TOP_RIGHT,
-      },
-      !isMobileSized && {
-        control: CONTROL_PRINT,
-        position: CONTROLS_TOP_RIGHT,
-        onToggle,
+        control: CONTROL_ATTRIBUTION,
+        position: CONTROLS_BOTTOM_RIGHT,
       },
       {
-        control: CONTROL_SHARE,
-        position: CONTROLS_TOP_RIGHT,
-        initialState: viewState,
+        control: CONTROL_SCALE,
+        position: CONTROLS_BOTTOM_LEFT,
       },
       measureControl && {
         control: CONTROL_MEASURE,
@@ -482,6 +460,8 @@ export class Visualizer extends React.Component {
     map.on('click', onMapClick);
     map.on('load', () => this.updateLayersTree());
     map.on('styleimagemissing', ({ id }) => {
+      console.log(`Style image missing: ${id}`); // eslint-disable-line no-console
+
       if (isCustomIconId(id)) {
         const icon = this.customIcons[id];
         if (icon) addCustomIconToMap(map, id, icon);
@@ -1003,6 +983,7 @@ export class Visualizer extends React.Component {
       map,
       mapIsResizing,
       setVisibleBoundingBox,
+      visibleBoundingBox,
       renderHeader,
       isMobileSized,
       viewState,
@@ -1092,21 +1073,12 @@ export class Visualizer extends React.Component {
       activeLayers: activeAndSearchableLayers,
     });
 
-    const controls = getControls(
-      displaySearchInMap,
-      Array.isArray(mapProps.backgroundStyle),
-      disableSearch,
-      isMobileSized,
-      this.onPrintToggle,
-      viewState,
-      measureControl,
-      measureDrawStyles,
-    );
+    const controls = getControls(measureControl, measureDrawStyles);
 
-    if (displaySearchInMap) {
-      Object.assign(
-        controls.find(({ control }) => control === CONTROL_SEARCH),
-        buildSearchControl({
+    const search = displaySearchInMap
+      ? {
+        disabled: disableSearch,
+        ...buildSearchControl({
           language,
           searchProvider,
           locationsEnable,
@@ -1115,8 +1087,8 @@ export class Visualizer extends React.Component {
           layers: activeAndSearchableLayers,
           onResultClick: this.searchResultClick,
         }),
-      );
-    }
+      }
+      : null;
 
     const isTableVisible = hasTable(layersTreeState);
     const isWidgetsVisible = hasWidget(layersTreeState);
@@ -1227,6 +1199,27 @@ export class Visualizer extends React.Component {
                         isShareModuleVisible={visibleDrawer === 'share'}
                         onToggleShareModule={this.toggleShareModule}
                         layersTreeState={layersTreeState}
+                      />
+                      <MapTools
+                        map={map}
+                        translate={t}
+                        isMobileSized={isMobileSized}
+                        search={search}
+                        backgroundStyles={
+                          Array.isArray(mapProps.backgroundStyle) ? mapProps.backgroundStyle : []
+                        }
+                        interactiveMapInstance={this.state.interactiveMapInstance}
+                        isDeclarationOpen={visibleDrawer === 'declaration'}
+                        onToggleDeclaration={this.toggleDeclarationModule}
+                        extents={mapProps.extents}
+                        extentType={mapProps.extentType}
+                        visibleBoundingBox={visibleBoundingBox}
+                        onPrintToggle={this.onPrintToggle}
+                        isShareOpen={visibleDrawer === 'share'}
+                        onToggleShare={this.toggleShareModule}
+                        fitBounds={mapProps.fitBounds}
+                        center={mapProps.center}
+                        zoom={mapProps.zoom}
                       />
                     </BoundingBoxObserver>
                     <TableConnected

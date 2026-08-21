@@ -1,7 +1,6 @@
 import KeyboardReturnIcon from '@mui/icons-material/KeyboardReturn';
 import {
   Box,
-  Experimental_CssVarsProvider as CssVarsProvider,
   List,
   ListItemButton,
   ListItemText,
@@ -9,7 +8,6 @@ import {
 } from '@mui/material';
 import React, { useEffect, useRef } from 'react';
 
-import theme from '../../../../mui-theme';
 
 const splitOnMatch = (text, query) => {
   const value = `${text ?? ''}`;
@@ -93,123 +91,121 @@ const ResultItem = ({ item, isSelected, query, onClick }) => {
 };
 
 const SearchResults = ({ results = [], onClick, query = '', translate = key => key, selected = -1 }) => (
-  <CssVarsProvider theme={theme} disableStyleSheetGeneration>
-    <Box sx={{ borderTop: '1px solid', borderColor: 'rgba(0, 0, 0, .08)' }}>
-      <Box
-        sx={{
-          maxHeight: 'min(72vh, 34rem)',
-          overflowY: 'auto',
-          overscrollBehavior: 'contain',
-          py: 0.5,
-          scrollbarWidth: 'thin',
-          '&::-webkit-scrollbar': { width: 8 },
-          '&::-webkit-scrollbar-thumb': {
-            borderRadius: 4,
-            border: '2px solid transparent',
-            backgroundClip: 'content-box',
-            backgroundColor: 'rgba(0, 0, 0, .16)',
-          },
-        }}
-      >
-        {results.map(({ group, total, error, results: items = [] }, index) => (
-          // eslint-disable-next-line react/no-array-index-key
-          <Box key={`${index}-${group}`} sx={{ px: 1, pb: 0.5 }}>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'baseline',
-                gap: 0.75,
-                px: 1.5,
-                pt: 1,
-                pb: 0.5,
-                position: 'sticky',
-                top: 0,
-                zIndex: 1,
-                backgroundColor: 'rgba(255, 255, 255, .98)',
-              }}
-            >
-              <Typography variant="caption" sx={{ fontWeight: 500, color: 'text.secondary' }}>
-                {group}
+  <Box sx={{ borderTop: '1px solid', borderColor: 'rgba(0, 0, 0, .08)' }}>
+    <Box
+      sx={{
+        maxHeight: 'min(72vh, 34rem)',
+        overflowY: 'auto',
+        overscrollBehavior: 'contain',
+        py: 0.5,
+        scrollbarWidth: 'thin',
+        '&::-webkit-scrollbar': { width: 8 },
+        '&::-webkit-scrollbar-thumb': {
+          borderRadius: 4,
+          border: '2px solid transparent',
+          backgroundClip: 'content-box',
+          backgroundColor: 'rgba(0, 0, 0, .16)',
+        },
+      }}
+    >
+      {results.map(({ group, total, error, results: items = [] }, index) => (
+        // eslint-disable-next-line react/no-array-index-key
+        <Box key={`${index}-${group}`} sx={{ px: 1, pb: 0.5 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'baseline',
+              gap: 0.75,
+              px: 1.5,
+              pt: 1,
+              pb: 0.5,
+              position: 'sticky',
+              top: 0,
+              zIndex: 1,
+              backgroundColor: 'rgba(255, 255, 255, .98)',
+            }}
+          >
+            <Typography variant="caption" sx={{ fontWeight: 500, color: 'text.secondary' }}>
+              {group}
+            </Typography>
+            {!!total && (
+              <Typography variant="caption" color="text.disabled">
+                {translate('terralego.map.search_results.group_total', { count: total })}
               </Typography>
-              {!!total && (
-                <Typography variant="caption" color="text.disabled">
-                  {translate('terralego.map.search_results.group_total', { count: total })}
-                </Typography>
-              )}
-            </Box>
-
-            {!items.length && (
-              <Typography
-                variant="body2"
-                color={error ? 'error.main' : 'text.disabled'}
-                sx={{ px: 1.5, pb: 0.5 }}
-              >
-                {translate(
-                  error
-                    ? 'terralego.map.search_results.error'
-                    : 'terralego.map.search_results.no_result',
-                )}
-              </Typography>
-            )}
-
-            {!!items.length && (
-              <List dense disablePadding>
-                {items.map(item => (
-                  <ResultItem
-                    key={`${item.label}${item.id}`}
-                    item={item}
-                    isSelected={selected === item}
-                    query={query}
-                    onClick={() => onClick(item)}
-                  />
-                ))}
-                {total > items.length && (
-                  <Typography
-                    variant="caption"
-                    color="text.disabled"
-                    sx={{ display: 'block', px: 1.5, pt: 0.75 }}
-                  >
-                    {translate('terralego.map.search_results.more', {
-                      count: total - items.length,
-                    })}
-                  </Typography>
-                )}
-              </List>
             )}
           </Box>
-        ))}
-      </Box>
 
+          {!items.length && (
+            <Typography
+              variant="body2"
+              color={error ? 'error.main' : 'text.disabled'}
+              sx={{ px: 1.5, pb: 0.5 }}
+            >
+              {translate(
+                error
+                  ? 'terralego.map.search_results.error'
+                  : 'terralego.map.search_results.no_result',
+              )}
+            </Typography>
+          )}
+
+          {!!items.length && (
+            <List dense disablePadding>
+              {items.map(item => (
+                <ResultItem
+                  key={`${item.label}${item.id}`}
+                  item={item}
+                  isSelected={selected === item}
+                  query={query}
+                  onClick={() => onClick(item)}
+                />
+              ))}
+              {total > items.length && (
+                <Typography
+                  variant="caption"
+                  color="text.disabled"
+                  sx={{ display: 'block', px: 1.5, pt: 0.75 }}
+                >
+                  {translate('terralego.map.search_results.more', {
+                    count: total - items.length,
+                  })}
+                </Typography>
+              )}
+            </List>
+          )}
+        </Box>
+      ))}
+    </Box>
+
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 1,
+        px: 2,
+        py: 1,
+        borderTop: '1px solid',
+        borderColor: 'rgba(0, 0, 0, .08)',
+        backgroundColor: 'rgba(0, 0, 0, .02)',
+      }}
+    >
       <Box
         sx={{
           display: 'flex',
           alignItems: 'center',
-          gap: 1,
-          px: 2,
-          py: 1,
-          borderTop: '1px solid',
-          borderColor: 'rgba(0, 0, 0, .08)',
-          backgroundColor: 'rgba(0, 0, 0, .02)',
+          px: 0.5,
+          borderRadius: '6px',
+          border: '1px solid rgba(0, 0, 0, .12)',
+          backgroundColor: 'common.white',
         }}
       >
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            px: 0.5,
-            borderRadius: '6px',
-            border: '1px solid rgba(0, 0, 0, .12)',
-            backgroundColor: 'common.white',
-          }}
-        >
-          <KeyboardReturnIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
-        </Box>
-        <Typography variant="caption" color="text.secondary">
-          {translate('terralego.map.search_results.go_to')}
-        </Typography>
+        <KeyboardReturnIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
       </Box>
+      <Typography variant="caption" color="text.secondary">
+        {translate('terralego.map.search_results.go_to')}
+      </Typography>
     </Box>
-  </CssVarsProvider>
+  </Box>
 );
 
 export default SearchResults;

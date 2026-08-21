@@ -10,12 +10,8 @@ import { updateCluster } from '../services/cluster';
 
 import createCustomMarker from './CustomMarkers/customMarker';
 
-import SearchControl from './components/SearchControl';
-import SearchResults from './components/SearchResults';
 import CaptureControl from './components/CaptureControl';
 import DrawControl from './components/DrawControl';
-import PrintControl from './components/PrintControl';
-import HomeControl from './components/HomeControl';
 import WidgetControl from './components/WidgetControl';
 import MeasureControl from './components/MeasureControl';
 
@@ -31,12 +27,8 @@ export const CONTROLS_BOTTOM_RIGHT = 'bottom-right';
 export const CONTROL_ATTRIBUTION = 'AttributionControl';
 export const CONTROL_NAVIGATION = 'NavigationControl';
 export const CONTROL_SCALE = 'ScaleControl';
-export const CONTROL_SEARCH = 'SearchControl';
 export const CONTROL_CAPTURE = 'CaptureControl';
 export const CONTROL_DRAW = 'DrawControl';
-export const CONTROL_PRINT = 'PrintControl';
-export const CONTROL_HOME = 'HomeControl';
-export const CONTROL_SHARE = 'ShareControl';
 export const CONTROL_CUSTOM = 'CustomControl';
 export const CONTROL_WIDGET = 'WidgetControl';
 export const CONTROL_MEASURE = 'MeasureControl';
@@ -86,11 +78,8 @@ export class MapComponent extends React.Component {
           CONTROL_ATTRIBUTION,
           CONTROL_NAVIGATION,
           CONTROL_SCALE,
-          CONTROL_SEARCH,
           CONTROL_CAPTURE,
           CONTROL_DRAW,
-          CONTROL_PRINT,
-          CONTROL_HOME,
           CONTROL_CUSTOM,
           CONTROL_MEASURE,
         ]),
@@ -99,10 +88,6 @@ export class MapComponent extends React.Component {
           onRemove: PropTypes.func,
         }),
       ]).isRequired,
-      // For CONTROL_SEARCH only
-      onSearch: PropTypes.func,
-      renderSearchResults: PropTypes.func,
-      onSearchResultClick: PropTypes.func,
     })),
 
     // Action to fly out to coordinates
@@ -235,33 +220,6 @@ export class MapComponent extends React.Component {
       this.replaceLayers(prevProps.customStyle, customStyle);
     }
   }
-
-  focusOnSearchResult = ({ center, bounds }) => {
-    const { map } = this.props;
-    if (bounds) {
-      map.fitBounds(bounds, {
-        padding: 10,
-      });
-      return;
-    }
-    if (center) {
-      map.setCenter(center);
-    }
-  };
-
-  onSearchResultClick = onResultClick => ({ result, ...rest }) => {
-    const { map } = this.props;
-    if (onResultClick) {
-      onResultClick({
-        result,
-        ...rest,
-        map,
-        focusOnSearchResult: this.focusOnSearchResult,
-      });
-    } else {
-      this.focusOnSearchResult(result);
-    }
-  };
 
   initMapProperties () {
     const {
@@ -434,17 +392,6 @@ export class MapComponent extends React.Component {
     // Add new controls
     controls.forEach(({ position, control, ...params }) => {
       switch (control) {
-        case CONTROL_SEARCH: {
-          const controlInstance = new SearchControl({
-            ...props,
-            renderSearchResults: SearchResults,
-            ...params,
-            onResultClick: this.onSearchResultClick(params.onSearchResultClick),
-          });
-          this.controls.push(controlInstance);
-          map.addControl(controlInstance, position);
-          break;
-        }
         case CONTROL_CAPTURE: {
           const controlInstance = new CaptureControl({
             ...props,
@@ -478,35 +425,6 @@ export class MapComponent extends React.Component {
               domElement.setAttribute('title', translation);
             }
           });
-          break;
-        }
-        case CONTROL_PRINT: {
-          const controlInstance = new PrintControl({
-            ...props,
-            map,
-            ...params,
-          });
-          this.controls.push(controlInstance);
-          map.addControl(controlInstance, position);
-          break;
-        }
-        case CONTROL_HOME: {
-          const { fitBounds, center, zoom } = props;
-          const { coordinates, ...fitBoundsParams } = fitBounds || {};
-          const controlInstance = new HomeControl({
-            ...props,
-            map,
-            fitBounds: coordinates,
-            fitBoundsParams,
-            center,
-            zoom,
-            ...params,
-          });
-          this.controls.push(controlInstance);
-          map.addControl(controlInstance, position);
-          break;
-        }
-        case CONTROL_SHARE: {
           break;
         }
         case CONTROL_CUSTOM: {

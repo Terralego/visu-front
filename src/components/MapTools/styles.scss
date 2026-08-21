@@ -1,0 +1,9 @@
+.map-tools {
+  margin: 10px 10px 0 0;
+  pointer-events: auto;
+
+  .bp3-popover-wrapper,
+  .bp3-popover-target {
+    display: flex;
+  }
+}

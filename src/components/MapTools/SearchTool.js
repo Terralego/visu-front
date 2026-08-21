@@ -1,43 +1,38 @@
+import SearchIcon from '@mui/icons-material/Search';
+import classnames from 'classnames';
+import debounce from 'lodash.debounce';
+import PropTypes from 'prop-types';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import PropTypes from 'prop-types';
-import classnames from 'classnames';
-import { Icon } from '@blueprintjs/core';
-import debounce from 'lodash.debounce';
-import DefaultSearchInput from './SearchInput';
 
-import AbstractMapControl from '../../../helpers/AbstractMapControl';
-import translateMock from '../../../../../utils/translate';
-import Tooltip from '../../../../../components/Tooltip';
+import translateMock from '@terralego/core/utils/translate';
+import ToolButton from './ToolButton';
 
-import './styles.scss';
+import './searchPanel.scss';
 
 const SEARCH_SHORTCUT = /Mac|iPhone|iPad|iPod/.test(global.navigator?.platform || '')
   ? '\u2318K'
   : 'Ctrl+K';
 
-export class SearchControl extends AbstractMapControl {
-  static containerClassName = 'mapboxgl-ctrl mapboxgl-ctrl-group mapboxgl-ctrl-search';
-
+export class SearchTool extends React.Component {
   static propTypes = {
-    /** Function called when user submit input. Takes query as parameter */
+    map: PropTypes.shape({
+      fitBounds: PropTypes.func.isRequired,
+      setCenter: PropTypes.func.isRequired,
+    }).isRequired,
     onSearch: PropTypes.func,
-    /** Function called when user click on a result item. Takes result object as parameter */
-    onResultClick: PropTypes.func,
-    /** Function used to render the search results. Default to bundled component */
-    renderSearchResults: PropTypes.func,
-    /** Function used to render the search input. Default to bundled component */
-    renderSearchInput: PropTypes.func,
-    /** Minimum number of characters before a search is fired */
+    onSearchResultClick: PropTypes.func,
+    renderSearchResults: PropTypes.func.isRequired,
+    renderSearchInput: PropTypes.func.isRequired,
     minQueryLength: PropTypes.number,
-    /** Function used to translate wording. Takes key and object of options as parameters */
+    disabled: PropTypes.bool,
     translate: PropTypes.func,
   }
 
   static defaultProps = {
     onSearch () {},
-    onResultClick () {},
-    renderSearchInput: DefaultSearchInput,
+    onSearchResultClick () {},
+    disabled: false,
     minQueryLength: 3,
     translate: translateMock({
       'terralego.map.search_control.button_label': 'Search',
@@ -64,6 +59,8 @@ export class SearchControl extends AbstractMapControl {
 
   panelRef = React.createRef();
 
+  buttonRef = React.createRef();
+
   componentDidMount () {
     this.shortcutListener = event => {
       const { key, metaKey, ctrlKey } = event;
@@ -85,10 +82,9 @@ export class SearchControl extends AbstractMapControl {
     global.addEventListener('keydown', this.shortcutListener);
 
     this.listener = ({ target }) => {
-      const { container } = this.props;
       const { query } = this.state;
 
-      if (container.contains(target)) return;
+      if (this.buttonRef.current && this.buttonRef.current.contains(target)) return;
       if (this.panelRef.current && this.panelRef.current.contains(target)) return;
 
       this.toggleResultsDisplay(false);
@@ -116,7 +112,6 @@ export class SearchControl extends AbstractMapControl {
 
   toggle = state => this.setState(({ visible }) => {
     if (visible && state !== true) {
-      // SetTimeout because of css animation
       setTimeout(() => {
         if (this.isUnmount) return;
         this.setState({ visible: false });
@@ -169,17 +164,30 @@ export class SearchControl extends AbstractMapControl {
 
   toggleResultsDisplay = state => this.setState({ displayResults: state });
 
+  focusOnSearchResult = ({ center, bounds }) => {
+    const { map } = this.props;
+    if (bounds) {
+      map.fitBounds(bounds, { padding: 10 });
+      return;
+    }
+    if (center) {
+      map.setCenter(center);
+    }
+  }
+
   clickOnResult = async result => {
-    const { onResultClick } = this.props;
-    await onResultClick({
+    const { map, onSearchResultClick } = this.props;
+    await onSearchResultClick({
       result,
+      map,
+      focusOnSearchResult: this.focusOnSearchResult,
       setQuery: query => this.setState({ query }),
     });
     this.toggle(false);
   }
 
   async search () {
-    const { onSearch, minQueryLength } = this.props;
+    const { map, onSearch, minQueryLength } = this.props;
     const { query } = this.state;
 
     this.searchId = (this.searchId || 0) + 1;
@@ -194,7 +202,7 @@ export class SearchControl extends AbstractMapControl {
 
     let results;
     try {
-      results = await onSearch(query, this.map);
+      results = await onSearch(query, map);
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error('Search failed:', e);
@@ -227,22 +235,19 @@ export class SearchControl extends AbstractMapControl {
       minQueryLength,
       translate,
     } = this.props;
+    const { disabled } = this.props;
     const { visible, expanded, query, displayResults, results, selected, loading } = this.state;
 
     return (
       <>
-        <Tooltip
-          content={`${translate('terralego.map.search_control.button_label')} (${SEARCH_SHORTCUT})`}
-        >
-          <button
-            className="mapboxgl-ctrl-icon"
-            type="button"
-            aria-label={translate('terralego.map.search_control.button_label')}
-            onClick={this.toggle}
-          >
-            <Icon icon="search" />
-          </button>
-        </Tooltip>
+        <ToolButton
+          ref={this.buttonRef}
+          label={`${translate('terralego.map.search_control.button_label')} (${SEARCH_SHORTCUT})`}
+          icon={<SearchIcon sx={{ fontSize: 20 }} />}
+          isActive={visible}
+          disabled={disabled}
+          onClick={this.toggle}
+        />
         {visible && ReactDOM.createPortal(
           <div
             ref={this.panelRef}
@@ -280,4 +285,4 @@ export class SearchControl extends AbstractMapControl {
   }
 }
 
-export default SearchControl;
+export default SearchTool;

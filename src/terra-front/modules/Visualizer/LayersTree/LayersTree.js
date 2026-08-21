@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import LayersTreeGroup from './LayersTreeGroup';
 import LayersTreeItem from './LayersTreeItem';
 import LayerProps from '../types/Layer';
-import SearchInput from '../../Map/Map/components/SearchControl/SearchInput';
+import SearchInput from './SearchInput';
 
 import translateMock from '../../../utils/translate';
 

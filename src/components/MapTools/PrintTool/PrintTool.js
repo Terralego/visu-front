@@ -1,23 +1,23 @@
+/* eslint-disable react/sort-comp */
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import {
   Button,
   HTMLSelect,
-  Icon,
   InputGroup,
   NumericInput,
+  Radio,
+  RadioGroup,
   Popover,
   PopoverInteractionKind,
   PopoverPosition,
-  Radio,
-  RadioGroup,
   Spinner,
   Switch,
 } from '@blueprintjs/core';
-import AbstractMapControl from '../../../helpers/AbstractMapControl';
-import Tooltip from '../../../../../components/Tooltip';
-import translateMock from '../../../../../utils/translate';
+import PrintIcon from '@mui/icons-material/Print';
+import translateMock from '@terralego/core/utils/translate';
+import ToolButton from '../ToolButton';
 import './styles.scss';
 
 const PRINT_CLASS_PREFIX = 'visualizer__print';
@@ -36,9 +36,7 @@ const TITLE_ALIGN_LEFT = 'left';
 const TITLE_ALIGN_CENTER = 'center';
 const TITLE_ALIGN_RIGHT = 'right';
 
-export class PrintControl extends AbstractMapControl {
-  static containerClassName = 'mapboxgl-ctrl mapboxgl-ctrl-group mapboxgl-ctrl-print';
-
+export class PrintTool extends React.Component {
   static propTypes = {
     translate: PropTypes.func,
     onToggle: PropTypes.func,
@@ -597,7 +595,7 @@ export class PrintControl extends AbstractMapControl {
             : translate('terralego.map.print_control.button_label')}
         </Button>
         <Button
-          onClick={() => this.setState({ isOpen: false })}
+          onClick={() => this.handleInteraction(false)}
           intent="danger"
         >
           {translate('terralego.map.print_control.cancel_label')}
@@ -611,30 +609,23 @@ export class PrintControl extends AbstractMapControl {
     const { isOpen } = this.state;
 
     return (
-      <Tooltip
-        content={translate('terralego.map.print_control.button_label')}
+      <Popover
+        className="popoverPos"
+        position={PopoverPosition.AUTO_START}
+        interactionKind={PopoverInteractionKind.CLICK_TARGET_ONLY}
+        onInteraction={this.handleInteraction}
+        isOpen={isOpen}
+        ref={this.popoverRef}
+        content={this.renderContent()}
       >
-
-        <Popover
-          className="popoverPos"
-          position={PopoverPosition.AUTO_START}
-          interactionKind={PopoverInteractionKind.CLICK_TARGET_ONLY}
-          onInteraction={this.handleInteraction}
-          isOpen={isOpen}
-          ref={this.popoverRef}
-          content={this.renderContent()}
-        >
-          <button
-            className="mapboxgl-ctrl-icon"
-            type="button"
-            aria-label={translate('terralego.map.print_control.button_label')}
-          >
-            <Icon icon="print" />
-          </button>
-        </Popover>
-      </Tooltip>
+        <ToolButton
+          label={translate('terralego.map.print_control.button_label')}
+          icon={<PrintIcon sx={{ fontSize: 20 }} />}
+          isActive={isOpen}
+        />
+      </Popover>
     );
   }
 }
 
-export default PrintControl;
+export default PrintTool;

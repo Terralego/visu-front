@@ -12,7 +12,6 @@ import MapComponent, { CONTROLS_TOP_RIGHT, DEFAULT_CONTROLS } from '../Map';
 import { getClusteredFeatures } from '../services/cluster';
 import { fitZoom, setInteractions } from '../services/mapUtils';
 
-import BackgroundStyles from './components/BackgroundStyles';
 import Legend from './components/Legend';
 import Tooltip from './components/Tooltip';
 import './styles.scss';
@@ -24,7 +23,6 @@ export const INTERACTION_DISPLAY_TOOLTIP = 'displayTooltip';
 export const INTERACTION_HIGHLIGHT = 'highlight';
 export const INTERACTION_FN = 'function';
 
-export const CONTROL_BACKGROUND_STYLES = 'BackgroundStylesControl';
 
 const generateTooltipContainer = ({ fetchProperties, properties, template, content, history }) => {
   const container = document.createElement('div');
@@ -87,13 +85,7 @@ const getUniqueLegends = legends => {
   return uniques;
 };
 
-export const DEFAULT_INTERACTIVE_MAP_CONTROLS = [
-  ...DEFAULT_CONTROLS,
-  {
-    control: CONTROL_BACKGROUND_STYLES,
-    position: CONTROLS_TOP_RIGHT,
-  },
-];
+export const DEFAULT_INTERACTIVE_MAP_CONTROLS = [...DEFAULT_CONTROLS];
 
 export class InteractiveMap extends React.Component {
   static propTypes = {
@@ -207,7 +199,7 @@ export class InteractiveMap extends React.Component {
   componentDidMount() {
     const { onInit } = this.props;
     onInit(this);
-    this.insertBackgroundStyleControl();
+    this.syncControls();
 
     this.mouseMoveListener = ({ target }) => {
       if (!this.map) return;
@@ -250,7 +242,7 @@ export class InteractiveMap extends React.Component {
     }
 
     if (controls !== prevControls || backgroundStyle !== prevBackgroundStyle) {
-      this.insertBackgroundStyleControl();
+      this.syncControls();
     }
 
     if (JSON.stringify(declarationMarker) !== JSON.stringify(prevDeclarationMarker)) {
@@ -303,11 +295,6 @@ export class InteractiveMap extends React.Component {
     }
 
     this.setState({ selectedBackgroundStyle });
-    if (this.backgroundStyleControl) {
-      this.backgroundStyleControl.setProps({
-        selected: selectedBackgroundStyle,
-      });
-    }
   };
 
   getOriginalTarget = ({ originalEvent }) =>
@@ -763,33 +750,9 @@ export class InteractiveMap extends React.Component {
     }
   }
 
-  insertBackgroundStyleControl() {
-    const { controls = DEFAULT_INTERACTIVE_MAP_CONTROLS, backgroundStyle } = this.props;
-    const { selectedBackgroundStyle } = this.state;
-
-    try {
-      if (typeof backgroundStyle === 'string') throw new Error('Single background');
-
-      const pos = controls.findIndex(({ control }) => control === CONTROL_BACKGROUND_STYLES);
-
-      if (pos === -1) throw new Error('BackgroundStyleControl not found');
-
-      const backgroundStyleControl = { ...controls[pos] };
-      this.backgroundStyleControl = new BackgroundStyles({
-        ...this.props,
-        ...backgroundStyleControl,
-        onChange: this.onBackgroundChange,
-        styles: backgroundStyle,
-        selected: selectedBackgroundStyle,
-      });
-      backgroundStyleControl.control = this.backgroundStyleControl;
-      const newControls = [...controls];
-      newControls[pos] = backgroundStyleControl;
-
-      this.setState({ controls: newControls });
-    } catch (e) {
-      this.setState({ controls });
-    }
+  syncControls() {
+    const { controls = DEFAULT_INTERACTIVE_MAP_CONTROLS } = this.props;
+    this.setState({ controls });
   }
 
   render() {
