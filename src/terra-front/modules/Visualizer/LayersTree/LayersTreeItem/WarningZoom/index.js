@@ -6,7 +6,13 @@ import { connectLayersTree } from '../../LayersTreeProvider/context';
 
 const withWarningAccordingToZoom = WrappedComponent => props => {
   const { map, layer, isActive, children } = props;
-  if (!isActive) return children;
+  if (!isActive || !layer.fetched) {
+    return (
+      <WrappedComponent display={false} minZoomLayer={null} {...props}>
+        {children}
+      </WrappedComponent>
+    );
+  }
   const { showWarning, minZoomLayer } = processWarningAccordingToZoom(map, layer);
   return (
     <WrappedComponent display={showWarning} minZoomLayer={minZoomLayer} {...props}>
@@ -15,7 +21,4 @@ const withWarningAccordingToZoom = WrappedComponent => props => {
   );
 };
 
-export default compose(
-  withWarningAccordingToZoom,
-  connectLayersTree('translate'),
-)(WarningZoom);
+export default compose(withWarningAccordingToZoom, connectLayersTree('translate'))(WarningZoom);

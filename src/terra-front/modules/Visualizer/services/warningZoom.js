@@ -1,7 +1,6 @@
-import moize from 'moize';
 import { getRelatedLayers } from '../../Map/services/mapUtils';
 
-const getLayerZoom = moize((layer, map) => {
+const getLayerZoom = (layer, map) => {
   const layers = layer.layers.reduce((prev, layerId) =>
     [
       ...prev,
@@ -24,7 +23,7 @@ const getLayerZoom = moize((layer, map) => {
         maxzoom: Math.max(maxzoom, prevMaxzoom),
       };
     }, { minzoom: 24, maxzoom: 0 });
-});
+};
 
 export const processWarningAccordingToZoom = (map, layer) => {
   if (!map) return {};

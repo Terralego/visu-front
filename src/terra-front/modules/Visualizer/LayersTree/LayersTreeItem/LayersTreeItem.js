@@ -1,21 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import {
-  Card,
-  Switch,
-  Elevation,
-  Tag,
-  PopoverPosition,
-} from '@blueprintjs/core';
+import { Card, Elevation, Tag, PopoverPosition } from '@blueprintjs/core';
 import { v4 as uuid } from 'uuid';
+import LayerSwitch from './LayerSwitch';
 
 import OptionsLayer from './OptionsLayer';
 import LayersTreeItemFilters from './LayersTreeItemFilters';
 import LayerProps from '../../types/Layer';
 import LayersTreeItemOptions from './LayersTreeItemOptions';
 import withDeviceSize from '../../../../hoc/withDeviceSize';
-import WarningZoom from './WarningZoom';
 import LayersTreeExclusiveItemsList from './LayersTreeExclusiveItemsList';
 import Tooltip from '../../../../components/Tooltip';
 
@@ -31,6 +25,7 @@ export class LayersTreeItem extends React.Component {
     isPhoneSized: PropTypes.bool,
     customLabel: PropTypes.string,
     children: PropTypes.node,
+    loading: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -38,52 +33,56 @@ export class LayersTreeItem extends React.Component {
     opacity: 1,
     isTableActive: false,
     total: null,
-    setLayerState () {},
+    setLayerState() {},
     isMobileSized: false,
     isPhoneSized: false,
     customLabel: null,
     children: null,
-  }
+    loading: false,
+  };
 
   state = {
     isOptionsOpen: false,
     isFilterVisible: false,
     hasWidgetActive: false,
-  }
+  };
 
   uuid = `toggle-${uuid()}`;
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     this.resetFilterPanelListener();
   }
 
   onActiveChange = ({ target: { checked: active } }) => {
     const { layer, setLayerState } = this.props;
     setLayerState({ layer, state: { active, table: false } });
-  }
+  };
 
   onOpacityChange = opacity => {
     const { activeLayer: layer, setLayerState } = this.props;
     setLayerState({ layer, state: { opacity } });
-  }
+  };
 
   getFilterPanelRef = refs => {
     this.resetFilterPanelListener();
-    document.body.addEventListener('mousedown', this.clickListener = ({ target }) => {
-      if (refs.reduce((contains, el) => contains || el.contains(target), false)) {
-        return;
-      }
-      this.setState({ isFilterVisible: false });
-    });
-  }
+    document.body.addEventListener(
+      'mousedown',
+      (this.clickListener = ({ target }) => {
+        if (refs.reduce((contains, el) => contains || el.contains(target), false)) {
+          return;
+        }
+        this.setState({ isFilterVisible: false });
+      }),
+    );
+  };
 
   handleOptionPanel = () => {
     const { isOptionsOpen } = this.state;
     this.setState({ isOptionsOpen: !isOptionsOpen });
-  }
+  };
 
-  toggleFilters = () => this.setState(({ isFilterVisible }) =>
-    ({ isFilterVisible: !isFilterVisible }));
+  toggleFilters = () =>
+    this.setState(({ isFilterVisible }) => ({ isFilterVisible: !isFilterVisible }));
 
   toggleTable = () => {
     const { activeLayer: layer, isTableActive, setLayerState } = this.props;
@@ -95,37 +94,33 @@ export class LayersTreeItem extends React.Component {
     const contains = this.isWidgetActive(widget);
     const { hasWidgetActive } = this.state;
     const widgets = [
-      ...(contains
-        ? prevWidgets.filter(w => w !== widget)
-        : [...prevWidgets, widget]),
+      ...(contains ? prevWidgets.filter(w => w !== widget) : [...prevWidgets, widget]),
     ];
 
     this.setState({ hasWidgetActive: !hasWidgetActive });
 
     setLayerState({ layer, state: { widgets } });
-  }
+  };
 
   isWidgetActive = widget => {
     const { widgets = [] } = this.props;
     return widgets.includes(widget);
-  }
+  };
 
-  resetFilterPanelListener () {
+  resetFilterPanelListener() {
     if (this.clickListener) {
       document.body.removeEventListener('mousedown', this.clickListener);
     }
   }
 
-  render () {
+  render() {
     const {
       layer,
       layer: {
         group,
         label = group,
         exclusive,
-        filters: {
-          form: layerForm, fields: layerFields,
-        } = {},
+        filters: { form: layerForm, fields: layerFields } = {},
       },
       activeLayer,
       activeLayer: {
@@ -144,13 +139,12 @@ export class LayersTreeItem extends React.Component {
       isDetailsVisible,
       customLabel,
       children,
+      loading,
     } = this.props;
 
     if (hidden) return null;
 
-    const {
-      isOptionsOpen, isFilterVisible, hasWidgetActive,
-    } = this.state;
+    const { isOptionsOpen, isFilterVisible, hasWidgetActive } = this.state;
     const {
       onActiveChange,
       onOpacityChange,
@@ -162,9 +156,9 @@ export class LayersTreeItem extends React.Component {
       isWidgetActive,
     } = this;
 
-    const totalResult = typeof (total) === 'number';
+    const totalResult = typeof total === 'number';
     const hasSomeOptionActive =
-    isTableActive || isFilterVisible || isOptionsOpen || hasWidgetActive;
+      isTableActive || isFilterVisible || isOptionsOpen || hasWidgetActive;
 
     const displayTableButton = fields && !!fields.length;
 
@@ -174,27 +168,24 @@ export class LayersTreeItem extends React.Component {
         elevation={Elevation.ZERO}
         style={{ opacity: isActive ? 1 : 0.7 }}
       >
-        <div className={
-          classnames(
+        <div
+          className={classnames(
             { 'layerstree-node-content': !isMobileSized },
             { 'layerstree-node-content--desktop--active': !isMobileSized && hasSomeOptionActive },
             { 'layerstree-node-content--mobile': isMobileSized },
-          )
-        }
+          )}
         >
-          <div className={
-            classnames(
+          <div
+            className={classnames(
               { 'layerstree-node-content__item': !isMobileSized },
               { 'layerstree-node-content__item--mobile': isMobileSized },
-            )
-          }
+            )}
           >
-            <div className={
-            classnames(
-              { 'layerstree-node-content__item-label': !isMobileSized },
-              { 'layerstree-node-content__item-label--mobile': isMobileSized },
-            )
-          }
+            <div
+              className={classnames(
+                { 'layerstree-node-content__item-label': !isMobileSized },
+                { 'layerstree-node-content__item-label--mobile': isMobileSized },
+              )}
             >
               <Tooltip
                 content={customLabel ?? label}
@@ -203,73 +194,57 @@ export class LayersTreeItem extends React.Component {
                 className="layerstree-node-content__item-label__tooltip"
               >
                 <label className="layerstree-node-content__item-label__label" htmlFor={this.uuid}>
-                  <WarningZoom
-                    isActive={isActive}
-                    map={map}
+                  <LayerSwitch
+                    checked={!!isActive}
+                    onChange={onActiveChange}
+                    id={this.uuid}
+                    loading={loading}
                     layer={layer}
-                  >
-                    <Switch
-                      checked={!!isActive}
-                      onChange={onActiveChange}
-                      id={this.uuid}
-                      tagName="span"
-                    />
-                  </WarningZoom>
+                    isActive={isActive}
+                  />
                   {customLabel ?? label}
                 </label>
               </Tooltip>
 
               <div className="layerstree-node-content__item-label__total">
                 {isActive && totalResult && (
-                <Tag
-                  intent="primary"
-                  round
-                >
-                  {total}
-                </Tag>
+                  <Tag intent="primary" round>
+                    {total}
+                  </Tag>
                 )}
               </div>
             </div>
             {isMobileSized && isActive && exclusive && (
-              <LayersTreeExclusiveItemsList
-                layer={layer}
-              />
+              <LayersTreeExclusiveItemsList layer={layer} />
             )}
           </div>
           {isActive && !isPhoneSized && (
-          <LayersTreeItemOptions
-            hasSomeOptionActive={hasSomeOptionActive}
-            isOptionsOpen={isOptionsOpen}
-            handleOptionPanel={handleOptionPanel}
-            layer={activeLayer}
-            toggleFilters={toggleFilters}
-            isFilterVisible={isFilterVisible}
-            getFilterPanelRef={getFilterPanelRef}
-            form={form}
-            toggleTable={toggleTable}
-            isTableActive={isTableActive}
-            displayTableButton={displayTableButton}
-            toggleWidgets={toggleWidgets}
-            widgets={widgets}
-            isWidgetActive={isWidgetActive}
-            map={map}
-            extent={extent}
-            isDetailsVisible={isDetailsVisible}
-          />
+            <LayersTreeItemOptions
+              hasSomeOptionActive={hasSomeOptionActive}
+              isOptionsOpen={isOptionsOpen}
+              handleOptionPanel={handleOptionPanel}
+              layer={activeLayer}
+              toggleFilters={toggleFilters}
+              isFilterVisible={isFilterVisible}
+              getFilterPanelRef={getFilterPanelRef}
+              form={form}
+              toggleTable={toggleTable}
+              isTableActive={isTableActive}
+              displayTableButton={displayTableButton}
+              toggleWidgets={toggleWidgets}
+              widgets={widgets}
+              isWidgetActive={isWidgetActive}
+              map={map}
+              extent={extent}
+              isDetailsVisible={isDetailsVisible}
+            />
           )}
         </div>
         {isOptionsOpen && isActive && (
-          <OptionsLayer
-            onOpacityChange={onOpacityChange}
-            opacity={opacity}
-          />
+          <OptionsLayer onOpacityChange={onOpacityChange} opacity={opacity} />
         )}
         <LayersTreeItemFilters layer={activeLayer} />
-        {!isMobileSized && isActive && exclusive && (
-          <LayersTreeExclusiveItemsList
-            layer={layer}
-          />
-        )}
+        {!isMobileSized && isActive && exclusive && <LayersTreeExclusiveItemsList layer={layer} />}
         {children}
       </Card>
     );
