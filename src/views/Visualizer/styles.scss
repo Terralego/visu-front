@@ -183,25 +183,16 @@ $detailsWidth: 25.5rem;
     }
 
     &-details {
-      // .mapboxgl-ctrl-top-right,
-      .interactive-map__legends {
-        transform: translate3d(-$detailsWidth, 0, 0);
-      }
-
-      &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
-      &.visualizer--with-table .interactive-map__legends {
+      &.visualizer--with-table .mapboxgl-ctrl-bottom-right {
         transform: translate3d(-$detailsWidth, calc(-1 * var(--table-height, 33vh)), 0);
       }
 
       &.visualizer--with-widgets {
-        // .mapboxgl-ctrl-top-right,
-        .mapboxgl-ctrl-bottom-right,
-        .interactive-map__legends {
+        .mapboxgl-ctrl-bottom-right {
           transform: translate3d(-#{$widgetsWidth + $detailsWidth}, 0, 0);
         }
 
-        &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
-        &.visualizer--with-table .interactive-map__legends {
+        &.visualizer--with-table .mapboxgl-ctrl-bottom-right {
           transform: translate3d(-#{$widgetsWidth + $detailsWidth}, calc(-1 * var(--table-height, 33vh)), 0);
         }
       }
@@ -413,22 +404,18 @@ $detailsWidth: 25.5rem;
       }
       &-details {
         .mapboxgl-ctrl-top-right,
-        .mapboxgl-ctrl-bottom-right,
-        .interactive-map__legends {
+        .mapboxgl-ctrl-bottom-right {
           transform: translate3d(-$detailsWidth, 0, 0);
         }
-        &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
-        &.visualizer--with-table .interactive-map__legends {
+        &.visualizer--with-table .mapboxgl-ctrl-bottom-right {
           transform: translate3d(-$detailsWidth, calc(-1 * var(--table-height, 33vh)), 0);
         }
         &.visualizer--with-widgets {
           .mapboxgl-ctrl-top-right,
-          .mapboxgl-ctrl-bottom-right,
-          .interactive-map__legends {
+          .mapboxgl-ctrl-bottom-right {
             transform: translate3d(-#{$widgetsWidth + $detailsWidth}, 0, 0);
           }
-          &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
-          &.visualizer--with-table .interactive-map__legends {
+          &.visualizer--with-table .mapboxgl-ctrl-bottom-right {
             transform: translate3d(-#{$widgetsWidth + $detailsWidth}, calc(-1 * var(--table-height, 33vh)), 0);
           }
         }
@@ -469,12 +456,10 @@ $detailsWidth: 25.5rem;
       }
       &-details {
         .mapboxgl-ctrl-top-right,
-        .mapboxgl-ctrl-bottom-right,
-        .interactive-map__legends {
+        .mapboxgl-ctrl-bottom-right {
           transform: translate3d(-$detailsWidth, 0, 0);
         }
-        &.visualizer--with-table .mapboxgl-ctrl-bottom-right,
-        &.visualizer--with-table .interactive-map__legends {
+        &.visualizer--with-table .mapboxgl-ctrl-bottom-right {
           transform: translate3d(-$detailsWidth, calc(-1 * var(--table-height, 33vh)), 0);
         }
       }
