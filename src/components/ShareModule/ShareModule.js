@@ -179,7 +179,7 @@ const ShareModule = ({ map, open = false, onClose, layersTreeState }) => {
             backgroundColor: 'rgba(255, 255, 255, 0.8)',
             backdropFilter: 'blur(8px)',
             margin: 1,
-            right: 40,
+            right: 60,
             maxHeight: 'calc(100vh - 16px)',
             height: 'auto',
             borderRadius: 1,

@@ -98,7 +98,7 @@ const Details = ({
           backgroundColor: 'rgba(255, 255, 255, 0.8)',
           backdropFilter: 'blur(8px)',
           margin: 1,
-          right: 40,
+          right: 60,
           height: isTableActive ? 'calc(100vh - var(--table-height) - 16px)' : 'calc(100vh - 16px)',
           overflow: 'hidden',
           borderRadius: 1,
