@@ -47,7 +47,7 @@ export default async function exportPdf(map, orientation, format = 'a4') {
     scale: dpi / 96,
     useCORS: true,
     allowTaint: true,
-    backgroundColor: null,
+    backgroundColor: '#ffffff',
     // Remove control elements except attribution and scale
     ignoreElements: element => {
       const classes = element.className;
