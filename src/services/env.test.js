@@ -7,7 +7,7 @@ it('should fetch env config', async () => {
     DEFAULT_VIEWNAME: 'population',
   };
 
-  window.fetch = jest.fn().mockImplementationOnce(() => Promise.resolve({
+  window.fetch = vi.fn().mockImplementationOnce(() => Promise.resolve({
     json: () => response,
   }));
   const resp = await fetchEnv();

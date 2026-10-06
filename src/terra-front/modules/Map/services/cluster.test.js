@@ -12,9 +12,9 @@ it('should get paint expression', () => {
 
 it('should create cluster layers', () => {
   const map = {
-    addLayer: jest.fn(),
-    addSource: jest.fn(),
-    getMaxZoom: jest.fn(() => 18),
+    addLayer: vi.fn(),
+    addSource: vi.fn(),
+    getMaxZoom: vi.fn(() => 18),
     getZoom: () => 4,
   };
   const layer = {
@@ -125,11 +125,11 @@ it('should not update cluster if zoom is out of range', () => {
   const map = {
     getZoom: () => 4,
     getLayer: () => true,
-    getSource: jest.fn(),
-    getMaxZoom: jest.fn(() => 18),
-    addSource: jest.fn(),
-    addLayer: jest.fn(),
-    querySourceFeatures: jest.fn(),
+    getSource: vi.fn(),
+    getMaxZoom: vi.fn(() => 18),
+    addSource: vi.fn(),
+    addLayer: vi.fn(),
+    querySourceFeatures: vi.fn(),
   };
 
   updateCluster(map, {
@@ -157,9 +157,9 @@ it('should not update cluster if zoom is out of range', () => {
 
 it('should create cluster layers with custom paint', () => {
   const map = {
-    addLayer: jest.fn(),
-    addSource: jest.fn(),
-    getMaxZoom: jest.fn(() => 18),
+    addLayer: vi.fn(),
+    addSource: vi.fn(),
+    getMaxZoom: vi.fn(() => 18),
     getZoom: () => 4,
   };
   const layer = {
@@ -281,15 +281,15 @@ it('should create cluster layers with custom paint', () => {
 
 it('should update cluster first time with single radius', () => {
   const sourceMock = {
-    setData: jest.fn(),
+    setData: vi.fn(),
   };
   const map = {
-    addLayer: jest.fn(),
-    addSource: jest.fn(),
-    getMaxZoom: jest.fn(() => 18),
-    getLayer: jest.fn(() => {}),
-    getSource: jest.fn(() => sourceMock),
-    querySourceFeatures: jest.fn(() => []),
+    addLayer: vi.fn(),
+    addSource: vi.fn(),
+    getMaxZoom: vi.fn(() => 18),
+    getLayer: vi.fn(() => {}),
+    getSource: vi.fn(() => sourceMock),
+    querySourceFeatures: vi.fn(() => []),
     getZoom: () => 4,
   };
   const layer = {
@@ -303,7 +303,7 @@ it('should update cluster first time with single radius', () => {
       colors: ['red', 'blue', 'green', 'yellow', 'purple'],
     },
   };
-  const onClusterUpdate = jest.fn(() => []);
+  const onClusterUpdate = vi.fn(() => []);
 
   updateCluster(map, layer, onClusterUpdate);
 
@@ -336,16 +336,16 @@ it('should update cluster first time with single radius', () => {
 it('should update cluster next time', () => {
   const layerMock = {};
   const sourceMock = {
-    setData: jest.fn(),
+    setData: vi.fn(),
   };
   const map = {
-    addLayer: jest.fn(),
-    addSource: jest.fn(),
-    getMaxZoom: jest.fn(() => 18),
+    addLayer: vi.fn(),
+    addSource: vi.fn(),
+    getMaxZoom: vi.fn(() => 18),
     // Return
-    getLayer: jest.fn(() => layerMock),
-    getSource: jest.fn(() => sourceMock),
-    querySourceFeatures: jest.fn(() => []),
+    getLayer: vi.fn(() => layerMock),
+    getSource: vi.fn(() => sourceMock),
+    querySourceFeatures: vi.fn(() => []),
     getZoom: () => 4,
   };
   const layer = {
@@ -368,20 +368,20 @@ it('should update cluster next time', () => {
 it('should update cluster with many radius', () => {
   const sourcesMock = {};
   const map = {
-    addLayer: jest.fn(),
-    addSource: jest.fn(),
-    getMaxZoom: jest.fn(() => 18),
-    getLayer: jest.fn(() => ({})),
-    getSource: jest.fn(source => {
+    addLayer: vi.fn(),
+    addSource: vi.fn(),
+    getMaxZoom: vi.fn(() => 18),
+    getLayer: vi.fn(() => ({})),
+    getSource: vi.fn(source => {
       if (!sourcesMock[source]) {
         sourcesMock[source] = {
-          setData: jest.fn(),
+          setData: vi.fn(),
         };
         return undefined;
       }
       return sourcesMock[source];
     }),
-    querySourceFeatures: jest.fn(() => []),
+    querySourceFeatures: vi.fn(() => []),
     getZoom: () => 4,
   };
   const layer = {
@@ -401,7 +401,7 @@ it('should update cluster with many radius', () => {
       colors: ['red', 'blue', 'green', 'yellow', 'purple'],
     },
   };
-  const onClusterUpdate = jest.fn(() => []);
+  const onClusterUpdate = vi.fn(() => []);
 
   updateCluster(map, layer, onClusterUpdate);
 
@@ -413,10 +413,10 @@ it('should update cluster with many radius', () => {
 it('should get clustered features', async () => {
   const featuresMock = [{}, {}];
   const sourceMock = {
-    getClusterLeaves: jest.fn((id, i, k, fn) => fn(null, featuresMock)),
+    getClusterLeaves: vi.fn((id, i, k, fn) => fn(null, featuresMock)),
   };
   const map = {
-    getSource: jest.fn(() => sourceMock),
+    getSource: vi.fn(() => sourceMock),
     getZoom: () => 4,
   };
   const features = await getClusteredFeatures(map, {
@@ -460,7 +460,7 @@ it('should dedpuplicate features on update', () => {
     getSource: () => ({
       setData () {},
     }),
-    getMaxZoom: jest.fn(() => 18),
+    getMaxZoom: vi.fn(() => 18),
     querySourceFeatures: () => [1, 2, 1, 3, 1, 5].map(id => ({
       properties: {
         _id: id,
@@ -475,7 +475,7 @@ it('should dedpuplicate features on update', () => {
       radius: 10,
     },
   };
-  const onClusterUpdate = jest.fn(() => []);
+  const onClusterUpdate = vi.fn(() => []);
   updateCluster(map, layer, onClusterUpdate);
 
   expect(onClusterUpdate).toHaveBeenCalledWith({

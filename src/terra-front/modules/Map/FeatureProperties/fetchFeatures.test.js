@@ -7,7 +7,7 @@ it('should fetch features', async done => {
   const fetched = {
     json: () => expected,
   };
-  global.fetch = jest.fn(() => fetched);
+  global.fetch = vi.fn(() => fetched);
 
   const resp = await fetchFeatures('some/url/1');
 
@@ -28,7 +28,7 @@ it('should fail to fetch features', async done => {
     status: 404,
     statusText: 'not found',
   };
-  global.fetch = jest.fn(() => fetched);
+  global.fetch = vi.fn(() => fetched);
 
   try {
     await fetchFeatures('some/url/3');

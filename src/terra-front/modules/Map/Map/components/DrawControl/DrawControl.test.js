@@ -1,26 +1,26 @@
 import MapboxDraw from '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw';
 import { DrawControl } from './DrawControl';
 
-jest.mock('@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw');
+vi.mock('@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw');
 MapboxDraw.modes = {};
 
 MapboxDraw.mockImplementation(() => ({
-  onRemove: jest.fn(),
+  onRemove: vi.fn(),
 }));
 
 describe('Init draw', () => {
   const map = {
-    on: jest.fn(),
+    on: vi.fn(),
   };
-  const onDrawActionable = jest.fn();
-  const onDrawCombine = jest.fn();
-  const onDrawCreate = jest.fn();
-  const onDrawDelete = jest.fn();
-  const onDrawModeChange = jest.fn();
-  const onDrawRender = jest.fn();
-  const onDrawSelectionChange = jest.fn();
-  const onDrawUncombine = jest.fn();
-  const onDrawUpdate = jest.fn();
+  const onDrawActionable = vi.fn();
+  const onDrawCombine = vi.fn();
+  const onDrawCreate = vi.fn();
+  const onDrawDelete = vi.fn();
+  const onDrawModeChange = vi.fn();
+  const onDrawRender = vi.fn();
+  const onDrawSelectionChange = vi.fn();
+  const onDrawUncombine = vi.fn();
+  const onDrawUpdate = vi.fn();
 
   beforeEach(() => {
     map.on.mockClear();
@@ -69,18 +69,18 @@ describe('Init draw', () => {
 
 describe('Remove event listeners', () => {
   const map = {
-    on: jest.fn(),
-    off: jest.fn(),
+    on: vi.fn(),
+    off: vi.fn(),
   };
-  const onDrawActionable = jest.fn();
-  const onDrawCombine = jest.fn();
-  const onDrawCreate = jest.fn();
-  const onDrawDelete = jest.fn();
-  const onDrawModeChange = jest.fn();
-  const onDrawRender = jest.fn();
-  const onDrawSelectionChange = jest.fn();
-  const onDrawUncombine = jest.fn();
-  const onDrawUpdate = jest.fn();
+  const onDrawActionable = vi.fn();
+  const onDrawCombine = vi.fn();
+  const onDrawCreate = vi.fn();
+  const onDrawDelete = vi.fn();
+  const onDrawModeChange = vi.fn();
+  const onDrawRender = vi.fn();
+  const onDrawSelectionChange = vi.fn();
+  const onDrawUncombine = vi.fn();
+  const onDrawUpdate = vi.fn();
 
   beforeEach(() => {
     map.on.mockClear();
@@ -100,7 +100,7 @@ describe('Remove event listeners', () => {
 
   it('Should remove 8 others listeners', () => {
     MapboxDraw.mockImplementation(() => ({
-      onRemove: jest.fn(),
+      onRemove: vi.fn(),
     }));
     const controlInstance = new DrawControl({
       map,

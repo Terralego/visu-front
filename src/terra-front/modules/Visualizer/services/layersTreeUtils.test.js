@@ -16,28 +16,30 @@ import {
 } from './layersTreeUtils';
 import search from './search';
 
-jest.mock('./search', () => ({
+vi.mock('./search', () => ({
   MAX_SIZE: 10000,
-  search: jest.fn(({ index }) => {
-    if (index === 'witherror') {
+  default: {
+    search: vi.fn(({ index }) => {
+      if (index === 'witherror') {
+        return {
+          aggregations: {},
+        };
+      }
       return {
-        aggregations: {},
-      };
-    }
-    return {
-      aggregations: {
-        values: {
-          buckets: [{
-            key: 'foo',
-          }, {
-            key: 'bar',
-          }],
+        aggregations: {
+          values: {
+            buckets: [{
+              key: 'foo',
+            }, {
+              key: 'bar',
+            }],
+          },
+          min: { value: 42 },
+          max: { value: 123 },
         },
-        min: { value: 42 },
-        max: { value: 123 },
-      },
-    };
-  }),
+      };
+    }),
+  },
 }));
 
 const layersTree = [{
@@ -286,14 +288,14 @@ it('should be a cluster', () => {
 
 it('should filter features', () => {
   const map = {
-    getLayer: jest.fn(layerId => (layerId === 'unknownlayer'
+    getLayer: vi.fn(layerId => (layerId === 'unknownlayer'
       ? undefined
       : {
         source: layerId === 'cluster' ? `${layerId}-cluster-source-0` : 'source',
       })),
-    getFilter: jest.fn(() => ['prev', 'filter']),
-    setFilter: jest.fn(),
-    fire: jest.fn(),
+    getFilter: vi.fn(() => ['prev', 'filter']),
+    setFilter: vi.fn(),
+    fire: vi.fn(),
   };
   const layer1 = {
     id: 'foo',
@@ -346,14 +348,14 @@ it('should filter features', () => {
 
 it('should reset filters', () => {
   const map = {
-    getLayer: jest.fn(layerId => (layerId === 'unknownlayer'
+    getLayer: vi.fn(layerId => (layerId === 'unknownlayer'
       ? undefined
       : {
         source: layerId === 'cluster' ? `${layerId}-cluster-source-0` : 'source',
       })),
-    getFilter: jest.fn(() => ['prev', 'filter']),
-    setFilter: jest.fn(),
-    fire: jest.fn(),
+    getFilter: vi.fn(() => ['prev', 'filter']),
+    setFilter: vi.fn(),
+    fire: vi.fn(),
   };
   const layer1 = {
     label: 'foo',

@@ -4,26 +4,28 @@ import MapboxInspect from 'mapbox-gl-inspect';
 import renderInspectPopup from 'mapbox-gl-inspect/lib/renderPopup';
 import { addMapDebug } from './mapDebug';
 
-jest.mock('mapbox-gl', () => {
-  const mockedPopup = { on: jest.fn() };
+vi.mock('mapbox-gl', () => {
+  const mockedPopup = { on: vi.fn() };
 
   return {
-    mockedPopup,
-    Popup: jest.fn(() => mockedPopup),
+    default: {
+      mockedPopup,
+      Popup: vi.fn(() => mockedPopup),
+    },
   };
 });
 
-jest.mock('mapbox-gl-inspect/lib/renderPopup', () => jest.fn());
+vi.mock('mapbox-gl-inspect/lib/renderPopup', () => ({ default: vi.fn() }));
 
-jest.mock('mapbox-gl-inspect', () => {
+vi.mock('mapbox-gl-inspect', () => {
   const mockedControl = {};
-  const mockedMapboxInspector = jest.fn(() => mockedControl);
+  const mockedMapboxInspector = vi.fn(() => mockedControl);
   mockedMapboxInspector.mockedControl = mockedControl;
 
-  return mockedMapboxInspector;
+  return { default: mockedMapboxInspector };
 });
 
-jest.spyOn(global.console, 'log');
+vi.spyOn(global.console, 'log');
 
 beforeEach(() => {
   MapboxInspect.mockClear();
@@ -40,7 +42,7 @@ it('should only return map', () => {
 
 describe('should add a Control', () => ['*', 'console', 'popup'].forEach(localStorageValue =>
   it(`with ${localStorageValue} in localStorage`, () => {
-    const map = { addControl: jest.fn() };
+    const map = { addControl: vi.fn() };
     global.localStorage.mapDebug = localStorageValue;
     addMapDebug(map);
     expect(map.addControl).toHaveBeenCalledWith(MapboxInspect.mockedControl);
@@ -76,7 +78,7 @@ it('should not show a popup (popup show but autodestroy)', () => {
 
   expect(mapBoxGl.mockedPopup.on).toHaveBeenCalled();
   const [[event, callback]] = mapBoxGl.mockedPopup.on.mock.calls;
-  const target = { remove: jest.fn() };
+  const target = { remove: vi.fn() };
   callback({ target });
 
   expect(target.remove).toHaveBeenCalled();
@@ -107,7 +109,7 @@ it('should create a new mapboxInspect', () => {
 
 it('should render the popup', () => {
   const map = { addControl () {} };
-  global.console = { log: jest.fn() };
+  global.console = { log: vi.fn() };
 
   global.localStorage.mapDebug = '*';
   addMapDebug(map);

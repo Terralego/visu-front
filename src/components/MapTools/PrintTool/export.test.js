@@ -3,20 +3,20 @@ import html2canvas from 'html2canvas';
 
 import exportPdf from './export';
 
-jest.mock('jspdf', () => {
+vi.mock('jspdf', () => {
   const instance = {
-    addImage: jest.fn(),
-    save: jest.fn(),
+    addImage: vi.fn(),
+    save: vi.fn(),
   };
-  const jspdfMock = jest.fn(() => instance);
+  const jspdfMock = vi.fn(() => instance);
   jspdfMock.instance = instance;
-  return jspdfMock;
+  return { default: jspdfMock };
 });
-jest.mock('html2canvas', () => {
+vi.mock('html2canvas', () => {
   const canvas = {};
-  const html2canvasMock = jest.fn(() => canvas);
+  const html2canvasMock = vi.fn(() => canvas);
   html2canvasMock.canvas = canvas;
-  return html2canvasMock;
+  return { default: html2canvasMock };
 });
 
 let toLocaleDateString;
@@ -32,7 +32,7 @@ afterEach(() => {
 });
 
 it('should export map as pdf', async () => {
-  window.scrollTo = jest.fn();
+  window.scrollTo = vi.fn();
   const parentElement = {};
   const canvas = {
     style: {
@@ -43,14 +43,14 @@ it('should export map as pdf', async () => {
       appendChild () {},
       removeChild () {},
     },
-    toDataURL: jest.fn(() => 'dataurl'),
+    toDataURL: vi.fn(() => 'dataurl'),
   };
   const listeners = [];
   const map = {
-    getContainer: jest.fn(() => ({
+    getContainer: vi.fn(() => ({
       parentElement,
     })),
-    getCanvas: jest.fn(() => canvas),
+    getCanvas: vi.fn(() => canvas),
     resize () {
       expect(window.devicePixelRatio).toBe(300 / 96);
     },
