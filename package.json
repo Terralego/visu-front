@@ -9,7 +9,6 @@
     "@blueprintjs/datetime": "3.7.2",
     "@blueprintjs/icons": "3.3.0",
     "@blueprintjs/select": "3.10.0",
-    "@blueprintjs/table": "3.7.0",
     "@craco/craco": "^7.1.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
@@ -93,7 +92,6 @@
     "ajv": "^8.17.1",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.1",
-    "cypress": "^4.12.1",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.2",
     "enzyme-to-json": "^3.4.3",
@@ -123,8 +121,6 @@
     "lint": "eslint src",
     "coverage": "npm test -- --coverage",
     "eject": "craco eject",
-    "cypress:open": "cypress open",
-    "cypress:run": "cypress run",
     "postinstall": "node scripts/patch-blueprint.js"
   },
   "eslintConfig": {
@@ -135,9 +131,7 @@
       "src/**/*.js",
       "!src/App.js",
       "!src/config/i18n.js",
-      "!src/**/index.js",
-      "!src/terra-front/**/stories/**/*.js",
-      "!src/terra-front/**/*.stories.js"
+      "!src/**/index.js"
     ],
     "coverageThreshold": {
       "global": {
