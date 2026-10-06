@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import Api from '@terralego/core/modules/Api';
-import elasticsearch from 'elasticsearch';
+import { createEsClient } from '../../../services/elasticsearch';
 
 const useEsClient = () =>
   useMemo(
     () =>
-      new elasticsearch.Client({
+      createEsClient({
         host: Api.host.replace(/api$/, 'elasticsearch'),
       }),
     [],

@@ -1,6 +1,7 @@
-import elasticsearch from 'elasticsearch';
 import bodybuilder from 'bodybuilder';
 import debounce from 'lodash.debounce';
+
+import { msearch as esMsearch } from '../../../../services/elasticsearch';
 
 export const MAX_SIZE = 10000;
 export const SEARCHES_QUEUE = new Set();
@@ -170,7 +171,11 @@ export class Search {
   }
 
   set host (host) {
-    this.client = new elasticsearch.Client({ host });
+    this.esHost = host;
+  }
+
+  get host () {
+    return this.esHost;
   }
 
   /**
@@ -234,7 +239,7 @@ export class Search {
       )
       .reduce((body, [header, query]) => [...body, header, query],
         []);
-    return this.client.msearch({ body: searches });
+    return esMsearch(this.esHost, searches);
   }
 
   /**
@@ -257,7 +262,7 @@ export class Search {
     SEARCHES_QUEUE.clear();
 
     // Perform the request and run all responses through the corresponding resolver
-    const { responses } = await this.client.msearch({ body: batchBody }) || {};
+    const { responses } = await esMsearch(this.esHost, batchBody) || {};
     resolves.forEach((resolve, index) => resolve(responses?.[index]));
   }, 500)
 }

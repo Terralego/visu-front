@@ -1,5 +1,5 @@
 import Api from '@terralego/core/modules/Api';
-import elasticsearch from 'elasticsearch';
+import { createEsClient as createClient } from '../../../services/elasticsearch';
 
 export const getEsIndexFromBlocks = blocks => {
   if (!blocks || !Array.isArray(blocks)) return null;
@@ -19,7 +19,7 @@ export const hideSplashScreen = () => {
 };
 
 export const createEsClient = () =>
-  new elasticsearch.Client({
+  createClient({
     host: Api.host.replace(/api$/, 'elasticsearch'),
   });
 
