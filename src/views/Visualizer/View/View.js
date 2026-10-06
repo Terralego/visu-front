@@ -559,7 +559,7 @@ export class Visualizer extends React.Component {
 
     const featureGeometry = feature?.geometry || null;
     const fetchProperties = {
-      ...(interaction?.fetchProperties || {}),
+      ...interaction?.fetchProperties,
       properties: featureData,
     };
 

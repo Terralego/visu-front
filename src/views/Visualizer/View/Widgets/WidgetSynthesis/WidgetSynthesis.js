@@ -226,12 +226,10 @@ export class WidgetSynthesis extends React.Component {
       }
     });
 
-    const properties = {
-      ...Object.keys(filters).reduce((all, key) => ({
+    const properties = Object.keys(filters).reduce((all, key) => ({
         ...all,
         ...getSearchParamFromProperty(filters, form, key),
-      }), {}),
-    };
+      }), {});
 
     this.setState({ values: {} });
     const data = await searchService.search({

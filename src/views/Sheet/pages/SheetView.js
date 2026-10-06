@@ -289,11 +289,11 @@ const SheetView = () => {
   const filteredBlocks = useMemo(() => {
     if (!hideEmptyFields) return enrichedBlocks;
 
-    const alwaysVisibleTypes = ['MAP', 'PANORAMAX', 'RADAR_PLOT', 'BAR_PLOT', 'DISTRIB_PLOT', 'BOOLEANS', 'TEXT'];
+    const alwaysVisibleTypes = new Set(['MAP', 'PANORAMAX', 'RADAR_PLOT', 'BAR_PLOT', 'DISTRIB_PLOT', 'BOOLEANS', 'TEXT']);
 
     return enrichedBlocks
       .map(block => {
-        if (alwaysVisibleTypes.includes(block.type)) return block;
+        if (alwaysVisibleTypes.has(block.type)) return block;
 
         if (block.type === 'FIELDS_TABLE') {
           if (!block.tableData || block.tableData.length === 0) return null;

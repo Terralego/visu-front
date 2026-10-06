@@ -360,11 +360,11 @@ const SheetCompare = () => {
   const getFilteredBlocks = sheet => {
     if (!hideEmptyFields) return sheet.blocks;
 
-    const alwaysVisibleTypes = ['MAP', 'PANORAMAX', 'RADAR_PLOT', 'BAR_PLOT', 'DISTRIB_PLOT', 'BOOLEANS', 'TEXT'];
+    const alwaysVisibleTypes = new Set(['MAP', 'PANORAMAX', 'RADAR_PLOT', 'BAR_PLOT', 'DISTRIB_PLOT', 'BOOLEANS', 'TEXT']);
 
     return sheet.blocks.filter(block => !block.is_tab)
       .map(block => {
-        if (alwaysVisibleTypes.includes(block.type)) return block;
+        if (alwaysVisibleTypes.has(block.type)) return block;
         if (block.type === 'FIELDS_TABLE') return null;
         if (!block.fields) return block;
 
