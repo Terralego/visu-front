@@ -163,6 +163,35 @@ it('should init layers state', () => {
   expect(layersTreeState).toEqual(initialLayersTreeState);
 });
 
+it('should keep the default states when url layers match nothing in the tree', () => {
+  const layersTreeState = initLayersStateAction(layersTree, { layers: ['nope1', 'nope2'] });
+
+  expect(layersTreeState).toEqual(initialLayersTreeState);
+});
+
+it('should let matching url layers override the default states', () => {
+  const layersTreeState = initLayersStateAction(layersTree, { layers: ['layer2.2'] });
+
+  expect(layersTreeState.get(layersTree[1].layers[1]).active).toBe(true);
+  expect(layersTreeState.get(layersTree[0]).active).toBe(false);
+});
+
+it('should not mutate the layers tree config', () => {
+  const tree = [{
+    label: 'a',
+    initialState: { active: true, opacity: 0.3 },
+    layers: ['layerA'],
+  }, {
+    label: 'b',
+    layers: ['layerB'],
+  }];
+  const before = JSON.stringify(tree);
+
+  initLayersStateAction(tree, { layers: ['layerB'] });
+
+  expect(JSON.stringify(tree)).toBe(before);
+});
+
 
 it('should set layer state', () => {
   const newLayersTreeState = setLayerStateAction(
