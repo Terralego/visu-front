@@ -92,7 +92,7 @@ export class MultiSelect extends React.Component {
   handleChange = item => {
     const { value, onChange } = this.props;
     const newValue = value.includes(item.value)
-      ? [...value.filter(val => val !== item.value)]
+      ? value.filter(val => val !== item.value)
       : [...value, item.value];
     onChange(newValue);
   };

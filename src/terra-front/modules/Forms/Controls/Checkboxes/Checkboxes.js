@@ -34,7 +34,7 @@ export class Checkboxes extends React.Component {
     const { value, onChange } = this.props;
 
     const newValue = value.includes(toggledValue)
-      ? [...value.filter(val => val !== toggledValue)]
+      ? value.filter(val => val !== toggledValue)
       : [...value, toggledValue];
 
     if (newValue.length === 0) { // Case where we have selected nothing

@@ -344,12 +344,12 @@ export class PrintTool extends React.Component {
     const { map } = this.props;
     const container = map.getContainer().parentElement;
     const isPortrait = orientation === ORIENTATION_PORTRAIT;
-    const forDeletion = [
+    const forDeletion = new Set([
       PRINT_CLASS_PREFIX,
       `${PRINT_CLASS_PREFIX}--${ORIENTATION_PORTRAIT}`,
       `${PRINT_CLASS_PREFIX}--${ORIENTATION_LANDSCAPE}`,
-    ];
-    const oldClasses = container.className.split(' ').filter(item => !forDeletion.includes(item));
+    ]);
+    const oldClasses = container.className.split(' ').filter(item => !forDeletion.has(item));
     container.className = classnames(
       ...oldClasses,
       isOpen && PRINT_CLASS_PREFIX,

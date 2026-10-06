@@ -43,7 +43,11 @@
     "jsx-a11y/prefer-tag-over-role": "warn",
     "jsx-a11y/no-autofocus": "warn",
     "jsx-a11y/aria-role": "warn",
-    "jsx-a11y/control-has-associated-label": "warn"
+    "jsx-a11y/control-has-associated-label": "warn",
+    "import/no-unassigned-import": "off",
+    "import/no-named-as-default": "off",
+    "import/no-named-as-default-member": "off",
+    "eslint/no-underscore-dangle": "off"
   },
   "overrides": [
     {

@@ -94,11 +94,9 @@ export class LayersTreeItem extends React.Component {
     const { activeLayer: layer, widgets: prevWidgets = [], setLayerState } = this.props;
     const contains = this.isWidgetActive(widget);
     const { hasWidgetActive } = this.state;
-    const widgets = [
-      ...(contains
+    const widgets = (contains
         ? prevWidgets.filter(w => w !== widget)
-        : [...prevWidgets, widget]),
-    ];
+        : [...prevWidgets, widget]);
 
     this.setState({ hasWidgetActive: !hasWidgetActive });
 

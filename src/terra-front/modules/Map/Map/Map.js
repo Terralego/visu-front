@@ -251,12 +251,12 @@ export class MapComponent extends React.Component {
 
     sources.forEach(({ id, ...sourceAttrs }) => map.addSource(id, sourceAttrs));
 
-    const labelLayerTypes = ['fill', 'circle', 'line'];
+    const labelLayerTypes = new Set(['fill', 'circle', 'line']);
 
     layers.forEach(layer => {
       if (layer.type === 'piechart') return createCustomMarker('piechart', layer, map);
       if (layer.cluster) return this.createClusterLayer(layer);
-      if (layer.advanced_style?.show_value_on_map?.type === 'fixed' && labelLayerTypes.includes(layer.type)) {
+      if (layer.advanced_style?.show_value_on_map?.type === 'fixed' && labelLayerTypes.has(layer.type)) {
         return this.createLabelLayer(layer);
       }
       return map.addLayer(layer);
