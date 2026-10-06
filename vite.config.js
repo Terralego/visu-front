@@ -139,6 +139,7 @@ export default defineConfig(({ mode }) => {
       include: ['src/**/*.test.js'],
       coverage: {
         provider: 'v8',
+        reporter: ['text-summary', 'lcov', 'clover'],
         include: ['src/**/*.js'],
         exclude: ['src/App.js', 'src/config/i18n.js', 'src/**/index.js'],
       },
