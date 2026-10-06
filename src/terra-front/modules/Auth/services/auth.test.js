@@ -9,14 +9,15 @@ export const MOCKED_TOKEN = `xxx.${b64u(JSON.stringify({ ...MOCKED_PAYLOAD }))}.
 export const IMPERISHABLE_TOKEN = `imp.${b64u(JSON.stringify({ ...MOCKED_PAYLOAD, exp: 99999999999 }))}.xxx`;
 export const EXPIRED_TOKEN = `exp.${b64u(JSON.stringify({ ...MOCKED_PAYLOAD, exp: 0 }))}.xxx`;
 
+const apiListeners = vi.hoisted(() => ({ failure: null }));
+
 vi.mock('../../Api', async () => {
   const { default: b64uM } = await import('base64url');
 
   const api = {
     EVENT_FAILURE: 'failure',
     on: vi.fn((event, fn) => {
-      fn({ status: 401 });
-      fn({ status: 200 });
+      apiListeners.failure = fn;
     }),
     request: vi.fn((endpoint, { body: { token } }) => {
       if (endpoint === 'auth/obtain-token/') {
@@ -42,17 +43,32 @@ vi.mock('../../Api', async () => {
   return { default: api, EVENT_FAILURE: api.EVENT_FAILURE, POST: 'POST' };
 });
 
-it('should add a listener to Api', () => {
-  expect(Api.on).toHaveBeenCalled();
+beforeEach(() => {
+  global.localStorage.clear();
 });
 
-it('should not refresh token', async done => {
+it('should clear the token when the api rejects it as unauthorized', () => {
+  global.localStorage.setItem('tf:auth:token', IMPERISHABLE_TOKEN);
+
+  apiListeners.failure({ status: 401 });
+
+  expect(getToken()).toBeFalsy();
+});
+
+it('should keep the token on other api failures', () => {
+  global.localStorage.setItem('tf:auth:token', IMPERISHABLE_TOKEN);
+
+  apiListeners.failure({ status: 500 });
+
+  expect(getToken()).toBe(IMPERISHABLE_TOKEN);
+});
+
+it('should not refresh token', async () => {
   const token = await refreshToken();
   expect(token).toBe(null);
-  done();
 });
 
-it('should request a token', async done => {
+it('should request a token', async () => {
   const token = await obtainToken('foo@bar', 'bar');
   expect(Api.request).toHaveBeenCalledWith('auth/obtain-token/', {
     method: 'POST',
@@ -60,10 +76,9 @@ it('should request a token', async done => {
   });
   expect(token).toBe('newToken');
   expect(global.localStorage.getItem('tf:auth:token')).toBe('newToken');
-  done();
 });
 
-it('should refresh token', async done => {
+it('should refresh token', async () => {
   global.localStorage.setItem('tf:auth:token', IMPERISHABLE_TOKEN);
 
   const token = await refreshToken();
@@ -72,22 +87,18 @@ it('should refresh token', async done => {
     body: { token: IMPERISHABLE_TOKEN },
   });
   expect(token).toBe('refreshedToken');
-  global.localStorage.clear();
-  done();
 });
 
 it('should get token', () => {
   global.localStorage.setItem('tf:auth:token', IMPERISHABLE_TOKEN);
   const token = getToken();
   expect(token).toBe(IMPERISHABLE_TOKEN);
-  global.localStorage.clear();
 });
 
 it('should invalidate token', () => {
   global.localStorage.setItem('tf:auth:token', IMPERISHABLE_TOKEN);
   clearToken();
   expect(getToken()).toBeFalsy();
-  global.localStorage.clear();
 });
 
 it('should parse token', () => {
@@ -109,10 +120,8 @@ it('should create a token', () => {
   });
 });
 
-it('should delete invalid token on refresh', async done => {
+it('should delete invalid token on refresh', async () => {
   global.localStorage.setItem('tf:auth:token', 'invalid');
   await refreshToken();
   expect(getToken()).not.toBeDefined();
-  global.localStorage.clear();
-  done();
 });

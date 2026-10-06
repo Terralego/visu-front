@@ -176,6 +176,15 @@ it('should let matching url layers override the default states', () => {
   expect(layersTreeState.get(layersTree[0]).active).toBe(false);
 });
 
+it('should not mutate the previous states when a table is activated', () => {
+  const previous = initLayersStateAction(layersTree);
+  const snapshot = JSON.stringify(Array.from(previous.values()));
+
+  setLayerStateAction(layersTree[0], { table: true }, previous);
+
+  expect(JSON.stringify(Array.from(previous.values()))).toBe(snapshot);
+});
+
 it('should not mutate the layers tree config', () => {
   const tree = [{
     label: 'a',

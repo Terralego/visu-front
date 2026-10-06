@@ -1,134 +1,123 @@
-/* eslint-disable no-console */
 import mapBoxGl from 'mapbox-gl';
 import MapboxInspect from 'mapbox-gl-inspect';
 import renderInspectPopup from 'mapbox-gl-inspect/lib/renderPopup';
+
 import { addMapDebug } from './mapDebug';
 
-vi.mock('mapbox-gl', () => {
-  const mockedPopup = { on: vi.fn() };
+const mocks = vi.hoisted(() => ({
+  popup: { on: vi.fn() },
+  control: {},
+}));
 
-  return {
-    default: {
-      mockedPopup,
-      Popup: vi.fn(() => mockedPopup),
-    },
-  };
-});
+function popupStub () {
+  return mocks.popup;
+}
+
+function inspectStub () {
+  return mocks.control;
+}
+
+vi.mock('mapbox-gl', () => ({ default: { Popup: vi.fn(popupStub) } }));
+
+vi.mock('mapbox-gl-inspect', () => ({ default: vi.fn(inspectStub) }));
 
 vi.mock('mapbox-gl-inspect/lib/renderPopup', () => ({ default: vi.fn() }));
 
-vi.mock('mapbox-gl-inspect', () => {
-  const mockedControl = {};
-  const mockedMapboxInspector = vi.fn(() => mockedControl);
-  mockedMapboxInspector.mockedControl = mockedControl;
+const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
-  return { default: mockedMapboxInspector };
-});
+const mapStub = () => ({ addControl: vi.fn() });
 
-vi.spyOn(global.console, 'log');
+const debugMode = mode => global.localStorage.setItem('mapDebug', mode);
+
+const inspectOptions = () => MapboxInspect.mock.calls[0][0];
 
 beforeEach(() => {
-  MapboxInspect.mockClear();
-  mapBoxGl.mockedPopup.on.mockClear();
-  mapBoxGl.Popup.mockClear();
-  renderInspectPopup.mockClear();
-  console.log.mockClear();
+  global.localStorage.clear();
+  vi.clearAllMocks();
 });
 
-it('should only return map', () => {
-  const map = {};
+it('should leave the map untouched when debug is off', () => {
+  const map = mapStub();
+
   expect(addMapDebug(map)).toBe(map);
+  expect(map.addControl).not.toHaveBeenCalled();
+  expect(mapBoxGl.Popup).not.toHaveBeenCalled();
 });
 
-describe('should add a Control', () => ['*', 'console', 'popup'].forEach(localStorageValue =>
-  it(`with ${localStorageValue} in localStorage`, () => {
-    const map = { addControl: vi.fn() };
-    global.localStorage.mapDebug = localStorageValue;
+describe.each(['*', 'console', 'popup'])('with mapDebug=%s', mode => {
+  it('should add the inspect control to the map', () => {
+    const map = mapStub();
+    debugMode(mode);
+
     addMapDebug(map);
-    expect(map.addControl).toHaveBeenCalledWith(MapboxInspect.mockedControl);
-  })));
 
-it('should create a Popup', () => {
-  const map = { addControl () {} };
-  addMapDebug(map);
-
-  expect(mapBoxGl.Popup).toHaveBeenCalledWith({
-    closeButton: false,
-    closeOnClick: false,
+    expect(map.addControl).toHaveBeenCalledWith(mocks.control);
   });
 });
 
-it('should show a popup', () => {
-  const map = { addControl () {} };
+it('should give the inspect control a non-interactive popup', () => {
+  debugMode('*');
 
-  global.localStorage.mapDebug = '*';
-  addMapDebug(map);
-  expect(mapBoxGl.mockedPopup.on).not.toHaveBeenCalled();
+  addMapDebug(mapStub());
 
-  global.localStorage.mapDebug = 'popup';
-  addMapDebug(map);
-  expect(mapBoxGl.mockedPopup.on).not.toHaveBeenCalled();
+  expect(mapBoxGl.Popup).toHaveBeenCalledWith({ closeButton: false, closeOnClick: false });
+  expect(inspectOptions().popup).toBe(mocks.popup);
 });
 
-it('should not show a popup (popup show but autodestroy)', () => {
-  const map = { addControl () {} };
+describe.each(['*', 'popup'])('with mapDebug=%s', mode => {
+  it('should keep the popup visible', () => {
+    debugMode(mode);
 
-  global.localStorage.mapDebug = 'console';
-  addMapDebug(map);
+    addMapDebug(mapStub());
 
-  expect(mapBoxGl.mockedPopup.on).toHaveBeenCalled();
-  const [[event, callback]] = mapBoxGl.mockedPopup.on.mock.calls;
+    expect(mocks.popup.on).not.toHaveBeenCalled();
+  });
+});
+
+it('should destroy the popup on open when only logging to the console', () => {
+  debugMode('console');
+
+  addMapDebug(mapStub());
+
+  const [event, onOpen] = mocks.popup.on.mock.calls[0];
   const target = { remove: vi.fn() };
-  callback({ target });
+  onOpen({ target });
 
-  expect(target.remove).toHaveBeenCalled();
   expect(event).toBe('open');
+  expect(target.remove).toHaveBeenCalled();
 });
 
+it('should disable every inspect interaction', () => {
+  debugMode('*');
 
-it('should create a new mapboxInspect', () => {
-  const map = { addControl () {} };
+  addMapDebug(mapStub());
 
-  global.localStorage.mapDebug = '*';
-  addMapDebug(map);
-
-  expect(MapboxInspect).toHaveBeenCalled();
-  const [[{
-    popup, showMapPopup, showMapPopupOnHover, showInspectButton,
-    showInspectMap, showInspectMapPopupOnHover,
-  }]] = MapboxInspect.mock.calls;
-
-  expect(popup).toBe(mapBoxGl.mockedPopup);
-  expect(showMapPopup).toBe(true);
-  expect(showMapPopupOnHover).toBe(false);
-  expect(showInspectButton).toBe(false);
-  expect(showInspectMap).toBe(false);
-  expect(showInspectMapPopupOnHover).toBe(false);
+  expect(inspectOptions()).toMatchObject({
+    showMapPopup: true,
+    showMapPopupOnHover: false,
+    showInspectButton: false,
+    showInspectMap: false,
+    showInspectMapPopupOnHover: false,
+  });
 });
 
-
-it('should render the popup', () => {
-  const map = { addControl () {} };
-  global.console = { log: vi.fn() };
-
-  global.localStorage.mapDebug = '*';
-  addMapDebug(map);
-  const [[{ renderPopup }]] = MapboxInspect.mock.calls;
+it('should log the features and delegate the rendering when console debug is on', () => {
+  debugMode('*');
+  addMapDebug(mapStub());
   const features = [];
 
-  renderPopup(features);
+  inspectOptions().renderPopup(features);
+
+  expect(logSpy).toHaveBeenCalledWith(features);
   expect(renderInspectPopup).toHaveBeenCalledWith(features);
-  expect(console.log).toHaveBeenCalledWith(features);
 });
 
-it('should render the popup with no console', () => {
-  const map = { addControl () {} };
+it('should not log the features when only showing the popup', () => {
+  debugMode('popup');
+  addMapDebug(mapStub());
 
-  global.localStorage.mapDebug = 'popup';
-  addMapDebug(map);
-  const [[{ renderPopup }]] = MapboxInspect.mock.calls;
-  const features = [];
+  inspectOptions().renderPopup([]);
 
-  renderPopup(features);
-  expect(console.log).not.toHaveBeenCalled();
+  expect(logSpy).not.toHaveBeenCalled();
+  expect(renderInspectPopup).toHaveBeenCalled();
 });
