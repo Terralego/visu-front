@@ -100,9 +100,9 @@ export const setLayerStateAction = (layer, layerState, prevLayersTreeState, rese
   const newLayerState = { ...layerState };
 
   if (newLayerState.table) {
-    // Easiest to to read as transform Map in Array and run a .map() on it
-    // eslint-disable-next-line no-param-reassign
-    newLayersTreeState.forEach(layState => { layState.table = false; });
+    Array.from(newLayersTreeState).forEach(([node, layState]) => {
+      newLayersTreeState.set(node, { ...layState, table: false });
+    });
   }
   newLayersTreeState.set(layer, {
     ...reset ? {} : prevLayerState,

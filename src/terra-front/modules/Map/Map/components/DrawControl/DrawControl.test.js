@@ -4,9 +4,11 @@ import { DrawControl } from './DrawControl';
 vi.mock('@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw');
 MapboxDraw.modes = {};
 
-MapboxDraw.mockImplementation(() => ({
-  onRemove: vi.fn(),
-}));
+function MapboxDrawStub () {
+  return { onRemove: vi.fn() };
+}
+
+MapboxDraw.mockImplementation(MapboxDrawStub);
 
 describe('Init draw', () => {
   const map = {
@@ -27,8 +29,7 @@ describe('Init draw', () => {
   });
 
   it('should init with all actions', () => {
-    // eslint-disable-next-line no-unused-vars
-    const controlInstance = new DrawControl({
+    const control = new DrawControl({
       map,
       onDrawActionable,
       onDrawCombine,
@@ -43,6 +44,7 @@ describe('Init draw', () => {
     });
 
 
+    expect(control.onRemove).toEqual(expect.any(Function));
     expect(MapboxDraw).toHaveBeenCalledWith({ modes: { foo: 'bar' } });
     expect(map.on).toHaveBeenCalledWith('draw.actionable', onDrawActionable);
     expect(map.on).toHaveBeenCalledWith('draw.combine', onDrawCombine);
@@ -56,12 +58,12 @@ describe('Init draw', () => {
   });
 
   it('should init with only `draw.create` action', () => {
-    // eslint-disable-next-line no-unused-vars
-    const controlInstance = new DrawControl({
+    const control = new DrawControl({
       map,
       onDrawCreate,
     });
 
+    expect(control.onRemove).toEqual(expect.any(Function));
     expect(map.on).toHaveBeenCalledTimes(1);
     expect(map.on).toHaveBeenCalledWith('draw.create', onDrawCreate);
   });
@@ -87,7 +89,7 @@ describe('Remove event listeners', () => {
     map.off.mockClear();
   });
 
-  it('Should remove one listener', () => {
+  it('should remove the only registered listener', () => {
     const controlInstance = new DrawControl({
       map,
       onDrawCreate,
@@ -98,10 +100,7 @@ describe('Remove event listeners', () => {
     expect(map.off).toHaveBeenCalledWith('draw.create', onDrawCreate);
   });
 
-  it('Should remove 8 others listeners', () => {
-    MapboxDraw.mockImplementation(() => ({
-      onRemove: vi.fn(),
-    }));
+  it('should remove every registered listener', () => {
     const controlInstance = new DrawControl({
       map,
       onDrawActionable,

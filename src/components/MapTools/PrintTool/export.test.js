@@ -7,11 +7,16 @@ vi.mock('jspdf', () => {
   const instance = {
     addImage: vi.fn(),
     save: vi.fn(),
+    internal: { pageSize: { getWidth: () => 210, getHeight: () => 297 } },
   };
-  const jspdfMock = vi.fn(() => instance);
+  function JsPdfStub () {
+    return instance;
+  }
+  const jspdfMock = vi.fn(JsPdfStub);
   jspdfMock.instance = instance;
   return { default: jspdfMock };
 });
+
 vi.mock('html2canvas', () => {
   const canvas = {};
   const html2canvasMock = vi.fn(() => canvas);
@@ -19,71 +24,86 @@ vi.mock('html2canvas', () => {
   return { default: html2canvasMock };
 });
 
-let toLocaleDateString;
-beforeEach(() => {
-  // eslint-disable-next-line prefer-destructuring
-  toLocaleDateString = Date.prototype.toLocaleDateString;
-  // eslint-disable-next-line no-extend-native
-  Date.prototype.toLocaleDateString = () => 'mocked date';
-});
-afterEach(() => {
-  // eslint-disable-next-line no-extend-native
-  Date.prototype.toLocaleDateString = toLocaleDateString;
-});
+const printContainer = { classList: { contains: () => true }, parentElement: null };
 
-it('should export map as pdf', async () => {
-  window.scrollTo = vi.fn();
-  const parentElement = {};
-  const canvas = {
-    style: {
-      width: `${(210 * 96) / 25.4}px`,
-      height: `${(297 * 96) / 25.4}px`,
-    },
-    parentNode: {
-      appendChild () {},
-      removeChild () {},
-    },
-    toDataURL: vi.fn(() => 'dataurl'),
-  };
+const mapStub = () => {
+  const canvas = { style: {}, parentNode: { appendChild () {}, removeChild () {} }, toDataURL: () => 'dataurl' };
   const listeners = [];
-  const map = {
-    getContainer: vi.fn(() => ({
-      parentElement,
-    })),
+  return {
+    listeners,
+    getContainer: vi.fn(() => ({ parentElement: printContainer })),
     getCanvas: vi.fn(() => canvas),
-    resize () {
-      expect(window.devicePixelRatio).toBe(300 / 96);
-    },
-    once: (e, listener) => listeners.push(listener),
+    resize: vi.fn(),
+    once: (event, listener) => listeners.push(listener),
+  };
+};
+
+const runExport = async (map, orientation = 'portrait') => {
+  const pending = exportPdf(map, orientation);
+  map.listeners[0]();
+  await pending;
+};
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  window.scrollTo = vi.fn();
+  vi.spyOn(Date.prototype, 'toLocaleDateString').mockReturnValue('mocked date');
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+it('should render the print container at the requested format', async () => {
+  const map = mapStub();
+
+  await runExport(map, 'landscape');
+
+  expect(jspdf).toHaveBeenCalledWith({ format: 'a4', orientation: 'landscape', units: 'mm' });
+  expect(html2canvas).toHaveBeenCalledWith(printContainer, expect.objectContaining({
+    ignoreElements: expect.any(Function),
+  }));
+  expect(jspdf.instance.addImage).toHaveBeenCalledWith(html2canvas.canvas, 'PNG', 0, 0, 210, 297);
+});
+
+it('should name the file after the current date', async () => {
+  await runExport(mapStub());
+
+  expect(jspdf.instance.save).toHaveBeenCalledWith('export (mocked date).pdf');
+});
+
+it('should restore the device pixel ratio once done', async () => {
+  const before = window.devicePixelRatio;
+
+  await runExport(mapStub());
+
+  expect(window.devicePixelRatio).toBe(before);
+});
+
+describe('the captured elements', () => {
+  const ignoreElements = async () => {
+    await runExport(mapStub());
+    return html2canvas.mock.calls[0][1].ignoreElements;
   };
 
-  const orientation = 'portrait';
+  it('should keep the attribution and the scale', async () => {
+    const ignore = await ignoreElements();
 
-  exportPdf(map, orientation);
-
-  expect(map.getContainer).toHaveBeenCalled();
-  expect(map.getCanvas).toHaveBeenCalled();
-  expect(window.scrollTo).toHaveBeenCalled();
-  expect(jspdf).toHaveBeenCalledWith({
-    format: 'a4',
-    orientation: 'portrait',
-    units: 'mm',
+    expect(ignore({ className: 'mapboxgl-ctrl-attrib' })).toBe(false);
+    expect(ignore({ className: 'mapboxgl-ctrl-scale' })).toBe(false);
   });
 
-  await listeners[0]();
-  await true;
-  await true;
-  await true;
+  it('should drop the control groups and the print button', async () => {
+    const ignore = await ignoreElements();
 
-  expect(html2canvas).toHaveBeenCalledWith(parentElement, {
-    ignoreElements: expect.any(Function),
+    expect(ignore({ className: 'mapboxgl-ctrl-group' })).toBe(true);
+    expect(ignore({ className: 'mapboxgl-ctrl-print' })).toBe(true);
   });
 
-  const { ignoreElements } = html2canvas.mock.calls[0][1];
-  expect(ignoreElements({ className: 'mapboxgl-control-container-top' })).toBe(true);
-  expect(ignoreElements({ className: 'foo' })).toBe(false);
+  it('should keep elements without a string class name', async () => {
+    const ignore = await ignoreElements();
 
-  expect(jspdf.instance.addImage).toHaveBeenCalledWith(html2canvas.canvas, 'PNG', 0, 0, 210, 297);
-  expect(jspdf.instance.save).toHaveBeenCalledWith('export (mocked date).pdf');
-  expect(window.devicePixelRatio).toBe(1);
+    expect(ignore({ className: undefined })).toBe(false);
+    expect(ignore({ className: 'anything-else' })).toBe(false);
+  });
 });

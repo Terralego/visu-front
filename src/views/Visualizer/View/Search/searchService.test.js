@@ -1,5 +1,19 @@
 import Api from '@terralego/core/modules/Api';
+import elasticsearch from '@terralego/core/modules/Visualizer/services/search';
+
 import searchInMap, { fetchNominatim } from './searchService';
+
+vi.mock('@terralego/core/modules/Visualizer/services/search', () => ({
+  default: { msearch: vi.fn() },
+}));
+
+const esHit = {
+  _id: 'feature-1',
+  _source: {
+    mainfield: 'Paris',
+    geom: { type: 'Point', coordinates: [2.35, 48.85] },
+  },
+};
 
 global.fetch = vi.fn(() => Promise.resolve({
   json: () =>
@@ -15,11 +29,11 @@ global.fetch = vi.fn(() => Promise.resolve({
 
 beforeEach(() => {
   fetch.mockClear();
-  Api.request = vi.fn(() =>
-    Promise.resolve({
-      count: 1,
-      results: [{ identifier: 1, properties: { mainfield: 'Paris' } }],
-    }));
+  Api.request = vi.fn(() => Promise.resolve({ count: 0, results: [] }));
+  elasticsearch.msearch.mockReset();
+  elasticsearch.msearch.mockResolvedValue({
+    responses: [{ hits: { total: { value: 1 }, hits: [esHit] } }],
+  });
 });
 
 describe('fetchNominatim', () => {
@@ -128,15 +142,29 @@ describe('searchInMap', () => {
           {
             mainfield: 'Paris',
             label: 'Paris',
-            id: 1,
-            _feature_id: 1,
+            id: 'feature-1',
+            _feature_id: 'feature-1',
             matchedField: undefined,
             matchedValue: undefined,
-            source: 'layer-slug',
+            geom: esHit._source.geom,
+            bounds: undefined,
+            center: [2.35, 48.85],
+            source: undefined,
             layers: ['layer1', 'layer2'],
           },
         ],
       },
+    ]);
+  });
+
+  it('should report an error group when the search fails', async () => {
+    elasticsearch.msearch.mockRejectedValue(new Error('elasticsearch is down'));
+    const searchFunction = searchInMap({
+      searchProvider, layers, language: 'en', translate: () => 'text',
+    });
+
+    expect(await searchFunction('fake query')).toEqual([
+      { group: 'label', total: 0, results: [], error: true },
     ]);
   });
 
