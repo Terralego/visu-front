@@ -35,7 +35,6 @@
     "color2k": "^1.2.2",
     "debounce": "^1.2.0",
     "deep-object-diff": "^1.1.0",
-    "elasticsearch": "^15.4.1",
     "eslint": "^8.57.0",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
