@@ -33,11 +33,6 @@
     "debounce": "^1.2.0",
     "debug": "^4",
     "deep-object-diff": "^1.1.0",
-    "eslint": "^8.57.0",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-jsx-a11y": "^6.10.2",
-    "eslint-plugin-react": "^7.37.5",
-    "eslint-plugin-react-hooks": "^5.2.0",
     "file-saver": "^2.0.2",
     "final-form": "^4.18.7",
     "html-to-react": "~1.4.8",
@@ -81,15 +76,12 @@
     "xlsx": "^0.14.5"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.28.0",
     "@babel/preset-react": "^7.27.1",
     "@testing-library/react": "^11.2.3",
     "@vitejs/plugin-react": "^5.2.0",
     "@vitest/coverage-v8": "^5.0.3",
-    "eslint-config-airbnb": "^19.0.4",
-    "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-import-resolver-alias": "^1.1.2",
     "jsdom": "^29.1.1",
+    "oxlint": "^1.87.0",
     "vite": "^7.3.6",
     "vitest": "^5.0.3"
   },
@@ -103,8 +95,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "coverage": "vitest run --coverage",
-    "lint": "eslint src",
-    "postinstall": "node scripts/patch-blueprint.js"
+    "lint": "oxlint",
+    "postinstall": "node scripts/patch-blueprint.js",
+    "lint:fix": "oxlint --fix"
   },
   "browserslist": [
     ">0.2%",

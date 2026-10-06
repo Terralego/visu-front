@@ -83,6 +83,7 @@ const LayersTreeVariableItem = ({ group, layers, activeLayer }) => {
                 {error && <Callout intent="danger">{error}</Callout>}
                 {variables.map(variable => (
                   <Select
+                    key={variable.id}
                     fullWidth
                     value={selectedVariables[variable.id]}
                     onChange={value => handleChange(variable.id, value)}
