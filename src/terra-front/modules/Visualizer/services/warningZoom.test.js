@@ -1,6 +1,6 @@
 import { processWarningAccordingToZoom } from './warningZoom';
 
-const getStyle = jest.fn(() => ({
+const getStyle = vi.fn(() => ({
   layers: [{
     id: 'foo',
     source: 'foo',
@@ -14,9 +14,9 @@ const getStyle = jest.fn(() => ({
 }));
 it('should display warning according to current zoom', () => {
   const map = {
-    getZoom: jest.fn(() => 7),
-    getSource: jest.fn(() => ({ minzoom: 14, maxzoom: 22 })),
-    getLayer: jest.fn(id => ({
+    getZoom: vi.fn(() => 7),
+    getSource: vi.fn(() => ({ minzoom: 14, maxzoom: 22 })),
+    getLayer: vi.fn(id => ({
       id,
       minzoom: 14,
       maxzoom: 24,
@@ -32,9 +32,9 @@ it('should display warning according to current zoom', () => {
 
 it('should not display warning according to current zoom', () => {
   const map = {
-    getZoom: jest.fn(() => 17),
-    getSource: jest.fn(() => ({ minzoom: 14, maxzoom: 22 })),
-    getLayer: jest.fn(id => ({
+    getZoom: vi.fn(() => 17),
+    getSource: vi.fn(() => ({ minzoom: 14, maxzoom: 22 })),
+    getLayer: vi.fn(id => ({
       id,
       minzoom: 14,
       maxzoom: 24,
@@ -48,7 +48,7 @@ it('should not display warning according to current zoom', () => {
   });
 
   const layer2 = { layers: ['foo'] };
-  map.getLayer = jest.fn(id => ({
+  map.getLayer = vi.fn(id => ({
     id,
   }));
   expect(processWarningAccordingToZoom(map, layer2)).toEqual({
@@ -57,7 +57,7 @@ it('should not display warning according to current zoom', () => {
   });
 
   const layer3 = { layers: ['foo'] };
-  map.getLayer = jest.fn(() => null);
+  map.getLayer = vi.fn(() => null);
   expect(processWarningAccordingToZoom(map, layer3)).toEqual({
     showWarning: false,
     minZoomLayer: 0,
@@ -72,9 +72,9 @@ it('should displayWarningAccordingToZoom without map', () => {
 
 it('should display warning on exclusive groups layers', () => {
   const map = {
-    getZoom: jest.fn(() => 7),
-    getSource: jest.fn(() => ({ minzoom: 14, maxzoom: 22 })),
-    getLayer: jest.fn(id => ({
+    getZoom: vi.fn(() => 7),
+    getSource: vi.fn(() => ({ minzoom: 14, maxzoom: 22 })),
+    getLayer: vi.fn(id => ({
       id,
       minzoom: id === '1' ? 12 : 8,
       maxzoom: id === '1' ? 16 : 12,

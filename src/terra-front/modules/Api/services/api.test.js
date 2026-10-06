@@ -1,7 +1,7 @@
 import { Api, EVENT_FAILURE, EVENT_SUCCESS, buildHeaders } from './api';
 import { IMPERISHABLE_TOKEN } from '../../Auth/services/auth.test';
 
-global.fetch = jest.fn(path => {
+global.fetch = vi.fn(path => {
   if (path === '/wrongpath') {
     return {
       status: 404,
@@ -63,8 +63,8 @@ it('should catch a failed fetch', async done => {
 
 it('should fire events', () => {
   const api = new Api();
-  const listener1 = jest.fn();
-  const listener2 = jest.fn();
+  const listener1 = vi.fn();
+  const listener2 = vi.fn();
   api.on(EVENT_FAILURE, listener1);
   api.on(EVENT_SUCCESS, listener2);
   api.handleError({});
@@ -100,7 +100,7 @@ describe('should build headers', () => {
 
 it('should fire and catch an event', () => {
   const api = new Api();
-  const listener = jest.fn();
+  const listener = vi.fn();
   api.on('foo', listener);
   api.fire('foo', 'bar');
   expect(listener).toHaveBeenCalledWith('bar');

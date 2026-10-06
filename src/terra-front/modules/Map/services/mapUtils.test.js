@@ -10,9 +10,9 @@ import {
   PREV_STATE,
 } from './mapUtils';
 
-jest.mock('lodash.debounce', () => jest.fn(fn => (...args) => fn(...args)));
+vi.mock('lodash.debounce', () => ({ default: vi.fn(fn => (...args) => fn(...args)) }));
 
-const getStyle = jest.fn(() => ({
+const getStyle = vi.fn(() => ({
   layers: [{
     id: 'foo',
     type: 'fill',
@@ -42,12 +42,14 @@ const getStyle = jest.fn(() => ({
   }],
 }));
 
-jest.useFakeTimers();
+vi.useFakeTimers();
 
-jest.mock('moize', () => ({ serializer }) => fn => (...args) => {
-  serializer(...args);
-  return fn(...args);
-});
+vi.mock('moize', () => ({
+  default: ({ serializer }) => fn => (...args) => {
+    serializer(...args);
+    return fn(...args);
+  },
+}));
 
 it('should get all layers related to main one', () => {
   const map = {
@@ -88,7 +90,7 @@ it('should get all layers related to main one', () => {
 
 it('should toggle layer visibility', () => {
   const map = {
-    setLayoutProperty: jest.fn(),
+    setLayoutProperty: vi.fn(),
     getStyle,
   };
   toggleLayerVisibility(map, 'foo', 'visible');
@@ -117,7 +119,7 @@ it('should get opacity property', () => {
 
 it('should set layer opacity', () => {
   const map = {
-    setPaintProperty: jest.fn(),
+    setPaintProperty: vi.fn(),
     getStyle,
   };
   setLayerOpacity(map, 'foo', 0);
@@ -140,8 +142,8 @@ it('should get interaction on event', () => {
   }];
   const map = {
     getStyle,
-    getLayoutProperty: jest.fn(() => 'visible'),
-    queryRenderedFeatures: jest.fn(() => [{
+    getLayoutProperty: vi.fn(() => 'visible'),
+    queryRenderedFeatures: vi.fn(() => [{
       layer: {
         id: 'foo',
       },
@@ -183,8 +185,8 @@ it('should get interaction on mouseover event', () => {
   }];
   const map = {
     getStyle,
-    getLayoutProperty: jest.fn(() => 'visible'),
-    queryRenderedFeatures: jest.fn(() => [{
+    getLayoutProperty: vi.fn(() => 'visible'),
+    queryRenderedFeatures: vi.fn(() => [{
       layer: {
         id: 'foo',
       },
@@ -224,8 +226,8 @@ it('should get no interaction on event', () => {
   }];
   const map = {
     getStyle,
-    getLayoutProperty: jest.fn(() => 'visible'),
-    queryRenderedFeatures: jest.fn(() => [{
+    getLayoutProperty: vi.fn(() => 'visible'),
+    queryRenderedFeatures: vi.fn(() => [{
       layer: {
         id: 'foo',
       },
@@ -248,8 +250,8 @@ describe('should set interactions', () => {
   let listeners = [];
   const map = {
     getStyle,
-    getLayoutProperty: jest.fn(() => 'visible'),
-    on: jest.fn((event, id, listener) => listeners.push({
+    getLayoutProperty: vi.fn(() => 'visible'),
+    on: vi.fn((event, id, listener) => listeners.push({
       event,
       listener: listener || id,
       id: listener ? id : null,
@@ -302,7 +304,7 @@ describe('should set interactions', () => {
       id: 'foo',
       interaction: 'doSomething',
     }];
-    const callback = jest.fn();
+    const callback = vi.fn();
     const event = { target: map, point: [1, 2], type: 'click' };
     map.queryRenderedFeatures = () => [{
       layer: {
@@ -340,7 +342,7 @@ describe('should set interactions', () => {
       id: 'foo',
       interaction: 'doSomething',
     }];
-    const callback = jest.fn();
+    const callback = vi.fn();
     const event = { target: map, point: [1, 2] };
     map.queryRenderedFeatures = () => [];
 
@@ -356,7 +358,7 @@ describe('should set interactions', () => {
       interaction: 'doSomething',
       trigger: 'mouseover',
     }];
-    const callback = jest.fn();
+    const callback = vi.fn();
     const event = { target: map, point: [1, 2], type: 'mousemove' };
     PREV_STATE.features = [{
       layer: {
@@ -419,7 +421,7 @@ describe('should set interactions', () => {
     }];
     const callback = () => {};
     const canvas = { style: {} };
-    map.getCanvas = jest.fn(() => canvas);
+    map.getCanvas = vi.fn(() => canvas);
     map.queryRenderedFeatures = () => [{
       layer: {
         id: 'foo',
@@ -620,7 +622,7 @@ it('should check contraints', () => {
 it('should get interactions responding to constraints', () => {
   const map = {
     getStyle,
-    getLayoutProperty: jest.fn(() => 'visible'),
+    getLayoutProperty: vi.fn(() => 'visible'),
     getZoom: () => 3,
     queryRenderedFeatures: () => [{
       layer: {
@@ -650,7 +652,7 @@ it('should get interactions responding to constraints', () => {
 it('should get multiple interactions', () => {
   const map = {
     getStyle,
-    getLayoutProperty: jest.fn(() => 'visible'),
+    getLayoutProperty: vi.fn(() => 'visible'),
     getZoom: () => 3,
     queryRenderedFeatures: () => [{
       layer: {
@@ -670,7 +672,7 @@ it('should get multiple interactions', () => {
 });
 
 it('should call fitBounds', () => {
-  const map = { fitBounds: jest.fn() };
+  const map = { fitBounds: vi.fn() };
 
   const feature = {
     type: 'Feature',

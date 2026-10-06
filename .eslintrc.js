@@ -22,9 +22,9 @@ module.exports = {
   },
   settings: {
     'import/resolver': {
-      // Load webpack.config to allow resolving aliases in imports
-      webpack: {
-        config: 'webpack.config.eslint.js',
+      alias: {
+        map: [['@terralego/core', './src/terra-front']],
+        extensions: ['.js', '.jsx', '.json', '.scss', '.css'],
       },
     },
   },

@@ -1,5 +1,5 @@
 @import './theme.scss';
-@import '~@blueprintjs/core/src/blueprint.scss';
+@import '@blueprintjs/core/src/blueprint.scss';
 
 // Quick-and-dirty fix for checkboxes, as 1. inline properly svg from blueprint
 // would mean to eject and 2. blueprint does not export svg source

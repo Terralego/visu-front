@@ -1,7 +1,7 @@
 import Api from '@terralego/core/modules/Api';
 import searchInMap, { fetchNominatim } from './searchService';
 
-global.fetch = jest.fn(() => Promise.resolve({
+global.fetch = vi.fn(() => Promise.resolve({
   json: () =>
     Promise.resolve({
       features: [
@@ -15,7 +15,7 @@ global.fetch = jest.fn(() => Promise.resolve({
 
 beforeEach(() => {
   fetch.mockClear();
-  Api.request = jest.fn(() =>
+  Api.request = vi.fn(() =>
     Promise.resolve({
       count: 1,
       results: [{ identifier: 1, properties: { mainfield: 'Paris' } }],
@@ -40,7 +40,7 @@ describe('fetchNominatim', () => {
   });
 
   it('Should return an empty array when fetch error occured', async () => {
-    jest.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'error').mockImplementation(() => {});
     fetch.mockImplementationOnce(() => Promise.reject(new Error('API is down')));
     const result = await fetchNominatim({
       query: 'fake query',

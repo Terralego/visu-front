@@ -9,17 +9,16 @@ export const MOCKED_TOKEN = `xxx.${b64u(JSON.stringify({ ...MOCKED_PAYLOAD }))}.
 export const IMPERISHABLE_TOKEN = `imp.${b64u(JSON.stringify({ ...MOCKED_PAYLOAD, exp: 99999999999 }))}.xxx`;
 export const EXPIRED_TOKEN = `exp.${b64u(JSON.stringify({ ...MOCKED_PAYLOAD, exp: 0 }))}.xxx`;
 
-jest.mock('../../Api', () => {
-  // eslint-disable-next-line global-require
-  const b64uM = require('base64url');
+vi.mock('../../Api', async () => {
+  const { default: b64uM } = await import('base64url');
 
-  return {
+  const api = {
     EVENT_FAILURE: 'failure',
-    on: jest.fn((event, fn) => {
+    on: vi.fn((event, fn) => {
       fn({ status: 401 });
       fn({ status: 200 });
     }),
-    request: jest.fn((endpoint, { body: { token } }) => {
+    request: vi.fn((endpoint, { body: { token } }) => {
       if (endpoint === 'auth/obtain-token/') {
         return { token: 'newToken' };
       }
@@ -38,8 +37,9 @@ jest.mock('../../Api', () => {
 
       return {};
     }),
-    POST: 'POST',
   };
+
+  return { default: api, EVENT_FAILURE: api.EVENT_FAILURE, POST: 'POST' };
 });
 
 it('should add a listener to Api', () => {

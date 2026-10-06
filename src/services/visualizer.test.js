@@ -16,7 +16,7 @@ it('should fetch view\'s config', async done => {
   const fetched = {
     json: () => response,
   };
-  global.fetch = jest.fn(() => fetched);
+  global.fetch = vi.fn(() => fetched);
 
   const resp = await fetchViewConfig('some/url/foo');
 
@@ -30,7 +30,7 @@ it('should fail to fetch view\'s config if response not suitable ', async done =
   const fetched = {
     json: () => response,
   };
-  global.fetch = jest.fn(() => fetched);
+  global.fetch = vi.fn(() => fetched);
 
   const resp = await fetchViewConfig('some/url/bar');
 
@@ -46,7 +46,7 @@ it('should fetch views', async done => {
   const fetched = {
     json: () => response,
   };
-  global.fetch = jest.fn(() => fetched);
+  global.fetch = vi.fn(() => fetched);
 
   const resp = await fetchAllViews('some/url/foo');
 
@@ -60,7 +60,7 @@ it('should fail to fetch views', async done => {
     status: 404,
     statusText: 'not found',
   };
-  global.fetch = jest.fn(() => fetched);
+  global.fetch = vi.fn(() => fetched);
 
   try {
     const resp = await fetchAllViews('some/url/foo');

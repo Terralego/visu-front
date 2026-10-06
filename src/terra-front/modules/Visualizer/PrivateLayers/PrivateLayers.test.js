@@ -6,7 +6,7 @@ it('should render nothing', () => {
 });
 
 it('should update layers states', () => {
-  const setLayerState = jest.fn();
+  const setLayerState = vi.fn();
   const layers = [{}, { private: true }];
   const layersTreeState = new Map([[layers[0], { }], [layers[1], { }]]);
   const instance = new PrivateLayers({
@@ -25,7 +25,7 @@ it('should update layers states', () => {
 });
 
 it('should update not layers states', () => {
-  const setLayerState = jest.fn();
+  const setLayerState = vi.fn();
   const layers = [{}, { private: true }];
   const layersTreeState = new Map([[layers[0], { }], [layers[1], { }]]);
   const instance = new PrivateLayers({
@@ -39,14 +39,14 @@ it('should update not layers states', () => {
 
 it('should update layers on mount', () => {
   const instance = new PrivateLayers();
-  instance.updatePrivateLayers = jest.fn();
+  instance.updatePrivateLayers = vi.fn();
   instance.componentDidMount();
   expect(instance.updatePrivateLayers).toHaveBeenCalled();
 });
 
 it('should update layers on component update', () => {
   const instance = new PrivateLayers({});
-  instance.updatePrivateLayers = jest.fn();
+  instance.updatePrivateLayers = vi.fn();
 
   instance.props = { authenticated: true };
   instance.componentDidUpdate({});
