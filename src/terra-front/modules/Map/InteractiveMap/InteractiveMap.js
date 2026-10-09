@@ -1,5 +1,6 @@
 /* eslint-disable react/sort-comp */
 import centroid from '@turf/centroid';
+import classnames from 'classnames';
 import debounce from 'lodash.debounce';
 import mapBoxGl from 'mapbox-gl';
 import PropTypes from 'prop-types';
@@ -13,6 +14,7 @@ import { getClusteredFeatures } from '../services/cluster';
 import { fitZoom, setInteractions } from '../services/mapUtils';
 
 import Legend from './components/Legend';
+import groupLegendsByLayer from './components/Legend/groupLegends';
 import Tooltip from './components/Tooltip';
 import './styles.scss';
 
@@ -144,6 +146,7 @@ export class InteractiveMap extends React.Component {
       }),
     ),
     legends: PropTypes.arrayOf(PropTypes.shape({})),
+    hideLegends: PropTypes.bool,
     onInit: PropTypes.func,
     onStyleChange: PropTypes.func,
   };
@@ -152,6 +155,7 @@ export class InteractiveMap extends React.Component {
     backgroundStyle: 'mapbox://styles/mapbox/light-v9',
     interactions: [],
     legends: [],
+    hideLegends: false,
     onInit() {},
     onStyleChange() {},
   };
@@ -766,6 +770,7 @@ export class InteractiveMap extends React.Component {
       history,
       children,
       translate,
+      hideLegends,
       ...mapProps
     } = this.props;
 
@@ -800,14 +805,24 @@ export class InteractiveMap extends React.Component {
         />
         {!!legends.length && (
           <div className="interactive-map__legends">
-            {getUniqueLegends(legends).map(legend => (
-              <Legend
-                key={`${legend.renderUuid}`}
-                history={history}
-                translate={translate}
-                {...legend}
-              />
-            ))}
+            <div
+              className={classnames('interactive-map__legends-inner', {
+                'interactive-map__legends-inner--hidden': hideLegends,
+              })}
+            >
+              {groupLegendsByLayer(getUniqueLegends(legends)).map(group => (
+                <div className="tf-legend-group" key={group.key}>
+                  {group.legends.map(legend => (
+                    <Legend
+                      key={`${legend.renderUuid}`}
+                      history={history}
+                      translate={translate}
+                      {...legend}
+                    />
+                  ))}
+                </div>
+              ))}
+            </div>
           </div>
         )}
         {children}

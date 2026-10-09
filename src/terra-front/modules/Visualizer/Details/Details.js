@@ -85,6 +85,7 @@ const Details = ({
       variant="persistent"
       anchor="right"
       open={visible}
+      PaperProps={{ className: 'map-overlay-panel' }}
       sx={{
         width: 400,
         flexShrink: 0,

@@ -14,9 +14,10 @@ $transitionSpeed: .2s;
 
   &__legends {
     position: absolute;
-    bottom: 1rem;
-    right: 1rem;
-    max-height: calc(100% - 1rem);
+    bottom: 22px;
+    right: .5rem;
+    padding: 8px;
+    max-height: calc(100% - 30px);
     max-width: 17%;
     min-width: 200px;
     overflow: auto;
@@ -24,5 +25,16 @@ $transitionSpeed: .2s;
 }
 
 .interactive-map__legends {
-  z-index: 10;
+  z-index: 31;
+}
+
+.interactive-map__legends-inner {
+  transform-origin: bottom right;
+  transition: opacity .2s ease-in-out, transform .2s ease-in-out, visibility .2s;
+
+  &--hidden {
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(.88);
+  }
 }

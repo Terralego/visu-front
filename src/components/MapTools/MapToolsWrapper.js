@@ -42,6 +42,9 @@ const MapToolsWrapper = ({
   fitBounds,
   center,
   zoom,
+  hasLegends,
+  areLegendsVisible,
+  onToggleLegends,
 }) => {
   const container = useToolsContainer(map);
 
@@ -117,7 +120,13 @@ const MapToolsWrapper = ({
         </Box>,
         container,
       )}
-      <NavigationTools map={map} translate={translate} />
+      <NavigationTools
+        map={map}
+        translate={translate}
+        hasLegends={hasLegends}
+        areLegendsVisible={areLegendsVisible}
+        onToggleLegends={onToggleLegends}
+      />
     </>
   );
 };
@@ -143,6 +152,9 @@ MapToolsWrapper.propTypes = {
   fitBounds: PropTypes.shape({ coordinates: PropTypes.array }),
   center: PropTypes.arrayOf(PropTypes.number),
   zoom: PropTypes.number,
+  hasLegends: PropTypes.bool,
+  areLegendsVisible: PropTypes.bool,
+  onToggleLegends: PropTypes.func,
 };
 
 MapToolsWrapper.defaultProps = {
@@ -160,6 +172,9 @@ MapToolsWrapper.defaultProps = {
   fitBounds: undefined,
   center: undefined,
   zoom: undefined,
+  hasLegends: false,
+  areLegendsVisible: true,
+  onToggleLegends: undefined,
 };
 
 export default MapToolsWrapper;

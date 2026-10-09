@@ -114,6 +114,10 @@
       "home_control": {
         "button_label": "Réinitialiser la position de la carte"
       },
+      "legend_control": {
+        "hide": "Masquer la légende",
+        "show": "Afficher la légende"
+      },
       "measure_control": {
         "text": "Commencez à tracer"
       },

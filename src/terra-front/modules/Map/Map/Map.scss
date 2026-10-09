@@ -10,7 +10,10 @@
   }
 }
 
-.mapboxgl-ctrl-top-right {
+.mapboxgl-ctrl-top-left,
+.mapboxgl-ctrl-top-right,
+.mapboxgl-ctrl-bottom-left,
+.mapboxgl-ctrl-bottom-right {
   z-index: 30;
 }
 

@@ -63,6 +63,7 @@ import ReportingModule from '../../../components/ReportingModule/ReportingModule
 import TableConnected from './Table';
 import Widgets from './Widgets';
 import { generateClusterList } from './interactions';
+import LegendsOverlapWatcher from './LegendsOverlapWatcher';
 import {
   buildSearchControl,
   getSearchableLayers,
@@ -175,6 +176,9 @@ export class Visualizer extends React.Component {
     selectedFetchPropertiesForReporting: {},
     selectedMainFieldForReporting: null,
     legends: [],
+    areLegendsVisible: true,
+    areLegendsOverlapped: false,
+    forceLegends: false,
     features: {},
     totalFeatures: 0,
     interactions: [],
@@ -277,6 +281,9 @@ export class Visualizer extends React.Component {
           ...(advancedStyle?.legends || []),
         ], []);
 
+    const withGroup = (group, layerLegends) =>
+      layerLegends.map(legend => ({ ...legend, group }));
+
     const legendsFromLayersTree = Array.from(layersTreeState.entries())
       .map(([layer, state]) => {
         if (!state.active) return undefined;
@@ -284,12 +291,15 @@ export class Visualizer extends React.Component {
           const selected = state.sublayers.findIndex(active => active);
           const selectedSublayer = layer.sublayers[selected];
           if (!selectedSublayer) return undefined;
-          return [
+          return withGroup(layer.id, [
             ...(selectedSublayer.legends || []),
             ...generatedLegends(selectedSublayer.layers),
-          ];
+          ]);
         }
-        return [...(layer.legends || []), ...generatedLegends(layer.layers)];
+        return withGroup(layer.id, [
+          ...(layer.legends || []),
+          ...generatedLegends(layer.layers),
+        ]);
       })
       .filter(defined => defined)
       .reduce(
@@ -530,6 +540,18 @@ export class Visualizer extends React.Component {
       visibleDrawer: visibleDrawer === 'reporting' ? null : 'reporting',
     }));
   };
+
+  toggleLegends = () => {
+    this.setState(({ areLegendsVisible, areLegendsOverlapped, forceLegends }) => {
+      const visible = areLegendsVisible && (!areLegendsOverlapped || forceLegends);
+      return { areLegendsVisible: !visible, forceLegends: !visible };
+    });
+  };
+
+  setLegendsOverlapped = areLegendsOverlapped =>
+    this.setState(state => (state.areLegendsOverlapped === areLegendsOverlapped
+      ? null
+      : { areLegendsOverlapped, forceLegends: areLegendsOverlapped && state.forceLegends }));
 
   toggleShareModule = () => {
     this.setState(({ isShareModuleVisible, visibleDrawer }) => ({
@@ -1037,6 +1059,9 @@ export class Visualizer extends React.Component {
       printIsOpened,
       bounds,
       tableHeight,
+      areLegendsVisible,
+      areLegendsOverlapped,
+      forceLegends,
     } = this.state;
 
     const {
@@ -1069,6 +1094,7 @@ export class Visualizer extends React.Component {
 
     const displayLayersTree = isLayersTreeVisible && !printIsOpened;
     const isDetailsVisible = !!details && !printIsOpened && visibleDrawer === 'details';
+    const legendsVisible = areLegendsVisible && (!areLegendsOverlapped || forceLegends);
     const isReportingVisible = visibleDrawer === 'reporting' && hasReportConfigs;
 
     const currentFeatureList = Object.values(features).find(({ layers }) =>
@@ -1231,6 +1257,9 @@ export class Visualizer extends React.Component {
                         fitBounds={mapProps.fitBounds}
                         center={mapProps.center}
                         zoom={mapProps.zoom}
+                        hasLegends={!!legends.length}
+                        areLegendsVisible={legendsVisible}
+                        onToggleLegends={this.toggleLegends}
                       />
                     </BoundingBoxObserver>
                     <TableConnected
@@ -1252,11 +1281,17 @@ export class Visualizer extends React.Component {
                 </div>
               </div>
             </div>
+            <LegendsOverlapWatcher
+              panelsOpen={!!visibleDrawer && !printIsOpened}
+              isMobileSized={isMobileSized}
+              onChange={this.setLegendsOverlapped}
+            />
             <InteractiveMap
               {...mapProps}
               className={Classes.DARK}
               interactions={interactions}
               legends={legends}
+              hideLegends={!legendsVisible}
               onMapLoaded={resetMap}
               onMapUpdate={onMapUpdate}
               onStyleChange={onStyleChange}

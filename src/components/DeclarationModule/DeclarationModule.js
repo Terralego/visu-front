@@ -222,6 +222,7 @@ const DeclarationModule = ({
     <Drawer
       variant="persistent"
       anchor="right"
+      PaperProps={{ className: 'map-overlay-panel' }}
       open={open}
       sx={{
         width: 400,

@@ -77,3 +77,36 @@ it('should bring the map back to north and flat', () => {
 
   expect(map.easeTo).toHaveBeenCalledWith({ bearing: 0, pitch: 0 });
 });
+
+it('should not offer the legend toggle without legends', () => {
+  renderTools(createMap());
+
+  expect(screen.queryByRole('button', { name: 'terralego.map.legend_control.hide' })).toBe(null);
+});
+
+it('should ask to hide the legends while they show', () => {
+  const onToggleLegends = vi.fn();
+  render(<NavigationTools
+    map={createMap()}
+    translate={translate}
+    hasLegends
+    areLegendsVisible
+    onToggleLegends={onToggleLegends}
+  />);
+
+  fireEvent.click(screen.getByRole('button', { name: 'terralego.map.legend_control.hide' }));
+
+  expect(onToggleLegends).toHaveBeenCalled();
+});
+
+it('should ask to show the legends once hidden', () => {
+  render(<NavigationTools
+    map={createMap()}
+    translate={translate}
+    hasLegends
+    areLegendsVisible={false}
+    onToggleLegends={vi.fn()}
+  />);
+
+  expect(screen.getByRole('button', { name: 'terralego.map.legend_control.show' })).toBeTruthy();
+});

@@ -167,6 +167,7 @@ const ShareModule = ({ map, open = false, onClose, layersTreeState }) => {
         variant="persistent"
         anchor="right"
         open={open}
+        PaperProps={{ className: 'map-overlay-panel' }}
         sx={{
           width: 400,
           flexShrink: 0,

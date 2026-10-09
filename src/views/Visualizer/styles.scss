@@ -116,7 +116,10 @@ $detailsWidth: 25.5rem;
   .mapboxgl-ctrl-top-left,
   .mapboxgl-ctrl-bottom-left,
   .mapboxgl-ctrl-top-right,
-  .mapboxgl-ctrl-bottom-right,
+  .mapboxgl-ctrl-bottom-right {
+    transition: transform .2s ease-in;
+  }
+
   .interactive-map__legends {
     transition: transform .2s ease-in;
   }
@@ -329,7 +332,7 @@ $detailsWidth: 25.5rem;
   }
 
   .interactive-map__legends {
-    margin-right: 2rem;
+    margin-right: 2.5rem;
   }
 
 }

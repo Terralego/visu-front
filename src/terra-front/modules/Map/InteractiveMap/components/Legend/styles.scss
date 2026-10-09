@@ -1,37 +1,54 @@
-@import "node_modules/@blueprintjs/core/lib/scss/variables";
+.tf-legend-group {
+  box-shadow: var(--mui-shadows-2, 0 1px 3px 0 rgba(0, 0, 0, .1));
+  border-radius: var(--mui-shape-borderRadius, 10px);
+  background: var(--mui-palette-background-paper, #fff);
+  color: var(--mui-palette-text-primary, inherit);
+  margin-top: .5rem;
+  overflow: hidden;
+
+  > .tf-legend + .tf-legend {
+    position: relative;
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 15%;
+      right: 15%;
+      border-top: 1px solid var(--mui-palette-divider, rgba(0, 0, 0, .12));
+    }
+  }
+}
 
 .tf-legend {
-  box-shadow: 0 1px 3px 0 rgba(16, 22, 26, 0.40);
-  border-radius: 2px;
-  background: $pt-app-background-color;
-  padding: .5rem 0;
-  margin-top: 1rem;
+  padding: .4rem .75rem .3rem;
   display: flex;
   flex-direction: column;
-
-  .bp3-dark & {
-    background: $pt-dark-app-background-color;
-  }
 
   > .tf-legend {
     border: 0;
   }
 
   &__title {
-    margin: 0.2rem 0.3rem;
-    font-size: 1rem;
+    margin: 0 0 0.3rem;
+    font-size: 0.95rem;
     font-weight: 600;
-    text-align: center;
+    text-align: left;
+    overflow-wrap: anywhere;
   }
 
   &__list:not(.tf-legend__stacked-circles) {
-    margin: 0.5rem;
+    margin: 0.25rem 0 0.3rem;
 
     position: relative;
 
     .tf-legend__item {
-      padding-top: 0.5rem;
-      padding-bottom: 0.25rem;
+      padding-top: 0.2rem;
+      padding-bottom: 0.1rem;
+    }
+
+    .tf-legend__symbol-container {
+      text-align: left;
     }
   }
 
@@ -101,7 +118,9 @@
   }
 
   &__source {
-    padding: .5em .5em 0 .5em;
-    opacity: .5;
+    padding: 0;
+    font-size: .8rem;
+    color: var(--mui-palette-text-secondary, inherit);
+    opacity: 1;
   }
 }
