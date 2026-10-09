@@ -225,21 +225,25 @@ const DeclarationModule = ({
       PaperProps={{ className: 'map-overlay-panel' }}
       open={open}
       sx={{
-        width: 400,
+        width: { xs: '100%', sm: 400 },
         flexShrink: 0,
         '& .MuiDrawer-paper': {
-          right: 60,
-          maxHeight: isTableActive ? 'calc(100vh - var(--table-height) - 16px)' : 'calc(100vh - 16px)',
-          height: 'auto',
-          borderRadius: '12px',
-          border: '1px solid rgba(0, 0, 0, 0.1)',
+          right: { xs: 0, sm: 60 },
+          maxHeight: {
+            xs: '100%',
+            sm: isTableActive
+              ? 'calc(100vh - var(--table-height) - 16px)'
+              : 'calc(100vh - 16px)',
+          },
+          height: { xs: '100%', sm: 'auto' },
+          borderRadius: { xs: 0, sm: '12px' },
+          border: { xs: 'none', sm: '1px solid rgba(0, 0, 0, 0.1)' },
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-          zIndex: 79,
-          width: 400,
+          width: { xs: '100%', sm: 400 },
           boxSizing: 'border-box',
-          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          backgroundColor: { xs: '#fff', sm: 'rgba(255, 255, 255, 0.8)' },
           backdropFilter: 'blur(8px)',
-          margin: 1,
+          margin: { xs: 0, sm: 1 },
           overflow: 'hidden',
         },
       }}

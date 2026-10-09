@@ -169,22 +169,22 @@ const ShareModule = ({ map, open = false, onClose, layersTreeState }) => {
         open={open}
         PaperProps={{ className: 'map-overlay-panel' }}
         sx={{
-          width: 400,
+          width: { xs: '100%', sm: 400 },
           flexShrink: 0,
           '& .MuiModal-backdrop': {
             backgroundColor: 'transparent',
           },
           '& .MuiDrawer-paper': {
-            width: 400,
+            width: { xs: '100%', sm: 400 },
             boxSizing: 'border-box',
-            backgroundColor: 'rgba(255, 255, 255, 0.8)',
+            backgroundColor: { xs: '#fff', sm: 'rgba(255, 255, 255, 0.8)' },
             backdropFilter: 'blur(8px)',
-            margin: 1,
-            right: 60,
-            maxHeight: 'calc(100vh - 16px)',
-            height: 'auto',
-            borderRadius: 1,
-            border: '1px solid rgba(0, 0, 0, 0.1)',
+            margin: { xs: 0, sm: 1 },
+            right: { xs: 0, sm: 60 },
+            maxHeight: { xs: '100%', sm: 'calc(100vh - 16px)' },
+            height: { xs: '100%', sm: 'auto' },
+            borderRadius: { xs: 0, sm: 1 },
+            border: { xs: 'none', sm: '1px solid rgba(0, 0, 0, 0.1)' },
             boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
           },
         }}

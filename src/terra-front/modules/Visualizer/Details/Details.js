@@ -87,28 +87,30 @@ const Details = ({
       open={visible}
       PaperProps={{ className: 'map-overlay-panel' }}
       sx={{
-        width: 400,
+        width: { xs: '100%', sm: 400 },
         flexShrink: 0,
         '& .login-button-details .bp3-icon': {
           color: theme => `${theme.palette.primary.dark} !important`,
         },
         '& .MuiDrawer-paper': {
-          zIndex: 79,
-          width: 400,
+          width: { xs: '100%', sm: 400 },
           boxSizing: 'border-box',
-          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+          backgroundColor: { xs: '#fff', sm: 'rgba(255, 255, 255, 0.8)' },
           backdropFilter: 'blur(8px)',
-          margin: 1,
-          right: 60,
-          height: 'auto',
-          maxHeight: isTableActive
-            ? 'calc(100vh - var(--table-height) - 16px)'
-            : 'calc(100vh - 16px)',
+          margin: { xs: 0, sm: 1 },
+          right: { xs: 0, sm: 60 },
+          height: { xs: '100%', sm: 'auto' },
+          maxHeight: {
+            xs: '100%',
+            sm: isTableActive
+              ? 'calc(100vh - var(--table-height) - 16px)'
+              : 'calc(100vh - 16px)',
+          },
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
-          borderRadius: 1,
-          border: '1px solid rgba(0, 0, 0, 0.1)',
+          borderRadius: { xs: 0, sm: 1 },
+          border: { xs: 'none', sm: '1px solid rgba(0, 0, 0, 0.1)' },
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
         },
       }}
