@@ -99,6 +99,10 @@ export const setLayerStateAction = (layer, layerState, prevLayersTreeState, rese
 
   const newLayerState = { ...layerState };
 
+  if (newLayerState.active === false) {
+    newLayerState.table = false;
+  }
+
   if (newLayerState.table) {
     Array.from(newLayersTreeState).forEach(([node, layState]) => {
       newLayersTreeState.set(node, { ...layState, table: false });

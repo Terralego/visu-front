@@ -454,7 +454,26 @@ it('should set group state', () => {
   });
   expect(newLayersTreeState.get(layer.layers[1])).toEqual({
     active: false,
+    table: false,
   });
+});
+
+it('should close the table of a layer being deactivated', () => {
+  const layer = { label: 'foo' };
+  const prevLayersTreeState = new Map([[layer, { active: true, table: true }]]);
+
+  const newLayersTreeState = setLayerStateAction(layer, { active: false }, prevLayersTreeState);
+
+  expect(newLayersTreeState.get(layer)).toEqual({ active: false, table: false });
+});
+
+it('should keep the table open when another property changes', () => {
+  const layer = { label: 'foo' };
+  const prevLayersTreeState = new Map([[layer, { active: true, table: true }]]);
+
+  const newLayersTreeState = setLayerStateAction(layer, { opacity: 0.5 }, prevLayersTreeState);
+
+  expect(newLayersTreeState.get(layer)).toEqual({ active: true, table: true, opacity: 0.5 });
 });
 
 it('should sort custom layers', () => {

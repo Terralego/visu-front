@@ -83,6 +83,16 @@ const LayersTreeGroupProps = PropTypes.shape({
   private: PropTypes.bool,
 });
 
+const flattenLayersTree = (nodes = []) =>
+  nodes.reduce(
+    (acc, node) => (node.group ? [...acc, ...flattenLayersTree(node.layers)] : [...acc, node]),
+    [],
+  );
+
+const layerOwnsMapboxId = ({ layers = [], sublayers = [] }, mapboxLayerId) =>
+  layers.includes(mapboxLayerId) ||
+  sublayers.some(({ layers: sublayerIds = [] }) => sublayerIds.includes(mapboxLayerId));
+
 const getControls = memoize(
   (measureControl, measureDrawStyles) =>
     [
@@ -210,6 +220,10 @@ export class Visualizer extends React.Component {
     const { features } = this.state;
     if (prevLayersTreeState !== layersTreeState || map !== prevMap) {
       this.updateLayersTree();
+    }
+
+    if (prevLayersTreeState !== layersTreeState) {
+      this.hideDetailsOfInactiveLayer();
     }
 
     if (
@@ -375,29 +389,11 @@ export class Visualizer extends React.Component {
     this.setState({ interactions: newInteractions });
   }
 
-  findLayerByMapboxId = (layers, mapboxLayerId) => {
-    const flattenLayers = layers.reduce((acc, item) => {
-      if (item.layers) {
-        return [...acc, ...item.layers];
-      }
-      return [...acc, item];
-    }, []);
+  findLayerByMapboxId = (layers, mapboxLayerId) =>
+    flattenLayersTree(layers).find(layer => layerOwnsMapboxId(layer, mapboxLayerId)) || null;
 
-    return (
-      flattenLayers.find(layer => layer.layers && layer.layers.includes(mapboxLayerId)) || null
-    );
-  };
-
-  findLayerById = (layers, targetId) => {
-    const flattenLayers = layers.reduce((acc, item) => {
-      if (item.layers) {
-        return [...acc, ...item.layers];
-      }
-      return [...acc, item];
-    }, []);
-
-    return flattenLayers.find(layer => layer.id === targetId) || null;
-  };
+  findLayerById = (layers, targetId) =>
+    flattenLayersTree(layers).find(({ id }) => id === targetId) || null;
 
   setLayerExtent = bounds => {
     this.setState({ bounds });
@@ -495,6 +491,22 @@ export class Visualizer extends React.Component {
     hide();
     this.setState({ details: undefined, visibleDrawer: null });
   };
+
+  hideDetailsOfInactiveLayer() {
+    const {
+      layersTreeState,
+      view: { layersTree },
+    } = this.props;
+    const { details } = this.state;
+
+    if (!details) return;
+
+    const owner = this.findLayerByMapboxId(layersTree, details.layer);
+    if (!owner) return;
+
+    const { active } = layersTreeState.get(owner) || {};
+    if (!active) this.hideDetails();
+  }
 
   toggleLayersTree = () => {
     const { setCurrentState } = this.props;
