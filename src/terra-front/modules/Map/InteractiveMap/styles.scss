@@ -26,6 +26,10 @@ $transitionSpeed: .2s;
 
 .interactive-map__legends {
   z-index: 31;
+
+  &:has(.interactive-map__legends-inner--hidden) {
+    pointer-events: none;
+  }
 }
 
 .interactive-map__legends-inner {
