@@ -125,7 +125,7 @@
   &__source {
     padding: 0;
     font-size: .8rem;
-    color: var(--mui-palette-text-secondary, inherit);
-    opacity: 1;
+    color: var(--mui-palette-text-secondary, rgba(0, 0, 0, .6));
+    opacity: .85;
   }
 }

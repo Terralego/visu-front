@@ -59,7 +59,10 @@ export default async function exportPdf(map, orientation, format = 'a4') {
       }
 
       // Ignore other controls (but not the container itself, just individual controls)
-      if (classes.includes('mapboxgl-ctrl-group') || classes.includes('mapboxgl-ctrl-print')) {
+      if (classes.includes('mapboxgl-ctrl-group')
+        || classes.includes('mapboxgl-ctrl-print')
+        || classes.includes('map-navigation-tools')
+        || classes.includes('map-tools')) {
         return true;
       }
 

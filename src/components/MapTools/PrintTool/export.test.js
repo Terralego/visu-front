@@ -100,6 +100,13 @@ describe('the captured elements', () => {
     expect(ignore({ className: 'mapboxgl-ctrl-print' })).toBe(true);
   });
 
+  it('should drop the mui map tools', async () => {
+    const ignore = await ignoreElements();
+
+    expect(ignore({ className: 'map-navigation-tools' })).toBe(true);
+    expect(ignore({ className: 'map-tools' })).toBe(true);
+  });
+
   it('should keep elements without a string class name', async () => {
     const ignore = await ignoreElements();
 

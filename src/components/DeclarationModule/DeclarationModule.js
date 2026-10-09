@@ -55,6 +55,8 @@ const DeclarationModule = ({
     }
   };
 
+  const isWaitingForLocation = open && !location;
+
   const clearLocation = () => {
     setLocation(null);
     onMapClick(true);
@@ -229,13 +231,15 @@ const DeclarationModule = ({
         flexShrink: 0,
         '& .MuiDrawer-paper': {
           right: { xs: 0, sm: 60 },
+          top: { xs: isWaitingForLocation ? 'auto' : 0, sm: 0 },
+          bottom: { xs: 0, sm: 'auto' },
           maxHeight: {
             xs: '100%',
             sm: isTableActive
               ? 'calc(100vh - var(--table-height) - 16px)'
               : 'calc(100vh - 16px)',
           },
-          height: { xs: '100%', sm: 'auto' },
+          height: { xs: isWaitingForLocation ? 'auto' : '100%', sm: 'auto' },
           borderRadius: { xs: 0, sm: '12px' },
           border: { xs: 'none', sm: '1px solid rgba(0, 0, 0, 0.1)' },
           boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
