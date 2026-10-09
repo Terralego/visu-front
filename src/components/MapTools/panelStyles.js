@@ -8,6 +8,13 @@ export const frostedContainer = {
   boxShadow: '0 8px 32px rgba(0, 0, 0, .1)',
 };
 
+export const lightContainer = {
+  overflow: 'hidden',
+  borderRadius: '10px',
+  backgroundColor: 'rgba(255, 255, 255, .95)',
+  boxShadow: '0 1px 4px rgba(0, 0, 0, .15)',
+};
+
 export const surface = {
   overflow: 'hidden',
   borderRadius: '8px',

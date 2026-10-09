@@ -1,7 +1,11 @@
 class MapToolsControl {
+  constructor(className = 'map-tools') {
+    this.className = className;
+  }
+
   onAdd() {
     this.container = document.createElement('div');
-    this.container.className = 'map-tools';
+    this.container.className = this.className;
     return this.container;
   }
 

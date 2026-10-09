@@ -3,7 +3,6 @@ import withDeviceSize from '@terralego/core/hoc/withDeviceSize';
 import {
   CONTROL_ATTRIBUTION,
   CONTROL_MEASURE,
-  CONTROL_NAVIGATION,
   CONTROL_SCALE,
   CONTROLS_BOTTOM_LEFT,
   CONTROLS_BOTTOM_RIGHT,
@@ -96,10 +95,6 @@ const layerOwnsMapboxId = ({ layers = [], sublayers = [] }, mapboxLayerId) =>
 const getControls = memoize(
   (measureControl, measureDrawStyles) =>
     [
-      {
-        control: CONTROL_NAVIGATION,
-        position: CONTROLS_BOTTOM_RIGHT,
-      },
       {
         control: CONTROL_ATTRIBUTION,
         position: CONTROLS_BOTTOM_RIGHT,

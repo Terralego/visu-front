@@ -5,7 +5,7 @@ import React from 'react';
 import { toolButton, toolButtonActive } from './panelStyles';
 
 const ToolButton = React.forwardRef((
-  { label, icon, isActive, disabled, onClick, ...props },
+  { label, icon, isActive, disabled, onClick, sx, ...props },
   ref,
 ) => (
   <Tooltip title={label} placement="left">
@@ -19,6 +19,7 @@ const ToolButton = React.forwardRef((
           ...toolButton,
           ...(isActive ? toolButtonActive : {}),
           ...(disabled ? { opacity: 0.4 } : {}),
+          ...sx,
         }}
         {...props}
       >
@@ -34,12 +35,14 @@ ToolButton.propTypes = {
   isActive: PropTypes.bool,
   disabled: PropTypes.bool,
   onClick: PropTypes.func,
+  sx: PropTypes.shape({}),
 };
 
 ToolButton.defaultProps = {
   isActive: false,
   disabled: false,
   onClick: undefined,
+  sx: undefined,
 };
 
 export default ToolButton;

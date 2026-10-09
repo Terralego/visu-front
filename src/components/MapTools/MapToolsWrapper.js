@@ -2,7 +2,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import ShareIcon from '@mui/icons-material/Share';
 import { Box } from '@mui/material';
 import PropTypes from 'prop-types';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 
 import TerritorySelector from '../TerritorySelector';
@@ -16,36 +16,13 @@ import {
 import useCurrentExtent from '../TerritorySelector/useCurrentExtent';
 import BackgroundTool from './BackgroundTool';
 import DeclarationTool from './DeclarationTool';
-import MapToolsControl from './MapToolsControl';
+import NavigationTools from './NavigationTools';
 import PrintTool from './PrintTool';
 import SearchTool from './SearchTool';
 import ToolButton from './ToolButton';
 import ToolGroup from './ToolGroup';
+import useToolsContainer from './useToolsContainer';
 import './styles.scss';
-
-const useToolsContainer = map => {
-  const [container, setContainer] = useState(null);
-
-  useEffect(() => {
-    if (!map) return undefined;
-
-    const control = new MapToolsControl();
-    map.addControl(control, 'top-right');
-    setContainer(control.container);
-
-    return () => {
-      setContainer(null);
-      try {
-        map.removeControl(control);
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.debug('Map tools control already removed:', error);
-      }
-    };
-  }, [map]);
-
-  return container;
-};
 
 const MapToolsWrapper = ({
   map,
@@ -140,6 +117,7 @@ const MapToolsWrapper = ({
         </Box>,
         container,
       )}
+      <NavigationTools map={map} translate={translate} />
     </>
   );
 };
