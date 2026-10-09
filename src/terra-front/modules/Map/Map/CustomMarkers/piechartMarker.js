@@ -80,6 +80,11 @@ const createMarker = (
   return el.firstChild;
 };
 
+const getLayerPaint = paint => ({
+  ...paint,
+  'circle-radius': paint['circle-radius'] || 30,
+});
+
 const updateLayerOpacity = (marker, opacity) => {
   marker.getElement().children[0].setAttribute('opacity', opacity);
 };
@@ -93,6 +98,7 @@ export default {
     'circle-radius': 0,
   },
   getUpdateParameters,
+  getLayerPaint,
   createMarker,
   updateLayerOpacity,
 };
