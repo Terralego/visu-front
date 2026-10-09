@@ -274,19 +274,27 @@ export class Visualizer extends React.Component {
     const customStyleLayers =
       (view && view.map && view.map.customStyle && view.map.customStyle.layers) || [];
 
+    const generatedLegends = (mapboxLayerIds = []) =>
+      customStyleLayers
+        .filter(({ id }) => mapboxLayerIds.includes(id))
+        .reduce((all, { advanced_style: advancedStyle }) => [
+          ...all,
+          ...(advancedStyle?.legends || []),
+        ], []);
+
     const legendsFromLayersTree = Array.from(layersTreeState.entries())
       .map(([layer, state]) => {
         if (!state.active) return undefined;
         if (layer.sublayers) {
           const selected = state.sublayers.findIndex(active => active);
           const selectedSublayer = layer.sublayers[selected];
-          return selectedSublayer && selectedSublayer.legends;
+          if (!selectedSublayer) return undefined;
+          return [
+            ...(selectedSublayer.legends || []),
+            ...generatedLegends(selectedSublayer.layers),
+          ];
         }
-        const styleLayer = customStyleLayers.find(e => layer.layers.includes(e.id));
-        const styleLegends =
-          (styleLayer && styleLayer.advanced_style && styleLayer.advanced_style.legends) || [];
-
-        return [...layer.legends, ...(styleLegends || [])];
+        return [...(layer.legends || []), ...generatedLegends(layer.layers)];
       })
       .filter(defined => defined)
       .reduce(
