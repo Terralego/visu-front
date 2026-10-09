@@ -8,10 +8,7 @@ import {
   Button,
 } from '@blueprintjs/core';
 
-import withDeviceSize from '@terralego/core/hoc/withDeviceSize';
-
-import NavBarItemDesktop from '@terralego/core/components/NavBarItemDesktop';
-import NavBarItemTablet from '@terralego/core/components/NavBarItemTablet';
+import { SidebarItem } from '../../../components/Sidebar';
 
 import PartnerPage from './PartnerPage';
 
@@ -45,13 +42,12 @@ export const PartnerOverlayContent = ({
   </Component>
 );
 
-export const PartnerButton = ({ isMobileSized, isPhoneSized, content, ...props }) => {
+export const PartnerButton = ({ content, ...props }) => {
   const [isOpen, setOpen] = React.useState(false);
-  const NavBarItem = isMobileSized ? NavBarItemTablet : NavBarItemDesktop;
 
   return (
     <>
-      <NavBarItem {...props} onClick={() => setOpen(true)} buttonProps={{ 'aria-expanded': isOpen }} />
+      <SidebarItem {...props} onClick={() => setOpen(true)} aria-expanded={isOpen} />
       <Overlay
         className={classNames(
           Classes.OVERLAY_SCROLL_CONTAINER,
@@ -71,14 +67,11 @@ export const PartnerButton = ({ isMobileSized, isPhoneSized, content, ...props }
 };
 
 PartnerButton.propTypes = {
-  isMobileSized: PropTypes.bool,
-  isPhoneSized: PropTypes.bool,
+  content: PropTypes.string,
 };
 
 PartnerButton.defaultProps = {
-  isMobileSized: false,
-  isPhoneSized: false,
+  content: undefined,
 };
 
-
-export default withDeviceSize()(PartnerButton);
+export default PartnerButton;

@@ -119,9 +119,9 @@ describe('fetchAllViews', () => {
     expect(entry.icon).toBeTruthy();
   });
 
-  it('should resolve to an empty list when the request fails', async () => {
+  it('should let the caller know when the request fails', async () => {
     Api.request.mockRejectedValue(new Error('backend is down'));
 
-    await expect(fetchAllViews()).resolves.toEqual([]);
+    await expect(fetchAllViews()).rejects.toThrow('backend is down');
   });
 });

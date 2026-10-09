@@ -80,24 +80,18 @@ export const fetchViewConfig = memoizee(async viewName => {
 }, { promise: true });
 
 export const fetchAllViews = async (rootPath = '') => {
-  try {
-    const config = await Api.request('geolayer/scene/?viewer=true');
-    const allViews = JSON.parse(JSON.stringify(config.results).replace(/"\/api(\/[^"]+)"/g, `"${Api.host}$1"`));
-    return allViews.map(({
-      name,
-      slug,
-      custom_icon: customIcon,
-    }) => ({
-      id: `nav-${slug}`,
-      label: name,
-      href: rootPath ? `/${rootPath}/${slug}` : `/${slug}`,
-      icon: customIcon || defaultIcon,
-    }));
-  } catch (e) {
-    // eslint-disable-next-line no-console
-    console.log(e);
-    return [];
-  }
+  const config = await Api.request('geolayer/scene/?viewer=true');
+  const allViews = JSON.parse(JSON.stringify(config.results).replace(/"\/api(\/[^"]+)"/g, `"${Api.host}$1"`));
+  return allViews.map(({
+    name,
+    slug,
+    custom_icon: customIcon,
+  }) => ({
+    id: `nav-${slug}`,
+    label: name,
+    href: rootPath ? `/${rootPath}/${slug}` : `/${slug}`,
+    icon: customIcon || defaultIcon,
+  }));
 };
 
 export default { fetchViewConfig, fetchAllViews };

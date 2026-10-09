@@ -10,7 +10,6 @@ import './app.scss';
 import '@blueprintjs/datetime/lib/css/blueprint-datetime.css';
 import { Experimental_CssVarsProvider as CssVarsProvider } from '@mui/material';
 
-import SettingsProvider from './views/Main/Provider';
 import withEnv from './config/withEnv';
 import './config/i18n';
 import Main from './views/Main';
@@ -26,9 +25,7 @@ const App = ({ env: { API_HOST } }) => (
         <StateProvider>
           <BrowserRouter>
             <Suspense fallback={<Loading />}>
-              <SettingsProvider>
-                <Main />
-              </SettingsProvider>
+              <Main />
             </Suspense>
           </BrowserRouter>
         </StateProvider>

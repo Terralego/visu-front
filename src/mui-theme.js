@@ -10,6 +10,8 @@ const rgbChannel = hex =>
 
 const cssVar = (name, fallback) => `var(--${name}, ${fallback})`;
 
+const layered = (name, base, fallback) => cssVar(name, cssVar(base, fallback));
+
 const overridable = (name, fallback) => {
   const color = cssVar(name, fallback);
   const channel = cssVar(`${name}-channel`, rgbChannel(fallback));
@@ -42,6 +44,23 @@ const theme = extendTheme({
         primary: overridable('primary', PRIMARY),
         secondary: overridable('secondary', SECONDARY),
         contrasted: overridable('contrasted', CONTRASTED),
+        sidebar: {
+          main: layered('sidebar', 'primary', PRIMARY),
+          mainChannel: layered('sidebar-channel', 'primary-channel', rgbChannel(PRIMARY)),
+          contrastText: layered('sidebar-contrast-text', 'primary-contrast-text', WHITE),
+          contrastTextChannel: layered(
+            'sidebar-contrast-text-channel',
+            'primary-contrast-text-channel',
+            rgbChannel(WHITE),
+          ),
+          selected: layered('sidebar-selection', 'secondary', SECONDARY),
+          selectedChannel: layered('sidebar-selection-channel', 'secondary-channel', rgbChannel(SECONDARY)),
+          selectedContrastText: layered(
+            'sidebar-selection-contrast-text',
+            'secondary-contrast-text',
+            WHITE,
+          ),
+        },
       },
     },
   },

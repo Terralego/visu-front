@@ -12,15 +12,12 @@ import {
 import { LoginForm, SignupForm } from '../../modules/Auth';
 import translateMock from '../../utils/translate';
 
-import NavBarItemDesktop from '../NavBarItemDesktop';
-import NavBarItemTablet from '../NavBarItemTablet';
 import LoginFormRenderer from '../../modules/Auth/components/LoginForm/LoginFormRenderer';
 
 export const LoginButton = ({
   authenticated,
-  isMobileSized,
-  isPhoneSized,
   logoutAction,
+  trigger: Trigger,
   translate,
   allowUserRegistration,
   render = LoginFormRenderer,
@@ -35,7 +32,6 @@ export const LoginButton = ({
   const [isNewlyAuthenticated, setIsNewlyAuthenticated] = useState(false);
 
   const wantLogout = isOpen && authenticated && !isNewlyAuthenticated;
-  const NavBarItem = isMobileSized ? NavBarItemTablet : NavBarItemDesktop;
 
   useEffect(() => {
     if (authenticated) {
@@ -52,7 +48,7 @@ export const LoginButton = ({
 
   return (
     <>
-      <NavBarItem {...props} onClick={toggleOverlay} />
+      <Trigger {...props} onClick={toggleOverlay} />
       <Overlay
         className={classNames(
           Classes.OVERLAY_SCROLL_CONTAINER,
@@ -142,9 +138,8 @@ export const LoginButton = ({
 };
 
 LoginButton.propTypes = {
+  trigger: PropTypes.elementType.isRequired,
   authenticated: PropTypes.bool,
-  isMobileSized: PropTypes.bool,
-  isPhoneSized: PropTypes.bool,
   logoutAction: PropTypes.func,
   translate: PropTypes.func,
   ssoLink: PropTypes.string,
@@ -155,8 +150,6 @@ LoginButton.propTypes = {
 
 LoginButton.defaultProps = {
   authenticated: false,
-  isMobileSized: false,
-  isPhoneSized: false,
   ssoLink: undefined,
   defaultButtonText: undefined,
   ssoButtonText: undefined,

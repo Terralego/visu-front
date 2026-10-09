@@ -1,37 +1,23 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-
-import classnames from 'classnames';
-import withDeviceSize from '@terralego/core/hoc/withDeviceSize';
-import { connectAuthProvider } from '@terralego/core/modules/Auth';
-import { useTranslation } from 'react-i18next';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
 import PropTypes from 'prop-types';
-import { NavLink } from 'react-router-dom';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import MainMenu from '@terralego/core/components/MainMenu';
 import LoginButton from '@terralego/core/components/LoginButton';
+import { connectAuthProvider } from '@terralego/core/modules/Auth';
 import SSOLoginFormRenderer from '@terralego/core/modules/Auth/components/LoginForm/SSOLoginFormRenderer';
+
+import Sidebar, { SidebarItem, signedIn } from '../../../components/Sidebar';
 import { fetchAllViews } from '../../../services/visualizer';
 
 import PartnerButton from './PartnerButton';
 
 import './styles.scss';
 
-const getLinkProps = link => (
-  !link.startsWith('http') && {
-    link: {
-      component: NavLink,
-      linkProps: {
-        hrefAttribute: 'to',
-      },
-    },
-  }
-);
-
 export const Header = ({
   env: { VIEW_ROOT_PATH },
-  isHeaderOpen,
-  isMobileSized,
-  toggleHeader,
   authenticated,
   settings: {
     theme: { logo = '', logoUrl = '/' } = {},
@@ -47,103 +33,77 @@ export const Header = ({
     loginMessage,
   },
 }) => {
-  const [menu, setMenu] = useState([]);
   const { t } = useTranslation();
-
-  const extraMenuItemsToMenu = useMemo(() => extraMenuItems.map(item => (
-    { ...item, ...getLinkProps(item.href) }
-  )), [extraMenuItems]);
-
-  const generateMenu = useCallback(views => ({
-    navHeader: {
-      id: 'welcome',
-      label: t('menu.home'),
-      href: logoUrl,
-      icon: logo,
-      ...getLinkProps(logoUrl),
-    },
-    navItems: [
-      views,
-      extraMenuItemsToMenu,
-      [{
-        id: 'nav-partenaires',
-        component: () => (
-          <PartnerButton
-            label={t('menu.informations')}
-            icon="info-sign"
-            content={infoContent}
-          />
-        ),
-      }, {
-        id: 'nav-connexion',
-        component: () => (
-          <LoginButton
-            icon={authenticated ? 'log-out' : 'log-in'}
-            label={authenticated ? t('menu.logout') : t('menu.login')}
-            className={authenticated ? 'log-out' : 'log-in'}
-            translate={t}
-            allowUserRegistration={allowUserRegistration}
-            ssoLink={authenticated ? logoutUrl : loginUrl}
-            ssoButtonText={ssoButtonText}
-            defaultButtonText={defaultButtonText}
-            loginMessage={loginMessage}
-            render={loginUrl ? SSOLoginFormRenderer : undefined}
-          />
-        ),
-      }],
-    ],
-  }), [
-    t,
-    logoUrl,
-    logo,
-    extraMenuItemsToMenu,
-    authenticated,
-    allowUserRegistration,
-    loginUrl,
-    logoutUrl,
-    ssoButtonText,
-    defaultButtonText,
-    infoContent,
-    loginMessage,
-  ]);
-
+  const [views, setViews] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
+    if (!VIEW_ROOT_PATH) {
+      setIsLoading(false);
+      return undefined;
+    }
+
     let isMounted = true;
+    setIsLoading(true);
+    setHasError(false);
 
-    const loadViewList = async () => {
-      /** Load the view list and add it to base menu only if component mounted */
-      const views = await fetchAllViews(VIEW_ROOT_PATH);
-      if (!isMounted) return;
-      const viewsToMenu = views.map(view => ({ ...view, ...getLinkProps(view.href) }));
-      setMenu(generateMenu(viewsToMenu));
-    };
-
-    VIEW_ROOT_PATH && loadViewList();
+    fetchAllViews(VIEW_ROOT_PATH)
+      .then(loadedViews => isMounted && setViews(loadedViews))
+      .catch(() => isMounted && setHasError(true))
+      .finally(() => isMounted && setIsLoading(false));
 
     return () => {
       isMounted = false;
     };
-  }, [VIEW_ROOT_PATH, generateMenu]);
+  }, [VIEW_ROOT_PATH]);
+
+  const viewItems = useMemo(() => views.map(({ id, label, href, icon }) => (
+    <SidebarItem key={id} id={id} label={label} href={href} icon={icon} />
+  )), [views]);
+
+  const extraItems = useMemo(() => extraMenuItems.map(({ id, label, href, icon }) => (
+    <SidebarItem key={id || href} id={id} label={label} href={href} icon={icon} />
+  )), [extraMenuItems]);
 
   return (
-    // eslint-disable-next-line jsx-a11y/click-events-have-key-events
-    <div
-      className={classnames(
-        'main__header',
-        { 'main__header--mobile': isMobileSized },
-        { 'main__header--mobile--open': isMobileSized && isHeaderOpen },
+    <Sidebar
+      label={t('menu.label')}
+      loading={isLoading}
+      error={hasError}
+      errorLabel={t('menu.views_error')}
+      header={(
+        <SidebarItem
+          variant="brand"
+          id="welcome"
+          label={t('menu.home')}
+          href={logoUrl}
+          icon={logo}
+          exact
+        />
       )}
-      onClick={() => toggleHeader()}
-      role="button"
-      tabIndex="-1"
+      items={viewItems}
+      links={extraItems}
     >
-      <MainMenu {...menu} className="main__navbar" />
-      {isMobileSized && !isHeaderOpen
-        // eslint-disable-next-line jsx-a11y/click-events-have-key-events
-        && <div className="main__header__target" role="button" tabIndex="-1" onClick={() => toggleHeader(false)} />
-      }
-    </div>
+      <PartnerButton
+        label={t('menu.informations')}
+        icon={<InfoOutlinedIcon />}
+        content={infoContent}
+      />
+      <LoginButton
+        trigger={SidebarItem}
+        sx={authenticated ? signedIn : undefined}
+        icon={authenticated ? <LogoutIcon /> : <LoginIcon />}
+        label={authenticated ? t('menu.logout') : t('menu.login')}
+        translate={t}
+        allowUserRegistration={allowUserRegistration}
+        ssoLink={authenticated ? logoutUrl : loginUrl}
+        ssoButtonText={ssoButtonText}
+        defaultButtonText={defaultButtonText}
+        loginMessage={loginMessage}
+        render={loginUrl ? SSOLoginFormRenderer : undefined}
+      />
+    </Sidebar>
   );
 };
 
@@ -151,9 +111,6 @@ Header.propTypes = {
   env: PropTypes.shape({
     VIEW_ROOT_PATH: PropTypes.string,
   }),
-  isHeaderOpen: PropTypes.bool,
-  isMobileSized: PropTypes.bool,
-  toggleHeader: PropTypes.func,
   authenticated: PropTypes.bool,
   settings: PropTypes.shape({
     theme: PropTypes.shape({
@@ -171,9 +128,6 @@ Header.propTypes = {
 };
 
 Header.defaultProps = {
-  isHeaderOpen: false,
-  isMobileSized: false,
-  toggleHeader: () => {},
   authenticated: false,
   settings: {
     theme: {
@@ -193,4 +147,4 @@ Header.defaultProps = {
   },
 };
 
-export default withDeviceSize()(connectAuthProvider('authenticated')(Header));
+export default connectAuthProvider('authenticated')(Header);

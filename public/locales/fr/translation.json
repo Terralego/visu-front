@@ -57,7 +57,9 @@
     "informations": "Informations",
     "home": "Accueil",
     "login": "Connexion",
-    "logout": "Déconnexion"
+    "logout": "Déconnexion",
+    "label": "Navigation principale",
+    "views_error": "Impossible de charger la liste des vues"
   },
   "terralego": {
     "forms": {
@@ -206,10 +208,10 @@
       }
     },
     "widget": {
-      "synthesis":{
+      "synthesis": {
         "title": "Synthèse : {{layer}}"
       },
-      "default":{
+      "default": {
         "title": "Widget"
       }
     },
