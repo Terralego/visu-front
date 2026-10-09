@@ -254,7 +254,7 @@ const ReportingModuleContent = ({
   const renderFieldInput = field => {
     if (!field) return null;
 
-    const { required, sourceFieldId, format_type: formatType, label, value } = field;
+    const { required, sourceFieldId, format_type: formatType, value } = field;
 
     return (
       <TextField

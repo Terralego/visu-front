@@ -8,7 +8,7 @@ import ReactDOM from 'react-dom';
 import { Box } from '@mui/material';
 import { v4 as uuid } from 'uuid';
 import { connectState } from '../../State/context';
-import MapComponent, { CONTROLS_TOP_RIGHT, DEFAULT_CONTROLS } from '../Map';
+import MapComponent, { DEFAULT_CONTROLS } from '../Map';
 import { getClusteredFeatures } from '../services/cluster';
 import { fitZoom, setInteractions } from '../services/mapUtils';
 

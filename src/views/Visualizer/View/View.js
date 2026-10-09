@@ -809,7 +809,6 @@ export class Visualizer extends React.Component {
 
       const {
         feature: { sourceLayer: detailsSourceLayer },
-        layer: detailLayer,
       } = details;
 
       const feature = map
@@ -1010,9 +1009,6 @@ export class Visualizer extends React.Component {
       details,
       details: { layer: detailLayer } = {},
       isLayersTreeVisible,
-      isReportingModuleVisible,
-      isDeclarationModuleVisible,
-      isShareModuleVisible,
       visibleDrawer,
       declarationLocation,
       selectedLayerForReporting,

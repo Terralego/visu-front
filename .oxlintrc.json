@@ -27,7 +27,14 @@
     "public/**"
   ],
   "rules": {
-    "eslint/no-unused-vars": "warn",
+    "eslint/no-unused-vars": [
+      "error",
+      {
+        "args": "none",
+        "ignoreRestSiblings": true,
+        "caughtErrors": "none"
+      }
+    ],
     "eslint/no-unused-expressions": "warn",
     "react/set-state-in-effect": "warn",
     "react/no-did-mount-set-state": "warn",
