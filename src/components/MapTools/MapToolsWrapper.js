@@ -120,13 +120,11 @@ const MapToolsWrapper = ({
               />
             )}
           </ToolGroup>
-          <ToolGroup>
-            <BackgroundTool
-              styles={backgroundStyles}
-              interactiveMapInstance={interactiveMapInstance}
-              translate={translate}
-            />
-          </ToolGroup>
+          <BackgroundTool
+            styles={backgroundStyles}
+            interactiveMapInstance={interactiveMapInstance}
+            translate={translate}
+          />
           <ToolGroup>
             {!isMobileSized && (
               <PrintTool map={map} translate={translate} onToggle={onPrintToggle} />
@@ -138,9 +136,7 @@ const MapToolsWrapper = ({
               onClick={onToggleShare}
             />
           </ToolGroup>
-          <ToolGroup>
-            <DeclarationTool isOpen={isDeclarationOpen} onToggle={onToggleDeclaration} />
-          </ToolGroup>
+          <DeclarationTool isOpen={isDeclarationOpen} onToggle={onToggleDeclaration} />
         </Box>,
         container,
       )}

@@ -12,6 +12,7 @@ import PropTypes from 'prop-types';
 import React, { useCallback, useState } from 'react';
 
 import ToolButton from './ToolButton';
+import ToolGroup from './ToolGroup';
 import { frostedContainer, surface } from './panelStyles';
 
 const BackgroundTool = ({ styles, interactiveMapInstance, translate }) => {
@@ -36,12 +37,14 @@ const BackgroundTool = ({ styles, interactiveMapInstance, translate }) => {
 
   return (
     <>
-      <ToolButton
-        label={translate('terralego.map.backgroundstyles_control.button_label')}
-        icon={<LayersIcon sx={{ fontSize: 20 }} />}
-        isActive={open}
-        onClick={openMenu}
-      />
+      <ToolGroup>
+        <ToolButton
+          label={translate('terralego.map.backgroundstyles_control.button_label')}
+          icon={<LayersIcon sx={{ fontSize: 20 }} />}
+          isActive={open}
+          onClick={openMenu}
+        />
+      </ToolGroup>
 
       <Popover
         open={open}
