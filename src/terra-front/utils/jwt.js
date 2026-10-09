@@ -1,4 +1,11 @@
-import b64u from 'base64url';
+const decodeBase64Url = value => {
+  const base64 = value.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = base64.padEnd(base64.length + ((4 - (base64.length % 4)) % 4), '=');
+  const percentEncoded = Array.from(window.atob(padded))
+    .map(char => `%${char.charCodeAt(0).toString(16).padStart(2, '0')}`)
+    .join('');
+  return decodeURIComponent(percentEncoded);
+};
 
 /**
  * Returns decoded JWT token payload
@@ -9,10 +16,9 @@ export const getTokenPayload = token => {
   }
 
   const [, payload = ''] = token.split('.');
-  const base64url = payload.replace('-', '+').replace('_', '/');
 
   try {
-    return JSON.parse(b64u.decode(base64url));
+    return JSON.parse(decodeBase64Url(payload));
   } catch (e) {
     return {};
   }

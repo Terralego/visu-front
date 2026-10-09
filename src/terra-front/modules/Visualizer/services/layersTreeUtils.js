@@ -15,23 +15,39 @@ export const isCluster = (source, layerId) => !!source.match(new RegExp(`^${laye
  * @param {string} table Active table from hash (layer id)
  * @return {Map} A reduced layer tree state
  */
+export const getLayersTreeIds = (group, ids = []) => {
+  group.forEach(layer => {
+    if (layer.group) {
+      getLayersTreeIds(layer.layers, ids);
+      return;
+    }
+    const { layers: [layerId] = [] } = layer;
+    if (layerId !== undefined) ids.push(layerId);
+  });
+  return ids;
+};
+
 export const initLayersStateAction = (layersTree, { layers: hashLayers, table } = {}) => {
   const layersTreeState = new Map();
 
+  const requestedIds = (Array.isArray(hashLayers) ? hashLayers : [hashLayers])
+    .filter(id => id !== undefined && id !== null && id !== '');
+  const knownIds = getLayersTreeIds(layersTree);
+  const hashMatchesTree = requestedIds.some(id => knownIds.includes(id));
+
   function reduceLayers (group, map) {
     return group.reduce((layersStateMap, layer) => {
-      const { initialState = {}, layers: [layerId] = [] } = layer;
+      const { initialState: layerInitialState = {}, layers: [layerId] = [] } = layer;
       if (layer.group) {
         return reduceLayers(layer.layers, layersStateMap);
       }
+      const initialState = { ...layerInitialState };
       initialState.opacity = initialState.opacity === undefined
         ? 1
         : initialState.opacity;
 
-      if (hashLayers) {
-        initialState.active = (
-          Array.isArray(hashLayers) && hashLayers.includes(layerId))
-          || hashLayers === layerId;
+      if (hashMatchesTree) {
+        initialState.active = requestedIds.includes(layerId);
       }
 
       if (table && table === layerId) {
@@ -83,10 +99,14 @@ export const setLayerStateAction = (layer, layerState, prevLayersTreeState, rese
 
   const newLayerState = { ...layerState };
 
+  if (newLayerState.active === false) {
+    newLayerState.table = false;
+  }
+
   if (newLayerState.table) {
-    // Easiest to to read as transform Map in Array and run a .map() on it
-    // eslint-disable-next-line no-param-reassign
-    newLayersTreeState.forEach(layState => { layState.table = false; });
+    Array.from(newLayersTreeState).forEach(([node, layState]) => {
+      newLayersTreeState.set(node, { ...layState, table: false });
+    });
   }
   newLayersTreeState.set(layer, {
     ...reset ? {} : prevLayerState,

@@ -1,15 +1,22 @@
-import { Api, EVENT_FAILURE, EVENT_SUCCESS, buildHeaders } from './api';
-import { IMPERISHABLE_TOKEN } from '../../Auth/services/auth.test';
+import b64u from 'base64url';
 
-global.fetch = jest.fn(path => {
-  if (path === '/wrongpath') {
-    return {
-      status: 404,
-    };
-  }
-  return {
-    status: 200,
-  };
+import { Api, EVENT_FAILURE, EVENT_SUCCESS, buildHeaders } from './api';
+
+const IMPERISHABLE_TOKEN = `hdr.${b64u(JSON.stringify({ exp: 99999999999, user: { id: 42 } }))}.sig`;
+
+const response = (status, payload) => Promise.resolve({
+  status,
+  json: async () => payload,
+  text: async () => JSON.stringify(payload),
+});
+
+global.fetch = vi.fn(path => (path.endsWith('/wrongpath')
+  ? response(404, { detail: 'not found' })
+  : response(200, { ok: true })));
+
+beforeEach(() => {
+  global.localStorage.clear();
+  global.fetch.mockClear();
 });
 
 it('should build url', () => {
@@ -21,7 +28,7 @@ it('should build url', () => {
   expect(api.buildUrl({ endpoint: 'foo', querystring: { bar: 'bar' } })).toBe('http://foo.bar/foo?bar=bar');
 });
 
-it('should fetch a request', async done => {
+it('should fetch a request', async () => {
   const api = new Api();
   api.host = 'http://foo.bar';
   await api.request('');
@@ -30,11 +37,9 @@ it('should fetch a request', async done => {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
   });
-
-  done();
 });
 
-it('should request a formData', async done => {
+it('should request a formData', async () => {
   const api = new Api();
   api.host = '';
   const body = new FormData();
@@ -44,11 +49,10 @@ it('should request a formData', async done => {
     headers: {},
     body,
   });
-  done();
 });
 
 
-it('should catch a failed fetch', async done => {
+it('should catch a failed fetch', async () => {
   const api = new Api();
   api.host = '';
   let error;
@@ -58,13 +62,12 @@ it('should catch a failed fetch', async done => {
     error = e;
   }
   expect(error.constructor).toBe(Error);
-  done();
 });
 
 it('should fire events', () => {
   const api = new Api();
-  const listener1 = jest.fn();
-  const listener2 = jest.fn();
+  const listener1 = vi.fn();
+  const listener2 = vi.fn();
   api.on(EVENT_FAILURE, listener1);
   api.on(EVENT_SUCCESS, listener2);
   api.handleError({});
@@ -84,8 +87,6 @@ it('should off event', () => {
 });
 
 describe('should build headers', () => {
-  beforeEach(() => global.localStorage.clear());
-
   it('with no token', () => {
     const headers = buildHeaders({ foo: 'bar' });
     expect(headers).toEqual({ foo: 'bar' });
@@ -100,7 +101,7 @@ describe('should build headers', () => {
 
 it('should fire and catch an event', () => {
   const api = new Api();
-  const listener = jest.fn();
+  const listener = vi.fn();
   api.on('foo', listener);
   api.fire('foo', 'bar');
   expect(listener).toHaveBeenCalledWith('bar');

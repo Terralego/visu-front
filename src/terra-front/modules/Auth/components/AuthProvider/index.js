@@ -6,6 +6,7 @@ import {
   obtainToken,
   refreshToken,
   clearToken,
+  closeServerSession,
   createToken,
 } from '../../services/auth';
 import context from '../../services/context';
@@ -47,14 +48,11 @@ export class AuthProvider extends React.Component {
   }
 
   logoutAction = async (ssoLink = null) => {
-    if (ssoLink) {
-      try {
-        const ssoUrl = new URL(ssoLink, window.location);
-        await fetch(ssoUrl);
-      } catch (e) {
-        // eslint-disable-next-line no-console
-        console.error(e);
-      }
+    try {
+      await closeServerSession();
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error(e);
     }
     clearToken();
     this.setState({ authenticated: false, user: null });

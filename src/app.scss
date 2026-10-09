@@ -1,5 +1,5 @@
 @import './theme.scss';
-@import '~@blueprintjs/core/src/blueprint.scss';
+@import '@blueprintjs/core/src/blueprint.scss';
 
 // Quick-and-dirty fix for checkboxes, as 1. inline properly svg from blueprint
 // would mean to eject and 2. blueprint does not export svg source
@@ -24,15 +24,6 @@ body {
   z-index: 120;
 }
 
-.placeholder__navbar {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 3.3rem;
-  background-color: #394b59;
-  z-index: 100;
-}
 .with-splash .splash-screen_container {
   opacity: 1;
 }
@@ -44,10 +35,11 @@ body {
   transform: translate(-50%, -50%);
 }
 
+.splash-screen img {
+  max-width: calc(100dvw - 100px);
+}
+
 @media(min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
-  .placeholder__navbar {
-    width: 2.65rem;
-  }
   .splash-screen {
     top: 25%;
     left: 25%;
@@ -56,9 +48,6 @@ body {
 }
 
 @media(min-width: 320px) and (max-width: 768px) and (orientation: portrait) {
-  .placeholder__navbar {
-    width: 2.75rem;
-  }
   .splash-screen {
     transform: scale(.65);
   }

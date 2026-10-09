@@ -1,0 +1,69 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "react",
+    "import",
+    "vitest",
+    "jsx-a11y",
+    "promise",
+    "unicorn",
+    "oxc"
+  ],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn",
+    "pedantic": "off",
+    "style": "off"
+  },
+  "env": {
+    "browser": true,
+    "es2024": true,
+    "node": true
+  },
+  "ignorePatterns": [
+    "build/**",
+    "coverage/**",
+    "public/**"
+  ],
+  "rules": {
+    "eslint/no-unused-vars": [
+      "error",
+      {
+        "args": "none",
+        "ignoreRestSiblings": true,
+        "caughtErrors": "none"
+      }
+    ],
+    "eslint/no-unused-expressions": "warn",
+    "react/set-state-in-effect": "warn",
+    "react/no-did-mount-set-state": "warn",
+    "react/refs": "warn",
+    "react/static-components": "warn",
+    "react/immutability": "warn",
+    "react/incompatible-library": "warn",
+    "react-hooks/exhaustive-deps": "warn",
+    "unicorn/no-useless-spread": "warn",
+    "unicorn/no-useless-fallback-in-spread": "warn",
+    "unicorn/no-invalid-fetch-options": "warn",
+    "unicorn/no-empty-file": "warn",
+    "jsx-a11y/prefer-tag-over-role": "warn",
+    "jsx-a11y/no-autofocus": "warn",
+    "jsx-a11y/aria-role": "warn",
+    "jsx-a11y/control-has-associated-label": "warn",
+    "import/no-unassigned-import": "off",
+    "import/no-named-as-default": "off",
+    "import/no-named-as-default-member": "off",
+    "eslint/no-underscore-dangle": "off"
+  },
+  "overrides": [
+    {
+      "files": [
+        "**/*.test.js"
+      ],
+      "rules": {
+        "eslint/no-unused-expressions": "off"
+      }
+    }
+  ]
+}

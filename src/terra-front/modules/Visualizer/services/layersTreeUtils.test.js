@@ -16,28 +16,30 @@ import {
 } from './layersTreeUtils';
 import search from './search';
 
-jest.mock('./search', () => ({
+vi.mock('./search', () => ({
   MAX_SIZE: 10000,
-  search: jest.fn(({ index }) => {
-    if (index === 'witherror') {
+  default: {
+    search: vi.fn(({ index }) => {
+      if (index === 'witherror') {
+        return {
+          aggregations: {},
+        };
+      }
       return {
-        aggregations: {},
-      };
-    }
-    return {
-      aggregations: {
-        values: {
-          buckets: [{
-            key: 'foo',
-          }, {
-            key: 'bar',
-          }],
+        aggregations: {
+          values: {
+            buckets: [{
+              key: 'foo',
+            }, {
+              key: 'bar',
+            }],
+          },
+          min: { value: 42 },
+          max: { value: 123 },
         },
-        min: { value: 42 },
-        max: { value: 123 },
-      },
-    };
-  }),
+      };
+    }),
+  },
 }));
 
 const layersTree = [{
@@ -159,6 +161,44 @@ it('should init layers state', () => {
   const layersTreeState = initLayersStateAction(layersTree);
 
   expect(layersTreeState).toEqual(initialLayersTreeState);
+});
+
+it('should keep the default states when url layers match nothing in the tree', () => {
+  const layersTreeState = initLayersStateAction(layersTree, { layers: ['nope1', 'nope2'] });
+
+  expect(layersTreeState).toEqual(initialLayersTreeState);
+});
+
+it('should let matching url layers override the default states', () => {
+  const layersTreeState = initLayersStateAction(layersTree, { layers: ['layer2.2'] });
+
+  expect(layersTreeState.get(layersTree[1].layers[1]).active).toBe(true);
+  expect(layersTreeState.get(layersTree[0]).active).toBe(false);
+});
+
+it('should not mutate the previous states when a table is activated', () => {
+  const previous = initLayersStateAction(layersTree);
+  const snapshot = JSON.stringify(Array.from(previous.values()));
+
+  setLayerStateAction(layersTree[0], { table: true }, previous);
+
+  expect(JSON.stringify(Array.from(previous.values()))).toBe(snapshot);
+});
+
+it('should not mutate the layers tree config', () => {
+  const tree = [{
+    label: 'a',
+    initialState: { active: true, opacity: 0.3 },
+    layers: ['layerA'],
+  }, {
+    label: 'b',
+    layers: ['layerB'],
+  }];
+  const before = JSON.stringify(tree);
+
+  initLayersStateAction(tree, { layers: ['layerB'] });
+
+  expect(JSON.stringify(tree)).toBe(before);
 });
 
 
@@ -286,14 +326,14 @@ it('should be a cluster', () => {
 
 it('should filter features', () => {
   const map = {
-    getLayer: jest.fn(layerId => (layerId === 'unknownlayer'
+    getLayer: vi.fn(layerId => (layerId === 'unknownlayer'
       ? undefined
       : {
         source: layerId === 'cluster' ? `${layerId}-cluster-source-0` : 'source',
       })),
-    getFilter: jest.fn(() => ['prev', 'filter']),
-    setFilter: jest.fn(),
-    fire: jest.fn(),
+    getFilter: vi.fn(() => ['prev', 'filter']),
+    setFilter: vi.fn(),
+    fire: vi.fn(),
   };
   const layer1 = {
     id: 'foo',
@@ -346,14 +386,14 @@ it('should filter features', () => {
 
 it('should reset filters', () => {
   const map = {
-    getLayer: jest.fn(layerId => (layerId === 'unknownlayer'
+    getLayer: vi.fn(layerId => (layerId === 'unknownlayer'
       ? undefined
       : {
         source: layerId === 'cluster' ? `${layerId}-cluster-source-0` : 'source',
       })),
-    getFilter: jest.fn(() => ['prev', 'filter']),
-    setFilter: jest.fn(),
-    fire: jest.fn(),
+    getFilter: vi.fn(() => ['prev', 'filter']),
+    setFilter: vi.fn(),
+    fire: vi.fn(),
   };
   const layer1 = {
     label: 'foo',
@@ -414,7 +454,26 @@ it('should set group state', () => {
   });
   expect(newLayersTreeState.get(layer.layers[1])).toEqual({
     active: false,
+    table: false,
   });
+});
+
+it('should close the table of a layer being deactivated', () => {
+  const layer = { label: 'foo' };
+  const prevLayersTreeState = new Map([[layer, { active: true, table: true }]]);
+
+  const newLayersTreeState = setLayerStateAction(layer, { active: false }, prevLayersTreeState);
+
+  expect(newLayersTreeState.get(layer)).toEqual({ active: false, table: false });
+});
+
+it('should keep the table open when another property changes', () => {
+  const layer = { label: 'foo' };
+  const prevLayersTreeState = new Map([[layer, { active: true, table: true }]]);
+
+  const newLayersTreeState = setLayerStateAction(layer, { opacity: 0.5 }, prevLayersTreeState);
+
+  expect(newLayersTreeState.get(layer)).toEqual({ active: true, table: true, opacity: 0.5 });
 });
 
 it('should sort custom layers', () => {

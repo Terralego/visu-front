@@ -21,7 +21,8 @@ $containerWidth: 20rem;
   z-index: 80;
   background: rgb(48,64,77);
   will-change: width;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 
   &--visible {
     width: $containerWidth;
@@ -74,8 +75,8 @@ $containerWidth: 20rem;
     justify-content: center;
 
     &__item {
-      width: 50%;
       text-align: center;
+      padding-top: 10px;
     }
 
     &__value {
@@ -85,6 +86,7 @@ $containerWidth: 20rem;
     }
     &__loading {
       display: block;
+      font-size: 1rem;
       height: 2rem;
       color: #4580E6;
       font-weight: 800;

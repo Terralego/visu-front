@@ -8,7 +8,7 @@ import {
   Tag,
   PopoverPosition,
 } from '@blueprintjs/core';
-import uuid from 'uuid/v4';
+import { v4 as uuid } from 'uuid';
 
 import OptionsLayer from './OptionsLayer';
 import LayersTreeItemFilters from './LayersTreeItemFilters';
@@ -30,6 +30,7 @@ export class LayersTreeItem extends React.Component {
     isMobileSized: PropTypes.bool,
     isPhoneSized: PropTypes.bool,
     customLabel: PropTypes.string,
+    children: PropTypes.node,
   };
 
   static defaultProps = {
@@ -41,6 +42,7 @@ export class LayersTreeItem extends React.Component {
     isMobileSized: false,
     isPhoneSized: false,
     customLabel: null,
+    children: null,
   }
 
   state = {
@@ -92,11 +94,9 @@ export class LayersTreeItem extends React.Component {
     const { activeLayer: layer, widgets: prevWidgets = [], setLayerState } = this.props;
     const contains = this.isWidgetActive(widget);
     const { hasWidgetActive } = this.state;
-    const widgets = [
-      ...(contains
+    const widgets = (contains
         ? prevWidgets.filter(w => w !== widget)
-        : [...prevWidgets, widget]),
-    ];
+        : [...prevWidgets, widget]);
 
     this.setState({ hasWidgetActive: !hasWidgetActive });
 
@@ -141,6 +141,7 @@ export class LayersTreeItem extends React.Component {
       extent,
       isDetailsVisible,
       customLabel,
+      children,
     } = this.props;
 
     if (hidden) return null;
@@ -267,6 +268,7 @@ export class LayersTreeItem extends React.Component {
             layer={layer}
           />
         )}
+        {children}
       </Card>
     );
   }

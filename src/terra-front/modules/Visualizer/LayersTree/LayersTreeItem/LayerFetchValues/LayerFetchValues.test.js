@@ -2,14 +2,14 @@ import LayerFetchValues from './LayerFetchValues';
 
 it('should fetch values on mount', () => {
   const instance = new LayerFetchValues({});
-  instance.fetchValues = jest.fn();
+  instance.fetchValues = vi.fn();
   instance.componentDidMount();
   expect(instance.fetchValues).toHaveBeenCalled();
 });
 
 it('should fetch values on update', () => {
   const instance = new LayerFetchValues({});
-  instance.fetchValues = jest.fn();
+  instance.fetchValues = vi.fn();
   instance.componentDidUpdate({});
   expect(instance.fetchValues).not.toHaveBeenCalled();
   instance.componentDidUpdate({ layer: {} });
@@ -17,7 +17,7 @@ it('should fetch values on update', () => {
 });
 
 it('should fetch values', () => {
-  const fetchPropertiesValues = jest.fn();
+  const fetchPropertiesValues = vi.fn();
   const layer = {};
   const instance = new LayerFetchValues({ fetchPropertiesValues, layer });
   const property = {

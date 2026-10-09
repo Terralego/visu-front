@@ -28,9 +28,7 @@ export class SignupForm extends React.Component {
     const properties = { ...this.state };
 
     this.setState(state => ({
-      errors: {
-        ...Object.keys(state).reduce((acc, curr) => ({ ...acc, [curr]: false }), {}),
-      },
+      errors: Object.keys(state).reduce((acc, curr) => ({ ...acc, [curr]: false }), {}),
       loading: true,
     }));
 
