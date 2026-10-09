@@ -95,26 +95,29 @@ it('should also watch the other map panels', () => {
 
 it('should hide legends taller than half the screen on a small device', () => {
   const onChange = vi.fn();
+  window.innerWidth = 400;
   window.innerHeight = 800;
   setup({ legends: rect(0, 100, 200, 600), panel: rect(1400, 100, 1700, 500) });
 
-  render(<LegendsOverlapWatcher isMobileSized onChange={onChange} />);
+  render(<LegendsOverlapWatcher onChange={onChange} />);
 
   expect(onChange).toHaveBeenLastCalledWith(true);
 });
 
 it('should keep short legends on a small device', () => {
   const onChange = vi.fn();
+  window.innerWidth = 400;
   window.innerHeight = 800;
   setup({ legends: rect(0, 100, 200, 400), panel: rect(1400, 100, 1700, 500) });
 
-  render(<LegendsOverlapWatcher isMobileSized onChange={onChange} />);
+  render(<LegendsOverlapWatcher onChange={onChange} />);
 
   expect(onChange).toHaveBeenLastCalledWith(false);
 });
 
 it('should not mind tall legends on a large screen', () => {
   const onChange = vi.fn();
+  window.innerWidth = 1200;
   window.innerHeight = 800;
   setup({ legends: rect(0, 100, 200, 600), panel: rect(1400, 100, 1700, 500) });
 

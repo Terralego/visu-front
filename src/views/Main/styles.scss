@@ -19,8 +19,16 @@ $tableHeight: 33vh;
   padding: 0 ! important;
 
   &__header {
+    overflow: hidden;
+
     .appName-title-logo {
       margin-top: 0;
+    }
+
+    .appName,
+    .appName-title,
+    .appName-title-logo {
+      max-width: 100%;
     }
   }
 }

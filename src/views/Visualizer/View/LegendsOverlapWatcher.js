@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export const rectsOverlap = (a, b) =>
   a.width > 0 &&
@@ -14,12 +14,35 @@ export const rectsOverlap = (a, b) =>
 const LEGENDS_SELECTOR = '.interactive-map__legends';
 const PANELS_SELECTOR = '.map-overlay-panel';
 
-export const MAX_MOBILE_HEIGHT_RATIO = 0.5;
+export const MAX_SMALL_SCREEN_WIDTH = 600;
+export const MAX_SMALL_SCREEN_HEIGHT_RATIO = 0.5;
 
-const LegendsOverlapWatcher = ({ panelsOpen, isMobileSized, onChange }) => {
+const LegendsOverlapWatcher = ({ panelsOpen, legendsCount, onChange }) => {
+  const [legends, setLegends] = useState(null);
+
   useEffect(() => {
-    const legends = document.querySelector(LEGENDS_SELECTOR);
+    const found = document.querySelector(LEGENDS_SELECTOR);
 
+    if (found) {
+      setLegends(found);
+      return undefined;
+    }
+
+    setLegends(null);
+
+    const observer = new MutationObserver(() => {
+      const node = document.querySelector(LEGENDS_SELECTOR);
+      if (node) {
+        setLegends(node);
+        observer.disconnect();
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    return () => observer.disconnect();
+  }, [legendsCount]);
+
+  useEffect(() => {
     if (!legends) {
       onChange(false);
       return undefined;
@@ -29,8 +52,8 @@ const LegendsOverlapWatcher = ({ panelsOpen, isMobileSized, onChange }) => {
 
     const check = () => {
       const legendsRect = legends.getBoundingClientRect();
-      const isTooTall = isMobileSized
-        && legendsRect.height > window.innerHeight * MAX_MOBILE_HEIGHT_RATIO;
+      const isTooTall = window.innerWidth <= MAX_SMALL_SCREEN_WIDTH
+        && legendsRect.height > window.innerHeight * MAX_SMALL_SCREEN_HEIGHT_RATIO;
 
       onChange(isTooTall
         || panels.some(panel => rectsOverlap(legendsRect, panel.getBoundingClientRect())));
@@ -51,20 +74,20 @@ const LegendsOverlapWatcher = ({ panelsOpen, isMobileSized, onChange }) => {
       panels.forEach(panel => panel.removeEventListener('transitionend', check));
       window.removeEventListener('resize', check);
     };
-  }, [panelsOpen, isMobileSized, onChange]);
+  }, [panelsOpen, legends, onChange]);
 
   return null;
 };
 
 LegendsOverlapWatcher.propTypes = {
   panelsOpen: PropTypes.bool,
-  isMobileSized: PropTypes.bool,
+  legendsCount: PropTypes.number,
   onChange: PropTypes.func.isRequired,
 };
 
 LegendsOverlapWatcher.defaultProps = {
   panelsOpen: false,
-  isMobileSized: false,
+  legendsCount: 0,
 };
 
 export default LegendsOverlapWatcher;

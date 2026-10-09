@@ -1283,7 +1283,7 @@ export class Visualizer extends React.Component {
             </div>
             <LegendsOverlapWatcher
               panelsOpen={!!visibleDrawer && !printIsOpened}
-              isMobileSized={isMobileSized}
+              legendsCount={legends.length}
               onChange={this.setLegendsOverlapped}
             />
             <InteractiveMap

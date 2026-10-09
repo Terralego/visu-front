@@ -125,7 +125,7 @@ export const Legend = ({
               case 'circle':
                 Shape = Circle;
                 shapeProps.size = size;
-                wrapperStyle.width = Math.max(DEFAULT_SIZE * 2, biggestSize);
+                wrapperStyle.width = biggestSize;
                 break;
               case 'line':
                 Shape = Line;

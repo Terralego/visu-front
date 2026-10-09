@@ -33,7 +33,7 @@
     margin: 0 0 0.3rem;
     font-size: 0.95rem;
     font-weight: 600;
-    text-align: left;
+    text-align: center;
     overflow-wrap: anywhere;
   }
 
@@ -49,6 +49,11 @@
 
     .tf-legend__symbol-container {
       text-align: left;
+    }
+
+    .tf-legend__item--circle .tf-legend__symbol-container,
+    .tf-legend__item--stackedCircle .tf-legend__symbol-container {
+      text-align: center;
     }
   }
 
