@@ -58,6 +58,7 @@ import {
 } from '../../../services/customIcons';
 
 import BoundingBoxObserver from '../../../components/BoundingBoxObserver';
+import { flattenLayersTree, layerOwnsMapboxId } from './layerOwnership';
 import DeclarationWrapper from '../../../components/DeclarationModule/DeclarationWrapper';
 import ReportingModule from '../../../components/ReportingModule/ReportingModule';
 import TableConnected from './Table';
@@ -83,15 +84,6 @@ const LayersTreeGroupProps = PropTypes.shape({
   private: PropTypes.bool,
 });
 
-const flattenLayersTree = (nodes = []) =>
-  nodes.reduce(
-    (acc, node) => (node.group ? [...acc, ...flattenLayersTree(node.layers)] : [...acc, node]),
-    [],
-  );
-
-const layerOwnsMapboxId = ({ layers = [], sublayers = [] }, mapboxLayerId) =>
-  layers.includes(mapboxLayerId) ||
-  sublayers.some(({ layers: sublayerIds = [] }) => sublayerIds.includes(mapboxLayerId));
 
 const getControls = memoize(
   (measureControl, measureDrawStyles) =>

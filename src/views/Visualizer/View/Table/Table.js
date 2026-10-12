@@ -6,6 +6,7 @@ import { Box } from '@mui/material';
 
 import bbox from '@turf/bbox';
 
+import { layerOwnsMapboxId } from '../layerOwnership';
 import { extractColumns, prepareData, exportSpreadsheet } from './dataUtils';
 import { fetchTableData, fetchGeometriesByIds, getExtent } from './tableService';
 import HeaderMui from './HeaderMui';
@@ -634,6 +635,7 @@ const DataTableMui = ({
                   onColumnVisibilityChange={setColumnVisibility}
                   details={
                     details?.layerTreeId === displayedLayer.id
+                      || layerOwnsMapboxId(displayedLayer, details?.layer)
                       ? details?.feature?.properties?._id
                       : null
                   }
