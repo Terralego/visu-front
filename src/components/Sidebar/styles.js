@@ -147,6 +147,14 @@ export const brand = {
   '&.active': { backgroundColor: 'transparent', '&::before': { display: 'none' } },
 };
 
+export const viewItem = {
+  ...item,
+  borderRadius: 'var(--sidebar-view-icon-radius, calc(var(--mui-shape-borderRadius, 10px) * 2))',
+  borderWidth: 'var(--sidebar-view-icon-border-width, 0)',
+  borderStyle: 'solid',
+  borderColor: 'var(--sidebar-view-icon-border-color, transparent)',
+};
+
 export const icon = {
   width: 22,
   height: 22,

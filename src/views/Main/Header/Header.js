@@ -59,7 +59,7 @@ export const Header = ({
   }, [VIEW_ROOT_PATH]);
 
   const viewItems = useMemo(() => views.map(({ id, label, href, icon }) => (
-    <SidebarItem key={id} id={id} label={label} href={href} icon={icon} />
+    <SidebarItem key={id} id={id} label={label} href={href} icon={icon} variant="view" />
   )), [views]);
 
   const extraItems = useMemo(() => extraMenuItems.map(({ id, label, href, icon }) => (

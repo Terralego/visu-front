@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom';
 
 import { connectState } from '@terralego/core/modules/State/context';
 
-import { brand, brandIcon, icon as iconStyle, item } from './styles';
+import { brand, brandIcon, icon as iconStyle, item, viewItem } from './styles';
 
 const isPlainLink = href => href.startsWith('http') || href.startsWith('#');
 
@@ -14,6 +14,8 @@ const renderIcon = (icon, isBrand) => {
   if (typeof icon !== 'string') return icon;
   return <Box component="img" src={icon} alt="" sx={isBrand ? brandIcon : iconStyle} />;
 };
+
+const buttonStyles = { brand, view: viewItem, item };
 
 export const SidebarItem = ({
   id,
@@ -46,7 +48,7 @@ export const SidebarItem = ({
         data-link-id={id}
         aria-label={label}
         onClick={handleClick}
-        sx={[isBrand ? brand : item, ...(Array.isArray(sx) ? sx : [sx])]}
+        sx={[buttonStyles[variant] || item, ...(Array.isArray(sx) ? sx : [sx])]}
         {...linkProps}
         {...props}
       >
@@ -62,7 +64,7 @@ SidebarItem.propTypes = {
   icon: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
   href: PropTypes.string,
   exact: PropTypes.bool,
-  variant: PropTypes.oneOf(['item', 'brand']),
+  variant: PropTypes.oneOf(['item', 'brand', 'view']),
   onClick: PropTypes.func,
   setForceFitBounds: PropTypes.func,
   sx: PropTypes.oneOfType([PropTypes.object, PropTypes.array, PropTypes.func]),
