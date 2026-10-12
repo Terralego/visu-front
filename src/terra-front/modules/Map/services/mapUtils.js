@@ -168,6 +168,7 @@ export function setInteractions ({ map, interactions, callback }) {
 
     getRelatedLayers(map, id).forEach(({ id: realLayer }) => {
       map.on(eventType, realLayer, listenerRelatedLayers);
+      interactionList.push({ eventType, layerId: realLayer, listener: listenerRelatedLayers });
     });
   });
 

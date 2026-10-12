@@ -196,7 +196,6 @@ export class InteractiveMap extends React.Component {
     this.state = {
       selectedBackgroundStyle,
       legends: [],
-      interactionList: [],
     };
   }
 
@@ -256,6 +255,7 @@ export class InteractiveMap extends React.Component {
 
   componentWillUnmount() {
     document.body.removeEventListener('mousemove', this.mouseMoveListener);
+    this.map?.off('styledata', this.rebindInteractionsOnNewLayers);
     if (this.declarationMarker) {
       this.declarationMarker.remove();
     }
@@ -281,8 +281,25 @@ export class InteractiveMap extends React.Component {
     const { onMapLoaded = () => {} } = this.props;
     this.map = map;
     this.setInteractions();
+    this.layersSignature = this.getLayersSignature();
+    map.on('styledata', this.rebindInteractionsOnNewLayers);
     this.updateDeclarationMarker();
     onMapLoaded(map);
+  };
+
+  getLayersSignature = () => {
+    const { map } = this;
+    if (!map?.getStyle) return '';
+    return (map.getStyle()?.layers || []).map(({ id }) => id).join(',');
+  };
+
+  rebindInteractionsOnNewLayers = () => {
+    const signature = this.getLayersSignature();
+    if (signature === this.layersSignature) return;
+    this.layersSignature = signature;
+
+    const { interactions } = this.props;
+    if (interactions?.length) this.setInteractions(interactions);
   };
 
   onBackgroundChange = selectedBackgroundStyle => {
@@ -309,14 +326,18 @@ export class InteractiveMap extends React.Component {
 
     if (!map) return;
 
-    const { interactionList } = this.state;
+    const interactionList = this.interactionList || [];
     const { interactions } = this.props;
 
     if (prevInteractions?.length && interactionList.length) {
       interactionList.forEach(interaction => {
+        if (interaction.layerId) {
+          map.off(interaction.eventType, interaction.layerId, interaction.listener);
+          return;
+        }
         map.off(interaction.eventType, interaction.listener);
       });
-      this.setState({ interactionList: [] });
+      this.interactionList = [];
       // Since the handleMove event listener has also been removed
       // the cursor often gets stuck on the `pointer`
       const canvas = map.getCanvas?.();
@@ -330,7 +351,7 @@ export class InteractiveMap extends React.Component {
         interactions,
         callback: config => this.triggerInteraction(config),
       });
-      this.setState({ interactionList: nextInteractionList });
+      this.interactionList = nextInteractionList;
     }
   }
 

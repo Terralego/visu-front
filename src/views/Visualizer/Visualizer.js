@@ -4,39 +4,14 @@ import { connectAuthProvider } from '@terralego/core/modules/Auth';
 
 import { connectState } from '@terralego/core/modules/State/context';
 
-import parser from 'pivotql/packages/pivotql-parser-expression/src';
-import compilerMb from 'pivotql-compiler-mapboxgl';
-import compilerEs from 'pivotql-compiler-elasticsearch';
-
 import { fetchViewConfig, loadLayerData } from '../../services/visualizer';
+import addSourceFilter from './sourceFilter';
 import { sortCustomLayers } from '../../terra-front/modules/Visualizer/services/layersTreeUtils';
 import Loading from './Loading';
 import View from './View';
 import NotFound from './NotFound';
 
 import './styles.scss';
-
-const addSourceFilter = (layerTreeNode, customStyle) => {
-  if (layerTreeNode.group) {
-    layerTreeNode.layers.forEach(node => addSourceFilter(node, customStyle));
-  } else if (layerTreeNode.source_filter) {
-    const layerId = layerTreeNode.layers[0];
-    const parsed = parser(layerTreeNode.source_filter || '');
-
-    /* eslint-disable no-param-reassign */
-    // Add elasticsearch and mapbox parsed base queries
-    layerTreeNode.baseEsQuery = compilerEs(parsed);
-    layerTreeNode.baseMbQuery = compilerMb(parsed);
-    customStyle.layers = customStyle.layers.map(layer => {
-      if (layer.id === layerId) {
-        return { ...layer, ...layerTreeNode.baseMbQuery };
-      }
-      return layer;
-    });
-    /* eslint-enable no-param-reassign */
-  }
-};
-
 
 export const Visualizer = ({
   match: { params: { viewName } },
@@ -52,10 +27,12 @@ export const Visualizer = ({
 
   const isUnmount = React.useRef(false);
   isUnmount.current = false;
+  const loadedLayers = React.useRef(new Map());
 
   const loadViewConfig = React.useCallback(async viewLabel => {
     setLoading(true);
     setNotFound(false);
+    loadedLayers.current = new Map();
 
     const viewSettings = await fetchViewConfig(viewLabel);
 
@@ -95,9 +72,7 @@ export const Visualizer = ({
     }));
   }, []);
 
-  const handleLoadLayerData = React.useCallback(async (layer, { hidden = false } = {}) => {
-    const data = await loadLayerData(viewName, layer.id);
-
+  const applyLayerData = React.useCallback((layer, data, hidden) => {
     if (data.details) {
       const { details } = data;
       Object.keys(details).forEach(key => {
@@ -114,12 +89,16 @@ export const Visualizer = ({
       layer.fetched = true;
     }
 
-    const mapboxLayersToAdd = hidden
-      ? data.mapboxLayers.map(l => ({
-        ...l,
-        layout: { ...(l.layout || {}), visibility: 'none' },
-      }))
-      : data.mapboxLayers;
+    const styleToAdd = {
+      layers: hidden
+        ? data.mapboxLayers.map(l => ({
+          ...l,
+          layout: { ...(l.layout || {}), visibility: 'none' },
+        }))
+        : data.mapboxLayers,
+    };
+
+    addSourceFilter(layer, styleToAdd);
 
     setViewConfig(prev => {
       if (!prev) return prev;
@@ -134,12 +113,24 @@ export const Visualizer = ({
         ...data.mapboxSources.filter(s => !existingSourceIds.has(s.id)),
       ];
       newConfig.map.customStyle.layers = sortCustomLayers(
-        [...prev.map.customStyle.layers, ...mapboxLayersToAdd],
+        [...prev.map.customStyle.layers, ...styleToAdd.layers],
         newConfig.layersTree,
       );
       return newConfig;
     });
-  }, [viewName]);
+  }, []);
+
+  const handleLoadLayerData = React.useCallback((layer, { hidden = false } = {}) => {
+    const pending = loadedLayers.current.get(layer.id);
+    if (pending) return pending;
+
+    const loadingLayer = loadLayerData(viewName, layer.id)
+      .catch(() => ({ details: null, mapboxLayers: [], mapboxSources: [] }))
+      .then(data => applyLayerData(layer, data, hidden));
+
+    loadedLayers.current.set(layer.id, loadingLayer);
+    return loadingLayer;
+  }, [viewName, applyLayerData]);
 
   useEffect(() => () => { isUnmount.current = true; }, []);
 
