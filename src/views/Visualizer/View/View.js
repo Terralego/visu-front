@@ -146,6 +146,7 @@ export class Visualizer extends React.Component {
     layersTreeState: PropTypes.instanceOf(Map),
     setLayersTreeState: PropTypes.func,
     settings: PropTypes.objectOf(PropTypes.any),
+    onLoadLayerData: PropTypes.func,
   };
 
   static defaultProps = {
@@ -162,6 +163,7 @@ export class Visualizer extends React.Component {
     layersTreeState: new Map(),
     setLayersTreeState() {},
     settings: {},
+    onLoadLayerData: null,
   };
 
   state = {
@@ -1040,6 +1042,7 @@ export class Visualizer extends React.Component {
         theme: { logo, brandLogo } = {},
       },
       enableDetailCarrousel,
+      onLoadLayerData,
     } = this.props;
 
     const {
@@ -1146,6 +1149,7 @@ export class Visualizer extends React.Component {
           translate={t}
           layersExtent={bounds}
           isDetailsVisible={isDetailsVisible}
+          onLoadLayerData={onLoadLayerData}
         >
           <PrivateLayers layersTree={layersTree} />
           <div
@@ -1181,6 +1185,7 @@ export class Visualizer extends React.Component {
                       story={layersTreeToStory(layersTree)}
                       setLegends={setLegends}
                       translate={t}
+                      onLoadLayerData={onLoadLayerData}
                     />
                   ) : (
                     <LayersTree translate={t} filterable />

@@ -19,6 +19,7 @@ export default connectLayersTree(({
     widgets = [],
     total,
     hidden,
+    loading,
   } = getLayerState({ layer: activeLayer });
 
   return {
@@ -30,6 +31,7 @@ export default connectLayersTree(({
     setLayerState,
     total,
     hidden,
+    loading,
     map,
     activeLayer,
   };

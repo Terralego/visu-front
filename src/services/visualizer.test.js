@@ -12,6 +12,18 @@ const viewConfig = overrides => ({
   ...overrides,
 });
 
+const mockSplitApi = ({ view, details = {}, layers = {}, sources = {} }) => {
+  Api.request.mockImplementation(url => {
+    const layerId = url.split('/').pop();
+    if (url.includes('/layersTree/layer/')) return Promise.resolve(details[layerId]);
+    if (url.includes('/customStyle/layers/')) return Promise.resolve(layers[layerId] || []);
+    if (url.includes('/customStyle/source/')) return Promise.resolve(sources[layerId] || []);
+    return Promise.resolve(view);
+  });
+};
+
+const activeNode = (id, label) => ({ id, label, initialState: { active: true } });
+
 beforeEach(() => {
   Api.request.mockReset();
   fetchViewConfig.clear();
@@ -27,14 +39,57 @@ describe('fetchViewConfig', () => {
   });
 
   it('should order the custom layers so the first tree layer is drawn on top', async () => {
-    Api.request.mockResolvedValue({
-      layersTree: [{ label: 'first', layers: ['a'] }, { label: 'second', layers: ['b'] }],
-      map: { customStyle: { layers: [{ id: 'b' }, { id: 'a' }, { id: 'untracked' }] } },
+    mockSplitApi({
+      view: { layersTree: [activeNode(1, 'first'), activeNode(2, 'second')], map: {} },
+      layers: {
+        1: [{ id: 'a', type: 'fill', layerId: 1 }],
+        2: [{ id: 'b', type: 'fill', layerId: 2 }],
+      },
     });
 
     const { map: { customStyle: { layers } } } = await fetchViewConfig('ordered');
 
-    expect(layers.map(({ id }) => id)).toEqual(['b', 'a', 'untracked']);
+    expect(layers.map(({ id }) => id)).toEqual(['b', 'a']);
+  });
+
+  it('should only fetch the layers active on load', async () => {
+    mockSplitApi({
+      view: {
+        layersTree: [activeNode(1, 'active'), { id: 2, label: 'idle', initialState: { active: false } }],
+        map: {},
+      },
+      layers: { 1: [{ id: 'a', type: 'fill', layerId: 1 }] },
+    });
+
+    await fetchViewConfig('partial');
+
+    const requested = Api.request.mock.calls.map(([url]) => url);
+    expect(requested).toContain('geolayer/view/partial/customStyle/layers/1');
+    expect(requested).not.toContain('geolayer/view/partial/customStyle/layers/2');
+  });
+
+  it('should merge the layer details into its tree node', async () => {
+    mockSplitApi({
+      view: { layersTree: [activeNode(1, 'first')], map: {} },
+      details: { 1: { filters: { layer: 'index' }, legends: [{ title: 'legend' }] } },
+    });
+
+    const { layersTree: [node] } = await fetchViewConfig('details');
+
+    expect(node.filters).toEqual({ layer: 'index' });
+    expect(node.legends).toEqual([{ title: 'legend' }]);
+    expect(node.fetched).toBe(true);
+  });
+
+  it('should deduplicate the sources shared by several layers', async () => {
+    mockSplitApi({
+      view: { layersTree: [activeNode(1, 'first'), activeNode(2, 'second')], map: {} },
+      sources: { 1: [{ id: 'shared' }], 2: [{ id: 'shared' }, { id: 'own' }] },
+    });
+
+    const { map: { customStyle: { sources } } } = await fetchViewConfig('shared-sources');
+
+    expect(sources.map(({ id }) => id)).toEqual(['shared', 'own']);
   });
 
   it('should resolve to null when the request fails', async () => {

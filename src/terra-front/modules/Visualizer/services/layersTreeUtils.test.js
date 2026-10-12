@@ -476,46 +476,46 @@ it('should keep the table open when another property changes', () => {
   expect(newLayersTreeState.get(layer)).toEqual({ active: true, table: true, opacity: 0.5 });
 });
 
-it('should sort custom layers', () => {
-  const customLayers = [{
-    id: '1',
-  }, {
-    id: '2',
-  }, {
-    id: '3',
-  }, {
-    id: '4',
-  }, {
-    id: '5',
-  }, {
-    id: '6',
-  }];
-  const lT = [{
-    layers: ['4', '2', '7'],
-  }, {
+const layersTreeOf = ids => [
+  { id: ids[0] },
+  {
     group: 'foo',
-    layers: [{
-      layers: ['3', '5'],
-    }, {
-      group: 'bar',
-      layers: [{
-        layers: ['1', '2'],
-      }],
-    }],
-  }];
-  expect(sortCustomLayers(customLayers, lT)).toEqual([{
-    id: '2',
-  }, {
-    id: '1',
-  }, {
-    id: '5',
-  }, {
-    id: '3',
-  }, {
-    id: '4',
-  }, {
-    id: '6',
-  }]);
+    layers: [
+      { id: ids[1] },
+      { group: 'bar', layers: [{ id: ids[2] }] },
+    ],
+  },
+];
+
+it('should sort custom layers so the first tree node is drawn on top', () => {
+  const customLayers = [
+    { id: 'first', type: 'fill', layerId: 1 },
+    { id: 'second', type: 'fill', layerId: 2 },
+    { id: 'third', type: 'fill', layerId: 3 },
+  ];
+
+  expect(sortCustomLayers(customLayers, layersTreeOf([1, 2, 3])).map(({ id }) => id))
+    .toEqual(['third', 'second', 'first']);
+});
+
+it('should order custom layers by mapbox type before tree order', () => {
+  const customLayers = [
+    { id: 'label', type: 'symbol', layerId: 1 },
+    { id: 'area', type: 'fill', layerId: 3 },
+  ];
+
+  expect(sortCustomLayers(customLayers, layersTreeOf([1, 2, 3])).map(({ id }) => id))
+    .toEqual(['area', 'label']);
+});
+
+it('should push the custom layers of no known tree node last', () => {
+  const customLayers = [
+    { id: 'orphan', type: 'fill', layerId: 99 },
+    { id: 'known', type: 'fill', layerId: 1 },
+  ];
+
+  expect(sortCustomLayers(customLayers, layersTreeOf([1, 2, 3])).map(({ id }) => id))
+    .toEqual(['known', 'orphan']);
 });
 
 it('should fetch property value', async () => {
@@ -582,6 +582,11 @@ it('should generate story from layerstree', () => {
         active: true,
       }],
       content: 'some content',
+      layerNode: {
+        label: 'first story',
+        layers: ['layer1', 'layer2'],
+        content: 'some content',
+      },
     }, {
       title: 'second story',
       layouts: [{
@@ -589,6 +594,11 @@ it('should generate story from layerstree', () => {
         active: true,
       }],
       content: 'some other content',
+      layerNode: {
+        label: 'second story',
+        layers: ['layer3', 'layer4'],
+        content: 'some other content',
+      },
     }],
   });
 });
