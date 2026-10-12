@@ -152,7 +152,7 @@ const filterFromFeatureIds = ids => {
     return false;
   }
 
-  return ['match', ['get', '_id'], ids, true, false];
+  return ['match', ['to-string', ['get', '_id']], ids.map(id => `${id}`), true, false];
 };
 
 export const filterFeatures = (

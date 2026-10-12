@@ -324,6 +324,23 @@ it('should be a cluster', () => {
   expect(isCluster('test-source', 'test')).toBe(false);
 });
 
+it('should match numeric elasticsearch ids against the string ids of the tiles', () => {
+  const map = {
+    getLayer: vi.fn(() => ({ source: 'source' })),
+    getFilter: vi.fn(() => null),
+    setFilter: vi.fn(),
+    fire: vi.fn(),
+  };
+  const layer = { id: 'ports', layers: ['ports'], filters: { layer: 'ports' } };
+
+  filterFeatures(map, { ports: { features: [122, 184] } }, new Map([[layer, { active: true }]]));
+
+  expect(map.setFilter).toHaveBeenCalledWith(
+    'ports',
+    ['match', ['to-string', ['get', '_id']], ['122', '184'], true, false],
+  );
+});
+
 it('should filter features', () => {
   const map = {
     getLayer: vi.fn(layerId => (layerId === 'unknownlayer'
@@ -370,7 +387,7 @@ it('should filter features', () => {
   ltState.set(layer3, { active: false });
   filterFeatures(map, { foo: { features: ['1', '2'], layers: ['foo'] } }, ltState);
   expect(map.fire).not.toHaveBeenCalled();
-  expect(map.setFilter).toHaveBeenCalledWith('foo', ['match', ['get', '_id'], ['1', '2'], true, false]);
+  expect(map.setFilter).toHaveBeenCalledWith('foo', ['match', ['to-string', ['get', '_id']], ['1', '2'], true, false]);
   expect(map.setFilter).toHaveBeenCalledTimes(1);
 
   map.setFilter.mockClear();
