@@ -58,22 +58,28 @@ const computeNewPropertiesValue = (properties, property, value) => {
   return newProperties;
 };
 
-export const Filters = ({ properties, filters, translate, onChange }) => (
+export const Filters = ({ properties, filters, translate, onChange, onSearch }) => (
   <div>
-    {filters.map(({ type, values, property, display, format, label, ...props }) => (
-      <Control
-        {...props}
-        label={label}
-        translate={translate}
-        component={getComponent(type, values, display, format)}
-        key={property}
-        type={type}
-        values={values}
-        property={property}
-        onChange={value => onChange(computeNewPropertiesValue(properties, property, value))}
-        value={properties[property]}
-      />
-    ))}
+    {filters.map(filter => {
+      const { type, values, property, display, format, label, fetchValues, ...props } = filter;
+      return (
+        <Control
+          {...props}
+          label={label}
+          translate={translate}
+          component={getComponent(type, values, display, format)}
+          key={property}
+          type={type}
+          values={values}
+          property={property}
+          onQueryChange={onSearch && fetchValues
+            ? query => onSearch(filter, query)
+            : undefined}
+          onChange={value => onChange(computeNewPropertiesValue(properties, property, value))}
+          value={properties[property]}
+        />
+      );
+    })}
   </div>
 );
 

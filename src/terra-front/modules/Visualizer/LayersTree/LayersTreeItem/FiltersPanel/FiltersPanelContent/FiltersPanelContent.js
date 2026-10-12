@@ -66,6 +66,7 @@ export class FiltersPanelContent extends React.Component {
       activeLayer: { filters: { form = layerForm } = {} } = {},
       filtersValues,
       translate,
+      onSearch,
     } = this.props;
     const { visible, animate } = this.state;
     const { elRef } = this;
@@ -104,6 +105,7 @@ export class FiltersPanelContent extends React.Component {
           >
             <Filters
               onChange={onChange}
+              onSearch={onSearch}
               filters={filters}
               properties={filtersValues}
               translate={translate}

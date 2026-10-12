@@ -3,6 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import classnames from 'classnames';
+import debounce from 'lodash.debounce';
 import {
   Button,
   Intent,
@@ -15,10 +16,12 @@ import { MultiSelect as BPMultiSelect } from '@blueprintjs/select';
 import { preventEnterKeyPress } from '../../../utils/event';
 import translateMock from '../../../utils/translate';
 import NoValues from './NoValues';
+import rankMatches, { MAX_RENDERED_ITEMS } from './rankMatches';
 import formatValues from './formatValues';
 
 // With more than 250 items we don't display result but we propose a search
 const MAX_DISPLAY_ITEMS = 250;
+export const MIN_QUERY_LENGTH = 1;
 
 export class MultiSelect extends React.Component {
   static propTypes = {
@@ -39,6 +42,7 @@ export class MultiSelect extends React.Component {
     loading: PropTypes.bool,
     minCharacters: PropTypes.number,
     highlightSearch: PropTypes.bool,
+    onQueryChange: PropTypes.func,
   };
 
   static defaultProps = {
@@ -57,19 +61,27 @@ export class MultiSelect extends React.Component {
     loading: false,
     minCharacters: 0,
     highlightSearch: true,
+    onQueryChange: null,
   };
 
   state = {
     values: [],
     value: [],
+    lastValues: null,
+    searching: false,
   }
 
-  static getDerivedStateFromProps ({ values, value }) {
+  static getDerivedStateFromProps ({ values, value }, state) {
+    // A new values list means the search we were waiting for has landed
+    const searching = state.lastValues === values ? state.searching : false;
+
     // Avoid race condition
     if (!values) {
       return {
         values: [],
         value: [],
+        lastValues: values,
+        searching,
       };
     }
 
@@ -86,6 +98,8 @@ export class MultiSelect extends React.Component {
     return {
       values: formatedValues,
       value: formatedValue,
+      lastValues: values,
+      searching,
     };
   }
 
@@ -102,6 +116,29 @@ export class MultiSelect extends React.Component {
     const newValue = value.filter((__, idx) => idx !== index);
     onChange(newValue);
   }
+
+  searchValues = debounce(query => {
+    const { onQueryChange } = this.props;
+    if (onQueryChange) onQueryChange(query);
+  }, 300);
+
+  componentWillUnmount () {
+    this.searchValues.cancel();
+  }
+
+  handleQueryChange = query => {
+    const { onQueryChange } = this.props;
+    if (!onQueryChange) return;
+
+    if (query.length && query.length < MIN_QUERY_LENGTH) {
+      this.searchValues.cancel();
+      this.setState({ searching: false });
+      return;
+    }
+
+    this.setState({ searching: true });
+    this.searchValues(query);
+  };
 
   handleClear = () => {
     const { onChange } = this.props;
@@ -122,6 +159,7 @@ export class MultiSelect extends React.Component {
       translate,
       loading,
       minCharacters,
+      onQueryChange,
       highlightSearch,
       ...props
     } = this.props;
@@ -141,6 +179,7 @@ export class MultiSelect extends React.Component {
         {!loading && (
           <BPMultiSelect
             className={classnames('tf-multiselect', className)}
+            onQueryChange={this.handleQueryChange}
             resetOnSelect
             fill
             items={values}
@@ -152,16 +191,13 @@ export class MultiSelect extends React.Component {
             tagInputProps={{
               tagProps: { intent: Intent.NONE, interactive: true },
               onRemove: handleTagRemove,
-              rightElement: displayClearButton && (
-                <Button icon="cross" minimal onClick={this.handleClear} />
-              ),
+              rightElement: (this.state.searching && <Spinner size={16} />)
+                || (displayClearButton && (
+                  <Button icon="cross" minimal onClick={this.handleClear} />
+                )),
             }}
-            itemListPredicate={(query, items) => {
-              const regExp = new RegExp(query, 'i');
-              return query.length < minCharacters
-                ? items
-                : items.filter(item => regExp.test(item.label));
-            }}
+            itemListPredicate={(query, items) =>
+              rankMatches(items, query.length < minCharacters ? '' : query, MAX_RENDERED_ITEMS)}
             itemRenderer={({ label: itemLabel, value: itemValue }, {
               query, handleClick, modifiers: { matchesPredicate, ...modifiers },
             }) => {

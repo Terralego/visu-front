@@ -150,6 +150,29 @@ export class LayersTreeProvider extends React.Component {
     this.resetState({ layersTreeState: new Map(newLayersTreeState) });
   };
 
+  searchTokens = new Map();
+
+  /**
+   * Replace the values of a single property with the ones matching a query.
+   * Unlike fetchPropertiesValues it keeps the current values displayed, so the
+   * autocomplete does not flicker nor close while typing.
+   */
+  searchPropertyValues = async (layer, property, baseQuery, query) => {
+    const { fetchPropertyValues } = this.props;
+    const token = (this.searchTokens.get(property) || 0) + 1;
+    this.searchTokens.set(property, token);
+
+    const values = await fetchPropertyValues(layer, property, baseQuery, query);
+
+    if (this.isUnmount || this.searchTokens.get(property) !== token) return;
+
+    // eslint-disable-next-line no-param-reassign
+    property.values = [...(values || [])];
+
+    const { layersTreeState } = this.state;
+    this.resetState({ layersTreeState: new Map(layersTreeState) });
+  };
+
   initLayersState = initialLayersTreeState => {
     this.resetState(({ layersTreeState }) => {
       const { layersTree, initialState } = this.props;
@@ -217,7 +240,7 @@ export class LayersTreeProvider extends React.Component {
     const { layersTreeState } = this.state;
     const {
       initLayersState, setLayerState, getLayerState,
-      fetchPropertiesValues,
+      fetchPropertiesValues, searchPropertyValues,
     } = this;
     const value = {
       map,
@@ -227,6 +250,7 @@ export class LayersTreeProvider extends React.Component {
       setLayerState,
       getLayerState,
       fetchPropertiesValues,
+      searchPropertyValues,
       translate,
       layersExtent,
       isDetailsVisible,

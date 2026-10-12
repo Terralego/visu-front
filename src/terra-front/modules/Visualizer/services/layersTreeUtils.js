@@ -243,22 +243,61 @@ export const sortCustomLayers = (customLayers, layersTree) => {
  * @param {Object} property Property to fetch
  * @return Mixed[]
  */
-export const fetchPropertyValues = async (layer, { property }, baseQuery) => {
+export const AUTOCOMPLETE_SIZE = 500;
+
+const LUCENE_SPECIAL_CHARS = /[.?+*|{}[\]()"\\#@&<>~]/;
+
+/**
+ * Build a case insensitive lucene pattern for the query. Terms aggregations
+ * filter on the raw keyword, which lucene matches case sensitively and anchors
+ * on the whole value.
+ */
+export const buildValuesPatterns = query => {
+  const escaped = Array.from(query)
+    .map(char => {
+      if (LUCENE_SPECIAL_CHARS.test(char)) return `\\${char}`;
+      const lower = char.toLowerCase();
+      const upper = char.toUpperCase();
+      return lower === upper ? char : `[${lower}${upper}]`;
+    })
+    .join('');
+
+  return { startsWith: `${escaped}.*`, contains: `.*${escaped}.*` };
+};
+
+const termsOn = (field, name, include) => ({
+  type: 'terms',
+  field,
+  name,
+  options: {
+    size: AUTOCOMPLETE_SIZE,
+    include,
+    order: { _key: 'asc' },
+  },
+});
+
+export const fetchPropertyValues = async (layer, { property }, baseQuery, query = '') => {
+  const field = `${property}.keyword`;
+  const { startsWith, contains } = query ? buildValuesPatterns(query) : {};
+
   const results = await searchService.search({
     index: layer,
     baseQuery,
-    aggregations: [{
-      type: 'terms',
-      field: `${property}.keyword`,
-      name: 'values',
-      options: {
-        size: MAX_SIZE,
-      },
-    }],
+    aggregations: query
+      ? [termsOn(field, 'startsWith', startsWith), termsOn(field, 'values', contains)]
+      : [{ type: 'terms', field, name: 'values', options: { size: MAX_SIZE } }],
     size: 0,
   });
-  const { aggregations: { values: { buckets } } } = results;
-  return buckets.map(({ key }) => key);
+
+  const {
+    aggregations: {
+      values: { buckets },
+      startsWith: { buckets: startsWithBuckets = [] } = {},
+    },
+  } = results;
+
+  // Values starting with the query first, they are the ones being looked for
+  return [...new Set([...startsWithBuckets, ...buckets].map(({ key }) => key))];
 };
 
 /**

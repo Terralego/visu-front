@@ -3,14 +3,18 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { MenuItem, Button, Spinner } from '@blueprintjs/core';
 import { Select as BPSelect } from '@blueprintjs/select';
+import debounce from 'lodash.debounce';
 import { v4 as uuid } from 'uuid';
 
 import { preventEnterKeyPress } from '../../../../utils/event';
 import translateMock from '../../../../utils/translate';
+import rankMatches, { MAX_RENDERED_ITEMS } from '../rankMatches';
 import formatValues from '../formatValues';
 import NoValues from '../NoValues';
 
 const MAX_NON_FILTERABLE_COUNT = 9;
+export const MIN_QUERY_LENGTH = 1;
+const SEARCH_DEBOUNCE = 300;
 
 export class Select extends React.Component {
   static propTypes = {
@@ -28,6 +32,7 @@ export class Select extends React.Component {
     isSubmissionPrevented: PropTypes.bool,
     translate: PropTypes.func,
     loading: PropTypes.bool,
+    onQueryChange: PropTypes.func,
   };
 
   static defaultProps = {
@@ -42,13 +47,19 @@ export class Select extends React.Component {
       'terralego.forms.controls.noValues': 'No choice available',
     }),
     loading: false,
+    onQueryChange: null,
   };
 
-  static getDerivedStateFromProps ({ values = [], value }) {
+  static getDerivedStateFromProps ({ values = [], value }, state) {
+    // A new values list means the search we were waiting for has landed
+    const searching = state.lastValues === values ? state.searching : false;
+
     if (!values.length) {
       return {
         values,
         value: null,
+        lastValues: values,
+        searching,
       };
     }
 
@@ -61,15 +72,44 @@ export class Select extends React.Component {
     return {
       values: formatedValues,
       value: foundValue,
+      lastValues: values,
+      searching,
     };
   }
 
   state = {
     values: [],
     value: null,
+    lastValues: null,
+    searching: false,
   };
 
   uuid = `select-${uuid()}`;
+
+  searchValues = debounce(query => {
+    const { onQueryChange } = this.props;
+    if (onQueryChange) onQueryChange(query);
+  }, SEARCH_DEBOUNCE);
+
+  componentWillUnmount () {
+    this.searchValues.cancel();
+  }
+
+  handleQueryChange = query => {
+    const { onQueryChange } = this.props;
+    if (!onQueryChange) return;
+
+    // Below the threshold the local list is enough and the query would match
+    // far too many values to be useful
+    if (query.length && query.length < MIN_QUERY_LENGTH) {
+      this.searchValues.cancel();
+      this.setState({ searching: false });
+      return;
+    }
+
+    this.setState({ searching: true });
+    this.searchValues(query);
+  };
 
   handleChange = ({ value }) => {
     const { onChange } = this.props;
@@ -87,10 +127,11 @@ export class Select extends React.Component {
       fullWidth,
       translate,
       loading,
+      onQueryChange,
       ...props
     } = this.props;
 
-    const { values = [], value } = this.state;
+    const { values = [], value, searching } = this.state;
     const { handleChange } = this;
 
     const displayedValue = value ? value.label : '';
@@ -121,17 +162,17 @@ export class Select extends React.Component {
             className={classnames('tf-select', className)}
             popoverProps={{ usePortal: false, boundary: 'viewport', minimal: true }}
             items={values}
-            filterable={values.length > MAX_NON_FILTERABLE_COUNT}
+            filterable={!!onQueryChange || values.length > MAX_NON_FILTERABLE_COUNT}
             onQueryChange={this.handleQueryChange}
             initialContent={(values && values.length > 250)
               ? <MenuItem disabled text={translate('terralego.forms.controls.select.select_placeholder')} />
               : undefined}
             inputProps={{
               placeholder: translate('terralego.forms.controls.select.input_placeholder'),
+              rightElement: searching ? <Spinner size={16} /> : undefined,
             }}
-            itemPredicate={
-              (query, { label: itemLabel }) => itemLabel.toLowerCase().includes(query.toLowerCase())
-            }
+            itemListPredicate={(query, items) =>
+              rankMatches(items, query, MAX_RENDERED_ITEMS)}
             itemRenderer={({
               label: itemLabel, value: itemValue,
             }, {
@@ -146,7 +187,7 @@ export class Select extends React.Component {
               >
                 <MenuItem
                   {...modifiers}
-                  active={value.value === itemValue}
+                  active={value?.value === itemValue}
                   onClick={handleClick}
                   text={itemLabel}
                 />

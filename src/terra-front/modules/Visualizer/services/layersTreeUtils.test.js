@@ -9,6 +9,8 @@ import {
   filterFeatures,
   resetFilters,
   sortCustomLayers,
+  AUTOCOMPLETE_SIZE,
+  buildValuesPatterns,
   fetchPropertyValues,
   fetchPropertyRange,
   layersTreeToStory,
@@ -617,5 +619,50 @@ it('should generate story from layerstree', () => {
         content: 'some other content',
       },
     }],
+  });
+});
+
+describe('autocomplete on property values', () => {
+  it('builds case insensitive patterns, escaping the lucene syntax', () => {
+    expect(buildValuesPatterns('Tou')).toEqual({
+      startsWith: '[tT][oO][uU].*',
+      contains: '.*[tT][oO][uU].*',
+    });
+    expect(buildValuesPatterns('a.b').contains).toBe('.*[aA]\\.[bB].*');
+    expect(buildValuesPatterns('saint-l').startsWith).toBe('[sS][aA][iI][nN][tT]-[lL].*');
+  });
+
+  it('asks elasticsearch for the values starting with then containing the query', async () => {
+    search.search.mockClear();
+
+    await fetchPropertyValues('communes', { property: 'name' }, undefined, 'Tou');
+
+    const [{ aggregations }] = search.search.mock.calls[0];
+    expect(aggregations.map(({ name, options: { include } }) => [name, include])).toEqual([
+      ['startsWith', '[tT][oO][uU].*'],
+      ['values', '.*[tT][oO][uU].*'],
+    ]);
+    expect(aggregations[0].options.size).toBe(AUTOCOMPLETE_SIZE);
+  });
+
+  it('returns the values starting with the query first, without duplicates', async () => {
+    search.search.mockResolvedValueOnce({
+      aggregations: {
+        startsWith: { buckets: [{ key: 'Toulouse' }] },
+        values: { buckets: [{ key: 'Montoulieu' }, { key: 'Toulouse' }] },
+      },
+    });
+
+    await expect(fetchPropertyValues('communes', { property: 'name' }, undefined, 'Tou'))
+      .resolves.toEqual(['Toulouse', 'Montoulieu']);
+  });
+
+  it('falls back on the full list when nothing is typed', async () => {
+    search.search.mockClear();
+
+    await fetchPropertyValues('communes', { property: 'name' });
+
+    const [{ aggregations: [aggregation] }] = search.search.mock.calls[0];
+    expect(aggregation.options).toEqual({ size: 10000 });
   });
 });
