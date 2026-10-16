@@ -959,10 +959,15 @@ export class Visualizer extends React.Component {
     const { prevLayersTreeState = new Map() } = this;
     this.prevLayersTreeState = layersTreeState;
 
-    layersTreeState.forEach(({ active, opacity, sublayers: sublayersState }, layer) => {
+    layersTreeState.forEach(({ active, opacity, loading, sublayers: sublayersState }, layer) => {
       const { sublayers = [], layers = [], ignore = {} } = layer;
 
-      const { active: prevActive, opacity: prevOpacity } = prevLayersTreeState.get(layer) || {};
+      const {
+        active: prevActive,
+        opacity: prevOpacity,
+        loading: prevLoading,
+      } = prevLayersTreeState.get(layer) || {};
+      const hasJustLoaded = prevLoading && !loading;
 
       if (sublayersState) {
         sublayers.forEach((sublayer, index) => {
@@ -972,7 +977,7 @@ export class Visualizer extends React.Component {
               return;
             }
             toggleLayerVisibility(map, layerId, isActive ? 'visible' : 'none');
-            if (opacity !== prevOpacity) {
+            if (opacity !== prevOpacity || hasJustLoaded) {
               setLayerOpacity(map, layerId, opacity);
             }
           });
@@ -986,12 +991,12 @@ export class Visualizer extends React.Component {
           `${layerId}-border`,
         ];
 
-        if (active !== undefined && active !== prevActive) {
+        if (active !== undefined && (active !== prevActive || hasJustLoaded)) {
           toggleLayerVisibility(map, layerId, active ? 'visible' : 'none');
         }
         if (
           opacity !== undefined &&
-          opacity !== prevOpacity &&
+          (opacity !== prevOpacity || hasJustLoaded) &&
           // Don't change cluster border
           !ignoreOpacity.includes(layerId)
         ) {

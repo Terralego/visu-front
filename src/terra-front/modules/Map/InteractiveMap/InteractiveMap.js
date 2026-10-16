@@ -628,6 +628,10 @@ export class InteractiveMap extends React.Component {
           return { line, fill };
         };
 
+        const styleLayers = map.getStyle().layers;
+        const targetIndex = styleLayers.findIndex(({ id }) => id === layerId);
+        const nextLayerId = styleLayers[targetIndex + 1]?.id;
+
         Object.keys(targetType()).forEach(highlightType => {
           const highlightTypeId = getHighlightLayerId(layerId, highlightType);
           if (!map.getLayer(highlightTypeId)) {
@@ -640,7 +644,7 @@ export class InteractiveMap extends React.Component {
             if (sourceLayer) {
               highlightLayer['source-layer'] = sourceLayer;
             }
-            map.addLayer(highlightLayer);
+            (map.map || map).addLayer(highlightLayer, nextLayerId);
           } else {
             Object.keys(targetType()[highlightType]).forEach(paintProperty => {
               map.setPaintProperty(
