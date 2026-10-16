@@ -10,8 +10,26 @@
   }
 }
 
-.mapboxgl-ctrl-top-right {
+.mapboxgl-ctrl-top-left,
+.mapboxgl-ctrl-top-right,
+.mapboxgl-ctrl-bottom-left,
+.mapboxgl-ctrl-bottom-right {
   z-index: 30;
+}
+
+.mapboxgl-ctrl-top-right {
+  display: flex;
+  flex-direction: column;
+
+  & > mapboxgl-ctrl-group {
+    order: 0;
+  }
+  & > .mapboxgl-ctrl-share {
+    order: 1;
+  }
+  & > .mapboxgl-ctrl-declaration {
+    order: 2;
+  }
 }
 
 // Avoid .mapboxgl-ctrl-group to override .bp3-button
@@ -67,13 +85,20 @@
     }
   }
 
+  &.mapboxgl-ctrl-declaration {
+    button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: invert(0%);
+      color: $pt-dark-text-color;
+      opacity: 0.8;
+    }
+  }
+
   .bp3-popover-target button {
     filter: invert(0%);
     color: $pt-dark-text-color;
-  }
-
-  .mapboxgl-ctrl-icon.mapboxgl-ctrl-compass > .mapboxgl-ctrl-compass-arrow {
-    filter: brightness(0.5);
   }
 
   .mapbox-gl-draw_ctrl-draw-btn {

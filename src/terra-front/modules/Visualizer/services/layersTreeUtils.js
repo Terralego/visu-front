@@ -1,7 +1,7 @@
-
 import searchService, { MAX_SIZE } from './search';
 
 import { PREFIX_SOURCE } from '../../Map/services/cluster';
+import { LAYER_TYPES_ORDER } from '../../Map/services/mapUtils';
 
 export const INITIAL_FILTERS = new Map();
 
@@ -15,23 +15,39 @@ export const isCluster = (source, layerId) => !!source.match(new RegExp(`^${laye
  * @param {string} table Active table from hash (layer id)
  * @return {Map} A reduced layer tree state
  */
+export const getLayersTreeIds = (group, ids = []) => {
+  group.forEach(layer => {
+    if (layer.group) {
+      getLayersTreeIds(layer.layers, ids);
+      return;
+    }
+    const { layers: [layerId] = [] } = layer;
+    if (layerId !== undefined) ids.push(layerId);
+  });
+  return ids;
+};
+
 export const initLayersStateAction = (layersTree, { layers: hashLayers, table } = {}) => {
   const layersTreeState = new Map();
 
+  const requestedIds = (Array.isArray(hashLayers) ? hashLayers : [hashLayers])
+    .filter(id => id !== undefined && id !== null && id !== '');
+  const knownIds = getLayersTreeIds(layersTree);
+  const hashMatchesTree = requestedIds.some(id => knownIds.includes(id));
+
   function reduceLayers (group, map) {
     return group.reduce((layersStateMap, layer) => {
-      const { initialState = {}, layers: [layerId] = [] } = layer;
+      const { initialState: layerInitialState = {}, layers: [layerId] = [] } = layer;
       if (layer.group) {
         return reduceLayers(layer.layers, layersStateMap);
       }
+      const initialState = { ...layerInitialState };
       initialState.opacity = initialState.opacity === undefined
         ? 1
         : initialState.opacity;
 
-      if (hashLayers) {
-        initialState.active = (
-          Array.isArray(hashLayers) && hashLayers.includes(layerId))
-          || hashLayers === layerId;
+      if (hashMatchesTree) {
+        initialState.active = requestedIds.includes(layerId);
       }
 
       if (table && table === layerId) {
@@ -83,10 +99,14 @@ export const setLayerStateAction = (layer, layerState, prevLayersTreeState, rese
 
   const newLayerState = { ...layerState };
 
+  if (newLayerState.active === false) {
+    newLayerState.table = false;
+  }
+
   if (newLayerState.table) {
-    // Easiest to to read as transform Map in Array and run a .map() on it
-    // eslint-disable-next-line no-param-reassign
-    newLayersTreeState.forEach(layState => { layState.table = false; });
+    Array.from(newLayersTreeState).forEach(([node, layState]) => {
+      newLayersTreeState.set(node, { ...layState, table: false });
+    });
   }
   newLayersTreeState.set(layer, {
     ...reset ? {} : prevLayerState,
@@ -132,7 +152,7 @@ const filterFromFeatureIds = ids => {
     return false;
   }
 
-  return ['match', ['get', '_id'], ids, true, false];
+  return ['match', ['to-string', ['get', '_id']], ids.map(id => `${id}`), true, false];
 };
 
 export const filterFeatures = (
@@ -173,7 +193,6 @@ export const filterFeatures = (
   });
 };
 
-
 export const resetFilters = (map, layersTreeState) => {
   Array.from(layersTreeState).forEach(([{
     layers = [], filters,
@@ -196,22 +215,26 @@ export const resetFilters = (map, layersTreeState) => {
   });
 };
 
-const flattenLayersTreeLayersId = layersTree => layersTree.reduce((all, { group, layers }) => [
-  ...all,
-  ...(group ? flattenLayersTreeLayersId(layers) : layers),
-], []);
+const flattenLayersTreeNodeIds = layersTree => layersTree.reduce(
+  (all, node) => [
+    ...all,
+    ...(node.group ? flattenLayersTreeNodeIds(node.layers) : [node.id]),
+  ],
+  [],
+);
 
 export const sortCustomLayers = (customLayers, layersTree) => {
-  const newCustomLayers = [...customLayers];
-  const flattenLayersTree = flattenLayersTreeLayersId(layersTree);
-  flattenLayersTree.forEach(layerId => {
-    const pos = newCustomLayers.findIndex(({ id }) => id === layerId);
-    if (pos > -1) {
-      newCustomLayers.push(...newCustomLayers.splice(pos, 1));
-    }
+  const nodeIds = flattenLayersTreeNodeIds(layersTree);
+  const nodeIdIndex = new Map([...nodeIds].reverse().map((id, i) => [id, i]));
+
+  return [...customLayers].sort((a, b) => {
+    const typeA = LAYER_TYPES_ORDER.indexOf(a.type);
+    const typeB = LAYER_TYPES_ORDER.indexOf(b.type);
+    if (typeA !== typeB) return typeA - typeB;
+    const posA = nodeIdIndex.has(a.layerId) ? nodeIdIndex.get(a.layerId) : Infinity;
+    const posB = nodeIdIndex.has(b.layerId) ? nodeIdIndex.get(b.layerId) : Infinity;
+    return posA - posB;
   });
-  // Reverse order as we want first layer come over next layer
-  return newCustomLayers.reverse();
 };
 
 /**
@@ -220,22 +243,61 @@ export const sortCustomLayers = (customLayers, layersTree) => {
  * @param {Object} property Property to fetch
  * @return Mixed[]
  */
-export const fetchPropertyValues = async (layer, { property }, baseQuery) => {
+export const AUTOCOMPLETE_SIZE = 500;
+
+const LUCENE_SPECIAL_CHARS = /[.?+*|{}[\]()"\\#@&<>~]/;
+
+/**
+ * Build a case insensitive lucene pattern for the query. Terms aggregations
+ * filter on the raw keyword, which lucene matches case sensitively and anchors
+ * on the whole value.
+ */
+export const buildValuesPatterns = query => {
+  const escaped = Array.from(query)
+    .map(char => {
+      if (LUCENE_SPECIAL_CHARS.test(char)) return `\\${char}`;
+      const lower = char.toLowerCase();
+      const upper = char.toUpperCase();
+      return lower === upper ? char : `[${lower}${upper}]`;
+    })
+    .join('');
+
+  return { startsWith: `${escaped}.*`, contains: `.*${escaped}.*` };
+};
+
+const termsOn = (field, name, include) => ({
+  type: 'terms',
+  field,
+  name,
+  options: {
+    size: AUTOCOMPLETE_SIZE,
+    include,
+    order: { _key: 'asc' },
+  },
+});
+
+export const fetchPropertyValues = async (layer, { property }, baseQuery, query = '') => {
+  const field = `${property}.keyword`;
+  const { startsWith, contains } = query ? buildValuesPatterns(query) : {};
+
   const results = await searchService.search({
     index: layer,
     baseQuery,
-    aggregations: [{
-      type: 'terms',
-      field: `${property}.keyword`,
-      name: 'values',
-      options: {
-        size: MAX_SIZE,
-      },
-    }],
+    aggregations: query
+      ? [termsOn(field, 'startsWith', startsWith), termsOn(field, 'values', contains)]
+      : [{ type: 'terms', field, name: 'values', options: { size: MAX_SIZE } }],
     size: 0,
   });
-  const { aggregations: { values: { buckets } } } = results;
-  return buckets.map(({ key }) => key);
+
+  const {
+    aggregations: {
+      values: { buckets },
+      startsWith: { buckets: startsWithBuckets = [] } = {},
+    },
+  } = results;
+
+  // Values starting with the query first, they are the ones being looked for
+  return [...new Set([...startsWithBuckets, ...buckets].map(({ key }) => key))];
 };
 
 /**
@@ -289,37 +351,27 @@ const flattenLayersTreeGroup = tree => {
 export const layersTreeToStory = layersTree => {
   const arrayOfLayers = flattenLayersTreeGroup(layersTree);
 
-  const story = arrayOfLayers.reduce(({
-    beforeEach: [beforeEachConfig],
-    slides,
-  }, {
-    label: title,
-    content = '',
-    layers = [],
-    ...layerAttrs
-  }) => ({
-    beforeEach: [{
-      ...beforeEachConfig,
-      layers: [
-        ...beforeEachConfig.layers,
-        ...layers.filter(layer => typeof layer === 'string'),
-      ],
-    }],
-    slides: [
-      ...slides, {
-        title,
-        content,
-        layouts: [{
-          layers: layers.filter(layer => typeof layer === 'string'),
-          active: true,
-        }],
-        ...layerAttrs,
+  const story = arrayOfLayers.reduce(({ beforeEach: [beforeEachConfig], slides }, layer) => {
+    const { label: title, content = '', layers = [], legends, ...layerAttrs } = layer;
+    const mapboxLayers = layers.filter(l => typeof l === 'string');
+    return {
+      beforeEach: [{
+        ...beforeEachConfig,
+        layers: [...beforeEachConfig.layers, ...mapboxLayers],
       }],
-  }), {
-    beforeEach: [{
-      layers: [],
-      active: false,
-    }],
+      slides: [
+        ...slides, {
+          title,
+          content,
+          legends,
+          layouts: [{ layers: mapboxLayers, active: true }],
+          layerNode: layer,
+          ...layerAttrs,
+        },
+      ],
+    };
+  }, {
+    beforeEach: [{ layers: [], active: false }],
     slides: [],
   });
 

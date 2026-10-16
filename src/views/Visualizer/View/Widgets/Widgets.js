@@ -1,6 +1,6 @@
 import React from 'react';
 import classnames from 'classnames';
-import WidgetItem  from './WigetItem';
+import WidgetItem  from './WidgetItem';
 import './styles.scss';
 
 
@@ -31,6 +31,7 @@ const Widgets = ({
         {
           (widgets).map(({ widget, filters, layer, form, layerLabel }, index) => (
             <WidgetItem
+              key={`${widget.title}-${widget.component}`}
               widget={widget}
               filters={filters}
               layer={layer}

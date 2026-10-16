@@ -7,24 +7,23 @@ import {
   Overlay,
   Classes,
   Button,
+  Card,
 } from '@blueprintjs/core';
 import { LoginForm, SignupForm } from '../../modules/Auth';
 import translateMock from '../../utils/translate';
 
-import NavBarItemDesktop from '../NavBarItemDesktop';
-import NavBarItemTablet from '../NavBarItemTablet';
 import LoginFormRenderer from '../../modules/Auth/components/LoginForm/LoginFormRenderer';
 
 export const LoginButton = ({
   authenticated,
-  isMobileSized,
-  isPhoneSized,
   logoutAction,
+  trigger: Trigger,
   translate,
   allowUserRegistration,
   render = LoginFormRenderer,
   ssoLink,
   defaultButtonText,
+  loginMessage,
   ssoButtonText,
   ...props
 }) => {
@@ -33,7 +32,6 @@ export const LoginButton = ({
   const [isNewlyAuthenticated, setIsNewlyAuthenticated] = useState(false);
 
   const wantLogout = isOpen && authenticated && !isNewlyAuthenticated;
-  const NavBarItem = isMobileSized ? NavBarItemTablet : NavBarItemDesktop;
 
   useEffect(() => {
     if (authenticated) {
@@ -50,7 +48,7 @@ export const LoginButton = ({
 
   return (
     <>
-      <NavBarItem {...props} onClick={toggleOverlay} />
+      <Trigger {...props} onClick={toggleOverlay} />
       <Overlay
         className={classNames(
           Classes.OVERLAY_SCROLL_CONTAINER,
@@ -69,6 +67,15 @@ export const LoginButton = ({
             'modal-signin__form',
           )}
         >
+          {loginMessage && loginMessage !== '' && (
+          <Card style={{ marginBottom: '1rem' }}>
+            { /* eslint-disable-next-line react/no-danger */ }
+            <div dangerouslySetInnerHTML={{
+              __html: loginMessage,
+            }}
+            />
+          </Card>
+          )}
           {isOpen && !authenticated
           && (
           <Tabs id="login">
@@ -131,23 +138,22 @@ export const LoginButton = ({
 };
 
 LoginButton.propTypes = {
+  trigger: PropTypes.elementType.isRequired,
   authenticated: PropTypes.bool,
-  isMobileSized: PropTypes.bool,
-  isPhoneSized: PropTypes.bool,
   logoutAction: PropTypes.func,
   translate: PropTypes.func,
   ssoLink: PropTypes.string,
+  loginMessage: PropTypes.string,
   defaultButtonText: PropTypes.string,
   ssoButtonText: PropTypes.string,
 };
 
 LoginButton.defaultProps = {
   authenticated: false,
-  isMobileSized: false,
-  isPhoneSized: false,
   ssoLink: undefined,
   defaultButtonText: undefined,
   ssoButtonText: undefined,
+  loginMessage: undefined,
   logoutAction () {},
   translate: translateMock({
     'auth.loginform.title': 'Sign in',

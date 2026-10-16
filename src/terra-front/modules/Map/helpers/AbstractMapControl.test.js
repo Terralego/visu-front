@@ -16,7 +16,7 @@ it('should be added on map', () => {
     foo: 'foo',
     bar: 'bar',
   });
-  instance.renderContainer = jest.fn();
+  instance.renderContainer = vi.fn();
   instance.onAdd(map);
   expect(instance.renderContainer).toHaveBeenCalled();
   expect(instance.container.className).toContain('mocked-classname');
@@ -26,10 +26,10 @@ it('should be removed from map', () => {
   const instance = new TestControl();
   instance.container = {
     parentNode: {
-      removeChild: jest.fn(),
+      removeChild: vi.fn(),
     },
   };
-  ReactDOM.unmountComponentAtNode = jest.fn();
+  ReactDOM.unmountComponentAtNode = vi.fn();
   instance.onRemove();
   expect(instance.container.parentNode.removeChild).toHaveBeenCalledWith(instance.container);
   expect(instance.map).not.toBeDefined();
@@ -37,7 +37,7 @@ it('should be removed from map', () => {
 });
 
 it('should render container', () => {
-  ReactDOM.render = jest.fn();
+  ReactDOM.render = vi.fn();
   const instance = new TestControl();
   instance.renderContainer();
   expect(ReactDOM.render).toHaveBeenCalled();
@@ -45,7 +45,7 @@ it('should render container', () => {
 
 it('should set props', () => {
   const instance = new TestControl();
-  instance.renderContainer = jest.fn();
+  instance.renderContainer = vi.fn();
   instance.setProps({
     foo: 'foo',
     bar: 'bar',

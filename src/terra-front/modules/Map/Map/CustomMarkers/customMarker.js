@@ -25,15 +25,17 @@ export default (type, layer, map) => {
     }),
   );
 
+  const mergedPaint = { ...customMarker.defaultPaint, ...newPaint };
+
   const newLayer = {
     type: customMarker.targetType,
     id: layer.id,
-    paint: {
-      ...customMarker.defaultPaint,
-      ...newPaint,
-    },
+    paint: customMarker.getLayerPaint ? customMarker.getLayerPaint(mergedPaint) : mergedPaint,
     source: layer.source,
     ...(layer['source-layer'] ? { 'source-layer': layer['source-layer'] } : {}),
+    ...(layer.minzoom !== undefined ? { minzoom: layer.minzoom } : {}),
+    ...(layer.maxzoom !== undefined ? { maxzoom: layer.maxzoom } : {}),
+    ...(layer.filter ? { filter: layer.filter } : {}),
   };
 
   // Add "fake" layer to map
@@ -70,6 +72,7 @@ export default (type, layer, map) => {
           updateParameters,
           layerPaint,
         );
+        el.style.pointerEvents = 'none';
         marker = new Marker({
           element: el,
         }).setLngLat(coords);
@@ -88,7 +91,7 @@ export default (type, layer, map) => {
     // change opacity of markers without having to recreate them;
     if (layerOpacity !== opacity) {
       Object.values(markers).forEach(e => {
-        customMarker.updateOpacity(e, layerOpacity);
+        customMarker.updateLayerOpacity(e, layerOpacity);
       });
       opacity = layerOpacity;
     }

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import * as Sentry from '@sentry/react';
 import Api from '@terralego/core/modules/Api';
-import { connectAuthProvider } from '@terralego/core/modules/Auth';
+import { authService, connectAuthProvider } from '@terralego/core/modules/Auth';
 import { useLocation } from 'react-router';
 import { contextSettings } from './context';
 
@@ -75,8 +75,11 @@ export const SettingsProvider = ({ children, authenticated, setAuthenticated }) 
       const nextSettings = await getSettings();
       if (!isMounted) return;
       if (nextSettings.token && !global.localStorage.getItem(TERRA_TOKEN_KEY)) {
-        global.localStorage.setItem(TERRA_TOKEN_KEY, nextSettings.token);
+        authService.storeSessionToken(nextSettings.token);
         !authenticated && setAuthenticated(true);
+      } else if (nextSettings.token === null && authService.isSessionToken()) {
+        authService.clearToken();
+        setAuthenticated(false);
       }
       setSettings(nextSettings);
 

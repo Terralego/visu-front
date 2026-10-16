@@ -37,6 +37,7 @@ export class LayersTreeProvider extends React.Component {
     fetchPropertyRange: PropTypes.func,
     translate: PropTypes.func,
     setCurrentState: PropTypes.func,
+    onLoadLayerData: PropTypes.func,
   };
 
   static defaultProps = {
@@ -47,6 +48,7 @@ export class LayersTreeProvider extends React.Component {
     fetchPropertyRange () {},
     translate: undefined,
     setCurrentState () {},
+    onLoadLayerData: null,
   };
 
   constructor (props) {
@@ -56,10 +58,6 @@ export class LayersTreeProvider extends React.Component {
   }
 
   componentDidMount () {
-    const { setCurrentState } = this.props;
-    // Reset current tree state from hash
-    setCurrentState({ layers: undefined });
-
     this.initLayersState();
   }
 
@@ -84,6 +82,22 @@ export class LayersTreeProvider extends React.Component {
   }
 
   setLayerState = ({ layer, state: newState, reset }) => {
+    const { onLoadLayerData } = this.props;
+
+    if (newState.active && !layer.fetched && onLoadLayerData) {
+      const loadingState = { ...newState, loading: true };
+      this.resetState(({ layersTreeState }) => ({
+        layersTreeState: setLayerStateAction(layer, loadingState, layersTreeState, reset),
+      }));
+      onLoadLayerData(layer).then(() => {
+        if (this.isUnmount) return;
+        this.resetState(({ layersTreeState }) => ({
+          layersTreeState: setLayerStateAction(layer, { loading: false }, layersTreeState),
+        }));
+      });
+      return;
+    }
+
     this.resetState(({ layersTreeState }) => ({
       layersTreeState: setLayerStateAction(layer, newState, layersTreeState, reset),
     }));
@@ -136,6 +150,29 @@ export class LayersTreeProvider extends React.Component {
     this.resetState({ layersTreeState: new Map(newLayersTreeState) });
   };
 
+  searchTokens = new Map();
+
+  /**
+   * Replace the values of a single property with the ones matching a query.
+   * Unlike fetchPropertiesValues it keeps the current values displayed, so the
+   * autocomplete does not flicker nor close while typing.
+   */
+  searchPropertyValues = async (layer, property, baseQuery, query) => {
+    const { fetchPropertyValues } = this.props;
+    const token = (this.searchTokens.get(property) || 0) + 1;
+    this.searchTokens.set(property, token);
+
+    const values = await fetchPropertyValues(layer, property, baseQuery, query);
+
+    if (this.isUnmount || this.searchTokens.get(property) !== token) return;
+
+    // eslint-disable-next-line no-param-reassign
+    property.values = [...(values || [])];
+
+    const { layersTreeState } = this.state;
+    this.resetState({ layersTreeState: new Map(layersTreeState) });
+  };
+
   initLayersState = initialLayersTreeState => {
     this.resetState(({ layersTreeState }) => {
       const { layersTree, initialState } = this.props;
@@ -158,7 +195,7 @@ export class LayersTreeProvider extends React.Component {
    * @param {Function} callback
    */
   resetState (state, callback = () => { }) {
-    const { setCurrentState, onChange, initialState = {} } = this.props;
+    const { setCurrentState, onChange } = this.props;
 
     const setStateCallback = () => {
       callback();
@@ -178,10 +215,12 @@ export class LayersTreeProvider extends React.Component {
       };
 
       layersTreeState.forEach(populateActiveLayersAndTable);
-      // Deduplicate render
-      if (activeLayers !== initialState.layers || table !== initialState.table) {
-        setCurrentState({ layers: activeLayers, table });
-      }
+
+      setCurrentState({
+        layers: activeLayers.length > 0 ? activeLayers : undefined,
+        table: table || undefined,
+      });
+
       onChange(layersTreeState);
     };
 
@@ -196,11 +235,12 @@ export class LayersTreeProvider extends React.Component {
       translate,
       layersExtent,
       isDetailsVisible,
+      onLoadLayerData,
     } = this.props;
     const { layersTreeState } = this.state;
     const {
       initLayersState, setLayerState, getLayerState,
-      fetchPropertiesValues,
+      fetchPropertiesValues, searchPropertyValues,
     } = this;
     const value = {
       map,
@@ -210,9 +250,11 @@ export class LayersTreeProvider extends React.Component {
       setLayerState,
       getLayerState,
       fetchPropertiesValues,
+      searchPropertyValues,
       translate,
       layersExtent,
       isDetailsVisible,
+      onLoadLayerData,
     };
     return (
       <Provider value={value}>

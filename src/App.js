@@ -8,11 +8,12 @@ import '@blueprintjs/icons/lib/css/blueprint-icons.css';
 import '@blueprintjs/core/lib/css/blueprint.css';
 import './app.scss';
 import '@blueprintjs/datetime/lib/css/blueprint-datetime.css';
+import { Experimental_CssVarsProvider as CssVarsProvider } from '@mui/material';
 
-import SettingsProvider from './views/Main/Provider';
 import withEnv from './config/withEnv';
 import './config/i18n';
 import Main from './views/Main';
+import theme from './mui-theme';
 
 // Used while loading translations. Don't want to display anything
 const Loading = () => null;
@@ -20,15 +21,15 @@ const Loading = () => null;
 const App = ({ env: { API_HOST } }) => (
   <ApiProvider host={API_HOST}>
     <AuthProvider>
-      <StateProvider>
-        <BrowserRouter>
-          <Suspense fallback={<Loading />}>
-            <SettingsProvider>
+      <CssVarsProvider theme={theme}>
+        <StateProvider>
+          <BrowserRouter>
+            <Suspense fallback={<Loading />}>
               <Main />
-            </SettingsProvider>
-          </Suspense>
-        </BrowserRouter>
-      </StateProvider>
+            </Suspense>
+          </BrowserRouter>
+        </StateProvider>
+      </CssVarsProvider>
     </AuthProvider>
   </ApiProvider>
 );

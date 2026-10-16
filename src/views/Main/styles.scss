@@ -19,8 +19,16 @@ $tableHeight: 33vh;
   padding: 0 ! important;
 
   &__header {
+    overflow: hidden;
+
     .appName-title-logo {
       margin-top: 0;
+    }
+
+    .appName,
+    .appName-title,
+    .appName-title-logo {
+      max-width: 100%;
     }
   }
 }
@@ -67,22 +75,12 @@ $tableHeight: 33vh;
     .tf-legend {
       max-width: none;
     }
-
-    .tf-legend__title {
-      align-self: center;
-    }
   }
 }
 
 // Override TerraLego
 .mapboxgl-ctrl:hover {
   color: #202B33;
-}
-
-.interactive-map {
-  .tf-legend {
-    margin-bottom: 1em;
-  }
 }
 
 .visualizer {

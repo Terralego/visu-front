@@ -10,12 +10,14 @@ export class FiltersPanel extends React.Component {
     visible: PropTypes.bool,
     onMount: PropTypes.func,
     setLayerState: PropTypes.func,
+    searchPropertyValues: PropTypes.func,
   };
 
   static defaultProps = {
     visible: false,
     onMount () {},
     setLayerState () {},
+    searchPropertyValues: null,
   };
 
   containerRef = React.createRef();
@@ -37,14 +39,24 @@ export class FiltersPanel extends React.Component {
     this.panelContentRef = { current: ref };
   }
 
+  handleSearch = (property, query) => {
+    const { searchPropertyValues, layer, activeLayer } = this.props;
+    const target = activeLayer || layer;
+    const { filters: { layer: index } = {}, baseEsQuery } = target || {};
+
+    if (!searchPropertyValues || !index) return;
+
+    searchPropertyValues(index, property, baseEsQuery, query);
+  };
+
   handleChange = filters => {
     const { setLayerState, layer } = this.props;
     setLayerState({ layer, state: { filters, total: null } });
   }
 
   render () {
-    const { visible, children, ...props } = this.props;
-    const { containerRef, getPanelRef, handleChange } = this;
+    const { visible, children, searchPropertyValues, ...props } = this.props;
+    const { containerRef, getPanelRef, handleChange, handleSearch } = this;
 
     const position = this.getPosition();
 
@@ -53,6 +65,7 @@ export class FiltersPanel extends React.Component {
         onRef={getPanelRef}
         visible={visible}
         onChange={handleChange}
+        onSearch={searchPropertyValues ? handleSearch : undefined}
         {...props}
         {...position}
       />,

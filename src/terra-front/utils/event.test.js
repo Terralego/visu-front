@@ -1,7 +1,7 @@
 import { preventEnterKeyPress } from './event';
 
 it('should prevent event Enter', () => {
-  const preventDefault = jest.fn();
+  const preventDefault = vi.fn();
 
   preventEnterKeyPress({ key: 'Enter', preventDefault });
   expect(preventDefault).toHaveBeenCalled();

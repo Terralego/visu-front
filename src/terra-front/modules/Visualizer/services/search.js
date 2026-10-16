@@ -1,13 +1,17 @@
-import elasticsearch from 'elasticsearch';
 import bodybuilder from 'bodybuilder';
 import debounce from 'lodash.debounce';
+
+import { msearch as esMsearch } from '../../../../services/elasticsearch';
 
 export const MAX_SIZE = 10000;
 export const SEARCHES_QUEUE = new Set();
 
 export const getExtentWithPadding = (map, { top, left, width, height }) => {
-  const topLeft = map.unproject([left, top]).toArray();
-  const bottomRight = map.unproject([width + left, height + top]).toArray();
+  const mapRect = map.getContainer().getBoundingClientRect();
+  const relativeLeft = left - mapRect.left;
+  const relativeTop = top - mapRect.top;
+  const topLeft = map.unproject([relativeLeft, relativeTop]).toArray();
+  const bottomRight = map.unproject([relativeLeft + width, relativeTop + height]).toArray();
   return [topLeft, bottomRight];
 };
 
@@ -76,7 +80,7 @@ export const buildQuery = ({
   properties/* = { propName: value }, { propName: { value, type: 'term'} } */,
   include,
   exclude,
-  aggregations/* = [{ type, field, name, options }] */,
+  aggregations/* = [{ type, field, name, options, nest }] */,
   baseQuery = {},
   hookQuery = () => {},
 }) => {
@@ -134,8 +138,8 @@ export const buildQuery = ({
   }
 
   if (aggregations) {
-    aggregations.forEach(({ type = 'terms', field, options, name }) =>
-      body.aggregation(type, field, options, name));
+    aggregations.forEach(({ type = 'terms', field, options, name, nest = undefined }) =>
+      body.aggregation(type, field, options, name, nest));
   }
 
   // Apply query hooks if any
@@ -167,7 +171,11 @@ export class Search {
   }
 
   set host (host) {
-    this.client = new elasticsearch.Client({ host });
+    this.esHost = host;
+  }
+
+  get host () {
+    return this.esHost;
   }
 
   /**
@@ -231,7 +239,7 @@ export class Search {
       )
       .reduce((body, [header, query]) => [...body, header, query],
         []);
-    return this.client.msearch({ body: searches });
+    return esMsearch(this.esHost, searches);
   }
 
   /**
@@ -254,7 +262,7 @@ export class Search {
     SEARCHES_QUEUE.clear();
 
     // Perform the request and run all responses through the corresponding resolver
-    const { responses } = await this.client.msearch({ body: batchBody }) || {};
+    const { responses } = await esMsearch(this.esHost, batchBody) || {};
     resolves.forEach((resolve, index) => resolve(responses?.[index]));
   }, 500)
 }

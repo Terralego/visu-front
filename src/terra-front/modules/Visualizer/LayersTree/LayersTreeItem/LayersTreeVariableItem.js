@@ -15,7 +15,7 @@ const getValuesByVariable = (variables, layers) => {
   const values = {};
   variables.forEach(variable => {
     values[variable.id] = Array.from(
-      new Set(layers.map(layer => layer.variables?.[variable.id])),
+      new Set(layers.map(layer => layer.variables?.[variable.id]).filter(v => v != null)),
     ).sort();
   });
   return values;
@@ -38,12 +38,14 @@ const LayersTreeVariableItem = ({ group, layers, activeLayer }) => {
 
   const { setLayerState, getLayerState, layersExtent, isDetailsVisible } = useContext(context);
 
+  const layerActive = getLayerState({ layer })?.active;
+
   const valuesByVariable = getValuesByVariable(variables, layers);
 
   useEffect(() => {
     if (!activeLayer) return;
     setLayer(activeLayer);
-    setSelectedVariables(activeLayer.variables);
+    setSelectedVariables(activeLayer.variables || {});
     setLayerState({ layer: activeLayer, state: { active: true } });
   }, [activeLayer, setLayerState]);
 
@@ -61,8 +63,6 @@ const LayersTreeVariableItem = ({ group, layers, activeLayer }) => {
     setLayer(newLayer);
   };
 
-  const layerActive = getLayerState({ layer })?.active;
-
   return (
     <>
       <div className="layerstree-group layerstree-group--active">
@@ -72,26 +72,28 @@ const LayersTreeVariableItem = ({ group, layers, activeLayer }) => {
             layer={layer}
             customLabel={
               layerActive
-                ? `${group.group} (${variables.map(({ id }) => layer.variables[id]).join(' - ')})`
+                ? `${group.group} (${variables.map(({ id }) => layer.variables?.[id]).join(' - ')})`
                 : group.group
             }
             extent={layersExtent?.[layer.label]}
             isDetailsVisible={isDetailsVisible}
-          />
+          >
+            <Collapse isOpen={layerActive}>
+              <div style={{ padding: 5, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                {error && <Callout intent="danger">{error}</Callout>}
+                {variables.map(variable => (
+                  <Select
+                    key={variable.id}
+                    fullWidth
+                    value={selectedVariables[variable.id]}
+                    onChange={value => handleChange(variable.id, value)}
+                    values={valuesByVariable[variable.id]}
+                  />
+                ))}
+              </div>
+            </Collapse>
+          </LayersTreeItem>
         )}
-        <Collapse isOpen={layerActive}>
-          <div style={{ padding: 5, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-            {error && <Callout intent="danger">{error}</Callout>}
-            {variables.map(variable => (
-              <Select
-                fullWidth
-                value={selectedVariables[variable.id]}
-                onChange={value => handleChange(variable.id, value)}
-                values={valuesByVariable[variable.id]}
-              />
-            ))}
-          </div>
-        </Collapse>
       </div>
     </>
   );

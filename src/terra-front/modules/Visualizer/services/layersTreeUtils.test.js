@@ -9,6 +9,8 @@ import {
   filterFeatures,
   resetFilters,
   sortCustomLayers,
+  AUTOCOMPLETE_SIZE,
+  buildValuesPatterns,
   fetchPropertyValues,
   fetchPropertyRange,
   layersTreeToStory,
@@ -16,28 +18,30 @@ import {
 } from './layersTreeUtils';
 import search from './search';
 
-jest.mock('./search', () => ({
+vi.mock('./search', () => ({
   MAX_SIZE: 10000,
-  search: jest.fn(({ index }) => {
-    if (index === 'witherror') {
+  default: {
+    search: vi.fn(({ index }) => {
+      if (index === 'witherror') {
+        return {
+          aggregations: {},
+        };
+      }
       return {
-        aggregations: {},
-      };
-    }
-    return {
-      aggregations: {
-        values: {
-          buckets: [{
-            key: 'foo',
-          }, {
-            key: 'bar',
-          }],
+        aggregations: {
+          values: {
+            buckets: [{
+              key: 'foo',
+            }, {
+              key: 'bar',
+            }],
+          },
+          min: { value: 42 },
+          max: { value: 123 },
         },
-        min: { value: 42 },
-        max: { value: 123 },
-      },
-    };
-  }),
+      };
+    }),
+  },
 }));
 
 const layersTree = [{
@@ -159,6 +163,44 @@ it('should init layers state', () => {
   const layersTreeState = initLayersStateAction(layersTree);
 
   expect(layersTreeState).toEqual(initialLayersTreeState);
+});
+
+it('should keep the default states when url layers match nothing in the tree', () => {
+  const layersTreeState = initLayersStateAction(layersTree, { layers: ['nope1', 'nope2'] });
+
+  expect(layersTreeState).toEqual(initialLayersTreeState);
+});
+
+it('should let matching url layers override the default states', () => {
+  const layersTreeState = initLayersStateAction(layersTree, { layers: ['layer2.2'] });
+
+  expect(layersTreeState.get(layersTree[1].layers[1]).active).toBe(true);
+  expect(layersTreeState.get(layersTree[0]).active).toBe(false);
+});
+
+it('should not mutate the previous states when a table is activated', () => {
+  const previous = initLayersStateAction(layersTree);
+  const snapshot = JSON.stringify(Array.from(previous.values()));
+
+  setLayerStateAction(layersTree[0], { table: true }, previous);
+
+  expect(JSON.stringify(Array.from(previous.values()))).toBe(snapshot);
+});
+
+it('should not mutate the layers tree config', () => {
+  const tree = [{
+    label: 'a',
+    initialState: { active: true, opacity: 0.3 },
+    layers: ['layerA'],
+  }, {
+    label: 'b',
+    layers: ['layerB'],
+  }];
+  const before = JSON.stringify(tree);
+
+  initLayersStateAction(tree, { layers: ['layerB'] });
+
+  expect(JSON.stringify(tree)).toBe(before);
 });
 
 
@@ -284,16 +326,33 @@ it('should be a cluster', () => {
   expect(isCluster('test-source', 'test')).toBe(false);
 });
 
+it('should match numeric elasticsearch ids against the string ids of the tiles', () => {
+  const map = {
+    getLayer: vi.fn(() => ({ source: 'source' })),
+    getFilter: vi.fn(() => null),
+    setFilter: vi.fn(),
+    fire: vi.fn(),
+  };
+  const layer = { id: 'ports', layers: ['ports'], filters: { layer: 'ports' } };
+
+  filterFeatures(map, { ports: { features: [122, 184] } }, new Map([[layer, { active: true }]]));
+
+  expect(map.setFilter).toHaveBeenCalledWith(
+    'ports',
+    ['match', ['to-string', ['get', '_id']], ['122', '184'], true, false],
+  );
+});
+
 it('should filter features', () => {
   const map = {
-    getLayer: jest.fn(layerId => (layerId === 'unknownlayer'
+    getLayer: vi.fn(layerId => (layerId === 'unknownlayer'
       ? undefined
       : {
         source: layerId === 'cluster' ? `${layerId}-cluster-source-0` : 'source',
       })),
-    getFilter: jest.fn(() => ['prev', 'filter']),
-    setFilter: jest.fn(),
-    fire: jest.fn(),
+    getFilter: vi.fn(() => ['prev', 'filter']),
+    setFilter: vi.fn(),
+    fire: vi.fn(),
   };
   const layer1 = {
     id: 'foo',
@@ -330,7 +389,7 @@ it('should filter features', () => {
   ltState.set(layer3, { active: false });
   filterFeatures(map, { foo: { features: ['1', '2'], layers: ['foo'] } }, ltState);
   expect(map.fire).not.toHaveBeenCalled();
-  expect(map.setFilter).toHaveBeenCalledWith('foo', ['match', ['get', '_id'], ['1', '2'], true, false]);
+  expect(map.setFilter).toHaveBeenCalledWith('foo', ['match', ['to-string', ['get', '_id']], ['1', '2'], true, false]);
   expect(map.setFilter).toHaveBeenCalledTimes(1);
 
   map.setFilter.mockClear();
@@ -346,14 +405,14 @@ it('should filter features', () => {
 
 it('should reset filters', () => {
   const map = {
-    getLayer: jest.fn(layerId => (layerId === 'unknownlayer'
+    getLayer: vi.fn(layerId => (layerId === 'unknownlayer'
       ? undefined
       : {
         source: layerId === 'cluster' ? `${layerId}-cluster-source-0` : 'source',
       })),
-    getFilter: jest.fn(() => ['prev', 'filter']),
-    setFilter: jest.fn(),
-    fire: jest.fn(),
+    getFilter: vi.fn(() => ['prev', 'filter']),
+    setFilter: vi.fn(),
+    fire: vi.fn(),
   };
   const layer1 = {
     label: 'foo',
@@ -414,49 +473,68 @@ it('should set group state', () => {
   });
   expect(newLayersTreeState.get(layer.layers[1])).toEqual({
     active: false,
+    table: false,
   });
 });
 
-it('should sort custom layers', () => {
-  const customLayers = [{
-    id: '1',
-  }, {
-    id: '2',
-  }, {
-    id: '3',
-  }, {
-    id: '4',
-  }, {
-    id: '5',
-  }, {
-    id: '6',
-  }];
-  const lT = [{
-    layers: ['4', '2', '7'],
-  }, {
+it('should close the table of a layer being deactivated', () => {
+  const layer = { label: 'foo' };
+  const prevLayersTreeState = new Map([[layer, { active: true, table: true }]]);
+
+  const newLayersTreeState = setLayerStateAction(layer, { active: false }, prevLayersTreeState);
+
+  expect(newLayersTreeState.get(layer)).toEqual({ active: false, table: false });
+});
+
+it('should keep the table open when another property changes', () => {
+  const layer = { label: 'foo' };
+  const prevLayersTreeState = new Map([[layer, { active: true, table: true }]]);
+
+  const newLayersTreeState = setLayerStateAction(layer, { opacity: 0.5 }, prevLayersTreeState);
+
+  expect(newLayersTreeState.get(layer)).toEqual({ active: true, table: true, opacity: 0.5 });
+});
+
+const layersTreeOf = ids => [
+  { id: ids[0] },
+  {
     group: 'foo',
-    layers: [{
-      layers: ['3', '5'],
-    }, {
-      group: 'bar',
-      layers: [{
-        layers: ['1', '2'],
-      }],
-    }],
-  }];
-  expect(sortCustomLayers(customLayers, lT)).toEqual([{
-    id: '2',
-  }, {
-    id: '1',
-  }, {
-    id: '5',
-  }, {
-    id: '3',
-  }, {
-    id: '4',
-  }, {
-    id: '6',
-  }]);
+    layers: [
+      { id: ids[1] },
+      { group: 'bar', layers: [{ id: ids[2] }] },
+    ],
+  },
+];
+
+it('should sort custom layers so the first tree node is drawn on top', () => {
+  const customLayers = [
+    { id: 'first', type: 'fill', layerId: 1 },
+    { id: 'second', type: 'fill', layerId: 2 },
+    { id: 'third', type: 'fill', layerId: 3 },
+  ];
+
+  expect(sortCustomLayers(customLayers, layersTreeOf([1, 2, 3])).map(({ id }) => id))
+    .toEqual(['third', 'second', 'first']);
+});
+
+it('should order custom layers by mapbox type before tree order', () => {
+  const customLayers = [
+    { id: 'label', type: 'symbol', layerId: 1 },
+    { id: 'area', type: 'fill', layerId: 3 },
+  ];
+
+  expect(sortCustomLayers(customLayers, layersTreeOf([1, 2, 3])).map(({ id }) => id))
+    .toEqual(['area', 'label']);
+});
+
+it('should push the custom layers of no known tree node last', () => {
+  const customLayers = [
+    { id: 'orphan', type: 'fill', layerId: 99 },
+    { id: 'known', type: 'fill', layerId: 1 },
+  ];
+
+  expect(sortCustomLayers(customLayers, layersTreeOf([1, 2, 3])).map(({ id }) => id))
+    .toEqual(['known', 'orphan']);
 });
 
 it('should fetch property value', async () => {
@@ -523,6 +601,11 @@ it('should generate story from layerstree', () => {
         active: true,
       }],
       content: 'some content',
+      layerNode: {
+        label: 'first story',
+        layers: ['layer1', 'layer2'],
+        content: 'some content',
+      },
     }, {
       title: 'second story',
       layouts: [{
@@ -530,6 +613,56 @@ it('should generate story from layerstree', () => {
         active: true,
       }],
       content: 'some other content',
+      layerNode: {
+        label: 'second story',
+        layers: ['layer3', 'layer4'],
+        content: 'some other content',
+      },
     }],
+  });
+});
+
+describe('autocomplete on property values', () => {
+  it('builds case insensitive patterns, escaping the lucene syntax', () => {
+    expect(buildValuesPatterns('Tou')).toEqual({
+      startsWith: '[tT][oO][uU].*',
+      contains: '.*[tT][oO][uU].*',
+    });
+    expect(buildValuesPatterns('a.b').contains).toBe('.*[aA]\\.[bB].*');
+    expect(buildValuesPatterns('saint-l').startsWith).toBe('[sS][aA][iI][nN][tT]-[lL].*');
+  });
+
+  it('asks elasticsearch for the values starting with then containing the query', async () => {
+    search.search.mockClear();
+
+    await fetchPropertyValues('communes', { property: 'name' }, undefined, 'Tou');
+
+    const [{ aggregations }] = search.search.mock.calls[0];
+    expect(aggregations.map(({ name, options: { include } }) => [name, include])).toEqual([
+      ['startsWith', '[tT][oO][uU].*'],
+      ['values', '.*[tT][oO][uU].*'],
+    ]);
+    expect(aggregations[0].options.size).toBe(AUTOCOMPLETE_SIZE);
+  });
+
+  it('returns the values starting with the query first, without duplicates', async () => {
+    search.search.mockResolvedValueOnce({
+      aggregations: {
+        startsWith: { buckets: [{ key: 'Toulouse' }] },
+        values: { buckets: [{ key: 'Montoulieu' }, { key: 'Toulouse' }] },
+      },
+    });
+
+    await expect(fetchPropertyValues('communes', { property: 'name' }, undefined, 'Tou'))
+      .resolves.toEqual(['Toulouse', 'Montoulieu']);
+  });
+
+  it('falls back on the full list when nothing is typed', async () => {
+    search.search.mockClear();
+
+    await fetchPropertyValues('communes', { property: 'name' });
+
+    const [{ aggregations: [aggregation] }] = search.search.mock.calls[0];
+    expect(aggregation.options).toEqual({ size: 10000 });
   });
 });

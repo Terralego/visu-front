@@ -1,41 +1,25 @@
 import fetchFeatures, { clear } from './fetchFeatures';
 
-beforeEach(clear);
+const okResponse = payload => vi.fn(() => ({ json: () => payload }));
 
-it('should fetch features', async done => {
+beforeEach(() => {
+  clear();
+  global.fetch = okResponse({});
+});
+
+it('should resolve with the fetched payload', async () => {
   const expected = {};
-  const fetched = {
-    json: () => expected,
-  };
-  global.fetch = jest.fn(() => fetched);
+  global.fetch = okResponse(expected);
 
-  const resp = await fetchFeatures('some/url/1');
-
-  expect(resp).toBe(expected);
-
-  done();
+  await expect(fetchFeatures('some/url/1')).resolves.toBe(expected);
 });
 
-it('should cache response', () => {
-  const resp1 = fetchFeatures('some/url/2');
-  const resp2 = fetchFeatures('some/url/2');
-  expect(resp1).toBe(resp2);
+it('should return the same promise for a url already requested', () => {
+  expect(fetchFeatures('some/url/2')).toBe(fetchFeatures('some/url/2'));
 });
 
+it('should reject with the status text when the request fails', async () => {
+  global.fetch = vi.fn(() => ({ status: 404, statusText: 'not found' }));
 
-it('should fail to fetch features', async done => {
-  const fetched = {
-    status: 404,
-    statusText: 'not found',
-  };
-  global.fetch = jest.fn(() => fetched);
-
-  try {
-    await fetchFeatures('some/url/3');
-    expect(true).not.toBe(true);
-  } catch (e) {
-    expect(e.message).toBe('not found');
-  }
-
-  done();
+  await expect(fetchFeatures('some/url/3')).rejects.toThrow('not found');
 });

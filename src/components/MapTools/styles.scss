@@ -1,0 +1,21 @@
+.map-tools {
+  margin: 6px 6px 0 0;
+  pointer-events: auto;
+
+  .bp3-popover-wrapper,
+  .bp3-popover-target {
+    display: flex;
+  }
+}
+
+.mapboxgl-ctrl-bottom-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.map-navigation-tools {
+  order: -1;
+  margin: 0 18px 10px 0;
+  pointer-events: auto;
+}
