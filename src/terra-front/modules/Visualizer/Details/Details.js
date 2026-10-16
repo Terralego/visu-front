@@ -1,4 +1,9 @@
-import { ChevronLeft, ChevronRight, Close as CloseIcon } from '@mui/icons-material';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Close as CloseIcon,
+  Login as LoginIcon,
+} from '@mui/icons-material';
 import { Box, Drawer, IconButton, Button, Divider, Card } from '@mui/material';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
@@ -12,6 +17,18 @@ import SSOLoginFormRenderer from '../../Auth/components/LoginForm/SSOLoginFormRe
 import ReportsIndicator from './ReportsIndicator';
 import ReportsList from './ReportsList';
 import ReportsCount from './ReportsCount';
+
+const LoginTrigger = ({ label, onClick, className }) => (
+  <Button
+    variant="outlined"
+    startIcon={<LoginIcon />}
+    onClick={onClick}
+    className={className}
+    sx={{ textTransform: 'none' }}
+  >
+    {label}
+  </Button>
+);
 
 const Details = ({
   features = [],
@@ -89,9 +106,6 @@ const Details = ({
       sx={{
         width: { xs: '100%', sm: 400 },
         flexShrink: 0,
-        '& .login-button-details .bp3-icon': {
-          color: theme => `${theme.palette.primary.dark} !important`,
-        },
         '& .MuiDrawer-paper': {
           width: { xs: '100%', sm: 400 },
           boxSizing: 'border-box',
@@ -298,7 +312,7 @@ const Details = ({
                               </Box>
                               <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
                                 <LoginButton
-                                  icon="log-in"
+                                  trigger={LoginTrigger}
                                   label={translate('menu.login')}
                                   translate={translate}
                                   allowUserRegistration={allowUserRegistration}
