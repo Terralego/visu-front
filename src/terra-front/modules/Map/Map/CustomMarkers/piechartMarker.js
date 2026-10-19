@@ -4,6 +4,11 @@ const getUpdateParameters = layer => {
   return { fields: usableFields, advancedStyle };
 };
 
+const getFieldValue = (props, { name }) => {
+  const value = Number(props[name]);
+  return Number.isFinite(value) && value > 0 ? value : 0;
+};
+
 const donutSegment = (start, pEnd, r, color, r0 = 0) => {
   let end = pEnd;
   if (end - start === 1) end -= 0.00001;
@@ -35,11 +40,12 @@ const createMarker = (
   },
   { 'circle-radius': circleRadius = 30, 'circle-opacity': circleOpacity = 1 },
 ) => {
+  const values = fields.map(field => getFieldValue(props, field));
   const offsets = [];
   let total = 0;
-  fields.forEach(field => {
+  values.forEach(value => {
     offsets.push(total);
-    total += props[field.name];
+    total += value;
   });
 
   const r = circleRadius === 0 ? 30 : circleRadius;
@@ -56,10 +62,10 @@ const createMarker = (
         style="font: ${fontSize}px sans-serif; display: block"
       >`;
 
-  for (let i = 0; i < fields.length; i += 1) {
+  for (let i = 0; total > 0 && i < fields.length; i += 1) {
     html += donutSegment(
       offsets[i] / total,
-      (offsets[i] + props[fields[i].name]) / total,
+      (offsets[i] + values[i]) / total,
       r,
       fields[i].color,
     );
