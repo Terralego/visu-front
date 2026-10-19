@@ -1,6 +1,44 @@
 import JsPdf from 'jspdf';
 import html2canvas from 'html2canvas';
 
+const loadImage = src => new Promise((resolve, reject) => {
+  const image = new Image();
+  image.onload = () => resolve(image);
+  image.onerror = reject;
+  image.src = src;
+});
+
+const replaceBackgroundImage = async element => {
+  const [, src] = getComputedStyle(element).backgroundImage.match(/url\(["']?(.*?)["']?\)/) || [];
+  const { clientWidth: width, clientHeight: height } = element;
+  if (!src || !width || !height) return () => {};
+
+  const image = await loadImage(src).catch(() => null);
+  if (!image) return () => {};
+
+  const ratio = Math.min(width / image.naturalWidth, height / image.naturalHeight);
+  const imageWidth = image.naturalWidth * ratio;
+  const imageHeight = image.naturalHeight * ratio;
+  Object.assign(image.style, {
+    position: 'absolute',
+    left: `${(width - imageWidth) / 2}px`,
+    top: `${(height - imageHeight) / 2}px`,
+    width: `${imageWidth}px`,
+    height: `${imageHeight}px`,
+  });
+
+  const { position, backgroundImage } = element.style;
+  element.style.position = 'relative';
+  element.style.backgroundImage = 'none';
+  element.appendChild(image);
+
+  return () => {
+    element.removeChild(image);
+    element.style.position = position;
+    element.style.backgroundImage = backgroundImage;
+  };
+};
+
 export default async function exportPdf(map, orientation, format = 'a4') {
   // html2canvas fails to render elements on top of page so we need to scroll
   window.scrollTo(0, 0);
@@ -43,10 +81,14 @@ export default async function exportPdf(map, orientation, format = 'a4') {
   canvasRoot.appendChild(img);
   canvasRoot.removeChild(canvas);
 
+  const restoreBackgroundImages = await Promise.all(
+    Array.from(container.querySelectorAll('.print-header__image')).map(replaceBackgroundImage),
+  );
+
   const renderedContainer = await html2canvas(container, {
     scale: dpi / 96,
     useCORS: true,
-    allowTaint: true,
+    allowTaint: false,
     backgroundColor: '#ffffff',
     // Remove control elements except attribution and scale
     ignoreElements: element => {
@@ -83,6 +125,7 @@ export default async function exportPdf(map, orientation, format = 'a4') {
     get: () => actualPixelRatio,
   });
 
+  restoreBackgroundImages.forEach(restore => restore());
   canvasRoot.removeChild(img);
   canvasRoot.appendChild(canvas);
 }

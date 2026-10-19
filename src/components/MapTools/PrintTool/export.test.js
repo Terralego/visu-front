@@ -24,7 +24,11 @@ vi.mock('html2canvas', () => {
   return { default: html2canvasMock };
 });
 
-const printContainer = { classList: { contains: () => true }, parentElement: null };
+const printContainer = {
+  classList: { contains: () => true },
+  parentElement: null,
+  querySelectorAll: () => [],
+};
 
 const mapStub = () => {
   const canvas = { style: {}, parentNode: { appendChild () {}, removeChild () {} }, toDataURL: () => 'dataurl' };
