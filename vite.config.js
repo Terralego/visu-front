@@ -75,6 +75,7 @@ export default defineConfig(({ mode }) => {
       proxy: {
         '/api': proxy,
         '/static_dj': proxy,
+        '/media': proxy,
       },
     },
 
@@ -82,6 +83,7 @@ export default defineConfig(({ mode }) => {
       proxy: {
         '/api': proxy,
         '/static_dj': proxy,
+        '/media': proxy,
       },
     },
 
