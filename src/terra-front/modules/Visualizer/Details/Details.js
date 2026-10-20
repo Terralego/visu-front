@@ -17,6 +17,7 @@ import SSOLoginFormRenderer from '../../Auth/components/LoginForm/SSOLoginFormRe
 import ReportsIndicator from './ReportsIndicator';
 import ReportsList from './ReportsList';
 import ReportsCount from './ReportsCount';
+import Minisheet from './Minisheet/Minisheet';
 
 const LoginTrigger = ({ label, onClick, className }) => (
   <Button
@@ -91,7 +92,8 @@ const Details = ({
   const isCarousel = enableCarousel && features.length > 1;
   const featureToDisplay =
     features.length > 0 && index !== -1 ? features[index] : feature && feature.properties;
-  const { template, fetchProperties = {}, templates = [] } = interaction || {};
+  const { template, fetchProperties = {}, templates = [], blocks, title } = interaction || {};
+  const hasBlocks = Array.isArray(blocks);
 
   const normalizedTemplates =
     // eslint-disable-next-line no-nested-ternary
@@ -187,7 +189,7 @@ const Details = ({
               >
                 <Box
                   sx={{
-                    padding: '8px 32px',
+                    padding: hasBlocks ? '8px 16px' : '8px 32px',
                     flex: 'auto',
                     minWidth: 0,
                   }}
@@ -262,7 +264,18 @@ const Details = ({
                       },
                     }}
                   >
-                    {normalizedTemplates.map((templateItem, idx) => (
+                    {hasBlocks && (
+                      <FeatureProperties {...fetchProperties} properties={featureToDisplay}>
+                        {({ properties: newProperties, ...staticProperties }) => (
+                          <Minisheet
+                            title={title}
+                            blocks={blocks}
+                            properties={{ ...staticProperties, ...newProperties }}
+                          />
+                        )}
+                      </FeatureProperties>
+                    )}
+                    {!hasBlocks && normalizedTemplates.map((templateItem, idx) => (
                       // eslint-disable-next-line react/no-array-index-key
                       <Box key={idx} sx={{ mb: idx < normalizedTemplates.length - 1 ? 2 : 0 }}>
                         <FeatureProperties
@@ -367,6 +380,12 @@ Details.propTypes = {
     template: PropTypes.string,
     fetchProperties: PropTypes.shape(),
     layer: PropTypes.string,
+    blocks: PropTypes.arrayOf(PropTypes.shape({ type: PropTypes.string })),
+    title: PropTypes.shape({
+      field: PropTypes.string,
+      default: PropTypes.string,
+      icon: PropTypes.string,
+    }),
   }),
   features: PropTypes.arrayOf(propFeature),
   onChange: PropTypes.func,
