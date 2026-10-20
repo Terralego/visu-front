@@ -5,9 +5,15 @@ import PropTypes from 'prop-types';
 import FeatureProperties from '../../Map/FeatureProperties';
 import api from '../../Api/services/api';
 
-const ReportsIndicatorContent = ({ featureId, layerId, translate }) => {
+const ReportsIndicatorContent = ({ featureId, layerId, translate, onCountChange }) => {
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    onCountChange(loading ? 0 : count);
+  }, [count, loading, onCountChange]);
+
+  useEffect(() => () => onCountChange(0), [onCountChange]);
 
   useEffect(() => {
     const fetchReportsCount = async () => {
@@ -80,21 +86,34 @@ ReportsIndicatorContent.propTypes = {
   featureId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   layerId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   translate: PropTypes.func.isRequired,
+  onCountChange: PropTypes.func,
 };
 
 ReportsIndicatorContent.defaultProps = {
   featureId: null,
   layerId: null,
+  onCountChange: () => {},
 };
 
-const ReportsIndicator = ({ feature, fetchProperties, layerId, translate = a => a }) => (
+const ReportsIndicator = ({
+  feature,
+  fetchProperties,
+  layerId,
+  translate = a => a,
+  onCountChange,
+}) => (
   <FeatureProperties {...fetchProperties} properties={feature}>
     {({ properties: newProperties, ...staticProperties }) => {
       const allProperties = { ...staticProperties, ...newProperties };
       const featureId = allProperties.id;
 
       return (
-        <ReportsIndicatorContent featureId={featureId} layerId={layerId} translate={translate} />
+        <ReportsIndicatorContent
+          featureId={featureId}
+          layerId={layerId}
+          translate={translate}
+          onCountChange={onCountChange}
+        />
       );
     }}
   </FeatureProperties>
@@ -105,6 +124,7 @@ ReportsIndicator.propTypes = {
   fetchProperties: PropTypes.shape(),
   layerId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   translate: PropTypes.func,
+  onCountChange: PropTypes.func,
 };
 
 ReportsIndicator.defaultProps = {
@@ -112,6 +132,7 @@ ReportsIndicator.defaultProps = {
   fetchProperties: {},
   layerId: null,
   translate: a => a,
+  onCountChange: undefined,
 };
 
 export default ReportsIndicator;

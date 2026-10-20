@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { Experimental_CssVarsProvider as CssVarsProvider } from '@mui/material';
 
 import theme from '../../../../../mui-theme';
-import Minisheet from './Minisheet';
+import Minisheet, { MinisheetHeaderTitle } from './Minisheet';
 
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({ t: key => key, i18n: { language: 'fr' } }),
@@ -34,23 +34,28 @@ const renderMinisheet = props => render(
 );
 
 describe('Minisheet', () => {
-  it('shows the title from its field, its default otherwise', () => {
-    const { rerender } = renderMinisheet({ title: { field: 'nom', default: 'Sans nom', icon: 'icon.svg' } });
+  it('shows the header title from its field, its default otherwise', () => {
+    const renderTitle = title => render(<MinisheetHeaderTitle title={title} properties={properties} />);
+    const { unmount } = renderTitle({ field: 'nom', default: 'Sans nom', icon: 'icon.svg' });
 
     expect(screen.getByRole('heading', { level: 2 }).textContent).toBe('Lautaret');
+    expect(screen.getByRole('heading', { level: 2 }).getAttribute('title')).toBe('Lautaret');
     expect(document.querySelector('img').getAttribute('src')).toBe('icon.svg');
+    unmount();
 
-    rerender(
-      <CssVarsProvider theme={theme}>
-        <Minisheet properties={properties} title={{ field: 'absent', default: 'Sans nom' }} />
-      </CssVarsProvider>,
-    );
+    renderTitle({ field: 'absent', default: 'Sans nom' });
 
     expect(screen.getByRole('heading', { level: 2 }).textContent).toBe('Sans nom');
   });
 
-  it('shows no title when it is null', () => {
-    renderMinisheet({ title: null });
+  it('shows no header title when it is empty', () => {
+    render(<MinisheetHeaderTitle title={{ default: '' }} properties={properties} />);
+
+    expect(screen.queryByRole('heading')).toBeNull();
+  });
+
+  it('leaves the title out of the minisheet body', () => {
+    renderMinisheet({ title: { field: 'nom' } });
 
     expect(screen.queryByRole('heading')).toBeNull();
   });

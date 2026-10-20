@@ -17,7 +17,7 @@ import SSOLoginFormRenderer from '../../Auth/components/LoginForm/SSOLoginFormRe
 import ReportsIndicator from './ReportsIndicator';
 import ReportsList from './ReportsList';
 import ReportsCount from './ReportsCount';
-import Minisheet from './Minisheet/Minisheet';
+import Minisheet, { MinisheetHeaderTitle } from './Minisheet/Minisheet';
 
 const LoginTrigger = ({ label, onClick, className }) => (
   <Button
@@ -52,6 +52,7 @@ const Details = ({
     allowUserRegistration,
   } = settings;
   const [index, setIndex] = useState(-1);
+  const [reportsCount, setReportsCount] = useState(0);
 
   const isAuthenticated = React.useMemo(() => {
     const token = global.localStorage.getItem('tf:auth:token');
@@ -148,6 +149,7 @@ const Details = ({
               fetchProperties={fetchProperties}
               layerId={layerTreeId}
               translate={translate}
+              onCountChange={setReportsCount}
             />
           )}
           <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -172,8 +174,19 @@ const Details = ({
                   </IconButton>
                 </>
               )}
-              <Box sx={{ flexGrow: 1 }} />
-              <IconButton onClick={onClose} size="small">
+              <Box sx={{ flexGrow: 1, minWidth: 0, display: 'flex', pl: hasBlocks && title && !isCarousel && reportsCount > 0 ? 4 : 0 }}>
+                {hasBlocks && title && featureToDisplay && (
+                  <FeatureProperties {...fetchProperties} properties={featureToDisplay}>
+                    {({ properties: newProperties, ...staticProperties }) => (
+                      <MinisheetHeaderTitle
+                        title={title}
+                        properties={{ ...staticProperties, ...newProperties }}
+                      />
+                    )}
+                  </FeatureProperties>
+                )}
+              </Box>
+              <IconButton onClick={onClose} size="small" sx={{ alignSelf: 'flex-start', mt: -1 }}>
                 <CloseIcon />
               </IconButton>
             </Box>
@@ -268,7 +281,6 @@ const Details = ({
                       <FeatureProperties {...fetchProperties} properties={featureToDisplay}>
                         {({ properties: newProperties, ...staticProperties }) => (
                           <Minisheet
-                            title={title}
                             blocks={blocks}
                             properties={{ ...staticProperties, ...newProperties }}
                           />
