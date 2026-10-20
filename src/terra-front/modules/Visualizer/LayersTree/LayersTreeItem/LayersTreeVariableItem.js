@@ -27,7 +27,7 @@ const LayersTreeVariableItem = ({ group, layers, activeLayer }) => {
   const { variables } = group;
 
   const [selectedVariables, setSelectedVariables] = React.useState(
-    layers[0].variables || {},
+    (activeLayer || layers[0]).variables || {},
   );
 
 
@@ -42,12 +42,13 @@ const LayersTreeVariableItem = ({ group, layers, activeLayer }) => {
 
   const valuesByVariable = getValuesByVariable(variables, layers);
 
+  const activeInState = layers.find(item => getLayerState({ layer: item })?.active);
+
   useEffect(() => {
-    if (!activeLayer) return;
-    setLayer(activeLayer);
-    setSelectedVariables(activeLayer.variables || {});
-    setLayerState({ layer: activeLayer, state: { active: true } });
-  }, [activeLayer, setLayerState]);
+    if (!activeInState) return;
+    setLayer(activeInState);
+    setSelectedVariables(activeInState.variables || {});
+  }, [activeInState]);
 
   const handleChange = (variable, value) => {
     const newSelectedVariables = { ...selectedVariables, [variable]: value };
