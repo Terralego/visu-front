@@ -7,19 +7,30 @@ import Template from '../../../Template';
 import blockComponents from './blocks';
 import toPreviewParts from './previewParts';
 
-const Title = ({ title, properties }) => {
-  if (!title) {
+export const titleText = (title, properties = {}) => (title
+  ? (title.field && properties[title.field]) || title.default || ''
+  : '');
+
+export const MinisheetHeaderTitle = ({ title, properties }) => {
+  const text = titleText(title, properties);
+
+  if (!text && !title?.icon) {
     return null;
   }
-  const text = (title.field && properties[title.field]) || title.default;
 
   return (
     <Typography
       component="h2"
-      sx={{ textAlign: 'center', fontSize: '1.6rem', fontWeight: 300, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 1 }}
+      title={String(text)}
+      sx={{ flex: 1, minWidth: 0, mx: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, fontSize: '1.2rem', fontWeight: 400, lineHeight: 1.25 }}
     >
-      {title.icon && <Box component="img" src={title.icon} alt="" sx={{ height: '1.6rem' }} />}
-      {text}
+      {title.icon && <Box component="img" src={title.icon} alt="" sx={{ height: '1.4rem', flexShrink: 0 }} />}
+      <Box
+        component="span"
+        sx={{ minWidth: 0, textAlign: 'center', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflowWrap: 'anywhere' }}
+      >
+        {text}
+      </Box>
     </Typography>
   );
 };
@@ -48,9 +59,8 @@ const Blocks = ({ blocks, properties }) => toPreviewParts(blocks).map(part => (p
   ? <NunjucksPart key={part.key} template={part.template} properties={properties} />
   : <BlockPart key={part.key} block={part.block} properties={properties} />));
 
-export const Minisheet = ({ title, blocks = [], properties = {} }) => (
+export const Minisheet = ({ blocks = [], properties = {} }) => (
   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-    <Title title={title} properties={properties} />
     <Blocks blocks={blocks} properties={properties} />
   </Box>
 );
