@@ -52,6 +52,7 @@ export class MultiSelect extends React.Component {
     onChange () {},
     translate: translateMock({
       'terralego.forms.controls.multiselect.no_results': 'No results.',
+      'terralego.forms.controls.multiselect.loading': 'Loading...',
       'terralego.forms.controls.multiselect.select_placeholder': 'Enter a query first',
       'terralego.forms.controls.multiselect.select_placeholder_plural': 'Enter at least {{count}} characters',
       'terralego.forms.controls.multiselect.input_placeholder': 'Search...',
@@ -87,8 +88,10 @@ export class MultiSelect extends React.Component {
 
     const formatedValues = formatValues(values);
 
+    const findLabel = (list, val) =>
+      (list.find(({ value: availableVal }) => val === availableVal) || {}).label;
     const formatedValue = value.map(val => {
-      const { label } = formatedValues.find(({ value: availableVal }) => val === availableVal) || { label: '' };
+      const label = findLabel(formatedValues, val) ?? findLabel(state.value, val) ?? String(val);
       return {
         label,
         value: val,
@@ -230,6 +233,8 @@ export class MultiSelect extends React.Component {
               } else if (items.length > MAX_DISPLAY_ITEMS) {
                 // If we have a query but too many results
                 message = translate('terralego.forms.controls.multiselect.too_many');
+              } else if (items.length === 0 && this.state.searching) {
+                message = translate('terralego.forms.controls.multiselect.loading');
               } else if (items.length === 0) {
                 // If we have no results
                 message = translate('terralego.forms.controls.multiselect.no_results');

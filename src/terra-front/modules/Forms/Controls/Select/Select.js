@@ -42,6 +42,7 @@ export class Select extends React.Component {
     translate: translateMock({
       'terralego.forms.controls.select.empty_item': 'All',
       'terralego.forms.controls.select.no_results': 'No results.',
+      'terralego.forms.controls.select.loading': 'Loading...',
       'terralego.forms.controls.select.select_placeholder': 'Enter a query first',
       'terralego.forms.controls.select.input_placeholder': 'Filter...',
       'terralego.forms.controls.noValues': 'No choice available',
@@ -196,7 +197,9 @@ export class Select extends React.Component {
             noResults={(
               <MenuItem
                 disabled
-                text={translate('terralego.forms.controls.select.no_results')}
+                text={translate(searching
+                  ? 'terralego.forms.controls.select.loading'
+                  : 'terralego.forms.controls.select.no_results')}
               />
             )}
             onItemSelect={handleChange}

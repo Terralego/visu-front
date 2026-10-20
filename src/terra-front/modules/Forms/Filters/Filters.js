@@ -18,7 +18,7 @@ export const TYPE_BOOL = 'boolean';
 
 const MAX_MANY = 10;
 
-export function getComponent (type, values, display, format) {
+export function getComponent (type, values, display, format, searched = false) {
   switch (type) {
     case TYPE_SINGLE:
       return Array.isArray(values)
@@ -27,7 +27,7 @@ export function getComponent (type, values, display, format) {
     case TYPE_MANY:
       return (
         Array.isArray(values) && values.length > MAX_MANY) ||
-          (display === 'select')
+          (display === 'select') || searched
         ? MultiSelect
         : Checkboxes;
     case TYPE_RANGE:
@@ -61,13 +61,15 @@ const computeNewPropertiesValue = (properties, property, value) => {
 export const Filters = ({ properties, filters, translate, onChange, onSearch }) => (
   <div>
     {filters.map(filter => {
-      const { type, values, property, display, format, label, fetchValues, ...props } = filter;
+      const {
+        type, values, property, display, format, label, fetchValues, searched, ...props
+      } = filter;
       return (
         <Control
           {...props}
           label={label}
           translate={translate}
-          component={getComponent(type, values, display, format)}
+          component={getComponent(type, values, display, format, searched)}
           key={property}
           type={type}
           values={values}

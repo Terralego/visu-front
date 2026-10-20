@@ -168,6 +168,8 @@ export class LayersTreeProvider extends React.Component {
 
     // eslint-disable-next-line no-param-reassign
     property.values = [...(values || [])];
+    // eslint-disable-next-line no-param-reassign
+    property.searched = true;
 
     const { layersTreeState } = this.state;
     this.resetState({ layersTreeState: new Map(layersTreeState) });

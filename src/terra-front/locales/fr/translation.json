@@ -68,6 +68,7 @@
         },
         "multiselect": {
           "input_placeholder": "Rechercher...",
+          "loading": "Chargement…",
           "no_results": "Aucun résultat",
           "select_placeholder": "Saisissez un terme de recherche",
           "select_placeholder_plural": "Saisissez au moins {{count}} caractères",
@@ -79,6 +80,7 @@
         "select": {
           "empty_item": "Tous(tes)",
           "input_placeholder": "Filtrer...",
+          "loading": "Chargement…",
           "no_results": "Aucun résultat",
           "select_placeholder": "Saisissez un terme de recherche"
         }
