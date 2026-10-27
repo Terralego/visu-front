@@ -6,8 +6,7 @@ import ReportsListContent from './ReportsListContent';
 const ReportsList = ({ feature, fetchProperties, layerId, translate = a => a }) => (
   <FeatureProperties {...fetchProperties} properties={feature}>
     {({ properties: newProperties, ...staticProperties }) => {
-      const allProperties = { ...staticProperties, ...newProperties };
-      const featureId = allProperties.id;
+      const featureId = newProperties ? staticProperties.id : null;
 
       return <ReportsListContent featureId={featureId} layerId={layerId} translate={translate} />;
     }}
