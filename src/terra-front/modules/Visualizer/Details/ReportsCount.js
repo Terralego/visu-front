@@ -74,8 +74,7 @@ ReportsCountContent.defaultProps = {
 const ReportsCount = ({ feature, fetchProperties, layerId, translate = a => a }) => (
   <FeatureProperties {...fetchProperties} properties={feature}>
     {({ properties: newProperties, ...staticProperties }) => {
-      const allProperties = { ...staticProperties, ...newProperties };
-      const featureId = allProperties.id;
+      const featureId = newProperties ? staticProperties.id : null;
 
       return <ReportsCountContent featureId={featureId} layerId={layerId} translate={translate} />;
     }}
