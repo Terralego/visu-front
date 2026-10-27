@@ -104,8 +104,7 @@ const ReportsIndicator = ({
 }) => (
   <FeatureProperties {...fetchProperties} properties={feature}>
     {({ properties: newProperties, ...staticProperties }) => {
-      const allProperties = { ...staticProperties, ...newProperties };
-      const featureId = allProperties.id;
+      const featureId = newProperties ? staticProperties.id : null;
 
       return (
         <ReportsIndicatorContent
