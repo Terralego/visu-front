@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
-import Api from '@terralego/core/modules/Api';
 import bodybuilder from 'bodybuilder';
 import {
   Box,
@@ -15,7 +14,7 @@ import {
 import { ArrowBack as ArrowBackIcon, Print as PrintIcon } from '@mui/icons-material';
 
 import useEsClient from '../utils/useEsClient';
-import { getEsIndexFromBlocks, hideSplashScreen } from '../utils/sheetUtils';
+import { getEsIndexFromBlocks, hideSplashScreen, fetchFeatureSheets } from '../utils/sheetUtils';
 import { SheetLoading, SheetError, SheetWarning } from '../layouts/SheetLoadingStates';
 import SheetBlock from '../components/SheetBlock';
 
@@ -57,9 +56,9 @@ const SheetView = () => {
       }
 
       try {
-        const response = await Api.request('feature_sheet');
-        if (response.results?.length > 0) {
-          const config = response.results.find(
+        const sheets = await fetchFeatureSheets();
+        if (sheets.length > 0) {
+          const config = sheets.find(
             sheet => String(sheet.id) === String(sheetId),
           );
           if (config) {

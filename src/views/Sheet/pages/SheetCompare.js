@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useLocation, useHistory, useParams, Link } from 'react-router-dom';
-import Api from '@terralego/core/modules/Api';
 import bodybuilder from 'bodybuilder';
 import {
   Box,
@@ -32,6 +31,7 @@ import useEsClient from '../utils/useEsClient';
 import {
   getEsIndexFromBlocks,
   hideSplashScreen,
+  fetchFeatureSheets,
 } from '../utils/sheetUtils';
 import { CHART_COLORS } from '../../../mui-theme';
 import { SheetLoading, SheetError, SheetInfo } from '../layouts/SheetLoadingStates';
@@ -138,9 +138,9 @@ const SheetCompare = () => {
   useEffect(() => {
     const fetchSheetConfig = async () => {
       try {
-        const response = await Api.request('feature_sheet');
-        if (response.results?.length > 0) {
-          const config = response.results.find(
+        const sheets = await fetchFeatureSheets();
+        if (sheets.length > 0) {
+          const config = sheets.find(
             sheet => String(sheet.id) === String(sheetId),
           );
           if (config) {
