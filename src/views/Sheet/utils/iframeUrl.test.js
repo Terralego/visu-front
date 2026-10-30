@@ -8,6 +8,11 @@ describe('buildIframeUrl', () => {
       .toBe('https://example.com/Lyon/69');
   });
 
+  it('accepts single braces, as documented by the backend', () => {
+    expect(buildIframeUrl('https://example.com/{nom}/{ code }?q={nom}', fields, { nom: 'Lyon', code: 69 }))
+      .toBe('https://example.com/Lyon/69?q=Lyon');
+  });
+
   it('encodes the values', () => {
     expect(buildIframeUrl('https://example.com/?q={{nom}}', fields, { nom: 'Saint-Étienne & co/2' }))
       .toBe('https://example.com/?q=Saint-%C3%89tienne%20%26%20co%2F2');

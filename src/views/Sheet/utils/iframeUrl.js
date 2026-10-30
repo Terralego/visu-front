@@ -1,4 +1,4 @@
-const VARIABLE = /\{\{\s*([^{}]+?)\s*\}\}/g;
+const VARIABLE = /\{\{?\s*([^{}]+?)\s*\}\}?/g;
 
 export const buildIframeUrl = (template, fields = [], data = {}) => {
   if (!template) return '';
