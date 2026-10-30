@@ -265,6 +265,10 @@ const SheetView = () => {
         };
       }
 
+      if (block.type === 'IFRAME') {
+        return { ...block, featureData: esData || {} };
+      }
+
       if (['RADAR_PLOT', 'BAR_PLOT', 'DISTRIB_PLOT'].includes(block.type)) {
         return {
           ...block,
@@ -288,7 +292,7 @@ const SheetView = () => {
   const filteredBlocks = useMemo(() => {
     if (!hideEmptyFields) return enrichedBlocks;
 
-    const alwaysVisibleTypes = new Set(['MAP', 'PANORAMAX', 'RADAR_PLOT', 'BAR_PLOT', 'DISTRIB_PLOT', 'BOOLEANS', 'TEXT']);
+    const alwaysVisibleTypes = new Set(['MAP', 'PANORAMAX', 'IFRAME', 'RADAR_PLOT', 'BAR_PLOT', 'DISTRIB_PLOT', 'BOOLEANS', 'TEXT']);
 
     return enrichedBlocks
       .map(block => {

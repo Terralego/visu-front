@@ -36,6 +36,8 @@ import {
 import { CHART_COLORS } from '../../../mui-theme';
 import { SheetLoading, SheetError, SheetInfo } from '../layouts/SheetLoadingStates';
 import MapBlock from '../components/MapBlock';
+import IframeBlock from '../components/IframeBlock';
+import { buildIframeUrl } from '../utils/iframeUrl';
 import PanoramaxBlock from '../components/PanoramaxBlock';
 import RadarPlotBlock from '../components/RadarPlotBlock';
 import BarPlotBlock from '../components/BarPlotBlock';
@@ -360,7 +362,7 @@ const SheetCompare = () => {
   const getFilteredBlocks = sheet => {
     if (!hideEmptyFields) return sheet.blocks;
 
-    const alwaysVisibleTypes = new Set(['MAP', 'PANORAMAX', 'RADAR_PLOT', 'BAR_PLOT', 'DISTRIB_PLOT', 'BOOLEANS', 'TEXT']);
+    const alwaysVisibleTypes = new Set(['MAP', 'PANORAMAX', 'IFRAME', 'RADAR_PLOT', 'BAR_PLOT', 'DISTRIB_PLOT', 'BOOLEANS', 'TEXT']);
 
     return sheet.blocks.filter(block => !block.is_tab)
       .map(block => {
@@ -808,6 +810,62 @@ const SheetCompare = () => {
                         </Grid>
                       );
                     })}
+                  </Grid>
+                </Paper>
+              );
+            }
+
+            if (block.type === 'IFRAME') {
+              return (
+                <Paper
+                  key={block.id}
+                  elevation={0}
+                  sx={{ ...blockPaperSx, ...printStyles.hideOnPrint }}
+                >
+                  {block.display_title && (
+                    <Box
+                      sx={{
+                        p: 2,
+                        borderBottom: '1px solid',
+                        borderColor: 'divider',
+                        backgroundColor: 'grey.50',
+                      }}
+                    >
+                      <Typography variant="h6" color="primary.main" fontWeight="600">
+                        {block.title}
+                      </Typography>
+                    </Box>
+                  )}
+                  <Grid container spacing={2} sx={{ p: 2 }}>
+                    {sheets.map((sheet, idx) => (
+                      <Grid
+                        item
+                        xs={12}
+                        md={Math.max(4, Math.floor(12 / sheets.length))}
+                        key={sheet.id}
+                      >
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                          <Chip
+                            label={idx + 1}
+                            size="small"
+                            sx={{
+                              backgroundColor: CHART_COLORS[idx % CHART_COLORS.length],
+                              color: 'white',
+                              fontWeight: 600,
+                              minWidth: 24,
+                            }}
+                          />
+                          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                            {sheet.name}
+                          </Typography>
+                        </Box>
+                        <IframeBlock
+                          url={buildIframeUrl(block.url_iframe, block.fields, sheetsEsData[sheet.id])}
+                          height={block.height_iframe}
+                          title={`${block.title} - ${sheet.name}`}
+                        />
+                      </Grid>
+                    ))}
                   </Grid>
                 </Paper>
               );

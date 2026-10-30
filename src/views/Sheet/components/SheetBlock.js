@@ -22,6 +22,8 @@ import PanoramaxBlock from './PanoramaxBlock';
 import RadarPlotBlock from './RadarPlotBlock';
 import BarPlotBlock from './BarPlotBlock';
 import DistribPlotBlock from './DistribPlotBlock';
+import IframeBlock from './IframeBlock';
+import { buildIframeUrl } from '../utils/iframeUrl';
 
 export const FieldsBlock = ({ fields }) => (
   <Box
@@ -364,6 +366,14 @@ const renderBlockContent = (block, { onPanoramaxEmpty, isPrintMode } = {}) => {
           secondGeometries={block.secondGeometries}
         />
       );
+    case 'IFRAME':
+      return (
+        <IframeBlock
+          url={buildIframeUrl(block.url_iframe, block.fields, block.featureData)}
+          height={block.height_iframe}
+          title={block.title}
+        />
+      );
     case 'PANORAMAX':
       return <PanoramaxBlock geometry={block.geometry} onEmpty={onPanoramaxEmpty} />;
     case 'RADAR_PLOT':
@@ -412,7 +422,7 @@ const SheetBlock = ({ block, isPrintMode, hideEmptyFields }) => {
     return null;
   }
 
-  const hideOnPrint = ['MAP', 'PANORAMAX'].includes(block.type);
+  const hideOnPrint = ['MAP', 'PANORAMAX', 'IFRAME'].includes(block.type);
 
   return (
     <Paper
@@ -476,6 +486,8 @@ SheetBlock.propTypes = {
     display_title: PropTypes.bool,
     fields: PropTypes.arrayOf(PropTypes.shape({})),
     text: PropTypes.string,
+    url_iframe: PropTypes.string,
+    height_iframe: PropTypes.number,
     tableData: PropTypes.arrayOf(PropTypes.shape({})),
     // eslint-disable-next-line react/forbid-prop-types
     geometry: PropTypes.object,
