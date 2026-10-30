@@ -1,5 +1,6 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import PropTypes from 'prop-types';
+import DOMPurify from 'dompurify';
 import {
   Box,
   Typography,
@@ -21,6 +22,8 @@ import PanoramaxBlock from './PanoramaxBlock';
 import RadarPlotBlock from './RadarPlotBlock';
 import BarPlotBlock from './BarPlotBlock';
 import DistribPlotBlock from './DistribPlotBlock';
+import IframeBlock from './IframeBlock';
+import { buildIframeUrl } from '../utils/iframeUrl';
 
 export const FieldsBlock = ({ fields }) => (
   <Box
@@ -200,19 +203,69 @@ BooleansBlock.defaultProps = {
   fields: [],
 };
 
-export const TextBlock = ({ text }) => (
-  <Typography
-    variant="body1"
-    sx={{
-      whiteSpace: 'pre-wrap',
-      '@media print': {
-        fontSize: '11px',
-      },
-    }}
-  >
-    {text}
-  </Typography>
-);
+const HTML_TAG = /<[a-z][\s\S]*>/i;
+
+const richTextSx = {
+  '& > :first-child': { mt: 0 },
+  '& > :last-child': { mb: 0 },
+  '& p': { mt: 0, mb: 1 },
+  '& h1, & h2, & h3, & h4, & h5, & h6': { mt: 2, mb: 1, lineHeight: 1.3 },
+  '& h1': { fontSize: '1.5rem' },
+  '& h2': { fontSize: '1.3rem' },
+  '& h3': { fontSize: '1.15rem' },
+  '& h4, & h5, & h6': { fontSize: '1rem' },
+  '& ul, & ol': { mt: 0, mb: 1, pl: 3 },
+  '& a': { color: 'primary.main' },
+  '& blockquote': {
+    mx: 0,
+    my: 1,
+    pl: 2,
+    borderLeft: '3px solid',
+    borderColor: 'divider',
+    color: 'text.secondary',
+  },
+  '& table': { borderCollapse: 'collapse', mb: 1, maxWidth: '100%' },
+  '& th, & td': { border: '1px solid', borderColor: 'divider', px: 1, py: 0.5 },
+  '& img': { maxWidth: '100%', height: 'auto' },
+  '& code': { fontFamily: 'monospace', fontSize: '0.9em' },
+};
+
+export const TextBlock = ({ text }) => {
+  const html = useMemo(
+    () => (HTML_TAG.test(text) ? DOMPurify.sanitize(text, { ADD_ATTR: ['target'] }) : null),
+    [text],
+  );
+
+  if (html === null) {
+    return (
+      <Typography
+        variant="body1"
+        sx={{
+          whiteSpace: 'pre-wrap',
+          '@media print': {
+            fontSize: '11px',
+          },
+        }}
+      >
+        {text}
+      </Typography>
+    );
+  }
+
+  return (
+    <Typography
+      variant="body1"
+      component="div"
+      sx={{
+        ...richTextSx,
+        '@media print': {
+          fontSize: '11px',
+        },
+      }}
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
+};
 
 TextBlock.propTypes = {
   text: PropTypes.string,
@@ -313,6 +366,14 @@ const renderBlockContent = (block, { onPanoramaxEmpty, isPrintMode } = {}) => {
           secondGeometries={block.secondGeometries}
         />
       );
+    case 'IFRAME':
+      return (
+        <IframeBlock
+          url={buildIframeUrl(block.url_iframe, block.fields, block.featureData)}
+          height={block.height_iframe}
+          title={block.title}
+        />
+      );
     case 'PANORAMAX':
       return <PanoramaxBlock geometry={block.geometry} onEmpty={onPanoramaxEmpty} />;
     case 'RADAR_PLOT':
@@ -361,7 +422,7 @@ const SheetBlock = ({ block, isPrintMode, hideEmptyFields }) => {
     return null;
   }
 
-  const hideOnPrint = ['MAP', 'PANORAMAX'].includes(block.type);
+  const hideOnPrint = ['MAP', 'PANORAMAX', 'IFRAME'].includes(block.type);
 
   return (
     <Paper
@@ -425,6 +486,8 @@ SheetBlock.propTypes = {
     display_title: PropTypes.bool,
     fields: PropTypes.arrayOf(PropTypes.shape({})),
     text: PropTypes.string,
+    url_iframe: PropTypes.string,
+    height_iframe: PropTypes.number,
     tableData: PropTypes.arrayOf(PropTypes.shape({})),
     // eslint-disable-next-line react/forbid-prop-types
     geometry: PropTypes.object,
