@@ -56,7 +56,7 @@
     "pivotql-parser-expression": "^0.2.0",
     "prop-types": "^15.7.2",
     "qs": "^6.8.0",
-    "query-string": "^6.8.2",
+    "query-string": "^10.0.0",
     "react": "^16.9.0",
     "react-ctx-connect": "^1.0.2",
     "react-dom": "^16.9.0",
