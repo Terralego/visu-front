@@ -6,6 +6,8 @@ import { Box, Typography } from '@mui/material';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { CHART_COLORS } from '../../../mui-theme';
 
+export const DEFAULT_MAP_HEIGHT = 400;
+
 const MapBlock = ({
   firstGeometries,
   secondGeometries,
@@ -123,7 +125,7 @@ const MapBlock = ({
     <Box
       ref={mapContainer}
       sx={{
-        minHeight: 400,
+        minHeight: DEFAULT_MAP_HEIGHT,
         width: '100%',
         borderRadius: 1,
         '@media print': {

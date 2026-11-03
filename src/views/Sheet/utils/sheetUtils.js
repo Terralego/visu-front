@@ -41,3 +41,8 @@ export const filterEmptyFields = block => {
   if (filteredFields.length === 0) return null;
   return { ...block, fields: filteredFields };
 };
+
+export const fetchFeatureSheets = async () => {
+  const response = await Api.request('feature_sheet');
+  return response?.results || [];
+};
